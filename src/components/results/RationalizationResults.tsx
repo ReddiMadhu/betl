@@ -36,58 +36,51 @@ import DecommissionReviewModal from './DecommissionReviewModal';
 /* ── Uniform Metric card ── */
 const CROSS_TECH_COLOR = '#8B5CF6';
 
-function MetricPill({ metric, index }: { metric: OverlapMetric; index: number }) {
+function MetricPill({
+  metric,
+  index,
+  onClick,
+  isActive,
+}: {
+  metric: OverlapMetric;
+  index: number;
+  onClick?: () => void;
+  isActive?: boolean;
+}) {
   const count = useCountUp(metric.value, 900, 150 + index * 70);
-  const isCrossTech = metric.id === 'cross-tech';
+  const isClickable = !!onClick;
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.1 + index * 0.04, duration: 0.3 }}
-      className="rounded-xl border p-4 theme-transition flex flex-col justify-between h-full min-h-[90px]"
+      onClick={onClick}
+      className={`rounded-xl border p-4 theme-transition flex flex-col justify-between h-full min-h-[90px] ${
+        isClickable ? 'cursor-pointer hover:opacity-90 transition-transform hover:scale-[1.02]' : ''
+      }`}
       style={{
-        backgroundColor: isCrossTech
-          ? 'color-mix(in srgb, #8B5CF6 8%, var(--color-surface))'
-          : metric.highlight ? 'var(--color-accent-subtle)' : 'var(--color-surface)',
-        borderColor: isCrossTech
-          ? 'color-mix(in srgb, #8B5CF6 30%, var(--color-border-primary))'
-          : metric.highlight
-            ? 'color-mix(in srgb, var(--color-accent) 30%, var(--color-border-primary))'
-            : 'var(--color-border-primary)',
-        boxShadow: isCrossTech
-          ? '0 1px 6px rgba(139,92,246,0.10)'
-          : '0 1px 3px var(--color-card-shadow)',
+        backgroundColor: isActive ? 'var(--color-bg-tertiary)' : 'var(--color-surface)',
+        borderColor: isActive ? CROSS_TECH_COLOR : 'var(--color-border-primary)',
+        boxShadow: isActive ? `0 0 0 1px ${CROSS_TECH_COLOR}` : '0 1px 3px var(--color-card-shadow)',
       }}
     >
       <div className="flex items-center justify-between mb-2">
         <span
           className="text-2xl font-bold tabular-nums tracking-tight"
-          style={{ color: isCrossTech ? CROSS_TECH_COLOR : metric.highlight ? 'var(--color-accent)' : 'var(--color-text-primary)' }}
+          style={{ color: 'var(--color-text-primary)' }}
         >
           {count}
         </span>
-        {isCrossTech && (
+        {isActive && (
           <span
             className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border"
             style={{
-              backgroundColor: CROSS_TECH_COLOR,
               borderColor: CROSS_TECH_COLOR,
-              color: '#FFFFFF',
+              color: CROSS_TECH_COLOR,
+              backgroundColor: CROSS_TECH_COLOR + '15',
             }}
           >
-            X-Tech
-          </span>
-        )}
-        {!isCrossTech && metric.highlight && (
-          <span
-            className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border"
-            style={{
-              backgroundColor: 'var(--color-accent)',
-              borderColor: 'var(--color-accent)',
-              color: '#FFFFFF',
-            }}
-          >
-            Overlap
+            Filter Active
           </span>
         )}
       </div>
@@ -318,6 +311,7 @@ function ColumnHeader({
   color,
   crossTechCount,
   crossTechActive,
+  onToggleCrossTech,
   onClearCrossTech,
 }: {
   icon: typeof GitMerge;
@@ -327,6 +321,7 @@ function ColumnHeader({
   color: string;
   crossTechCount?: number;
   crossTechActive?: boolean;
+  onToggleCrossTech?: () => void;
   onClearCrossTech?: () => void;
 }) {
   return (
@@ -344,28 +339,32 @@ function ColumnHeader({
           {count} {countLabel}
         </span>
         {crossTechCount !== undefined && crossTechCount > 0 && (
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1"
+          <button
+            type="button"
+            onClick={onToggleCrossTech}
+            title={crossTechActive ? 'Click to show all recommendations' : `Click to filter ${crossTechCount} cross-technology recommendations`}
+            className="text-[10px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 cursor-pointer transition-all hover:scale-105 active:scale-95"
             style={{
               color: crossTechActive ? '#FFFFFF' : CROSS_TECH_COLOR,
-              backgroundColor: crossTechActive ? CROSS_TECH_COLOR : CROSS_TECH_COLOR + '10',
-              borderColor: crossTechActive ? CROSS_TECH_COLOR : CROSS_TECH_COLOR + '20',
-              transition: 'all 0.2s',
+              backgroundColor: crossTechActive ? CROSS_TECH_COLOR : CROSS_TECH_COLOR + '15',
+              borderColor: crossTechActive ? CROSS_TECH_COLOR : CROSS_TECH_COLOR + '30',
+              boxShadow: crossTechActive ? `0 2px 8px ${CROSS_TECH_COLOR}40` : 'none',
             }}
           >
-            {crossTechCount} Cross-Tech
-            {crossTechActive && onClearCrossTech && (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onClearCrossTech(); }}
-                className="ml-0.5 cursor-pointer hover:opacity-80"
-                style={{ background: 'none', border: 'none', padding: 0, color: '#FFFFFF', lineHeight: 0 }}
-                aria-label="Clear cross-technology filter"
+            <span>{crossTechCount} Cross-Tech</span>
+            {crossTechActive && (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClearCrossTech ? onClearCrossTech() : onToggleCrossTech?.();
+                }}
+                className="ml-0.5 hover:opacity-80 p-0.5 inline-flex items-center"
+                title="Clear filter"
               >
                 <X size={10} />
-              </button>
+              </span>
             )}
-          </span>
+          </button>
         )}
       </div>
     </div>
@@ -384,7 +383,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
   const [activeSection, setActiveSection] = useState<'bi' | 'etl'>('bi');
   const [activeTab, setActiveTab] = useState<'all' | 'merge' | 'decommission' | 'keep'>('all');
   const [search, setSearch] = useState('');
-  const [crossTechFilterColumn, setCrossTechFilterColumn] = useState<'merge' | 'decommission' | null>(null);
+  const [crossTechFilterColumn, setCrossTechFilterColumn] = useState<'merge' | 'decommission' | 'all' | null>(null);
   const [mergeModalRec, setMergeModalRec] = useState<Recommendation | null>(null);
   const [decommissionModalRec, setDecommissionModalRec] = useState<Recommendation | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -441,17 +440,21 @@ export default function RationalizationResults({ onStartMigration }: Props) {
 
   // Filtered lists accounting for cross-tech filter
   const displayedMergeRecs = useMemo(
-    () => crossTechFilterColumn === 'merge' ? mergeRecs.filter(isCrossTechRecommendation) : mergeRecs,
+    () => (crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all')
+      ? mergeRecs.filter(isCrossTechRecommendation)
+      : mergeRecs,
     [mergeRecs, crossTechFilterColumn],
   );
   const displayedRetireRecs = useMemo(
-    () => crossTechFilterColumn === 'decommission' ? retireRecs.filter(isCrossTechRecommendation) : retireRecs,
+    () => (crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all')
+      ? retireRecs.filter(isCrossTechRecommendation)
+      : retireRecs,
     [retireRecs, crossTechFilterColumn],
   );
 
-  // Toggle cross-tech filter per column
-  const toggleCrossTechFilter = useCallback((column: 'merge' | 'decommission') => {
-    setCrossTechFilterColumn((prev) => prev === column ? null : column);
+  // Toggle cross-tech filter per column or globally
+  const toggleCrossTechFilter = useCallback((column: 'merge' | 'decommission' | 'all') => {
+    setCrossTechFilterColumn((prev) => (prev === column ? null : column));
   }, []);
 
   const tabPills: { id: typeof activeTab; label: string; count: number; color: string; dot: string }[] = [
@@ -515,9 +518,18 @@ export default function RationalizationResults({ onStartMigration }: Props) {
 
         {/* Overlap metrics row — uniform grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {metrics.map((m, i) => (
-            <MetricPill key={`${activeSection}-${m.id}`} metric={m} index={i} />
-          ))}
+          {metrics.map((m, i) => {
+            const isCrossTech = m.id === 'cross-tech';
+            return (
+              <MetricPill
+                key={`${activeSection}-${m.id}`}
+                metric={m}
+                index={i}
+                onClick={isCrossTech ? () => toggleCrossTechFilter('all') : undefined}
+                isActive={isCrossTech && crossTechFilterColumn === 'all'}
+              />
+            );
+          })}
         </div>
       </motion.div>
 
@@ -587,6 +599,49 @@ export default function RationalizationResults({ onStartMigration }: Props) {
         </div>
       </motion.div>
 
+      {/* Active Cross-Technology Filter Banner */}
+      <AnimatePresence>
+        {crossTechFilterColumn && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex items-center justify-between px-4 py-2.5 rounded-xl border text-xs font-semibold overflow-hidden"
+            style={{
+              backgroundColor: CROSS_TECH_COLOR + '12',
+              borderColor: CROSS_TECH_COLOR + '35',
+              color: CROSS_TECH_COLOR,
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CROSS_TECH_COLOR }} />
+              <span>
+                Filtering by Cross-Technology:{' '}
+                <strong>
+                  {crossTechFilterColumn === 'merge'
+                    ? 'Consolidate & Merge only'
+                    : crossTechFilterColumn === 'decommission'
+                    ? 'Decommission only'
+                    : 'All Columns'}
+                </strong>
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCrossTechFilterColumn(null)}
+              className="px-2 py-1 rounded-md text-[11px] font-bold cursor-pointer hover:opacity-80 transition-colors border"
+              style={{
+                backgroundColor: CROSS_TECH_COLOR,
+                borderColor: CROSS_TECH_COLOR,
+                color: '#FFFFFF',
+              }}
+            >
+              Show All Recommendations ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ════════════════════════════════════════════════════
        *  THREE-COLUMN GRID (or single column when filtered)
        * ════════════════════════════════════════════════════ */}
@@ -609,7 +664,8 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 countLabel="Redundant"
                 color="#F59E0B"
                 crossTechCount={crossTechCounts.mergeCount}
-                crossTechActive={crossTechFilterColumn === 'merge'}
+                crossTechActive={crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all'}
+                onToggleCrossTech={() => toggleCrossTechFilter('merge')}
                 onClearCrossTech={() => setCrossTechFilterColumn(null)}
               />
               {displayedMergeRecs.map((r) => (
@@ -619,7 +675,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                   accentColor="#F59E0B"
                   bulletIcon="!"
                   onCrossTechClick={() => toggleCrossTechFilter('merge')}
-                  crossTechActive={crossTechFilterColumn === 'merge'}
+                  crossTechActive={crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all'}
                   onReview={() => setMergeModalRec(r)}
                 />
               ))}
@@ -641,7 +697,8 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 countLabel="Inactive"
                 color="#EF4444"
                 crossTechCount={crossTechCounts.retireCount}
-                crossTechActive={crossTechFilterColumn === 'decommission'}
+                crossTechActive={crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all'}
+                onToggleCrossTech={() => toggleCrossTechFilter('decommission')}
                 onClearCrossTech={() => setCrossTechFilterColumn(null)}
               />
               {displayedRetireRecs.map((r) => (
@@ -651,7 +708,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                   accentColor="#EF4444"
                   bulletIcon="▲"
                   onCrossTechClick={() => toggleCrossTechFilter('decommission')}
-                  crossTechActive={crossTechFilterColumn === 'decommission'}
+                  crossTechActive={crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all'}
                   onReview={() => setDecommissionModalRec(r)}
                 />
               ))}

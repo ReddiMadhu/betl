@@ -19,21 +19,15 @@ function MetricCard({ metric, index }: { metric: OverlapMetric; index: number })
       transition={{ delay: 0.15 + index * 0.06, duration: 0.35, ease: 'easeOut' }}
       className="rounded-xl border p-4 theme-transition flex-1 min-w-[130px]"
       style={{
-        backgroundColor: metric.highlight
-          ? 'var(--color-accent-subtle)'
-          : 'var(--color-surface)',
-        borderColor: metric.highlight
-          ? 'color-mix(in srgb, var(--color-accent) 30%, var(--color-border-primary))'
-          : 'var(--color-border-primary)',
+        backgroundColor: 'var(--color-surface)',
+        borderColor: 'var(--color-border-primary)',
         boxShadow: '0 1px 3px var(--color-card-shadow)',
       }}
     >
       <span
         className="text-2xl font-bold tabular-nums block"
         style={{
-          color: metric.highlight
-            ? 'var(--color-accent)'
-            : 'var(--color-text-primary)',
+          color: 'var(--color-text-primary)',
         }}
       >
         {count}
