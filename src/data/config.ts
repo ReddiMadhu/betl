@@ -2,8 +2,11 @@ import thoughtspotLogo from '../assets/logos/thoughtspot.svg';
 import powerbiLogo from '../assets/logos/powerbi.svg';
 import tableauLogo from '../assets/logos/tableau.svg';
 import microstrategyLogo from '../assets/logos/microstrategy.svg';
+import excelLogo from '../assets/logos/excel.svg';
 import alteryxLogo from '../assets/logos/alteryx.svg';
 import pythonLogo from '../assets/logos/python.svg';
+import sqlLogo from '../assets/logos/sql.svg';
+import sparkLogo from '../assets/logos/spark.svg';
 
 export type TechnologyStatus = 'connected' | 'available' | 'selected';
 export type TechnologyCategory = 'BI' | 'ETL';
@@ -46,6 +49,13 @@ export const technologies: Technology[] = [
     status: 'connected',
   },
   {
+    id: 'excel',
+    name: 'Excel',
+    category: 'BI',
+    logo: excelLogo,
+    status: 'connected',
+  },
+  {
     id: 'alteryx',
     name: 'Alteryx',
     category: 'ETL',
@@ -57,7 +67,21 @@ export const technologies: Technology[] = [
     name: 'Python',
     category: 'ETL',
     logo: pythonLogo,
-    status: 'available',
+    status: 'connected',
+  },
+  {
+    id: 'sql',
+    name: 'SQL',
+    category: 'ETL',
+    logo: sqlLogo,
+    status: 'connected',
+  },
+  {
+    id: 'spark',
+    name: 'Spark',
+    category: 'ETL',
+    logo: sparkLogo,
+    status: 'connected',
   },
 ];
 
@@ -76,8 +100,8 @@ export const agents: Agent[] = [
   {
     step: 1,
     id: 'discovery',
-    name: 'Discovery & Intelligence',
-    label: 'DISCOVER',
+    name: 'Assessment',
+    label: 'ASSESSMENT',
     description:
       'Discover and understand existing BI/ETL assets, metadata, dependencies, usage patterns, and relationships.',
     status: 'active',
@@ -97,7 +121,7 @@ export const agents: Agent[] = [
     name: 'Migration',
     label: 'MIGRATE',
     description:
-      'Plan modernization paths, transformation requirements, dependency mapping, and target platform selection.',
+      'Plan modernization paths, transformation requirements, dependency mapping, visual and calculation, and code conversions.',
     status: 'ready',
   },
 ];

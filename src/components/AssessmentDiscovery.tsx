@@ -1,19 +1,20 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BarChart3, Workflow, Clock } from 'lucide-react';
 import ThinkingTrace from './ThinkingTrace';
 import type { TraceStep } from './ThinkingTrace';
 
 /* ─────────────────────────────────────────────────────────
  * AssessmentDiscovery — the screen shown after "Launch Assessment"
  *
- * Two side-by-side sections:
- *   1. BI & ETL Discovery  — scans connected platforms
- *   2. BI & ETL Intelligence — analyses patterns & scores assets
+ * Two side-by-side boxes:
+ *   1. BI Discovery & Intelligence  — scans BI platforms, then runs intelligence
+ *   2. ETL Discovery & Intelligence — scans ETL pipelines, then runs intelligence
  *
- * Each section has a Drive pixel-grid loader next to the heading,
- * descriptive text, and an animated ThinkingTrace. After both
- * settle, a "Show Results" button appears at the bottom-right.
+ * In each box:
+ *   - Discovery runs first
+ *   - After discovery finishes, Intelligence runs automatically
+ *   - After both boxes complete, "Show Results" CTA appears
  * ───────────────────────────────────────────────────────── */
 
 /* ── Drive loader grid ── */
@@ -51,28 +52,50 @@ function LoaderGrid({ active = true }: { active?: boolean }) {
   );
 }
 
-/* ── Trace step definitions ── */
-const DISCOVERY_STEPS: TraceStep[] = [
+/* ── BI Step Definitions ── */
+const BI_DISCOVERY_STEPS: TraceStep[] = [
   { label: 'Scanning Power BI workspaces', detail: '10 dashboards' },
   { label: 'Mapping Tableau data sources', detail: '2 workbooks' },
   { label: 'Cataloging MicroStrategy objects', detail: '5 reports' },
-  { label: 'Analyzing Alteryx workflows', detail: '8 pipelines' },
+  { label: 'Extracting Excel analytical sheets & models', detail: 'Connected' },
 ];
 
-const INTELLIGENCE_STEPS: TraceStep[] = [
-  { label: 'Analyzing cross-platform usage patterns' },
-  { label: 'Detecting redundant & overlapping reports' },
-  { label: 'Evaluating data lineage & dependencies' },
-  { label: 'Scoring modernization readiness' },
+const BI_INTELLIGENCE_STEPS: TraceStep[] = [
+  { label: 'Analyzing dashboard view frequencies & active users' },
+  { label: 'Detecting redundant & overlapping reports across business areas' },
+  { label: 'Evaluating visualization complexity & calculations' },
+  { label: 'Scoring BI modernization readiness' },
+];
+
+/* ── ETL Step Definitions ── */
+const ETL_DISCOVERY_STEPS: TraceStep[] = [
+  { label: 'Analyzing Alteryx workflows', detail: '5 pipelines' },
+  { label: 'Extracting Python transformation scripts', detail: '3 scripts' },
+  { label: 'Cataloging SQL stored procedures & queries', detail: 'Connected' },
+  { label: 'Mapping Apache Spark processing jobs', detail: 'Connected' },
+];
+
+const ETL_INTELLIGENCE_STEPS: TraceStep[] = [
+  { label: 'Tracing data lineage from source systems to target marts' },
+  { label: 'Evaluating transformation business logic & dependencies' },
+  { label: 'Analyzing schema mappings & data flow bottlenecks' },
+  { label: 'Scoring pipeline performance & migration complexity' },
 ];
 
 export default function AssessmentDiscovery({ onShowResults }: { onShowResults?: () => void }) {
-  const [discoveryDone, setDiscoveryDone] = useState(false);
-  const [intelligenceDone, setIntelligenceDone] = useState(false);
-  const showResults = discoveryDone && intelligenceDone;
+  const [biDiscoveryDone, setBiDiscoveryDone] = useState(false);
+  const [biIntelligenceDone, setBiIntelligenceDone] = useState(false);
+  const [etlDiscoveryDone, setEtlDiscoveryDone] = useState(false);
+  const [etlIntelligenceDone, setEtlIntelligenceDone] = useState(false);
 
-  const onDiscoverySettled = useCallback(() => setDiscoveryDone(true), []);
-  const onIntelligenceSettled = useCallback(() => setIntelligenceDone(true), []);
+  const biAllDone = biDiscoveryDone && biIntelligenceDone;
+  const etlAllDone = etlDiscoveryDone && etlIntelligenceDone;
+  const showResults = biAllDone && etlAllDone;
+
+  const onBiDiscoverySettled = useCallback(() => setBiDiscoveryDone(true), []);
+  const onBiIntelligenceSettled = useCallback(() => setBiIntelligenceDone(true), []);
+  const onEtlDiscoverySettled = useCallback(() => setEtlDiscoveryDone(true), []);
+  const onEtlIntelligenceSettled = useCallback(() => setEtlIntelligenceDone(true), []);
 
   return (
     <motion.div
@@ -80,10 +103,10 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      {/* ─── Two side-by-side sections ─── */}
+      {/* ─── Two side-by-side boxes: BI Box & ETL Box ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-        {/* ── Section 1: BI & ETL Discovery ── */}
+        {/* ── Box 1: BI Discovery & Intelligence ── */}
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -94,105 +117,235 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
             borderColor: 'var(--color-engine-border)',
             boxShadow: '0 2px 12px var(--color-card-shadow)',
           }}
+          aria-label="BI Discovery and Intelligence"
         >
           {/* Header with Drive loader */}
-          <div className="flex items-start gap-3.5 mb-4">
+          <div className="flex items-start gap-3.5 mb-5">
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
               style={{ backgroundColor: 'var(--color-accent-subtle)' }}
             >
-              <LoaderGrid active={!discoveryDone} />
+              <LoaderGrid active={!biAllDone} />
             </div>
-            <div className="min-w-0">
-              <h2
-                className="text-lg font-bold tracking-tight mb-1"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                BI & ETL Discovery
-              </h2>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <BarChart3 size={17} style={{ color: 'var(--color-accent)' }} />
+                <h2
+                  className="text-lg font-bold tracking-tight"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  BI Discovery & Intelligence
+                </h2>
+              </div>
               <p
                 className="text-[13px] leading-relaxed"
                 style={{ color: 'var(--color-text-secondary)' }}
               >
-                Our Discovery agent is actively scanning your connected BI and ETL platforms —
-                crawling workspaces, extracting metadata, mapping data lineage, and cataloging
-                every dashboard, report, dataset, and pipeline across your enterprise landscape.
+                Scanning connected BI platforms (Power BI, Tableau, MicroStrategy, Excel),
+                followed by AI intelligence to analyze usage patterns, redundancy, and modernization potential.
               </p>
             </div>
           </div>
 
           {/* Divider */}
           <div
-            className="h-px mb-4"
+            className="h-px mb-5"
             style={{
               background: 'linear-gradient(90deg, var(--color-border-primary), transparent)',
             }}
           />
 
-          {/* Thinking trace */}
-          <ThinkingTrace
-            activeLabel="Discovering assets…"
-            doneLabel="Discovery complete — 25 assets cataloged"
-            steps={DISCOVERY_STEPS}
-            onSettled={onDiscoverySettled}
-            delayMs={500}
+          {/* Sub-stage 1: BI Discovery */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-accent)]">
+                Phase 1 · BI Discovery
+              </span>
+              {biDiscoveryDone && (
+                <span className="text-[11px] font-semibold text-emerald-500">
+                  Completed
+                </span>
+              )}
+            </div>
+            <ThinkingTrace
+              activeLabel="Discovering BI assets…"
+              doneLabel="BI Discovery complete — 17 assets cataloged"
+              steps={BI_DISCOVERY_STEPS}
+              onSettled={onBiDiscoverySettled}
+              delayMs={300}
+            />
+          </div>
+
+          {/* Divider between Discovery and Intelligence */}
+          <div
+            className="h-px my-4"
+            style={{
+              background: 'linear-gradient(90deg, var(--color-border-subtle), transparent)',
+            }}
           />
+
+          {/* Sub-stage 2: BI Intelligence (runs after BI Discovery finishes) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span
+                className="text-[11px] font-bold uppercase tracking-wider"
+                style={{
+                  color: biDiscoveryDone
+                    ? 'var(--color-accent)'
+                    : 'var(--color-text-tertiary)',
+                }}
+              >
+                Phase 2 · BI Intelligence
+              </span>
+              {biIntelligenceDone && (
+                <span className="text-[11px] font-semibold text-emerald-500">
+                  Completed
+                </span>
+              )}
+            </div>
+            {biDiscoveryDone ? (
+              <ThinkingTrace
+                activeLabel="Analyzing BI intelligence & scoring…"
+                doneLabel="BI Intelligence complete — redundancy & readiness scored"
+                steps={BI_INTELLIGENCE_STEPS}
+                onSettled={onBiIntelligenceSettled}
+                delayMs={200}
+              />
+            ) : (
+              <div
+                className="flex items-center gap-2 px-3 py-2.5 rounded-lg border text-xs"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-subtle)',
+                  color: 'var(--color-text-tertiary)',
+                }}
+              >
+                <Clock size={13} />
+                <span>Queued · Starts automatically after BI Discovery</span>
+              </div>
+            )}
+          </div>
         </motion.section>
 
-        {/* ── Section 2: BI & ETL Intelligence ── */}
+        {/* ── Box 2: ETL Discovery & Intelligence ── */}
         <motion.section
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4, ease: 'easeOut' }}
+          transition={{ duration: 0.5, delay: 0.35, ease: 'easeOut' }}
           className="rounded-2xl border p-6 md:p-8 theme-transition flex flex-col"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-engine-border)',
             boxShadow: '0 2px 12px var(--color-card-shadow)',
           }}
+          aria-label="ETL Discovery and Intelligence"
         >
           {/* Header with Drive loader */}
-          <div className="flex items-start gap-3.5 mb-4">
+          <div className="flex items-start gap-3.5 mb-5">
             <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-              style={{ backgroundColor: 'rgba(139, 92, 246, 0.08)' }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+              style={{ backgroundColor: 'rgba(16, 185, 129, 0.08)' }}
             >
-              <LoaderGrid active={!intelligenceDone} />
+              <LoaderGrid active={!etlAllDone} />
             </div>
-            <div className="min-w-0">
-              <h2
-                className="text-lg font-bold tracking-tight mb-1"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                BI & ETL Intelligence
-              </h2>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Workflow size={17} className="text-emerald-500" />
+                <h2
+                  className="text-lg font-bold tracking-tight"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  ETL Discovery & Intelligence
+                </h2>
+              </div>
               <p
                 className="text-[13px] leading-relaxed"
                 style={{ color: 'var(--color-text-secondary)' }}
               >
-                The Intelligence agent is analyzing discovered assets to uncover usage patterns,
-                identify redundancies, evaluate data quality, and score each asset's modernization
-                potential — building a comprehensive intelligence layer for your transformation roadmap.
+                Scanning connected ETL platforms (Alteryx, Python, SQL, Spark),
+                followed by AI intelligence to evaluate pipeline data lineage, business logic, and code complexity.
               </p>
             </div>
           </div>
 
           {/* Divider */}
           <div
-            className="h-px mb-4"
+            className="h-px mb-5"
             style={{
               background: 'linear-gradient(90deg, var(--color-border-primary), transparent)',
             }}
           />
 
-          {/* Thinking trace — starts after Discovery with a delay */}
-          <ThinkingTrace
-            activeLabel="Analyzing intelligence…"
-            doneLabel="Intelligence complete — readiness scored"
-            steps={INTELLIGENCE_STEPS}
-            onSettled={onIntelligenceSettled}
-            delayMs={3000}
+          {/* Sub-stage 1: ETL Discovery */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-500">
+                Phase 1 · ETL Discovery
+              </span>
+              {etlDiscoveryDone && (
+                <span className="text-[11px] font-semibold text-emerald-500">
+                  Completed
+                </span>
+              )}
+            </div>
+            <ThinkingTrace
+              activeLabel="Discovering ETL assets…"
+              doneLabel="ETL Discovery complete — 8 pipelines & scripts cataloged"
+              steps={ETL_DISCOVERY_STEPS}
+              onSettled={onEtlDiscoverySettled}
+              delayMs={400}
+            />
+          </div>
+
+          {/* Divider between Discovery and Intelligence */}
+          <div
+            className="h-px my-4"
+            style={{
+              background: 'linear-gradient(90deg, var(--color-border-subtle), transparent)',
+            }}
           />
+
+          {/* Sub-stage 2: ETL Intelligence (runs after ETL Discovery finishes) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span
+                className="text-[11px] font-bold uppercase tracking-wider"
+                style={{
+                  color: etlDiscoveryDone
+                    ? 'rgb(16, 185, 129)'
+                    : 'var(--color-text-tertiary)',
+                }}
+              >
+                Phase 2 · ETL Intelligence
+              </span>
+              {etlIntelligenceDone && (
+                <span className="text-[11px] font-semibold text-emerald-500">
+                  Completed
+                </span>
+              )}
+            </div>
+            {etlDiscoveryDone ? (
+              <ThinkingTrace
+                activeLabel="Analyzing ETL intelligence & lineage…"
+                doneLabel="ETL Intelligence complete — lineage & logic mapped"
+                steps={ETL_INTELLIGENCE_STEPS}
+                onSettled={onEtlIntelligenceSettled}
+                delayMs={200}
+              />
+            ) : (
+              <div
+                className="flex items-center gap-2 px-3 py-2.5 rounded-lg border text-xs"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-subtle)',
+                  color: 'var(--color-text-tertiary)',
+                }}
+              >
+                <Clock size={13} />
+                <span>Queued · Starts automatically after ETL Discovery</span>
+              </div>
+            )}
+          </div>
         </motion.section>
       </div>
 

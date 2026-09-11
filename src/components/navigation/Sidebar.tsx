@@ -22,7 +22,7 @@ export interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     id: 'discovery',
-    title: 'Discovery & Intelligence',
+    title: 'Assessment',
     icon: Compass,
     views: ['assessment', 'results'],
     targetView: (visited) => (visited.has('results') ? 'results' : 'assessment'),
@@ -86,7 +86,7 @@ export default function Sidebar({
               type="button"
               onClick={() => onNavigate('home')}
               className="w-10 h-10 rounded-xl flex items-center justify-center bg-transparent border-none cursor-pointer transition-opacity hover:opacity-85"
-              title="BI.ETL.AI Home"
+              title="AI on BI and ETL Home"
             >
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm"
@@ -106,7 +106,7 @@ export default function Sidebar({
                 onCloseMobile();
               }}
               className="flex items-center gap-2.5 min-w-0 text-left bg-transparent border-none cursor-pointer p-1 rounded-lg transition-opacity hover:opacity-85"
-              title="BI.ETL.AI Home"
+              title="AI on BI and ETL Home"
             >
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
@@ -119,7 +119,7 @@ export default function Sidebar({
                   className="text-[15px] font-bold tracking-tight truncate leading-tight"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  BI.ETL.<span style={{ color: 'var(--color-accent)' }}>AI</span>
+                  <span style={{ color: 'var(--color-accent)' }}>AI</span> on BI and ETL
                 </span>
                 <span
                   className="text-[10px] tracking-wide uppercase font-medium truncate"

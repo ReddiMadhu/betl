@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '../hooks/useAnimations';
+import { technologies } from '../data/config';
 
 interface LineData {
   id: string;
@@ -8,11 +9,22 @@ interface LineData {
   pathId: string;
 }
 
-export default function ConnectionLines() {
+interface ConnectionLinesProps {
+  ingestionState?: 'idle' | 'ingesting' | 'complete';
+}
+
+export default function ConnectionLines({
+  ingestionState = 'idle',
+}: ConnectionLinesProps) {
   const [lines, setLines] = useState<LineData[]>([]);
   const [dims, setDims] = useState({ w: 0, h: 0 });
   const reduced = useReducedMotion();
   const [visible, setVisible] = useState(false);
+
+  const isGreen = ingestionState === 'complete';
+  const isIngesting = ingestionState === 'ingesting';
+  // Moving particle animation only runs during ingestion; when green, lines are static and dots do not move
+  const showParticles = isIngesting;
 
   const compute = useCallback(() => {
     if (window.innerWidth < 1280) {
@@ -24,22 +36,17 @@ export default function ConnectionLines() {
     const container = document.getElementById('main-layout');
     const engine = document.getElementById('modernization-engine');
     const agentsArea = document.getElementById('engine-agents');
+    const orgContainer = document.getElementById('org-workspace-container');
     if (!container || !engine || !agentsArea) return;
 
     const cRect = container.getBoundingClientRect();
     const eRect = engine.getBoundingClientRect();
     const aRect = agentsArea.getBoundingClientRect();
+    const orgRect = orgContainer ? orgContainer.getBoundingClientRect() : null;
 
     setDims({ w: cRect.width, h: cRect.height });
 
-    const techIds = [
-      'tech-thoughtspot',
-      'tech-powerbi',
-      'tech-tableau',
-      'tech-microstrategy',
-      'tech-alteryx',
-      'tech-python',
-    ];
+    const techIds = technologies.map((t) => `tech-${t.id}`);
 
     // Converge at the center-left of the agent cards area
     const endX = eRect.left - cRect.left - 2;
@@ -52,7 +59,7 @@ export default function ConnectionLines() {
       if (!el) return;
 
       const r = el.getBoundingClientRect();
-      const startX = r.right - cRect.left + 2;
+      const startX = orgRect ? orgRect.right - cRect.left + 2 : r.right - cRect.left + 2;
       const startY = r.top + r.height / 2 - cRect.top;
 
       const dx = endX - startX;
@@ -90,10 +97,23 @@ export default function ConnectionLines() {
       aria-hidden="true"
     >
       <defs>
-        <linearGradient id="conn-grad" x1="0" y1="0" x2="1" y2="0">
+        {/* Orange initial/ingesting gradient */}
+        <linearGradient id="conn-grad-orange" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="var(--color-connection-path)" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="var(--color-connection-active)" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="var(--color-connection-active)" stopOpacity="0.55" />
         </linearGradient>
+
+        {/* Green converted gradient */}
+        <linearGradient id="conn-grad-green" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#4ade80" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="#22c55e" stopOpacity="0.95" />
+        </linearGradient>
+
+        {/* Green glow filter */}
+        <filter id="green-glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
       </defs>
 
       {lines.map((line, i) => (
@@ -102,8 +122,8 @@ export default function ConnectionLines() {
           <motion.path
             id={line.pathId}
             d={line.path}
-            stroke="url(#conn-grad)"
-            strokeWidth="1.2"
+            stroke={isGreen ? 'url(#conn-grad-green)' : 'url(#conn-grad-orange)'}
+            strokeWidth={isGreen ? 1.8 : 1.2}
             fill="none"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -111,39 +131,44 @@ export default function ConnectionLines() {
             transition={{ delay: 0.4 + i * 0.09, duration: 1, ease: 'easeOut' }}
           />
 
+          {/* Origin anchor dot on container border */}
+          <motion.circle
+            cx={parseFloat(line.path.split(' ')[1]) || 0}
+            cy={parseFloat(line.path.split(' ')[2]) || 0}
+            r={isGreen ? 3 : 2.5}
+            fill={isGreen ? '#22c55e' : 'var(--color-border-secondary)'}
+            filter={isGreen ? 'url(#green-glow)' : undefined}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 0.9, scale: 1 }}
+            transition={{ delay: 0.3 + i * 0.08, duration: 0.3 }}
+          />
+
           {/* Single convergence dot (only on first line since all converge) */}
           {i === 0 && (
             <motion.circle
               cx={parseFloat(line.path.split(' ').slice(-2, -1)[0]) || 0}
               cy={parseFloat(line.path.split(' ').pop() || '0')}
-              r="3"
-              fill="var(--color-accent)"
+              r={isGreen ? 4 : 3}
+              fill={isGreen ? '#22c55e' : 'var(--color-accent)'}
+              filter={isGreen ? 'url(#green-glow)' : undefined}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 0.6, scale: 1 }}
+              animate={{ opacity: 0.9, scale: 1 }}
               transition={{ delay: 1.2, duration: 0.4 }}
             />
           )}
 
-          {/* Animated particle along path */}
-          {!reduced && (
-            <circle r="2.5" fill="var(--color-accent)" opacity="0">
+          {/* Animated particle along path — starts on click, converts to green */}
+          {!reduced && showParticles && (
+            <circle
+              r={isGreen ? 3 : 2.5}
+              fill={isGreen ? '#22c55e' : 'var(--color-accent)'}
+              filter={isGreen ? 'url(#green-glow)' : undefined}
+            >
               <animateMotion
-                dur={`${2.8 + i * 0.25}s`}
+                dur={`${isGreen ? 2.2 + i * 0.2 : 2.0 + i * 0.2}s`}
                 repeatCount="indefinite"
-                begin={`${0.5 + i * 0.4}s`}
-                calcMode="spline"
-                keySplines="0.42 0 0.58 1"
-                keyTimes="0;1"
-              >
-                <mpath href={`#${line.pathId}`} />
-              </animateMotion>
-              <animate
-                attributeName="opacity"
-                values="0;0.7;0.7;0"
-                keyTimes="0;0.1;0.85;1"
-                dur={`${2.8 + i * 0.25}s`}
-                repeatCount="indefinite"
-                begin={`${0.5 + i * 0.4}s`}
+                begin={`${i * 0.12}s`}
+                path={line.path}
               />
             </circle>
           )}

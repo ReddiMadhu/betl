@@ -7,7 +7,7 @@ import SummaryMetrics from './SummaryMetrics';
 import BusinessAreaCard from './BusinessAreaCard';
 
 /* ─────────────────────────────────────────────────────────
- * AssessmentResults — Discovery & Intelligence results page
+ * AssessmentResults — Assessment results page
  *
  * Progress indicator → Header → Metrics → Business area grid
  * → Full-page asset detail → Start Rationalization CTA
@@ -66,7 +66,7 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
                 className="text-xl md:text-2xl font-bold tracking-tight"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                Discovery & Intelligence Results
+                Assessment Results
               </h1>
               <span
                 className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
