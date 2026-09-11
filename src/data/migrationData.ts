@@ -177,7 +177,7 @@ export const migrationAssets: MigrationAsset[] = [
   },
   {
     id: 'ma12',
-    name: 'Underwriting_Workflow',
+    name: 'Workflow_04',
     technology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Underwriting',
@@ -294,7 +294,7 @@ export const migrationResults: MigrationResult[] = [
   },
   {
     id: 'mr8',
-    assetName: 'Underwriting_Workflow',
+    assetName: 'Workflow_04',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Underwriting',
