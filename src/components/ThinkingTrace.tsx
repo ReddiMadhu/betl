@@ -46,7 +46,7 @@ export default function ThinkingTrace({
   const totalStages = steps.length + 2; // open + each step + settle
   const working = stage < totalStages - 1;
   const visibleSteps = stage <= 1 ? 0 : Math.min(stage - 1, steps.length);
-  const autoExpanded = stage >= 1 && working;
+  const autoExpanded = true;
   const expanded = manualExpanded ?? autoExpanded;
 
   // Start delay
