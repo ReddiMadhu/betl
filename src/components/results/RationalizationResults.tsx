@@ -6,12 +6,9 @@ import {
   Trash2,
   ShieldCheck,
   Search,
-  Calendar,
-  Database,
 } from 'lucide-react';
 import {
   recommendations,
-  categories,
   getOverlapMetrics,
 } from '../../data/rationalizationData';
 import type { Recommendation } from '../../data/rationalizationData';

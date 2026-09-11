@@ -1,4 +1,3 @@
-import { TECHNOLOGY_LOGOS } from './discoveryData';
 import type { TechnologyName } from './discoveryData';
 
 /* ─────────────────────────────────────────────────────────

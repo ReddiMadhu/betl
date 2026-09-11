@@ -1,12 +1,14 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { Asset, BusinessArea } from '../../data/discoveryData';
+import { isEtlAsset } from '../../data/discoveryData';
 import AssetRow from './AssetRow';
 
 /* ─────────────────────────────────────────────────────────
  * BusinessAreaCard — card per insurance business area
  *
  * Header: name, description, asset count, tech summary
- * Body: list of AssetRows
+ * Body: list of AssetRows with line separating BI and ETL
  * ───────────────────────────────────────────────────────── */
 
 interface Props {
@@ -16,6 +18,18 @@ interface Props {
 }
 
 export default function BusinessAreaCard({ area, index, onAssetClick }: Props) {
+  const { biAssets, etlAssets } = useMemo(() => {
+    const bi: Asset[] = [];
+    const etl: Asset[] = [];
+    for (const asset of area.assets) {
+      if (isEtlAsset(asset)) {
+        etl.push(asset);
+      } else {
+        bi.push(asset);
+      }
+    }
+    return { biAssets: bi, etlAssets: etl };
+  }, [area.assets]);
 
   return (
     <motion.article
@@ -69,8 +83,6 @@ export default function BusinessAreaCard({ area, index, onAssetClick }: Props) {
             {area.description}
           </p>
         )}
-
-
       </div>
 
       {/* ── Divider ── */}
@@ -81,9 +93,39 @@ export default function BusinessAreaCard({ area, index, onAssetClick }: Props) {
         }}
       />
 
-      {/* ── Asset list ── */}
+      {/* ── Asset list with line between BI & ETL ── */}
       <div className="p-2 flex flex-col" role="list">
-        {area.assets.map((asset) => (
+        {/* BI Assets */}
+        {biAssets.map((asset) => (
+          <AssetRow key={asset.id} asset={asset} onClick={onAssetClick} />
+        ))}
+
+        {/* Line separating BI and ETL assets */}
+        {biAssets.length > 0 && etlAssets.length > 0 && (
+          <div className="my-2 px-2 flex items-center gap-2.5" role="separator" aria-label="ETL Assets">
+            <div
+              className="h-px flex-1"
+              style={{ backgroundColor: 'var(--color-border-primary)' }}
+            />
+            <span
+              className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+              style={{
+                backgroundColor: 'var(--color-bg-tertiary)',
+                borderColor: 'var(--color-border-subtle)',
+                color: 'var(--color-text-tertiary)',
+              }}
+            >
+              ETL
+            </span>
+            <div
+              className="h-px flex-1"
+              style={{ backgroundColor: 'var(--color-border-primary)' }}
+            />
+          </div>
+        )}
+
+        {/* ETL Assets */}
+        {etlAssets.map((asset) => (
           <AssetRow key={asset.id} asset={asset} onClick={onAssetClick} />
         ))}
       </div>

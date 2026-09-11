@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { Menu } from 'lucide-react';
 import Header from './components/Header';
 import TechnologySources from './components/TechnologySources';
 import ModernizationEngine from './components/ModernizationEngine';
@@ -12,27 +13,58 @@ import RationalizationResults from './components/results/RationalizationResults'
 import MigrationSelection from './components/MigrationSelection';
 import MigrationLoading from './components/MigrationLoading';
 import MigrationResults from './components/results/MigrationResults';
-
-type ViewState =
-  | 'home'
-  | 'assessment'
-  | 'results'
-  | 'rationalization'
-  | 'rationalization-results'
-  | 'migration'
-  | 'migration-loading'
-  | 'migration-results';
+import Sidebar from './components/navigation/Sidebar';
+import TableauDetail from './components/details/TableauDetail';
+import PowerBIDetail from './components/details/PowerBIDetail';
+import MicroStrategyDetail from './components/details/MicroStrategyDetail';
+import AlteryxDetail from './components/details/AlteryxDetail';
+import PythonDetail from './components/details/PythonDetail';
+import type { ViewState } from './components/navigation/workflowStages';
+import type { Asset } from './data/discoveryData';
 
 export default function App() {
   const [view, setView] = useState<ViewState>('home');
+  const [visitedViews, setVisitedViews] = useState<Set<ViewState>>(() => new Set(['home']));
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
 
-  return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-      <Header />
+  // Navigation handler tracking visited stages
+  const navigateTo = useCallback((nextView: ViewState) => {
+    setView(nextView);
+    setVisitedViews((prev) => {
+      if (prev.has(nextView)) return prev;
+      const updated = new Set(prev);
+      updated.add(nextView);
+      return updated;
+    });
+  }, []);
 
-      {view === 'home' && (
+  // Navigate to a technology detail page for a specific asset
+  const navigateToAssetDetail = useCallback((asset: Asset) => {
+    setSelectedAsset(asset);
+    navigateTo('asset-detail');
+  }, [navigateTo]);
+
+  // Back from asset detail to results
+  const handleBackFromDetail = useCallback(() => {
+    setSelectedAsset(null);
+    setView('results');
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed((prev) => !prev);
+  }, []);
+
+  /* ─────────────────────────────────────────────────────────
+   * 1. LANDING PAGE — No sidebar, full-width presentation
+   * ───────────────────────────────────────────────────────── */
+  if (view === 'home') {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+        <Header />
+
         <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-
           {/* ─── Desktop layout: 20% | 10% gap | 52.5% | 2.5% gap | 15% ─── */}
           <div
             id="main-layout"
@@ -59,71 +91,135 @@ export default function App() {
 
           {/* CTA — bottom right */}
           <div className="flex justify-end mt-8">
-            <LaunchAssessmentButton onClick={() => setView('assessment')} />
+            <LaunchAssessmentButton onClick={() => navigateTo('assessment')} />
           </div>
         </main>
-      )}
 
-      {view === 'assessment' && (
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <AssessmentDiscovery onShowResults={() => setView('results')} />
+        {/* Landing Footer */}
+        <footer className="mt-auto border-t theme-transition" style={{ borderColor: 'var(--color-border-subtle)' }}>
+          <div className="max-w-[1600px] mx-auto px-6 lg:px-10 py-6 flex items-center justify-between">
+            <span
+              className="text-[11px]"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              © 2026 BI.ETL.AI. All rights reserved.
+            </span>
+            <span
+              className="text-[11px]"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              Enterprise BI & ETL Modernization Platform
+            </span>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
+  /* ─────────────────────────────────────────────────────────
+   * 2. WORKFLOW PAGES — Clean layout with Collapsible Sidebar
+   *    3 Core Stages:
+   *      1. Discovery & Intelligence
+   *      2. Rationalization
+   *      3. Migration
+   * ───────────────────────────────────────────────────────── */
+  return (
+    <div className="min-h-screen flex" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+      {/* ── Collapsible Left Sidebar (3 Stages only + Theme toggle at bottom) ── */}
+      <Sidebar
+        currentView={view}
+        onNavigate={navigateTo}
+        visitedViews={visitedViews}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={toggleSidebar}
+        isMobileOpen={isMobileNavOpen}
+        onCloseMobile={() => setIsMobileNavOpen(false)}
+      />
+
+      {/* ── Mobile Floating Menu Button (hidden on desktop) ── */}
+      <button
+        type="button"
+        onClick={() => setIsMobileNavOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-40 w-9 h-9 rounded-xl flex items-center justify-center shadow-md border cursor-pointer theme-transition"
+        style={{
+          backgroundColor: 'var(--color-bg-secondary)',
+          borderColor: 'var(--color-border-primary)',
+          color: 'var(--color-text-primary)',
+        }}
+        aria-label="Open navigation menu"
+      >
+        <Menu size={16} />
+      </button>
+
+      {/* ── Main Content Area (No top bar) ── */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+          {/* Stage 1: Discovery & Intelligence */}
+          {view === 'assessment' && (
+            <AssessmentDiscovery onShowResults={() => navigateTo('results')} />
+          )}
+
+          {view === 'results' && (
+            <AssessmentResults
+              onStartRationalization={() => navigateTo('rationalization')}
+              onAssetDetail={navigateToAssetDetail}
+            />
+          )}
+
+          {view === 'asset-detail' && selectedAsset && (
+            <>
+              {selectedAsset.technology === 'Tableau' && (
+                <TableauDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'Power BI' && (
+                <PowerBIDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'MicroStrategy' && (
+                <MicroStrategyDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'Alteryx' && (
+                <AlteryxDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'Python' && (
+                <PythonDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+            </>
+          )}
+
+          {/* Stage 2: Rationalization */}
+          {view === 'rationalization' && (
+            <RationalizationLoading onShowResults={() => navigateTo('rationalization-results')} />
+          )}
+
+          {view === 'rationalization-results' && (
+            <RationalizationResults onStartMigration={() => navigateTo('migration')} />
+          )}
+
+          {/* Stage 3: Migration */}
+          {view === 'migration' && (
+            <MigrationSelection onStartMigration={() => navigateTo('migration-loading')} />
+          )}
+
+          {view === 'migration-loading' && (
+            <MigrationLoading onShowResults={() => navigateTo('migration-results')} />
+          )}
+
+          {view === 'migration-results' && (
+            <MigrationResults onComplete={() => navigateTo('home')} />
+          )}
         </main>
-      )}
 
-      {view === 'results' && (
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <AssessmentResults onStartRationalization={() => setView('rationalization')} />
-        </main>
-      )}
-
-      {view === 'rationalization' && (
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <RationalizationLoading onShowResults={() => setView('rationalization-results')} />
-        </main>
-      )}
-
-      {view === 'rationalization-results' && (
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <RationalizationResults onStartMigration={() => setView('migration')} />
-        </main>
-      )}
-
-      {view === 'migration' && (
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <MigrationSelection onStartMigration={() => setView('migration-loading')} />
-        </main>
-      )}
-
-      {view === 'migration-loading' && (
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <MigrationLoading onShowResults={() => setView('migration-results')} />
-        </main>
-      )}
-
-      {view === 'migration-results' && (
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <MigrationResults onComplete={() => setView('home')} />
-        </main>
-      )}
-
-      {/* Footer */}
-      <footer className="mt-auto border-t theme-transition" style={{ borderColor: 'var(--color-border-subtle)' }}>
-        <div className="max-w-[1600px] mx-auto px-6 lg:px-10 py-6 flex items-center justify-between">
-          <span
-            className="text-[11px]"
-            style={{ color: 'var(--color-text-tertiary)' }}
-          >
-            © 2026 BI.ETL.AI. All rights reserved.
-          </span>
-          <span
-            className="text-[11px]"
-            style={{ color: 'var(--color-text-tertiary)' }}
-          >
-            Enterprise BI & ETL Modernization Platform
-          </span>
-        </div>
-      </footer>
+        {/* Clean Workflow Footer */}
+        <footer
+          className="mt-auto border-t theme-transition py-4 px-6 sm:px-8"
+          style={{ borderColor: 'var(--color-border-subtle)' }}
+        >
+          <div className="max-w-[1600px] mx-auto flex items-center justify-between text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
+            <span>BI.ETL.AI Modernization Platform</span>
+            <span>Enterprise Cloud Edition</span>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
-

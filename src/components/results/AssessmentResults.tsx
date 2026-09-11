@@ -1,27 +1,26 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Search } from 'lucide-react';
 import { getBusinessAreas, getSummaryMetrics } from '../../data/discoveryData';
 import type { Asset } from '../../data/discoveryData';
 import SummaryMetrics from './SummaryMetrics';
 import BusinessAreaCard from './BusinessAreaCard';
-import AssetDetailDrawer from './AssetDetailDrawer';
 
 /* ─────────────────────────────────────────────────────────
  * AssessmentResults — Discovery & Intelligence results page
  *
  * Progress indicator → Header → Metrics → Business area grid
- * → Asset detail drawer → Start Rationalization CTA
+ * → Full-page asset detail → Start Rationalization CTA
  * ───────────────────────────────────────────────────────── */
 
 interface Props {
   onStartRationalization?: () => void;
+  onAssetDetail?: (asset: Asset) => void;
 }
 
-export default function AssessmentResults({ onStartRationalization }: Props) {
+export default function AssessmentResults({ onStartRationalization, onAssetDetail }: Props) {
   const allAreas = useMemo(() => getBusinessAreas(), []);
   const metrics = useMemo(() => getSummaryMetrics(), []);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredAreas = useMemo(() => {
@@ -41,13 +40,11 @@ export default function AssessmentResults({ onStartRationalization }: Props) {
       .filter((area) => area.assets.length > 0 || area.name.toLowerCase().includes(q));
   }, [allAreas, searchQuery]);
 
-  const handleAssetClick = useCallback((asset: Asset) => {
-    setSelectedAsset(asset);
-  }, []);
-
-  const handleCloseDrawer = useCallback(() => {
-    setSelectedAsset(null);
-  }, []);
+  const handleAssetClick = (asset: Asset) => {
+    if (onAssetDetail) {
+      onAssetDetail(asset);
+    }
+  };
 
   return (
     <motion.div
@@ -181,7 +178,6 @@ export default function AssessmentResults({ onStartRationalization }: Props) {
       </motion.div>
 
       {/* ── Asset detail drawer ── */}
-      <AssetDetailDrawer asset={selectedAsset} onClose={handleCloseDrawer} />
     </motion.div>
   );
 }

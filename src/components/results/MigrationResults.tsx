@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Zap, Shield } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Zap } from 'lucide-react';
 import {
   MIGRATION_PATHS,
-  migrationResults,
   getMigrationSummaryMetrics,
   getResultsByPath,
 } from '../../data/migrationData';

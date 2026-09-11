@@ -8,7 +8,7 @@ import {
   getAssetsByPath,
 } from '../data/migrationData';
 import { TECHNOLOGY_LOGOS } from '../data/discoveryData';
-import type { MigrationPath, MigrationAsset } from '../data/migrationData';
+import type { MigrationPath } from '../data/migrationData';
 
 /* ─────────────────────────────────────────────────────────
  * MigrationSelection — choose which keep assets to migrate
