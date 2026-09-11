@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
-import { BarChart3, GitBranch, Database, Target, TrendingUp } from 'lucide-react';
+import { BarChart3, GitBranch, Database, Target, TrendingUp, FileSpreadsheet, Calculator } from 'lucide-react';
 import { useCountUp } from '../../hooks/useAnimations';
 import type { SummaryMetric } from '../../data/discoveryData';
 
 /* ─────────────────────────────────────────────────────────
- * SummaryMetrics — row of 5 compact metric cards
+ * SummaryMetrics — compact metric cards
  *
  * Large number (count-up) + small label + subtle icon.
+ * Includes separate cards for Worksheets and Calculated Fields.
  * ───────────────────────────────────────────────────────── */
 
 const ICON_MAP: Record<string, typeof BarChart3> = {
@@ -58,11 +59,82 @@ function MetricCard({ metric, index }: { metric: SummaryMetric; index: number })
 }
 
 export default function SummaryMetrics({ metrics }: { metrics: SummaryMetric[] }) {
+  const worksheetsCount = useCountUp(58, 1200, 300 + metrics.length * 150);
+  const calcFieldsCount = useCountUp(142, 1200, 300 + (metrics.length + 1) * 150);
+
   return (
     <div className="flex flex-wrap gap-3 mb-8">
       {metrics.map((m, i) => (
         <MetricCard key={m.icon} metric={m} index={i} />
       ))}
+
+      {/* Worksheets Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 + metrics.length * 0.08, duration: 0.4, ease: 'easeOut' }}
+        className="rounded-xl border p-4 theme-transition flex-1 min-w-[140px]"
+        style={{
+          backgroundColor: 'var(--color-surface)',
+          borderColor: 'var(--color-border-primary)',
+          boxShadow: '0 1px 3px var(--color-card-shadow)',
+        }}
+      >
+        <div className="flex items-start justify-between mb-2">
+          <span
+            className="text-2xl font-bold tabular-nums"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
+            {worksheetsCount}
+          </span>
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+            style={{ backgroundColor: 'var(--color-accent-subtle)' }}
+          >
+            <FileSpreadsheet size={14} style={{ color: 'var(--color-accent)' }} />
+          </div>
+        </div>
+        <span
+          className="text-[11px] font-medium leading-tight block"
+          style={{ color: 'var(--color-text-tertiary)' }}
+        >
+          Worksheets
+        </span>
+      </motion.div>
+
+      {/* Calculated Fields Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 + (metrics.length + 1) * 0.08, duration: 0.4, ease: 'easeOut' }}
+        className="rounded-xl border p-4 theme-transition flex-1 min-w-[140px]"
+        style={{
+          backgroundColor: 'var(--color-surface)',
+          borderColor: 'var(--color-border-primary)',
+          boxShadow: '0 1px 3px var(--color-card-shadow)',
+        }}
+      >
+        <div className="flex items-start justify-between mb-2">
+          <span
+            className="text-2xl font-bold tabular-nums"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
+            {calcFieldsCount}
+          </span>
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+            style={{ backgroundColor: 'var(--color-accent-subtle)' }}
+          >
+            <Calculator size={14} style={{ color: 'var(--color-accent)' }} />
+          </div>
+        </div>
+        <span
+          className="text-[11px] font-medium leading-tight block"
+          style={{ color: 'var(--color-text-tertiary)' }}
+        >
+          Calculated Fields
+        </span>
+      </motion.div>
     </div>
   );
 }
