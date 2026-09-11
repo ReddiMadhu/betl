@@ -6,8 +6,11 @@ import IngestionStats from './components/IngestionStats';
 import ConnectionLines from './components/ConnectionLines';
 import LaunchAssessmentButton from './components/LaunchAssessmentButton';
 import AssessmentDiscovery from './components/AssessmentDiscovery';
+import AssessmentResults from './components/results/AssessmentResults';
+import RationalizationLoading from './components/RationalizationLoading';
+import RationalizationResults from './components/results/RationalizationResults';
 
-type ViewState = 'home' | 'assessment';
+type ViewState = 'home' | 'assessment' | 'results' | 'rationalization' | 'rationalization-results';
 
 export default function App() {
   const [view, setView] = useState<ViewState>('home');
@@ -16,7 +19,7 @@ export default function App() {
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
       <Header />
 
-      {view === 'home' ? (
+      {view === 'home' && (
         <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
 
           {/* ─── Desktop layout: 20% | 10% gap | 52.5% | 2.5% gap | 15% ─── */}
@@ -48,9 +51,29 @@ export default function App() {
             <LaunchAssessmentButton onClick={() => setView('assessment')} />
           </div>
         </main>
-      ) : (
+      )}
+
+      {view === 'assessment' && (
         <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <AssessmentDiscovery />
+          <AssessmentDiscovery onShowResults={() => setView('results')} />
+        </main>
+      )}
+
+      {view === 'results' && (
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+          <AssessmentResults onStartRationalization={() => setView('rationalization')} />
+        </main>
+      )}
+
+      {view === 'rationalization' && (
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+          <RationalizationLoading onShowResults={() => setView('rationalization-results')} />
+        </main>
+      )}
+
+      {view === 'rationalization-results' && (
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+          <RationalizationResults onStartMigration={() => {/* next phase */}} />
         </main>
       )}
 

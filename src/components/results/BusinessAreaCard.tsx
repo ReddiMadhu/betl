@@ -1,0 +1,92 @@
+import { motion } from 'framer-motion';
+import type { Asset, BusinessArea } from '../../data/discoveryData';
+import AssetRow from './AssetRow';
+
+/* ─────────────────────────────────────────────────────────
+ * BusinessAreaCard — card per insurance business area
+ *
+ * Header: name, description, asset count, tech summary
+ * Body: list of AssetRows
+ * ───────────────────────────────────────────────────────── */
+
+interface Props {
+  area: BusinessArea;
+  index: number;
+  onAssetClick: (asset: Asset) => void;
+}
+
+export default function BusinessAreaCard({ area, index, onAssetClick }: Props) {
+
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 + index * 0.07, duration: 0.45, ease: 'easeOut' }}
+      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+      className="group rounded-2xl border theme-transition flex flex-col overflow-hidden"
+      style={{
+        backgroundColor: 'var(--color-bg-elevated)',
+        borderColor: 'var(--color-border-primary)',
+        boxShadow: '0 1px 4px var(--color-card-shadow)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'var(--color-border-secondary)';
+        e.currentTarget.style.boxShadow = '0 4px 16px var(--color-card-shadow)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+        e.currentTarget.style.boxShadow = '0 1px 4px var(--color-card-shadow)';
+      }}
+      aria-label={`${area.name} — ${area.assets.length} assets`}
+    >
+      {/* ── Card header ── */}
+      <div className="p-5 pb-3">
+        {/* Title + asset count */}
+        <div className="flex items-start justify-between mb-1">
+          <h3
+            className="text-[15px] font-bold tracking-tight"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
+            {area.name}
+          </h3>
+          <span
+            className="text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ml-2"
+            style={{
+              backgroundColor: 'var(--color-accent-subtle)',
+              color: 'var(--color-accent)',
+            }}
+          >
+            {area.assets.length} assets
+          </span>
+        </div>
+
+        {/* Description */}
+        {area.description && (
+          <p
+            className="text-[12px] leading-relaxed mb-3"
+            style={{ color: 'var(--color-text-tertiary)' }}
+          >
+            {area.description}
+          </p>
+        )}
+
+
+      </div>
+
+      {/* ── Divider ── */}
+      <div
+        className="h-px mx-5"
+        style={{
+          background: 'linear-gradient(90deg, var(--color-border-primary), transparent)',
+        }}
+      />
+
+      {/* ── Asset list ── */}
+      <div className="p-2 flex flex-col" role="list">
+        {area.assets.map((asset) => (
+          <AssetRow key={asset.id} asset={asset} onClick={onAssetClick} />
+        ))}
+      </div>
+    </motion.article>
+  );
+}

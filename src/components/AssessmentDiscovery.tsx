@@ -66,7 +66,7 @@ const INTELLIGENCE_STEPS: TraceStep[] = [
   { label: 'Scoring modernization readiness' },
 ];
 
-export default function AssessmentDiscovery() {
+export default function AssessmentDiscovery({ onShowResults }: { onShowResults?: () => void }) {
   const [discoveryDone, setDiscoveryDone] = useState(false);
   const [intelligenceDone, setIntelligenceDone] = useState(false);
   const showResults = discoveryDone && intelligenceDone;
@@ -227,6 +227,7 @@ export default function AssessmentDiscovery() {
                 e.currentTarget.style.backgroundColor = 'var(--color-accent)';
               }}
               aria-label="Show Results"
+              onClick={onShowResults}
             >
               Show Results
               <ArrowRight
