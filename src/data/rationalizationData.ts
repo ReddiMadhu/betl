@@ -1,5 +1,7 @@
 import { TECHNOLOGY_LOGOS } from './discoveryData';
 import type { TechnologyName } from './discoveryData';
+export { TECHNOLOGY_LOGOS };
+export type { TechnologyName };
 
 /* ─────────────────────────────────────────────────────────
  * Rationalization Data — overlap analysis, recommendations,
