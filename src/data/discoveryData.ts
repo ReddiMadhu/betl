@@ -167,3 +167,13 @@ export function getTechCounts(assets: Asset[]): { tech: TechnologyName; count: n
     .map(([tech, count]) => ({ tech, count, logo: TECHNOLOGY_LOGOS[tech] }))
     .sort((a, b) => b.count - a.count);
 }
+
+/* ── Helper to differentiate ETL vs BI assets ── */
+export function isEtlAsset(asset: Asset): boolean {
+  return (
+    asset.technology === 'Alteryx' ||
+    asset.technology === 'Python' ||
+    (asset.assetType?.toLowerCase().includes('etl') ?? false)
+  );
+}
+
