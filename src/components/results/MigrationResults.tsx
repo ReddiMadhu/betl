@@ -180,8 +180,12 @@ function ResultCard({
   );
 }
 
+interface Props {
+  onComplete?: () => void;
+}
+
 /* ── Main component ── */
-export default function MigrationResults() {
+export default function MigrationResults({ onComplete }: Props) {
   const metrics = useMemo(() => getMigrationSummaryMetrics(), []);
   const activePaths = useMemo(
     () => MIGRATION_PATHS.filter((p) => getResultsByPath(p.id).length > 0),
@@ -302,6 +306,39 @@ export default function MigrationResults() {
           </motion.div>
         );
       })}
+
+      {/* ════ Complete / Return CTA ════ */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
+        className="flex justify-end pb-4"
+      >
+        <motion.button
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onComplete}
+          className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-semibold text-white cursor-pointer transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
+          style={{
+            backgroundColor: 'var(--color-accent)',
+            boxShadow: '0 2px 8px var(--color-accent-glow)',
+            outlineColor: 'var(--color-accent)',
+            border: 'none',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
+            e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
+            e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+          }}
+          aria-label="Complete Modernization"
+        >
+          Complete Modernization
+          <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+        </motion.button>
+      </motion.div>
     </motion.div>
   );
 }

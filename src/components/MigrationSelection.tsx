@@ -324,6 +324,30 @@ export default function MigrationSelection({ onStartMigration }: Props) {
             >
               {totalSelected} of {needsMigration.length} assets selected
             </span>
+            <motion.button
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={onStartMigration}
+              className="group relative inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                boxShadow: '0 2px 8px var(--color-accent-glow)',
+                outlineColor: 'var(--color-accent)',
+                border: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
+                e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
+                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+              }}
+              aria-label="Start Migration"
+            >
+              Start Migration
+              <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
+            </motion.button>
           </div>
         </div>
 
@@ -448,33 +472,27 @@ export default function MigrationSelection({ onStartMigration }: Props) {
         className="flex justify-end pb-4"
       >
         <motion.button
-          whileHover={totalSelected > 0 ? { scale: 1.02, y: -1 } : {}}
-          whileTap={totalSelected > 0 ? { scale: 0.98 } : {}}
-          onClick={totalSelected > 0 ? onStartMigration : undefined}
-          disabled={totalSelected === 0}
-          className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-semibold text-white transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onStartMigration}
+          className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-semibold text-white cursor-pointer transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
           style={{
-            backgroundColor: totalSelected > 0 ? 'var(--color-accent)' : 'var(--color-border-secondary)',
-            boxShadow: totalSelected > 0 ? '0 2px 8px var(--color-accent-glow)' : 'none',
+            backgroundColor: 'var(--color-accent)',
+            boxShadow: '0 2px 8px var(--color-accent-glow)',
             outlineColor: 'var(--color-accent)',
             border: 'none',
-            cursor: totalSelected > 0 ? 'pointer' : 'not-allowed',
-            opacity: totalSelected > 0 ? 1 : 0.5,
           }}
           onMouseEnter={(e) => {
-            if (totalSelected > 0) {
-              e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
-              e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
-            }
+            e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
+            e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
           }}
           onMouseLeave={(e) => {
-            if (totalSelected > 0) {
-              e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-              e.currentTarget.style.backgroundColor = 'var(--color-accent)';
-            }
+            e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
+            e.currentTarget.style.backgroundColor = 'var(--color-accent)';
           }}
+          aria-label="Start Migration"
         >
-          Migrate {totalSelected} Asset{totalSelected !== 1 ? 's' : ''}
+          Start Migration
           <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
         </motion.button>
       </motion.div>

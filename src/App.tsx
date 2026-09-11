@@ -27,11 +27,11 @@ export default function App() {
   const [view, setView] = useState<ViewState>('home');
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
       <Header />
 
       {view === 'home' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
 
           {/* ─── Desktop layout: 20% | 10% gap | 52.5% | 2.5% gap | 15% ─── */}
           <div
@@ -65,49 +65,49 @@ export default function App() {
       )}
 
       {view === 'assessment' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
           <AssessmentDiscovery onShowResults={() => setView('results')} />
         </main>
       )}
 
       {view === 'results' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
           <AssessmentResults onStartRationalization={() => setView('rationalization')} />
         </main>
       )}
 
       {view === 'rationalization' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
           <RationalizationLoading onShowResults={() => setView('rationalization-results')} />
         </main>
       )}
 
       {view === 'rationalization-results' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
           <RationalizationResults onStartMigration={() => setView('migration')} />
         </main>
       )}
 
       {view === 'migration' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
           <MigrationSelection onStartMigration={() => setView('migration-loading')} />
         </main>
       )}
 
       {view === 'migration-loading' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
           <MigrationLoading onShowResults={() => setView('migration-results')} />
         </main>
       )}
 
       {view === 'migration-results' && (
-        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
           <MigrationResults onComplete={() => setView('home')} />
         </main>
       )}
 
       {/* Footer */}
-      <footer className="border-t theme-transition" style={{ borderColor: 'var(--color-border-subtle)' }}>
+      <footer className="mt-auto border-t theme-transition" style={{ borderColor: 'var(--color-border-subtle)' }}>
         <div className="max-w-[1600px] mx-auto px-6 lg:px-10 py-6 flex items-center justify-between">
           <span
             className="text-[11px]"
