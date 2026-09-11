@@ -16,7 +16,7 @@ import {
   isCrossTechRecommendation,
   getCrossTechCounts,
 } from '../../data/rationalizationData';
-import type { Recommendation } from '../../data/rationalizationData';
+import type { Recommendation, TechnologyName } from '../../data/rationalizationData';
 import { useCountUp } from '../../hooks/useAnimations';
 import type { OverlapMetric } from '../../data/rationalizationData';
 import MergeReviewModal from './MergeReviewModal';
@@ -96,8 +96,8 @@ function isBiEtlDecommission(rec: Recommendation): boolean {
   const isDecom = rec.category === 'bi-retire' || rec.category === 'etl-retire';
   if (!isDecom) return false;
 
-  const biTechs: TechnologyName[] = ['Tableau', 'Power BI', 'MicroStrategy', 'ThoughtSpot', 'Excel'];
-  const etlTechs: TechnologyName[] = ['Alteryx', 'Python', 'SQL', 'Spark'];
+  const biTechs: TechnologyName[] = ['Tableau', 'Power BI', 'MicroStrategy', 'ThoughtSpot'];
+  const etlTechs: TechnologyName[] = ['Alteryx', 'Python'];
 
   const allAssets = [...rec.assets];
   if (rec.dependentAsset) allAssets.push(rec.dependentAsset);

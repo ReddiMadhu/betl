@@ -4,11 +4,6 @@ import { agents, totalAssets } from '../data/config';
 import AgentCard from './AgentCard';
 import AgentFlow from './AgentFlow';
 import { useCountUp } from '../hooks/useAnimations';
-import powerbiLogo from '../assets/logos/powerbi.svg';
-import tableauLogo from '../assets/logos/tableau.svg';
-import microstrategyLogo from '../assets/logos/microstrategy.svg';
-import alterteryxLogo from '../assets/logos/alteryx.svg';
-import pythonLogo from '../assets/logos/python.svg';
 
 interface ModernizationEngineProps {
   ingestionState?: 'idle' | 'ingesting' | 'complete';
@@ -94,21 +89,22 @@ function IngestionStatsBar() {
         style={{ backgroundColor: 'var(--color-border-primary)' }}
       />
 
-      {/* Platform Logos + Counts */}
+      {/* Platform Text Counts */}
       <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
         {/* Power BI */}
         <div
-          className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border theme-transition"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border theme-transition text-xs font-medium"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
             boxShadow: '0 1px 3px var(--color-card-shadow)',
+            color: 'var(--color-text-secondary)',
           }}
           title="Power BI: 10"
         >
-          <img src={powerbiLogo} alt="Power BI" className="w-4 h-4 object-contain" />
+          <span>Power BI:</span>
           <span
-            className="text-xs font-bold tabular-nums"
+            className="font-bold tabular-nums"
             style={{ color: 'var(--color-text-primary)' }}
           >
             {pbiCount}
@@ -117,17 +113,18 @@ function IngestionStatsBar() {
 
         {/* Tableau */}
         <div
-          className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border theme-transition"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border theme-transition text-xs font-medium"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
             boxShadow: '0 1px 3px var(--color-card-shadow)',
+            color: 'var(--color-text-secondary)',
           }}
           title="Tableau: 2"
         >
-          <img src={tableauLogo} alt="Tableau" className="w-4 h-4 object-contain" />
+          <span>Tableau:</span>
           <span
-            className="text-xs font-bold tabular-nums"
+            className="font-bold tabular-nums"
             style={{ color: 'var(--color-text-primary)' }}
           >
             {tabCount}
@@ -136,17 +133,18 @@ function IngestionStatsBar() {
 
         {/* MicroStrategy */}
         <div
-          className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border theme-transition"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border theme-transition text-xs font-medium"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
             boxShadow: '0 1px 3px var(--color-card-shadow)',
+            color: 'var(--color-text-secondary)',
           }}
           title="MicroStrategy: 5"
         >
-          <img src={microstrategyLogo} alt="MicroStrategy" className="w-4 h-4 object-contain" />
+          <span>MicroStrategy:</span>
           <span
-            className="text-xs font-bold tabular-nums"
+            className="font-bold tabular-nums"
             style={{ color: 'var(--color-text-primary)' }}
           >
             {mstrCount}
@@ -155,17 +153,18 @@ function IngestionStatsBar() {
 
         {/* Alteryx */}
         <div
-          className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border theme-transition"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border theme-transition text-xs font-medium"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
             boxShadow: '0 1px 3px var(--color-card-shadow)',
+            color: 'var(--color-text-secondary)',
           }}
           title="Alteryx: 5"
         >
-          <img src={alterteryxLogo} alt="Alteryx" className="w-4 h-4 object-contain" />
+          <span>Alteryx:</span>
           <span
-            className="text-xs font-bold tabular-nums"
+            className="font-bold tabular-nums"
             style={{ color: 'var(--color-text-primary)' }}
           >
             {altCount}
@@ -174,17 +173,18 @@ function IngestionStatsBar() {
 
         {/* Python */}
         <div
-          className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border theme-transition"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border theme-transition text-xs font-medium"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
             boxShadow: '0 1px 3px var(--color-card-shadow)',
+            color: 'var(--color-text-secondary)',
           }}
           title="Python: 3"
         >
-          <img src={pythonLogo} alt="Python" className="w-4 h-4 object-contain" />
+          <span>Python:</span>
           <span
-            className="text-xs font-bold tabular-nums"
+            className="font-bold tabular-nums"
             style={{ color: 'var(--color-text-primary)' }}
           >
             {pyCount}

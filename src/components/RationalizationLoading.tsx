@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, BarChart3, Workflow, GitMerge, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Clock, CheckCircle2 } from 'lucide-react';
 import ThinkingTrace from './ThinkingTrace';
 import type { TraceStep } from './ThinkingTrace';
 
@@ -16,41 +16,6 @@ import type { TraceStep } from './ThinkingTrace';
  *
  * Once all 3 complete, "Show Rationalization Results" button appears.
  * ───────────────────────────────────────────────────────── */
-
-/* ── Drive loader grid ── */
-const chevron = Array.from({ length: 9 }, (_, i) => {
-  const r = Math.floor(i / 3), c = i % 3;
-  return (c + Math.abs(r - 1)) * 90;
-});
-
-function LoaderGrid({ active = true }: { active?: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className="grid shrink-0"
-      style={{
-        gridTemplateColumns: 'repeat(3, 5px)',
-        gap: '2px',
-      }}
-    >
-      {chevron.map((delay, index) => (
-        <span
-          key={index}
-          style={{
-            width: '5px',
-            height: '5px',
-            borderRadius: '1px',
-            backgroundColor: 'var(--color-accent)',
-            opacity: active ? 0.15 : 0.35,
-            animation: active
-              ? `pixel-on 650ms ease-in-out ${delay}ms infinite`
-              : 'none',
-          }}
-        />
-      ))}
-    </span>
-  );
-}
 
 /* ── BI Rationalization Steps ── */
 const BI_RATIONALIZATION_STEPS: TraceStep[] = [
@@ -116,31 +81,20 @@ export default function RationalizationLoading({ onShowResults }: Props) {
           aria-label="BI Rationalization"
         >
           {/* Header */}
-          <div className="flex items-start gap-3.5 mb-5">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-              style={{ backgroundColor: 'var(--color-accent-subtle)' }}
+          <div className="mb-5">
+            <h2
+              className="text-lg font-bold tracking-tight mb-1"
+              style={{ color: 'var(--color-text-primary)' }}
             >
-              <LoaderGrid active={!biDone} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <BarChart3 size={17} style={{ color: 'var(--color-accent)' }} />
-                <h2
-                  className="text-lg font-bold tracking-tight"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
-                  BI Rationalization
-                </h2>
-              </div>
-              <p
-                className="text-[13px] leading-relaxed"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
-                Cross-referencing dashboards and reports — detecting overlapping visual logic,
-                identifying low-utilization reports, and evaluating decommission opportunities.
-              </p>
-            </div>
+              BI Rationalization
+            </h2>
+            <p
+              className="text-[13px] leading-relaxed"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              Cross-referencing dashboards and reports — detecting overlapping visual logic,
+              identifying low-utilization reports, and evaluating decommission opportunities.
+            </p>
           </div>
 
           {/* Divider */}
@@ -175,31 +129,20 @@ export default function RationalizationLoading({ onShowResults }: Props) {
           aria-label="ETL Rationalization"
         >
           {/* Header */}
-          <div className="flex items-start gap-3.5 mb-5">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-              style={{ backgroundColor: 'rgba(16, 185, 129, 0.08)' }}
+          <div className="mb-5">
+            <h2
+              className="text-lg font-bold tracking-tight mb-1"
+              style={{ color: 'var(--color-text-primary)' }}
             >
-              <LoaderGrid active={!etlDone} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Workflow size={17} className="text-emerald-500" />
-                <h2
-                  className="text-lg font-bold tracking-tight"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
-                  ETL Rationalization
-                </h2>
-              </div>
-              <p
-                className="text-[13px] leading-relaxed"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
-                Evaluating data pipelines and transformation workflows — detecting redundant
-                prep logic, duplicated processing jobs, and legacy workflow retirement candidates.
-              </p>
-            </div>
+              ETL Rationalization
+            </h2>
+            <p
+              className="text-[13px] leading-relaxed"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              Evaluating data pipelines and transformation workflows — detecting redundant
+              prep logic, duplicated processing jobs, and legacy workflow retirement candidates.
+            </p>
           </div>
 
           {/* Divider */}
@@ -237,48 +180,28 @@ export default function RationalizationLoading({ onShowResults }: Props) {
         aria-label="Detecting BI and ETL Interdependence"
       >
         {/* Header */}
-        <div className="flex items-start gap-3.5 mb-5">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-            style={{
-              backgroundColor: canStartInterdependence
-                ? 'var(--color-accent-subtle)'
-                : 'var(--color-bg-tertiary)',
-            }}
-          >
-            <LoaderGrid active={canStartInterdependence && !interdependenceDone} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <GitMerge
-                size={17}
-                style={{
-                  color: canStartInterdependence
-                    ? 'var(--color-accent)'
-                    : 'var(--color-text-tertiary)',
-                }}
-              />
-              <h2
-                className="text-lg font-bold tracking-tight"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                Detecting BI and ETL Interdependence
-              </h2>
-              {interdependenceDone && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500 ml-auto">
-                  <CheckCircle2 size={13} />
-                  Complete
-                </span>
-              )}
-            </div>
-            <p
-              className="text-[13px] leading-relaxed"
-              style={{ color: 'var(--color-text-secondary)' }}
+        <div className="mb-5">
+          <div className="flex items-center justify-between mb-1">
+            <h2
+              className="text-lg font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
             >
-              Evaluating cross-impact dependencies between BI dashboards and ETL pipelines to ensure decommission
-              recommendations on one layer do not disrupt downstream consumers or upstream data flow.
-            </p>
+              Detecting BI and ETL Interdependence
+            </h2>
+            {interdependenceDone && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
+                <CheckCircle2 size={13} />
+                Complete
+              </span>
+            )}
           </div>
+          <p
+            className="text-[13px] leading-relaxed"
+            style={{ color: 'var(--color-text-secondary)' }}
+          >
+            Evaluating cross-impact dependencies between BI dashboards and ETL pipelines to ensure decommission
+            recommendations on one layer do not disrupt downstream consumers or upstream data flow.
+          </p>
         </div>
 
         {/* Divider */}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, TrendingUp, ArrowRight, Database } from 'lucide-react';
+import { X, Trash2, ArrowRight, Database } from 'lucide-react';
 import type { Recommendation } from '../../data/rationalizationData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 import EmailNotificationModal from './EmailNotificationModal';

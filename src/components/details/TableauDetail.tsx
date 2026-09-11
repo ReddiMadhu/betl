@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Layout,
@@ -13,9 +13,6 @@ import {
   Check,
   Calendar,
   User,
-  Layers,
-  Sparkles,
-  Filter,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
@@ -66,7 +63,7 @@ interface TableDetail {
   sampleRows: Record<string, string | number>[];
 }
 
-function getTableauMetadata(assetName: string) {
+function getTableauMetadata(_assetName: string) {
   const summary = {
     totalDashboards: 3,
     totalWorksheets: 8,

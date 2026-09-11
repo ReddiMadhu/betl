@@ -1,11 +1,10 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Layout,
   Grid,
   Database,
-  Code,
   Search,
   ChevronDown,
   ChevronUp,
@@ -14,7 +13,6 @@ import {
   Calendar,
   User,
   Calculator,
-  Layers,
   Network,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
@@ -64,10 +62,10 @@ interface SemanticTableDetail {
   source: string;
   relationships: string[];
   columns: { name: string; type: string }[];
-  sampleRows: Record<string, string | number>[];
+  sampleRows: Record<string, string | number | boolean>[];
 }
 
-function getPowerBIMetadata(assetName: string) {
+function getPowerBIMetadata(_assetName: string) {
   const summary = {
     totalPages: 4,
     totalVisuals: 10,

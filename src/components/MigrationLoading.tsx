@@ -12,41 +12,6 @@ import type { TraceStep } from './ThinkingTrace';
  * the migration conversion steps.
  * ───────────────────────────────────────────────────────── */
 
-/* ── Drive loader grid ── */
-const chevron = Array.from({ length: 9 }, (_, i) => {
-  const r = Math.floor(i / 3), c = i % 3;
-  return (c + Math.abs(r - 1)) * 90;
-});
-
-function LoaderGrid({ active = true }: { active?: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className="grid shrink-0"
-      style={{
-        gridTemplateColumns: 'repeat(3, 5px)',
-        gap: '2px',
-      }}
-    >
-      {chevron.map((delay, index) => (
-        <span
-          key={index}
-          style={{
-            width: '5px',
-            height: '5px',
-            borderRadius: '1px',
-            backgroundColor: 'var(--color-accent)',
-            opacity: active ? 0.15 : 0.35,
-            animation: active
-              ? `pixel-on 650ms ease-in-out ${delay}ms infinite`
-              : 'none',
-          }}
-        />
-      ))}
-    </span>
-  );
-}
-
 /* ── Trace steps ── */
 const MIGRATION_STEPS: TraceStep[] = [
   { label: 'Analyzing source asset definitions & schemas', detail: '8 assets' },
@@ -85,30 +50,22 @@ export default function MigrationLoading({ onShowResults }: Props) {
           boxShadow: '0 2px 12px var(--color-card-shadow)',
         }}
       >
-        {/* Header with Drive loader */}
-        <div className="flex items-start gap-3.5 mb-4">
-          <div
-            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-            style={{ backgroundColor: 'var(--color-accent-subtle)' }}
+        {/* Header */}
+        <div className="mb-4">
+          <h2
+            className="text-lg font-bold tracking-tight mb-1"
+            style={{ color: 'var(--color-text-primary)' }}
           >
-            <LoaderGrid active={!done} />
-          </div>
-          <div className="min-w-0">
-            <h2
-              className="text-lg font-bold tracking-tight mb-1"
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              Migration
-            </h2>
-            <p
-              className="text-[13px] leading-relaxed"
-              style={{ color: 'var(--color-text-secondary)' }}
-            >
-              The Migration agent is converting asset definitions, transpiling ETL workflows,
-              mapping data models, and generating validated migration packages for all
-              selected platform transitions.
-            </p>
-          </div>
+            Migration
+          </h2>
+          <p
+            className="text-[13px] leading-relaxed"
+            style={{ color: 'var(--color-text-secondary)' }}
+          >
+            The Migration agent is converting asset definitions, transpiling ETL workflows,
+            mapping data models, and generating validated migration packages for all
+            selected platform transitions.
+          </p>
         </div>
 
         {/* Divider */}

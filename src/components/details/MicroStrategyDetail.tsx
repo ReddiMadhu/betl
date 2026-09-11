@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   LayoutDashboard,
@@ -13,12 +13,8 @@ import {
   Check,
   Search,
   Code,
-  Database,
-  ArrowRight,
   Calendar,
   User,
-  ShieldCheck,
-  FileSpreadsheet,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
@@ -77,7 +73,7 @@ interface MstrMetricMapping {
   method: string;
 }
 
-function getMicroStrategyData(assetName: string) {
+function getMicroStrategyData(_assetName: string) {
   const visuals: ConversionCardItem[] = [
     {
       id: 'vis1',

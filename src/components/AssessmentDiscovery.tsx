@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, BarChart3, Workflow, Clock } from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
 import ThinkingTrace from './ThinkingTrace';
 import type { TraceStep } from './ThinkingTrace';
 
@@ -16,41 +16,6 @@ import type { TraceStep } from './ThinkingTrace';
  *   - After discovery finishes, Intelligence runs automatically
  *   - After both boxes complete, "Show Results" CTA appears
  * ───────────────────────────────────────────────────────── */
-
-/* ── Drive loader grid ── */
-const chevron = Array.from({ length: 9 }, (_, i) => {
-  const r = Math.floor(i / 3), c = i % 3;
-  return (c + Math.abs(r - 1)) * 90;
-});
-
-function LoaderGrid({ active = true }: { active?: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className="grid shrink-0"
-      style={{
-        gridTemplateColumns: 'repeat(3, 5px)',
-        gap: '2px',
-      }}
-    >
-      {chevron.map((delay, index) => (
-        <span
-          key={index}
-          style={{
-            width: '5px',
-            height: '5px',
-            borderRadius: '1px',
-            backgroundColor: 'var(--color-accent)',
-            opacity: active ? 0.15 : 0.35,
-            animation: active
-              ? `pixel-on 650ms ease-in-out ${delay}ms infinite`
-              : 'none',
-          }}
-        />
-      ))}
-    </span>
-  );
-}
 
 /* ── BI Step Definitions ── */
 const BI_DISCOVERY_STEPS: TraceStep[] = [
@@ -119,32 +84,21 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
           }}
           aria-label="BI Discovery and Intelligence"
         >
-          {/* Header with Drive loader */}
-          <div className="flex items-start gap-3.5 mb-5">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-              style={{ backgroundColor: 'var(--color-accent-subtle)' }}
+          {/* Header */}
+          <div className="mb-5">
+            <h2
+              className="text-lg font-bold tracking-tight mb-1"
+              style={{ color: 'var(--color-text-primary)' }}
             >
-              <LoaderGrid active={!biAllDone} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <BarChart3 size={17} style={{ color: 'var(--color-accent)' }} />
-                <h2
-                  className="text-lg font-bold tracking-tight"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
-                  BI Discovery & Intelligence
-                </h2>
-              </div>
-              <p
-                className="text-[13px] leading-relaxed"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
-                Scanning connected BI platforms (Power BI, Tableau, MicroStrategy, Excel),
-                followed by AI intelligence to analyze usage patterns, redundancy, and modernization potential.
-              </p>
-            </div>
+              BI Discovery & Intelligence
+            </h2>
+            <p
+              className="text-[13px] leading-relaxed"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              Scanning connected BI platforms (Power BI, Tableau, MicroStrategy, Excel),
+              followed by AI intelligence to analyze usage patterns, redundancy, and modernization potential.
+            </p>
           </div>
 
           {/* Divider */}
@@ -240,32 +194,21 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
           }}
           aria-label="ETL Discovery and Intelligence"
         >
-          {/* Header with Drive loader */}
-          <div className="flex items-start gap-3.5 mb-5">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-              style={{ backgroundColor: 'rgba(16, 185, 129, 0.08)' }}
+          {/* Header */}
+          <div className="mb-5">
+            <h2
+              className="text-lg font-bold tracking-tight mb-1"
+              style={{ color: 'var(--color-text-primary)' }}
             >
-              <LoaderGrid active={!etlAllDone} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Workflow size={17} className="text-emerald-500" />
-                <h2
-                  className="text-lg font-bold tracking-tight"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
-                  ETL Discovery & Intelligence
-                </h2>
-              </div>
-              <p
-                className="text-[13px] leading-relaxed"
-                style={{ color: 'var(--color-text-secondary)' }}
-              >
-                Scanning connected ETL platforms (Alteryx, Python, SQL, Spark),
-                followed by AI intelligence to evaluate pipeline data lineage, business logic, and code complexity.
-              </p>
-            </div>
+              ETL Discovery & Intelligence
+            </h2>
+            <p
+              className="text-[13px] leading-relaxed"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              Scanning connected ETL platforms (Alteryx, Python, SQL, Spark),
+              followed by AI intelligence to evaluate pipeline data lineage, business logic, and code complexity.
+            </p>
           </div>
 
           {/* Divider */}
