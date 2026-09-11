@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+/* ───────────── Google Font ───────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ───────────── Theme tokens ───────────── */
+@theme {
+  --color-accent: #FB4E0B;
+  --color-accent-hover: #e5440a;
+  --color-accent-glow: rgba(251, 78, 11, 0.25);
+  --color-accent-subtle: rgba(251, 78, 11, 0.08);
+}
+
+/* ───────────── Light theme ───────────── */
+:root,
+[data-theme="light"] {
+  --color-bg-primary: #FAFAF9;
+  --color-bg-secondary: #FFFFFF;
+  --color-bg-tertiary: #F5F5F4;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-engine: #FEFEFE;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F5F5F4;
+  --color-border-primary: #E7E5E4;
+  --color-border-secondary: #D6D3D1;
+  --color-border-subtle: #F0EEEC;
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #57534E;
+  --color-text-tertiary: #A8A29E;
+  --color-text-inverse: #FFFFFF;
+  --color-connection-path: #D6D3D1;
+  --color-connection-active: #FB4E0B;
+  --color-particle: #FB4E0B;
+  --color-card-shadow: rgba(0, 0, 0, 0.04);
+  --color-engine-shadow: rgba(0, 0, 0, 0.06);
+  --color-engine-border: #E7E5E4;
+  --color-stat-bar-bg: #F0EEEC;
+  --color-badge-bg: rgba(251, 78, 11, 0.08);
+  --color-badge-text: #FB4E0B;
+}
+
+/* ───────────── Dark theme ───────────── */
+[data-theme="dark"] {
+  --color-bg-primary: #0C0A09;
+  --color-bg-secondary: #1C1917;
+  --color-bg-tertiary: #171412;
+  --color-bg-elevated: #1C1917;
+  --color-bg-engine: #141211;
+  --color-surface: #1C1917;
+  --color-surface-hover: #292524;
+  --color-border-primary: #292524;
+  --color-border-secondary: #3B3835;
+  --color-border-subtle: #1E1C1A;
+  --color-text-primary: #FAFAF9;
+  --color-text-secondary: #A8A29E;
+  --color-text-tertiary: #78716C;
+  --color-text-inverse: #1C1917;
+  --color-connection-path: #3B3835;
+  --color-connection-active: #FB4E0B;
+  --color-particle: #FB4E0B;
+  --color-card-shadow: rgba(0, 0, 0, 0.2);
+  --color-engine-shadow: rgba(251, 78, 11, 0.04);
+  --color-engine-border: #292524;
+  --color-stat-bar-bg: #292524;
+  --color-badge-bg: rgba(251, 78, 11, 0.12);
+  --color-badge-text: #FB4E0B;
+}
+
+/* ───────────── Base styles ───────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* ───────────── Scrollbar ───────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-tertiary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-secondary);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* ───────────── Focus styles ───────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ───────────── Reduced motion ───────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ───────────── Keyframe animations ───────────── */
+@keyframes shimmer-text {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pixel-on {
+  0%, 100% { opacity: 0.15; }
+  50%      { opacity: 0.85; }
+}
+
+/* ───────────── Utility classes ───────────── */
+.theme-transition {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
