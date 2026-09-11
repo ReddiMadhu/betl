@@ -23,7 +23,7 @@ export default function Header() {
             className="text-lg font-semibold tracking-tight"
             style={{ color: 'var(--color-text-primary)' }}
           >
-            Symp<span style={{ color: 'var(--color-accent)' }}>AI</span>
+            BI.ETL.<span style={{ color: 'var(--color-accent)' }}>AI</span>
           </span>
         </div>
 

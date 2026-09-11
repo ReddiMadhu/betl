@@ -9,8 +9,19 @@ import AssessmentDiscovery from './components/AssessmentDiscovery';
 import AssessmentResults from './components/results/AssessmentResults';
 import RationalizationLoading from './components/RationalizationLoading';
 import RationalizationResults from './components/results/RationalizationResults';
+import MigrationSelection from './components/MigrationSelection';
+import MigrationLoading from './components/MigrationLoading';
+import MigrationResults from './components/results/MigrationResults';
 
-type ViewState = 'home' | 'assessment' | 'results' | 'rationalization' | 'rationalization-results';
+type ViewState =
+  | 'home'
+  | 'assessment'
+  | 'results'
+  | 'rationalization'
+  | 'rationalization-results'
+  | 'migration'
+  | 'migration-loading'
+  | 'migration-results';
 
 export default function App() {
   const [view, setView] = useState<ViewState>('home');
@@ -73,7 +84,25 @@ export default function App() {
 
       {view === 'rationalization-results' && (
         <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          <RationalizationResults onStartMigration={() => {/* next phase */}} />
+          <RationalizationResults onStartMigration={() => setView('migration')} />
+        </main>
+      )}
+
+      {view === 'migration' && (
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+          <MigrationSelection onStartMigration={() => setView('migration-loading')} />
+        </main>
+      )}
+
+      {view === 'migration-loading' && (
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+          <MigrationLoading onShowResults={() => setView('migration-results')} />
+        </main>
+      )}
+
+      {view === 'migration-results' && (
+        <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+          <MigrationResults onComplete={() => setView('home')} />
         </main>
       )}
 
@@ -84,7 +113,7 @@ export default function App() {
             className="text-[11px]"
             style={{ color: 'var(--color-text-tertiary)' }}
           >
-            © 2026 SympAI. All rights reserved.
+            © 2026 BI.ETL.AI. All rights reserved.
           </span>
           <span
             className="text-[11px]"
@@ -97,3 +126,4 @@ export default function App() {
     </div>
   );
 }
+
