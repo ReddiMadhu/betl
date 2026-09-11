@@ -4,6 +4,7 @@ export type ViewState =
   | 'home'
   | 'assessment'
   | 'results'
+  | 'asset-detail'
   | 'rationalization'
   | 'rationalization-results'
   | 'migration'
@@ -34,7 +35,7 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
     shortTitle: 'Discovery & Intel',
     subtitle: 'Scan platforms & catalog',
     icon: Compass,
-    views: ['assessment', 'results'],
+    views: ['assessment', 'results', 'asset-detail'],
     defaultView: (visited) => (visited.has('results') ? 'results' : 'assessment'),
     subItems: [
       { id: 'assessment', label: 'Discovery Scan', description: 'Live platform crawler' },

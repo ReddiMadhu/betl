@@ -14,13 +14,20 @@ import MigrationSelection from './components/MigrationSelection';
 import MigrationLoading from './components/MigrationLoading';
 import MigrationResults from './components/results/MigrationResults';
 import Sidebar from './components/navigation/Sidebar';
+import TableauDetail from './components/details/TableauDetail';
+import PowerBIDetail from './components/details/PowerBIDetail';
+import MicroStrategyDetail from './components/details/MicroStrategyDetail';
+import AlteryxDetail from './components/details/AlteryxDetail';
+import PythonDetail from './components/details/PythonDetail';
 import type { ViewState } from './components/navigation/workflowStages';
+import type { Asset } from './data/discoveryData';
 
 export default function App() {
   const [view, setView] = useState<ViewState>('home');
   const [visitedViews, setVisitedViews] = useState<Set<ViewState>>(() => new Set(['home']));
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
 
   // Navigation handler tracking visited stages
   const navigateTo = useCallback((nextView: ViewState) => {
@@ -31,6 +38,18 @@ export default function App() {
       updated.add(nextView);
       return updated;
     });
+  }, []);
+
+  // Navigate to a technology detail page for a specific asset
+  const navigateToAssetDetail = useCallback((asset: Asset) => {
+    setSelectedAsset(asset);
+    navigateTo('asset-detail');
+  }, [navigateTo]);
+
+  // Back from asset detail to results
+  const handleBackFromDetail = useCallback(() => {
+    setSelectedAsset(null);
+    setView('results');
   }, []);
 
   const toggleSidebar = useCallback(() => {
@@ -141,7 +160,30 @@ export default function App() {
           )}
 
           {view === 'results' && (
-            <AssessmentResults onStartRationalization={() => navigateTo('rationalization')} />
+            <AssessmentResults
+              onStartRationalization={() => navigateTo('rationalization')}
+              onAssetDetail={navigateToAssetDetail}
+            />
+          )}
+
+          {view === 'asset-detail' && selectedAsset && (
+            <>
+              {selectedAsset.technology === 'Tableau' && (
+                <TableauDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'Power BI' && (
+                <PowerBIDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'MicroStrategy' && (
+                <MicroStrategyDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'Alteryx' && (
+                <AlteryxDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+              {selectedAsset.technology === 'Python' && (
+                <PythonDetail asset={selectedAsset} onBack={handleBackFromDetail} />
+              )}
+            </>
           )}
 
           {/* Stage 2: Rationalization */}
