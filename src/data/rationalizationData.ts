@@ -404,6 +404,7 @@ export const recommendations: Recommendation[] = [
     rationale: 'ZOMBIE ETL: Runs weekly but its output tables are only consumed by the retired premium_revenue_report (MicroStrategy). After BI retire BR5, this ETL has zero downstream consumers.',
     action: 'Decommission after BR5 (Premium Revenue Report retirement) is confirmed. Cascade retire.',
     tags: ['Zombie', 'Cascade from BR5'],
+    dependentAsset: asset('premium_revenue_report', 'MicroStrategy'),
     kpis: ['Regulatory Field Count', 'Submission Deadline Compliance', 'Data Freshness'],
     tables: ['regulatory_output', 'premium_raw', 'loss_raw'],
     owner: 'Carlos Rivera',

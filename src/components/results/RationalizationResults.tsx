@@ -91,6 +91,23 @@ function MetricPill({
   );
 }
 
+/** Helper to determine if a decommission recommendation involves both BI and ETL assets */
+function isBiEtlDecommission(rec: Recommendation): boolean {
+  const isDecom = rec.category === 'bi-retire' || rec.category === 'etl-retire';
+  if (!isDecom) return false;
+
+  const biTechs: TechnologyName[] = ['Tableau', 'Power BI', 'MicroStrategy', 'ThoughtSpot', 'Excel'];
+  const etlTechs: TechnologyName[] = ['Alteryx', 'Python', 'SQL', 'Spark'];
+
+  const allAssets = [...rec.assets];
+  if (rec.dependentAsset) allAssets.push(rec.dependentAsset);
+
+  const hasBi = allAssets.some((a) => biTechs.includes(a.technology));
+  const hasEtl = allAssets.some((a) => etlTechs.includes(a.technology));
+
+  return hasBi && hasEtl;
+}
+
 /* ── Recommendation card — matches BI Compass card pattern ── */
 function RecCard({
   rec,
@@ -108,6 +125,7 @@ function RecCard({
   onReview?: () => void;
 }) {
   const isCrossTech = isCrossTechRecommendation(rec);
+  const isBiEtlDecom = isBiEtlDecommission(rec);
   return (
     <div
       className="rounded-2xl border p-5 theme-transition flex flex-col gap-3 transition-all duration-200"
@@ -133,7 +151,7 @@ function RecCard({
           : '0 1px 4px var(--color-card-shadow)';
       }}
     >
-      {/* Top: title + uniqueness badge */}
+      {/* Top: title + uniqueness badge or BI<=>ETL tag */}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <h4 className="text-[14px] font-bold leading-snug mb-0.5" style={{ color: 'var(--color-text-primary)' }}>
@@ -151,6 +169,18 @@ function RecCard({
             }}
           >
             {rec.overlapPct}% overlap
+          </span>
+        )}
+        {isBiEtlDecom && (
+          <span
+            className="text-[10px] font-bold shrink-0 px-2 py-0.5 rounded-md border inline-flex items-center gap-1 shadow-sm"
+            style={{
+              backgroundColor: 'rgba(139, 92, 246, 0.15)',
+              color: '#A78BFA',
+              borderColor: 'rgba(139, 92, 246, 0.4)',
+            }}
+          >
+            BI &lt;=&gt; ETL
           </span>
         )}
       </div>
@@ -246,7 +276,7 @@ function RecCard({
         </p>
       </div>
 
-      {/* Tags — includes cross-technology clickable badge */}
+      {/* Tags — includes cross-technology clickable badge & BI<=>ETL decommission tag */}
       <div className="flex flex-wrap gap-1">
         {isCrossTech && (
           <button
@@ -261,6 +291,18 @@ function RecCard({
           >
             Cross-Technology
           </button>
+        )}
+        {isBiEtlDecom && (
+          <span
+            className="text-[9px] font-bold tracking-wider uppercase px-2 py-0.5 rounded border inline-flex items-center gap-1"
+            style={{
+              backgroundColor: 'rgba(139, 92, 246, 0.15)',
+              color: '#A78BFA',
+              borderColor: 'rgba(139, 92, 246, 0.35)',
+            }}
+          >
+            BI &lt;=&gt; ETL
+          </span>
         )}
         {rec.tags && rec.tags.map((t) => (
           <span
@@ -351,7 +393,7 @@ function ColumnHeader({
               boxShadow: crossTechActive ? `0 2px 8px ${CROSS_TECH_COLOR}40` : 'none',
             }}
           >
-            <span>{crossTechCount} Cross-Tech</span>
+            <span>{crossTechCount} Cross-Technology</span>
             {crossTechActive && (
               <span
                 onClick={(e) => {
@@ -472,7 +514,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
       className="space-y-5"
     >
       {/* ════════════════════════════════════════════════════
-       *  HEADER + BI/ETL TABS + ACTIVE RULES
+       *  HEADER + KEY OBSERVATIONS + BI/ETL TABS + START MIGRATION
        * ════════════════════════════════════════════════════ */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -485,34 +527,69 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           boxShadow: '0 2px 12px var(--color-card-shadow)',
         }}
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-            Rationalization Results
-          </h1>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              Rationalization Results
+            </h1>
+            <p className="text-xs font-semibold tracking-wider uppercase mt-1" style={{ color: 'var(--color-accent)' }}>
+              Key Observations
+            </p>
+          </div>
 
-          {/* BI / ETL toggle to the right */}
-          <div
-            className="flex items-center gap-1 p-1 rounded-lg border inline-flex self-start sm:self-auto shrink-0"
-            style={{
-              borderColor: 'var(--color-border-primary)',
-              backgroundColor: 'var(--color-bg-tertiary)',
-            }}
-          >
-            {(['bi', 'etl'] as const).map((s) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => { setActiveSection(s); setActiveTab('all'); setSearch(''); setCrossTechFilterColumn(null); }}
-                className="px-4 py-1.5 rounded-md text-[12px] font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200"
+          {/* Right Controls: BI/ETL Toggle + Start Migration CTA */}
+          <div className="flex flex-wrap items-center gap-3 self-start lg:self-auto shrink-0">
+            {/* BI / ETL toggle */}
+            <div
+              className="flex items-center gap-1 p-1 rounded-lg border inline-flex"
+              style={{
+                borderColor: 'var(--color-border-primary)',
+                backgroundColor: 'var(--color-bg-tertiary)',
+              }}
+            >
+              {(['bi', 'etl'] as const).map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => { setActiveSection(s); setActiveTab('all'); setSearch(''); setCrossTechFilterColumn(null); }}
+                  className="px-3.5 py-1.5 rounded-md text-[12px] font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200"
+                  style={{
+                    backgroundColor: activeSection === s ? 'var(--color-accent)' : 'transparent',
+                    color: activeSection === s ? '#FFFFFF' : 'var(--color-text-secondary)',
+                    border: 'none',
+                  }}
+                >
+                  {s === 'bi' ? 'BI Rationalization' : 'ETL Rationalization'}
+                </button>
+              ))}
+            </div>
+
+            {/* Start Migration button moved to top right */}
+            {onStartMigration && (
+              <motion.button
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={onStartMigration}
+                className="group relative inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white cursor-pointer transition-all duration-300 shadow-sm"
                 style={{
-                  backgroundColor: activeSection === s ? 'var(--color-accent)' : 'transparent',
-                  color: activeSection === s ? '#FFFFFF' : 'var(--color-text-secondary)',
+                  backgroundColor: 'var(--color-accent)',
+                  boxShadow: '0 2px 8px var(--color-accent-glow)',
                   border: 'none',
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 16px var(--color-accent-glow)';
+                  e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
+                  e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+                }}
+                aria-label="Start Migration"
               >
-                {s === 'bi' ? 'BI Rationalization' : 'ETL Rationalization'}
-              </button>
-            ))}
+                Start Migration
+                <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
+              </motion.button>
+            )}
           </div>
         </div>
 
@@ -532,6 +609,18 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           })}
         </div>
       </motion.div>
+
+      {/* ════════════════════════════════════════════════════
+       *  KEY RECOMMENDATIONS SECTION SUB-HEADING
+       * ════════════════════════════════════════════════════ */}
+      <div className="pt-2">
+        <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+          Key Recommendations
+        </h2>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+          Actionable consolidation, merge, decommission, and retention recommendations
+        </p>
+      </div>
 
       {/* ════════════════════════════════════════════════════
        *  FILTER TOOLBAR
@@ -661,7 +750,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 icon={GitMerge}
                 label="Consolidate & Merge"
                 count={mergeRecs.length}
-                countLabel="Redundant"
+                countLabel="Recommendations"
                 color="#F59E0B"
                 crossTechCount={crossTechCounts.mergeCount}
                 crossTechActive={crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all'}
@@ -694,7 +783,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 icon={Trash2}
                 label="Decommission"
                 count={retireRecs.length}
-                countLabel="Inactive"
+                countLabel="Recommendations"
                 color="#EF4444"
                 crossTechCount={crossTechCounts.retireCount}
                 crossTechActive={crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all'}
@@ -723,7 +812,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           {/* KEEP & CERTIFY COLUMN */}
           {(activeTab === 'all' || activeTab === 'keep') && activeSection === 'bi' && (
             <div className="space-y-4 flex flex-col">
-              <ColumnHeader icon={ShieldCheck} label="Keep & Certify" count={keepRecs.length} countLabel="Active" color="#22C55E" />
+              <ColumnHeader icon={ShieldCheck} label="Keep & Certify" count={keepRecs.length} countLabel="Recommendations" color="#22C55E" />
               {keepRecs.map((r) => (
                 <RecCard key={r.id} rec={r} accentColor="#22C55E" bulletIcon="✓" />
               ))}
@@ -736,38 +825,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           )}
         </motion.div>
       </AnimatePresence>
-
-      {/* ═══ Start Migration CTA ═══ */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        className="flex justify-end pb-4"
-      >
-        <motion.button
-          whileHover={{ scale: 1.02, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onStartMigration}
-          className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-semibold text-white cursor-pointer transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{
-            backgroundColor: 'var(--color-accent)',
-            boxShadow: '0 2px 8px var(--color-accent-glow)',
-            outlineColor: 'var(--color-accent)',
-            border: 'none',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
-            e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-            e.currentTarget.style.backgroundColor = 'var(--color-accent)';
-          }}
-        >
-          Start Migration
-          <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-        </motion.button>
-      </motion.div>
 
       {/* ═══ Review Modals ═══ */}
       <AnimatePresence>
