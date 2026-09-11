@@ -145,7 +145,7 @@ export const migrationAssets: MigrationAsset[] = [
   /* ── ETL Keep — Alteryx → Python ── */
   {
     id: 'ma9',
-    name: 'claims_etl_workflow',
+    name: 'Claims_Extract_Volume',
     technology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Claims',
@@ -156,7 +156,7 @@ export const migrationAssets: MigrationAsset[] = [
   },
   {
     id: 'ma10',
-    name: 'customer_data_integration',
+    name: 'Customer_Thursday_Metrics',
     technology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Customer',
@@ -167,7 +167,7 @@ export const migrationAssets: MigrationAsset[] = [
   },
   {
     id: 'ma11',
-    name: 'finance_consolidation_etl',
+    name: 'Finance_ETL',
     technology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Finance',
@@ -178,7 +178,7 @@ export const migrationAssets: MigrationAsset[] = [
   },
   {
     id: 'ma12',
-    name: 'underwriting_risk_etl',
+    name: 'Underwriting_Workflow',
     technology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Underwriting',
@@ -259,7 +259,7 @@ export const migrationResults: MigrationResult[] = [
   /* Alteryx → Python */
   {
     id: 'mr5',
-    assetName: 'claims_etl_workflow',
+    assetName: 'Claims_Extract_Volume',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Claims',
@@ -271,7 +271,7 @@ export const migrationResults: MigrationResult[] = [
   },
   {
     id: 'mr6',
-    assetName: 'customer_data_integration',
+    assetName: 'Customer_Thursday_Metrics',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Customer',
@@ -283,7 +283,7 @@ export const migrationResults: MigrationResult[] = [
   },
   {
     id: 'mr7',
-    assetName: 'finance_consolidation_etl',
+    assetName: 'Finance_ETL',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Finance',
@@ -295,7 +295,7 @@ export const migrationResults: MigrationResult[] = [
   },
   {
     id: 'mr8',
-    assetName: 'underwriting_risk_etl',
+    assetName: 'Underwriting_Workflow',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Underwriting',
