@@ -1,29 +1,34 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
-  FileBarChart,
+  Layout,
+  Grid,
   Database,
-  Calculator,
-  Table2,
-  User,
-  Calendar,
+  Code,
+  Search,
   ChevronDown,
-  ChevronRight,
+  ChevronUp,
+  Copy,
+  Check,
+  Calendar,
+  User,
+  Calculator,
   Layers,
-  RefreshCw,
-  Link2,
-  BarChart3,
-  PieChart,
+  Network,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 
 /* ─────────────────────────────────────────────────────────
- * PowerBIDetail — full-page detail view for Power BI assets
+ * Page 1: Data Understanding - COMMAND CENTER DASHBOARD
+ * (Power BI Semantic Model & Report Deep Inspection)
  *
- * Showcases Power BI's semantic model paradigm:
- * stats → pages/visuals → DAX measures → data model
+ * Modeled after tb-bi migration-wizard Page1DataUnderstanding:
+ * - Executive summary KPI bar (Report Pages, Visuals, Semantic Tables, DAX Measures)
+ * - Report Pages / Visuals card with fields, measures, and visual containers
+ * - DAX Measures card with DAX formula inspector and page filter sync
+ * - Full-width Semantic Model Tables card with live multi-row preview & relationships
  * ───────────────────────────────────────────────────────── */
 
 interface Props {
@@ -31,473 +36,959 @@ interface Props {
   onBack: () => void;
 }
 
-interface ReportPage {
+interface PageDetail {
   id: string;
   name: string;
-  visualCount: number;
-  visualTypes: string[];
-  isHidden: boolean;
+  visualType: string;
+  dimensions: string[];
+  measures: { name: string; type: 'explicit' | 'implicit' }[];
+  visualSlots: {
+    values: string;
+    axes: string;
+  };
 }
 
-interface DAXMeasure {
+interface DAXMeasureDetail {
   id: string;
   name: string;
   expression: string;
-  table: string;
+  homeTable: string;
   formatString: string;
-  referencedColumns: string[];
   usedInPages: string[];
 }
 
-interface SemanticTable {
-  id: string;
-  name: string;
-  columns: number;
-  rows: string;
+interface SemanticTableDetail {
+  tableName: string;
+  displayName: string;
+  rowCount: number;
   source: string;
   relationships: string[];
+  columns: { name: string; type: string }[];
+  sampleRows: Record<string, string | number>[];
 }
 
-/* ── Mock data ── */
-function getMockData() {
-  const pages: ReportPage[] = [
-    { id: 'pg1', name: 'Executive Summary', visualCount: 8, visualTypes: ['Card', 'Line Chart', 'Bar Chart', 'KPI'], isHidden: false },
-    { id: 'pg2', name: 'Claims Analysis', visualCount: 6, visualTypes: ['Matrix', 'Clustered Bar', 'Pie Chart'], isHidden: false },
-    { id: 'pg3', name: 'Trend Overview', visualCount: 5, visualTypes: ['Area Chart', 'Line Chart', 'Slicer'], isHidden: false },
-    { id: 'pg4', name: 'Regional Drill-Down', visualCount: 7, visualTypes: ['Map', 'Table', 'Decomposition Tree'], isHidden: false },
-    { id: 'pg5', name: 'Hidden Tooltip Page', visualCount: 3, visualTypes: ['Card', 'Gauge'], isHidden: true },
+function getPowerBIMetadata(assetName: string) {
+  const summary = {
+    totalPages: 4,
+    totalVisuals: 10,
+    totalTables: 5,
+    totalDAXMeasures: 8,
+  };
+
+  const pages: PageDetail[] = [
+    {
+      id: 'pg1',
+      name: 'Executive KPI Summary',
+      visualType: 'Card / Clustered Bar',
+      dimensions: ['Calendar[Quarter]', 'Policy[Line of Business]'],
+      measures: [
+        { name: 'Total Earned Premium', type: 'explicit' },
+        { name: 'Loss Ratio %', type: 'explicit' },
+        { name: 'Active Incurred Claims', type: 'explicit' },
+      ],
+      visualSlots: {
+        values: '[Total Earned Premium], [Loss Ratio %]',
+        axes: 'Axis: Calendar[Quarter], Legend: Policy[Line of Business]',
+      },
+    },
+    {
+      id: 'pg2',
+      name: 'Claims Frequency & Severity',
+      visualType: 'Line and Stacked Column',
+      dimensions: ['Calendar[Month Year]', 'Claims[Claim Type]'],
+      measures: [
+        { name: 'Claims Count MTD', type: 'explicit' },
+        { name: 'Avg Claim Severity', type: 'explicit' },
+      ],
+      visualSlots: {
+        values: 'Column: [Claims Count MTD], Line: [Avg Claim Severity]',
+        axes: 'Shared Axis: Calendar[Month Year]',
+      },
+    },
+    {
+      id: 'pg3',
+      name: 'Underwriting Performance Matrix',
+      visualType: 'Matrix Table',
+      dimensions: ['Geography[Region]', 'Policy[Underwriter]', 'Policy[Class Code]'],
+      measures: [
+        { name: 'Total Written Premium', type: 'explicit' },
+        { name: 'Combined Ratio', type: 'explicit' },
+        { name: 'YoY Premium Growth', type: 'explicit' },
+      ],
+      visualSlots: {
+        values: '[Total Written Premium], [Combined Ratio], [YoY Premium Growth]',
+        axes: 'Rows: Geography[Region] > Underwriter, Columns: Calendar[Year]',
+      },
+    },
+    {
+      id: 'pg4',
+      name: 'Regional Exposure Geographic View',
+      visualType: 'Azure Map / Filled Map',
+      dimensions: ['Geography[State]', 'Geography[County]'],
+      measures: [
+        { name: 'Total Insured Value (TIV)', type: 'explicit' },
+        { name: 'Loss Ratio %', type: 'explicit' },
+      ],
+      visualSlots: {
+        values: 'Bubble Size: [Total Insured Value (TIV)], Color: [Loss Ratio %]',
+        axes: 'Location: Geography[State]',
+      },
+    },
   ];
 
-  const measures: DAXMeasure[] = [
-    { id: 'm1', name: 'Total Premium', expression: 'SUMX( Policy, Policy[Written Premium] )', table: 'Measures', formatString: '$#,##0', referencedColumns: ['Policy[Written Premium]'], usedInPages: ['Executive Summary', 'Claims Analysis'] },
-    { id: 'm2', name: 'Loss Ratio', expression: 'DIVIDE(\n  [Total Incurred Losses],\n  [Total Earned Premium],\n  0\n)', table: 'Measures', formatString: '0.0%', referencedColumns: ['[Total Incurred Losses]', '[Total Earned Premium]'], usedInPages: ['Executive Summary', 'Trend Overview'] },
-    { id: 'm3', name: 'Claims Count MTD', expression: 'CALCULATE(\n  COUNTROWS( Claims ),\n  DATESMTD( Calendar[Date] )\n)', table: 'Measures', formatString: '#,##0', referencedColumns: ['Claims', 'Calendar[Date]'], usedInPages: ['Claims Analysis'] },
-    { id: 'm4', name: 'YoY Premium Growth', expression: 'VAR CurrentYear = [Total Premium]\nVAR PriorYear =\n  CALCULATE(\n    [Total Premium],\n    SAMEPERIODLASTYEAR( Calendar[Date] )\n  )\nRETURN\n  DIVIDE( CurrentYear - PriorYear, PriorYear )', table: 'Measures', formatString: '+0.0%;-0.0%', referencedColumns: ['[Total Premium]', 'Calendar[Date]'], usedInPages: ['Executive Summary', 'Trend Overview'] },
-    { id: 'm5', name: 'Avg Claim Severity', expression: 'AVERAGEX(\n  Claims,\n  Claims[Claim Amount]\n)', table: 'Claims Metrics', formatString: '$#,##0', referencedColumns: ['Claims[Claim Amount]'], usedInPages: ['Claims Analysis', 'Regional Drill-Down'] },
-    { id: 'm6', name: 'Combined Ratio', expression: '[Loss Ratio] + [Expense Ratio]', table: 'Measures', formatString: '0.0%', referencedColumns: ['[Loss Ratio]', '[Expense Ratio]'], usedInPages: ['Executive Summary'] },
+  const daxMeasures: DAXMeasureDetail[] = [
+    {
+      id: 'dax1',
+      name: 'Loss Ratio %',
+      expression: 'DIVIDE(\n  [Total Incurred Losses],\n  [Total Earned Premium],\n  0\n)',
+      homeTable: 'Measures Table',
+      formatString: '0.0%',
+      usedInPages: ['Executive KPI Summary', 'Regional Exposure Geographic View'],
+    },
+    {
+      id: 'dax2',
+      name: 'Total Earned Premium',
+      expression: 'SUMX(\n  Policy,\n  Policy[Written Premium] * Policy[Earning Factor]\n)',
+      homeTable: 'Policy',
+      formatString: '$#,##0',
+      usedInPages: ['Executive KPI Summary'],
+    },
+    {
+      id: 'dax3',
+      name: 'Claims Count MTD',
+      expression: 'CALCULATE(\n  COUNTROWS( Claims ),\n  DATESMTD( Calendar[Date] )\n)',
+      homeTable: 'Claims',
+      formatString: '#,##0',
+      usedInPages: ['Claims Frequency & Severity'],
+    },
+    {
+      id: 'dax4',
+      name: 'Avg Claim Severity',
+      expression: 'AVERAGEX(\n  Claims,\n  Claims[Claim Amount]\n)',
+      homeTable: 'Claims',
+      formatString: '$#,##0',
+      usedInPages: ['Claims Frequency & Severity'],
+    },
+    {
+      id: 'dax5',
+      name: 'YoY Premium Growth',
+      expression: 'VAR CurrentYear = [Total Earned Premium]\nVAR PriorYear =\n  CALCULATE(\n    [Total Earned Premium],\n    SAMEPERIODLASTYEAR( Calendar[Date] )\n  )\nRETURN\n  DIVIDE( CurrentYear - PriorYear, PriorYear, 0 )',
+      homeTable: 'Measures Table',
+      formatString: '+0.0%;-0.0%;0.0%',
+      usedInPages: ['Underwriting Performance Matrix'],
+    },
+    {
+      id: 'dax6',
+      name: 'Combined Ratio',
+      expression: '[Loss Ratio %] + DIVIDE([Underwriting Expenses], [Total Earned Premium], 0)',
+      homeTable: 'Measures Table',
+      formatString: '0.0%',
+      usedInPages: ['Underwriting Performance Matrix'],
+    },
+    {
+      id: 'dax7',
+      name: 'Active Incurred Claims',
+      expression: 'CALCULATE(\n  COUNT( Claims[Claim ID] ),\n  Claims[Status] IN { "Open", "Under Investigation", "In Review" }\n)',
+      homeTable: 'Claims',
+      formatString: '#,##0',
+      usedInPages: ['Executive KPI Summary'],
+    },
+    {
+      id: 'dax8',
+      name: 'Total Insured Value (TIV)',
+      expression: 'SUM( Policy[Building TIV] ) + SUM( Policy[Contents TIV] )',
+      homeTable: 'Policy',
+      formatString: '$#,##0',
+      usedInPages: ['Regional Exposure Geographic View'],
+    },
   ];
 
-  const tables: SemanticTable[] = [
-    { id: 't1', name: 'Policy', columns: 18, rows: '2.4M', source: 'SQL Server - PolicyDB', relationships: ['Claims (1:N)', 'Customer (N:1)'] },
-    { id: 't2', name: 'Claims', columns: 24, rows: '890K', source: 'SQL Server - ClaimsDB', relationships: ['Policy (N:1)', 'ClaimType (N:1)'] },
-    { id: 't3', name: 'Customer', columns: 12, rows: '340K', source: 'SQL Server - CRM', relationships: ['Policy (1:N)'] },
-    { id: 't4', name: 'Calendar', columns: 15, rows: '3,650', source: 'Generated', relationships: ['Policy[Date] (1:N)', 'Claims[Date] (1:N)'] },
-    { id: 't5', name: 'Geography', columns: 8, rows: '52', source: 'Excel - StateRef.xlsx', relationships: ['Policy[State] (1:N)'] },
+  const tables: SemanticTableDetail[] = [
+    {
+      tableName: 'Policy',
+      displayName: 'Policy (Core Fact)',
+      rowCount: 2450000,
+      source: 'Azure SQL Database',
+      relationships: ['Claims (1:N on PolicyID)', 'Customer (N:1 on CustID)', 'Calendar (N:1 on EffectiveDate)'],
+      columns: [
+        { name: 'PolicyID', type: 'Int64' },
+        { name: 'PolicyNumber', type: 'String' },
+        { name: 'LineOfBusiness', type: 'String' },
+        { name: 'EffectiveDate', type: 'DateTime' },
+        { name: 'WrittenPremium', type: 'Decimal' },
+        { name: 'Status', type: 'String' },
+      ],
+      sampleRows: [
+        { PolicyID: 104281, PolicyNumber: 'POL-COM-001', LineOfBusiness: 'Commercial Property', EffectiveDate: '2025-06-01', WrittenPremium: 48500.0, Status: 'In Force' },
+        { PolicyID: 104282, PolicyNumber: 'POL-AUTO-094', LineOfBusiness: 'Commercial Auto', EffectiveDate: '2025-07-15', WrittenPremium: 112000.0, Status: 'In Force' },
+        { PolicyID: 104283, PolicyNumber: 'POL-GL-201', LineOfBusiness: 'General Liability', EffectiveDate: '2025-08-01', WrittenPremium: 29000.0, Status: 'Renewed' },
+        { PolicyID: 104284, PolicyNumber: 'POL-WC-552', LineOfBusiness: 'Workers Comp', EffectiveDate: '2025-08-12', WrittenPremium: 76400.0, Status: 'In Force' },
+        { PolicyID: 104285, PolicyNumber: 'POL-CYB-108', LineOfBusiness: 'Cyber Risk', EffectiveDate: '2025-09-01', WrittenPremium: 34200.0, Status: 'In Force' },
+      ],
+    },
+    {
+      tableName: 'Claims',
+      displayName: 'Claims (Loss Transactions)',
+      rowCount: 890000,
+      source: 'Snowflake Data Warehouse',
+      relationships: ['Policy (N:1 on PolicyID)', 'Calendar (N:1 on LossDate)'],
+      columns: [
+        { name: 'ClaimID', type: 'Int64' },
+        { name: 'PolicyID', type: 'Int64' },
+        { name: 'ClaimAmount', type: 'Decimal' },
+        { name: 'LossDate', type: 'DateTime' },
+        { name: 'ClaimType', type: 'String' },
+        { name: 'Status', type: 'String' },
+      ],
+      sampleRows: [
+        { ClaimID: 80112, PolicyID: 104281, ClaimAmount: 18450.0, LossDate: '2025-11-04', ClaimType: 'Water Damage', Status: 'Closed' },
+        { ClaimID: 80113, PolicyID: 104282, ClaimAmount: 64200.0, LossDate: '2025-12-14', ClaimType: 'Collision', Status: 'Open' },
+        { ClaimID: 80114, PolicyID: 104284, ClaimAmount: 9200.0, LossDate: '2026-01-09', ClaimType: 'Medical Only', Status: 'Closed' },
+        { ClaimID: 80115, PolicyID: 104285, ClaimAmount: 145000.0, LossDate: '2026-01-20', ClaimType: 'Ransomware Interruption', Status: 'Under Investigation' },
+        { ClaimID: 80116, PolicyID: 104283, ClaimAmount: 32100.0, LossDate: '2026-02-02', ClaimType: 'Slip and Fall', Status: 'In Review' },
+      ],
+    },
+    {
+      tableName: 'Calendar',
+      displayName: 'Calendar (Time Dimension)',
+      rowCount: 3650,
+      source: 'DAX Generated Table',
+      relationships: ['Policy[EffectiveDate] (1:N)', 'Claims[LossDate] (1:N)'],
+      columns: [
+        { name: 'Date', type: 'DateTime' },
+        { name: 'Year', type: 'Int64' },
+        { name: 'Quarter', type: 'String' },
+        { name: 'MonthYear', type: 'String' },
+        { name: 'IsCurrentYear', type: 'Boolean' },
+      ],
+      sampleRows: [
+        { Date: '2025-01-01', Year: 2025, Quarter: 'Q1', MonthYear: 'Jan 2025', IsCurrentYear: false },
+        { Date: '2025-04-01', Year: 2025, Quarter: 'Q2', MonthYear: 'Apr 2025', IsCurrentYear: false },
+        { Date: '2025-07-01', Year: 2025, Quarter: 'Q3', MonthYear: 'Jul 2025', IsCurrentYear: false },
+        { Date: '2025-10-01', Year: 2025, Quarter: 'Q4', MonthYear: 'Oct 2025', IsCurrentYear: false },
+        { Date: '2026-01-01', Year: 2026, Quarter: 'Q1', MonthYear: 'Jan 2026', IsCurrentYear: true },
+      ],
+    },
+    {
+      tableName: 'Geography',
+      displayName: 'Geography (Territory Dimension)',
+      rowCount: 52,
+      source: 'Azure Blob Storage / CSV',
+      relationships: ['Policy[StateCode] (1:N)'],
+      columns: [
+        { name: 'StateCode', type: 'String' },
+        { name: 'State', type: 'String' },
+        { name: 'Region', type: 'String' },
+        { name: 'CatastropheRiskTier', type: 'String' },
+      ],
+      sampleRows: [
+        { StateCode: 'CA', State: 'California', Region: 'West Coast', CatastropheRiskTier: 'Tier 1 (Wildfire / Earthquake)' },
+        { StateCode: 'TX', State: 'Texas', Region: 'South Central', CatastropheRiskTier: 'Tier 1 (Hail / Windstorm)' },
+        { StateCode: 'FL', State: 'Florida', Region: 'Southeast', CatastropheRiskTier: 'Tier 1 (Hurricane)' },
+        { StateCode: 'NY', State: 'New York', Region: 'Northeast', CatastropheRiskTier: 'Tier 3 (Standard)' },
+        { StateCode: 'IL', State: 'Illinois', Region: 'Midwest', CatastropheRiskTier: 'Tier 2 (Severe Convective Storm)' },
+      ],
+    },
   ];
 
-  return { pages, measures, tables };
-}
-
-/* ── Stat Card ── */
-function StatCard({ icon: Icon, label, value, color }: { icon: typeof FileBarChart; label: string; value: string | number; color: string }) {
-  return (
-    <div
-      className="rounded-xl border p-5 theme-transition"
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        borderColor: 'var(--color-border-primary)',
-        boxShadow: '0 1px 4px var(--color-card-shadow)',
-      }}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-          style={{ backgroundColor: `${color}15` }}
-        >
-          <Icon size={20} style={{ color }} />
-        </div>
-        <div>
-          <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
-            {label}
-          </p>
-          <p className="text-2xl font-bold mt-0.5" style={{ color: 'var(--color-text-primary)' }}>
-            {value}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  return { summary, pages, daxMeasures, tables };
 }
 
 export default function PowerBIDetail({ asset, onBack }: Props) {
-  const { pages, measures, tables } = getMockData();
-  const [expandedMeasure, setExpandedMeasure] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'pages' | 'measures' | 'model'>('pages');
+  const metadata = useMemo(() => getPowerBIMetadata(asset.name), [asset.name]);
 
-  const logo = TECHNOLOGY_LOGOS[asset.technology];
+  const [pageSearch, setPageSearch] = useState('');
+  const [measureSearch, setMeasureSearch] = useState('');
+  const [tableSearch, setTableSearch] = useState('');
+
+  const [selectedPage, setSelectedPage] = useState<PageDetail | null>(null);
+  const [expandedFormulas, setExpandedFormulas] = useState<Set<string>>(new Set());
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const toggleFormula = (id: string) => {
+    setExpandedFormulas((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const copyFormula = (formula: string, id: string) => {
+    navigator.clipboard.writeText(formula);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  // Filter pages
+  const filteredPages = useMemo(() => {
+    if (!pageSearch.trim()) return metadata.pages;
+    const q = pageSearch.toLowerCase();
+    return metadata.pages.filter(
+      (pg) =>
+        pg.name.toLowerCase().includes(q) ||
+        pg.visualType.toLowerCase().includes(q) ||
+        pg.dimensions.some((d) => d.toLowerCase().includes(q))
+    );
+  }, [metadata.pages, pageSearch]);
+
+  // Filter measures
+  const filteredMeasures = useMemo(() => {
+    let list = metadata.daxMeasures;
+
+    if (selectedPage) {
+      list = list.filter((m) => m.usedInPages.includes(selectedPage.name));
+    }
+
+    if (measureSearch.trim()) {
+      const q = measureSearch.toLowerCase();
+      list = list.filter(
+        (m) =>
+          m.name.toLowerCase().includes(q) ||
+          m.expression.toLowerCase().includes(q) ||
+          m.homeTable.toLowerCase().includes(q)
+      );
+    }
+
+    return list;
+  }, [metadata.daxMeasures, selectedPage, measureSearch]);
+
+  // Filter tables
+  const filteredTables = useMemo(() => {
+    if (!tableSearch.trim()) return metadata.tables;
+    const q = tableSearch.toLowerCase();
+    return metadata.tables.filter(
+      (t) =>
+        t.displayName.toLowerCase().includes(q) ||
+        t.source.toLowerCase().includes(q) ||
+        t.columns.some((c) => c.name.toLowerCase().includes(q))
+    );
+  }, [metadata.tables, tableSearch]);
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="space-y-6 pb-12"
     >
-      {/* ── Back button ── */}
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex items-center gap-1.5 text-[13px] font-medium mb-5 px-2 py-1 rounded-lg transition-colors duration-150"
-        style={{ color: 'var(--color-text-secondary)', background: 'transparent', border: 'none', cursor: 'pointer' }}
-        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface-hover)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-      >
-        <ArrowLeft size={14} />
-        Back to Results
-      </button>
-
       {/* ── Header ── */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05, duration: 0.35 }}
-        className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6"
+      <div
+        className="rounded-2xl border p-6 theme-transition shadow-sm"
+        style={{
+          backgroundColor: 'var(--color-bg-elevated)',
+          borderColor: 'var(--color-border-primary)',
+        }}
       >
-        <div className="flex items-start gap-4">
-          <div
-            className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 p-2.5"
-            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-          >
-            <img src={logo} alt="Power BI" className="w-full h-full object-contain" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <button
+              type="button"
+              onClick={onBack}
+              className="p-2.5 rounded-xl border cursor-pointer hover:scale-105 active:scale-95 transition-all mt-0.5 shrink-0"
+              style={{
+                backgroundColor: 'var(--color-bg-tertiary)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-text-primary)',
+              }}
+              title="Back to Asset Discovery"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div className="flex items-start gap-3">
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center p-2 shrink-0 border"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-subtle)',
+                }}
+              >
+                <img
+                  src={TECHNOLOGY_LOGOS['Power BI']}
+                  alt="Power BI"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                    {asset.name}
+                  </h1>
+                  <span
+                    className="text-[11px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider"
+                    style={{
+                      backgroundColor: 'rgba(242, 200, 17, 0.15)',
+                      borderColor: 'rgba(242, 200, 17, 0.4)',
+                      color: '#B48400',
+                    }}
+                  >
+                    Power BI Report & Semantic Model
+                  </span>
+                  <span
+                    className="text-[11px] font-medium px-2 py-0.5 rounded-md border"
+                    style={{
+                      backgroundColor: 'var(--color-bg-tertiary)',
+                      borderColor: 'var(--color-border-subtle)',
+                      color: 'var(--color-text-secondary)',
+                    }}
+                  >
+                    {asset.businessArea}
+                  </span>
+                </div>
+                <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                  Source Dashboard Exploration — Complete inspection of report pages, DAX measures, and data model tables
+                </p>
+                <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                  <span className="flex items-center gap-1.5">
+                    <User size={13} /> {asset.owner || 'Author: Rachel Davies'}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Calendar size={13} /> Last Refresh: Today, 04:30 AM
+                  </span>
+                  <span>•</span>
+                  <span>Storage: Import Mode</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Executive Summary Bar (4 KPI Cards from Page 1 Command Center) ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Report Pages Card */}
+        <div
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
+        >
+          <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Layout className="w-6 h-6 text-purple-500" />
           </div>
           <div>
-            <div className="flex items-center gap-2.5 mb-1">
-              <h1
-                className="text-xl md:text-2xl font-bold tracking-tight"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                {asset.name}
-              </h1>
-              <span
-                className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', color: 'rgb(34, 197, 94)' }}
-              >
-                Published
-              </span>
+            <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              {metadata.summary.totalPages}
             </div>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]" style={{ color: 'var(--color-text-tertiary)' }}>
-              {asset.assetType && (
-                <span className="font-medium px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
-                  {asset.assetType}
-                </span>
-              )}
-              <span className="font-medium px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
-                Workspace: Insurance Analytics
-              </span>
-              {asset.owner && (
-                <span className="flex items-center gap-1">
-                  <User size={11} />
-                  {asset.owner}
-                </span>
-              )}
-              {asset.lastUpdated && (
-                <span className="flex items-center gap-1">
-                  <Calendar size={11} />
-                  {asset.lastUpdated}
-                </span>
-              )}
+            <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
+              Report Pages
             </div>
-            {asset.description && (
-              <p className="text-[13px] mt-2 max-w-2xl leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                {asset.description}
-              </p>
-            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
-          <div
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-semibold"
-            style={{ backgroundColor: 'rgba(59, 130, 246, 0.08)', color: '#3B82F6' }}
-          >
-            <RefreshCw size={12} />
-            Scheduled Refresh: Daily 6 AM
-          </div>
-        </div>
-      </motion.div>
-
-      {/* ── Stats ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.35 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
-      >
-        <StatCard icon={FileBarChart} label="Report Pages" value={pages.length} color="#F59E0B" />
-        <StatCard icon={Calculator} label="DAX Measures" value={measures.length} color="#3B82F6" />
-        <StatCard icon={Table2} label="Semantic Tables" value={tables.length} color="#8B5CF6" />
-        <StatCard icon={BarChart3} label="Total Visuals" value={pages.reduce((s, p) => s + p.visualCount, 0)} color="#10B981" />
-      </motion.div>
-
-      {/* ── Tabs ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.35 }}
-        className="mb-6"
-      >
+        {/* Visuals Card */}
         <div
-          className="flex gap-1 p-1 rounded-xl mb-5"
-          style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
         >
-          {([
-            { key: 'pages', label: 'Report Pages', icon: FileBarChart },
-            { key: 'measures', label: 'DAX Measures', icon: Calculator },
-            { key: 'model', label: 'Data Model', icon: Database },
-          ] as const).map(({ key, label, icon: TabIcon }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setActiveTab(key)}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-[12px] font-semibold transition-all duration-200"
-              style={{
-                backgroundColor: activeTab === key ? 'var(--color-bg-elevated)' : 'transparent',
-                color: activeTab === key ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: activeTab === key ? '0 1px 4px var(--color-card-shadow)' : 'none',
-              }}
-            >
-              <TabIcon size={14} />
-              {label}
-            </button>
-          ))}
+          <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Grid className="w-6 h-6 text-blue-500" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              {metadata.summary.totalVisuals}
+            </div>
+            <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
+              Visual Containers
+            </div>
+          </div>
         </div>
 
-        {/* ── Pages Tab ── */}
-        {activeTab === 'pages' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {pages.map((page) => (
-              <div
-                key={page.id}
-                className="rounded-xl border p-5 theme-transition"
+        {/* Semantic Model Tables Card */}
+        <div
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
+        >
+          <div className="w-12 h-12 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Database className="w-6 h-6 text-orange-500" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              {metadata.summary.totalTables}
+            </div>
+            <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
+              Semantic Model Tables
+            </div>
+          </div>
+        </div>
+
+        {/* DAX Measures Card */}
+        <div
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
+        >
+          <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Calculator className="w-6 h-6 text-emerald-500" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              {metadata.summary.totalDAXMeasures}
+            </div>
+            <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
+              DAX Calculated Measures
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 2-Column Grid Layout: Pages/Visuals & DAX Measures ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Pages & Visuals Card */}
+        <div
+          className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
+          style={{
+            height: '470px',
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
+        >
+          {/* Card Header */}
+          <div
+            className="p-4 border-b shrink-0"
+            style={{ borderColor: 'var(--color-border-primary)' }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                <Grid className="w-5 h-5 text-blue-500" />
+                Report Pages & Visuals ({filteredPages.length})
+              </h2>
+              <span className="text-[11px] font-medium" style={{ color: 'var(--color-text-tertiary)' }}>
+                Click page to filter DAX
+              </span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search report pages or visual types..."
+                value={pageSearch}
+                onChange={(e) => setPageSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
                 style={{
-                  backgroundColor: 'var(--color-bg-elevated)',
+                  backgroundColor: 'var(--color-bg-tertiary)',
                   borderColor: 'var(--color-border-primary)',
-                  boxShadow: '0 1px 4px var(--color-card-shadow)',
-                  opacity: page.isHidden ? 0.6 : 1,
+                  color: 'var(--color-text-primary)',
                 }}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)' }}
-                    >
-                      <PieChart size={16} style={{ color: '#F59E0B' }} />
-                    </div>
-                    <div>
-                      <h4 className="text-[13px] font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                        {page.name}
-                      </h4>
-                      <p className="text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                        {page.visualCount} visuals
+              />
+            </div>
+          </div>
+
+          {/* Card Body - Scrollable list of Pages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+            {filteredPages.map((pg) => {
+              const isSelected = selectedPage?.id === pg.id;
+              return (
+                <div
+                  key={pg.id}
+                  className="rounded-xl border transition-all cursor-pointer overflow-hidden"
+                  style={{
+                    backgroundColor: isSelected
+                      ? 'color-mix(in srgb, #3B82F6 10%, var(--color-bg-elevated))'
+                      : 'var(--color-surface)',
+                    borderColor: isSelected ? '#3B82F6' : 'var(--color-border-subtle)',
+                    boxShadow: isSelected ? '0 0 0 1px #3B82F6' : 'none',
+                  }}
+                  onClick={() => setSelectedPage(isSelected ? null : pg)}
+                >
+                  <div className="p-3.5 flex items-center justify-between">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-xs truncate" style={{ color: 'var(--color-text-primary)' }}>
+                          {pg.name}
+                        </h3>
+                        <span
+                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0"
+                          style={{
+                            backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                            borderColor: 'rgba(59, 130, 246, 0.25)',
+                            color: '#3B82F6',
+                          }}
+                        >
+                          {pg.visualType}
+                        </span>
+                      </div>
+                      <p className="text-[11px] mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                        {pg.dimensions.length} Fields • {pg.measures.length} DAX Measures
                       </p>
                     </div>
+                    <div className="shrink-0 text-blue-500">
+                      {isSelected ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </div>
                   </div>
-                  {page.isHidden && (
-                    <span
-                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-tertiary)' }}
+
+                  {/* Expanded Breakdown */}
+                  {isSelected && (
+                    <div
+                      className="px-3.5 pb-3.5 pt-2 border-t text-xs space-y-2.5"
+                      style={{ borderColor: 'rgba(59, 130, 246, 0.2)' }}
                     >
-                      Hidden
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                  {page.visualTypes.map((vt) => (
-                    <span
-                      key={vt}
-                      className="text-[10px] font-medium px-2 py-0.5 rounded-md"
-                      style={{ backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-secondary)' }}
-                    >
-                      {vt}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── DAX Measures Tab ── */}
-        {activeTab === 'measures' && (
-          <div className="flex flex-col gap-3">
-            {measures.map((m) => (
-              <div
-                key={m.id}
-                className="rounded-xl border theme-transition overflow-hidden"
-                style={{
-                  backgroundColor: 'var(--color-bg-elevated)',
-                  borderColor: expandedMeasure === m.id ? 'var(--color-accent)' : 'var(--color-border-primary)',
-                  boxShadow: '0 1px 4px var(--color-card-shadow)',
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => setExpandedMeasure(expandedMeasure === m.id ? null : m.id)}
-                  className="w-full flex items-center justify-between p-4 text-left transition-colors duration-150"
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface-hover)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                >
-                  <div className="flex items-center gap-3">
-                    {expandedMeasure === m.id ? (
-                      <ChevronDown size={14} style={{ color: 'var(--color-accent)' }} />
-                    ) : (
-                      <ChevronRight size={14} style={{ color: 'var(--color-text-tertiary)' }} />
-                    )}
-                    <span className="text-[13px] font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                      {m.name}
-                    </span>
-                    <span
-                      className="text-[10px] font-medium px-2 py-0.5 rounded-md"
-                      style={{ backgroundColor: 'rgba(59, 130, 246, 0.08)', color: '#3B82F6' }}
-                    >
-                      {m.table}
-                    </span>
-                  </div>
-                  <span className="text-[11px] font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
-                    {m.formatString}
-                  </span>
-                </button>
-
-                {expandedMeasure === m.id && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                    className="border-t"
-                    style={{ borderColor: 'var(--color-border-subtle)' }}
-                  >
-                    <div className="p-4">
-                      <div className="mb-4">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: 'var(--color-text-tertiary)' }}>
-                          DAX Expression
-                        </span>
-                        <pre
-                          className="text-[12px] font-mono p-3 rounded-lg overflow-x-auto leading-relaxed whitespace-pre-wrap"
-                          style={{ backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
-                        >
-                          {m.expression}
-                        </pre>
-                      </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-2">
+                        {/* Fields list */}
                         <div>
-                          <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                          <span className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--color-text-tertiary)' }}>
                             Referenced Columns
                           </span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {m.referencedColumns.map((c) => (
-                              <span
-                                key={c}
-                                className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-md"
-                                style={{ backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-secondary)' }}
-                              >
-                                {c}
-                              </span>
+                          <div
+                            className="max-h-24 overflow-y-auto rounded-lg p-1.5 space-y-1 border"
+                            style={{
+                              backgroundColor: 'var(--color-bg-tertiary)',
+                              borderColor: 'var(--color-border-subtle)',
+                            }}
+                          >
+                            {pg.dimensions.map((d, i) => (
+                              <div key={i} className="truncate pl-1.5 border-l-2 border-amber-400 text-[11px]" style={{ color: 'var(--color-text-secondary)' }}>
+                                {d}
+                              </div>
                             ))}
                           </div>
                         </div>
+
+                        {/* Measures list */}
                         <div>
-                          <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: 'var(--color-text-tertiary)' }}>
-                            Used In Pages
+                          <span className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--color-text-tertiary)' }}>
+                            Explicit DAX Measures
                           </span>
-                          <div className="flex flex-wrap gap-1.5">
-                            {m.usedInPages.map((p) => (
-                              <span
-                                key={p}
-                                className="text-[11px] font-medium px-2 py-0.5 rounded-md"
-                                style={{ backgroundColor: 'rgba(245, 158, 11, 0.08)', color: '#F59E0B' }}
-                              >
-                                {p}
-                              </span>
+                          <div
+                            className="max-h-24 overflow-y-auto rounded-lg p-1.5 space-y-1 border"
+                            style={{
+                              backgroundColor: 'var(--color-bg-tertiary)',
+                              borderColor: 'var(--color-border-subtle)',
+                            }}
+                          >
+                            {pg.measures.map((m, i) => (
+                              <div key={i} className="truncate pl-1.5 border-l-2 border-emerald-500 text-[11px] font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+                                [{m.name}] ★
+                              </div>
                             ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Visual Slots */}
+                      <div className="pt-2 border-t" style={{ borderColor: 'var(--color-border-subtle)' }}>
+                        <span className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--color-text-tertiary)' }}>
+                          Visual Bindings
+                        </span>
+                        <div className="p-2 rounded border space-y-1 text-[11px]" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                          <div>
+                            <span className="font-bold text-[9px] uppercase text-gray-400">Values: </span>
+                            <span style={{ color: 'var(--color-text-primary)' }}>{pg.visualSlots.values}</span>
+                          </div>
+                          <div>
+                            <span className="font-bold text-[9px] uppercase text-gray-400">Axes/Slices: </span>
+                            <span style={{ color: 'var(--color-text-primary)' }}>{pg.visualSlots.axes}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </motion.div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
 
-        {/* ── Data Model Tab ── */}
-        {activeTab === 'model' && (
+        {/* Right Column: DAX Measures Card */}
+        <div
+          className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
+          style={{
+            height: '470px',
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
+        >
+          {/* Card Header */}
           <div
-            className="rounded-xl border overflow-hidden theme-transition"
-            style={{
-              backgroundColor: 'var(--color-bg-elevated)',
-              borderColor: 'var(--color-border-primary)',
-              boxShadow: '0 1px 4px var(--color-card-shadow)',
-            }}
+            className="p-4 border-b shrink-0"
+            style={{ borderColor: 'var(--color-border-primary)' }}
           >
-            <div className="p-4 border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <div className="flex items-center gap-2">
-                <Layers size={16} style={{ color: '#8B5CF6' }} />
-                <h3 className="text-[14px] font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                  Semantic Model — Tables & Relationships
-                </h3>
-              </div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                <Calculator className="w-5 h-5 text-emerald-500" />
+                DAX Measures ({filteredMeasures.length})
+              </h2>
+              {selectedPage && (
+                <div
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px]"
+                  style={{
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: 'rgba(59, 130, 246, 0.3)',
+                    color: '#3B82F6',
+                  }}
+                >
+                  <span>Filtered by: {selectedPage.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPage(null)}
+                    className="font-bold cursor-pointer hover:opacity-75"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-[12px]">
-                <thead>
-                  <tr style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
-                    {['Table', 'Columns', 'Row Count', 'Source', 'Relationships'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left px-4 py-2.5 font-semibold uppercase tracking-wider text-[10px]"
-                        style={{ color: 'var(--color-text-tertiary)' }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {tables.map((t, i) => (
-                    <tr
-                      key={t.id}
-                      className="transition-colors duration-100"
-                      style={{ borderTop: i > 0 ? '1px solid var(--color-border-subtle)' : 'none' }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface-hover)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-                    >
-                      <td className="px-4 py-3 font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                        <div className="flex items-center gap-2">
-                          <Table2 size={12} style={{ color: '#8B5CF6' }} />
-                          {t.name}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 font-mono" style={{ color: 'var(--color-text-secondary)' }}>{t.columns}</td>
-                      <td className="px-4 py-3 font-mono" style={{ color: 'var(--color-text-secondary)' }}>{t.rows}</td>
-                      <td className="px-4 py-3" style={{ color: 'var(--color-text-secondary)' }}>{t.source}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1.5">
-                          {t.relationships.map((r) => (
-                            <span
-                              key={r}
-                              className="text-[10px] font-medium px-2 py-0.5 rounded-md inline-flex items-center gap-1"
-                              style={{ backgroundColor: 'rgba(139, 92, 246, 0.08)', color: '#8B5CF6' }}
-                            >
-                              <Link2 size={8} />
-                              {r}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search DAX measures or syntax..."
+                value={measureSearch}
+                onChange={(e) => setMeasureSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-primary)',
+                  color: 'var(--color-text-primary)',
+                }}
+              />
             </div>
           </div>
-        )}
-      </motion.div>
+
+          {/* Card Body - Scrollable list of DAX Measures */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+            {filteredMeasures.map((m) => {
+              const isExpanded = expandedFormulas.has(m.id);
+              const isCopied = copiedId === m.id;
+              return (
+                <div
+                  key={m.id}
+                  className="rounded-xl border overflow-hidden transition-all"
+                  style={{
+                    backgroundColor: 'var(--color-surface)',
+                    borderColor: isExpanded ? '#10B981' : 'var(--color-border-subtle)',
+                  }}
+                >
+                  <div
+                    className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-opacity-80"
+                    onClick={() => toggleFormula(m.id)}
+                  >
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-xs truncate" style={{ color: 'var(--color-text-primary)' }}>
+                          [{m.name}]
+                        </h3>
+                        <span
+                          className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                        >
+                          {m.homeTable}
+                        </span>
+                        <span className="text-[10px] text-gray-400 font-mono">
+                          Format: {m.formatString}
+                        </span>
+                      </div>
+                      <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                        Bound in {m.usedInPages.length} report page{m.usedInPages.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <div className="shrink-0" style={{ color: 'var(--color-text-tertiary)' }}>
+                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </div>
+                  </div>
+
+                  {/* Expanded DAX Formula Box */}
+                  {isExpanded && (
+                    <div
+                      className="px-3.5 py-3 border-t text-xs space-y-2"
+                      style={{
+                        backgroundColor: 'var(--color-bg-tertiary)',
+                        borderColor: 'var(--color-border-subtle)',
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
+                          DAX Calculation Formula
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyFormula(m.expression, m.id);
+                          }}
+                          className="flex items-center gap-1 text-[11px] font-semibold cursor-pointer hover:opacity-80 px-2 py-0.5 rounded border"
+                          style={{
+                            borderColor: 'var(--color-border-primary)',
+                            color: isCopied ? '#22C55E' : 'var(--color-text-secondary)',
+                          }}
+                        >
+                          {isCopied ? <Check size={12} /> : <Copy size={12} />}
+                          <span>{isCopied ? 'Copied' : 'Copy DAX'}</span>
+                        </button>
+                      </div>
+                      <pre
+                        className="p-3 rounded-lg font-mono text-[11px] leading-relaxed overflow-x-auto border"
+                        style={{
+                          backgroundColor: 'var(--color-bg-primary)',
+                          borderColor: 'var(--color-border-primary)',
+                          color: 'var(--color-text-primary)',
+                        }}
+                      >
+                        <code>{m.expression}</code>
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Full-Width Data Tables Card ── */}
+      <div
+        className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
+        style={{
+          backgroundColor: 'var(--color-bg-elevated)',
+          borderColor: 'var(--color-border-primary)',
+        }}
+      >
+        {/* Card Header */}
+        <div
+          className="p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0"
+          style={{ borderColor: 'var(--color-border-primary)' }}
+        >
+          <div className="flex items-center gap-2">
+            <Database className="w-5 h-5 text-orange-500" />
+            <h2 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
+              Semantic Model Tables & Schema Preview ({filteredTables.length})
+            </h2>
+          </div>
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search model tables or columns..."
+              value={tableSearch}
+              onChange={(e) => setTableSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
+              style={{
+                backgroundColor: 'var(--color-bg-tertiary)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-text-primary)',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Card Body - List of Tables with Live Data Previews */}
+        <div className="p-4 space-y-4 max-h-[560px] overflow-y-auto">
+          {filteredTables.map((tbl) => (
+            <div
+              key={tbl.tableName}
+              className="rounded-xl border overflow-hidden shadow-xs"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border-primary)',
+              }}
+            >
+              {/* Table Meta Bar */}
+              <div
+                className="px-4 py-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-subtle)',
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-orange-500" />
+                  <h3 className="font-bold text-xs" style={{ color: 'var(--color-text-primary)' }}>
+                    {tbl.displayName}
+                  </h3>
+                  <span className="text-[10px] text-gray-400 font-mono">({tbl.source})</span>
+                </div>
+                <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{tbl.rowCount.toLocaleString()}</strong> rows ×{' '}
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{tbl.columns.length}</strong> columns
+                </div>
+              </div>
+
+              {/* Data Preview Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr
+                      className="border-b"
+                      style={{
+                        backgroundColor: 'var(--color-surface)',
+                        borderColor: 'var(--color-border-subtle)',
+                      }}
+                    >
+                      {tbl.columns.map((col, idx) => (
+                        <th
+                          key={idx}
+                          className="px-4 py-2.5 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap"
+                          style={{ color: 'var(--color-text-secondary)' }}
+                        >
+                          <div>{col.name}</div>
+                          <span className="text-[9px] font-mono text-gray-400 font-normal">
+                            {col.type}
+                          </span>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y" style={{ borderColor: 'var(--color-border-subtle)' }}>
+                    {tbl.sampleRows.map((row, rowIdx) => (
+                      <tr
+                        key={rowIdx}
+                        className="hover:bg-opacity-50 transition-colors"
+                        style={{ backgroundColor: rowIdx % 2 === 0 ? 'transparent' : 'var(--color-bg-tertiary)' }}
+                      >
+                        {tbl.columns.map((col, colIdx) => (
+                          <td
+                            key={colIdx}
+                            className="px-4 py-2 whitespace-nowrap font-mono text-[11px]"
+                            style={{ color: 'var(--color-text-primary)' }}
+                          >
+                            {row[col.name] !== undefined && row[col.name] !== null
+                              ? String(row[col.name])
+                              : <span className="text-gray-400 italic">null</span>}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Relationships Footer */}
+              <div
+                className="px-4 py-2.5 border-t text-[11px] flex flex-wrap items-center justify-between gap-2"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-subtle)',
+                  color: 'var(--color-text-tertiary)',
+                }}
+              >
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Network size={12} className="text-blue-500" />
+                  <span className="font-semibold text-gray-400">Relationships:</span>
+                  {tbl.relationships.map((rel, rIdx) => (
+                    <span
+                      key={rIdx}
+                      className="px-1.5 py-0.5 rounded border text-[10px] font-mono"
+                      style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-secondary)' }}
+                    >
+                      {rel}
+                    </span>
+                  ))}
+                </div>
+                <div>Showing 5 of {tbl.rowCount.toLocaleString()} sample rows</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </motion.div>
   );
 }
