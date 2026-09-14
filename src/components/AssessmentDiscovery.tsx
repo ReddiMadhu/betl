@@ -85,20 +85,13 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
           aria-label="BI Discovery and Intelligence"
         >
           {/* Header */}
-          <div className="mb-5">
+          <div className="mb-4">
             <h2
-              className="text-lg font-bold tracking-tight mb-1"
+              className="text-lg font-bold tracking-tight"
               style={{ color: 'var(--color-text-primary)' }}
             >
               BI Discovery & Intelligence
             </h2>
-            <p
-              className="text-[13px] leading-relaxed"
-              style={{ color: 'var(--color-text-secondary)' }}
-            >
-              Scanning connected BI platforms (Power BI, Tableau, MicroStrategy, Excel),
-              followed by AI intelligence to analyze usage patterns, redundancy, and modernization potential.
-            </p>
           </div>
 
           {/* Divider */}
@@ -113,7 +106,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-accent)]">
-                Phase 1 · BI Discovery
+                BI Discovery
               </span>
               {biDiscoveryDone && (
                 <span className="text-[11px] font-semibold text-emerald-500">
@@ -149,7 +142,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
                     : 'var(--color-text-tertiary)',
                 }}
               >
-                Phase 2 · BI Intelligence
+                BI Intelligence
               </span>
               {biIntelligenceDone && (
                 <span className="text-[11px] font-semibold text-emerald-500">
@@ -195,20 +188,13 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
           aria-label="ETL Discovery and Intelligence"
         >
           {/* Header */}
-          <div className="mb-5">
+          <div className="mb-4">
             <h2
-              className="text-lg font-bold tracking-tight mb-1"
+              className="text-lg font-bold tracking-tight"
               style={{ color: 'var(--color-text-primary)' }}
             >
               ETL Discovery & Intelligence
             </h2>
-            <p
-              className="text-[13px] leading-relaxed"
-              style={{ color: 'var(--color-text-secondary)' }}
-            >
-              Scanning connected ETL platforms (Alteryx, Python, SQL, Spark),
-              followed by AI intelligence to evaluate pipeline data lineage, business logic, and code complexity.
-            </p>
           </div>
 
           {/* Divider */}
@@ -223,7 +209,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-500">
-                Phase 1 · ETL Discovery
+                ETL Discovery
               </span>
               {etlDiscoveryDone && (
                 <span className="text-[11px] font-semibold text-emerald-500">
@@ -259,7 +245,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
                     : 'var(--color-text-tertiary)',
                 }}
               >
-                Phase 2 · ETL Intelligence
+                ETL Intelligence
               </span>
               {etlIntelligenceDone && (
                 <span className="text-[11px] font-semibold text-emerald-500">

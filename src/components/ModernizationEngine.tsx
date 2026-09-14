@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Play, Loader2, CheckCircle2 } from 'lucide-react';
+import { Play, Loader2, CheckCircle2 } from 'lucide-react';
 import { agents, totalAssets } from '../data/config';
 import AgentCard from './AgentCard';
 import AgentFlow from './AgentFlow';
 import { useCountUp } from '../hooks/useAnimations';
+import { AwsLogo, AzureLogo } from './icons/CloudLogos';
 
 interface ModernizationEngineProps {
   ingestionState?: 'idle' | 'ingesting' | 'complete';
@@ -222,6 +223,47 @@ export default function ModernizationEngine({
         }}
       />
 
+      {/* Top Left Cloud Badges — Azure & AWS */}
+      <div className="absolute top-4 left-4 md:top-6 md:left-6 z-20">
+        <div className="flex items-center gap-1.5">
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border theme-transition"
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
+            }}
+            title="Runs on Microsoft Azure"
+          >
+            <AzureLogo className="w-3.5 h-3.5 shrink-0" />
+            <span
+              className="text-[11px] md:text-xs font-semibold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              Azure
+            </span>
+          </div>
+
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border theme-transition"
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
+            }}
+            title="Runs on Amazon Web Services (AWS)"
+          >
+            <AwsLogo className="w-4.5 h-3.5 shrink-0 text-[#232F3E] dark:text-white" />
+            <span
+              className="text-[11px] md:text-xs font-semibold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              AWS
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Top Right Ingestion Button */}
       {onStartIngestion && (
         <div className="absolute top-4 right-4 md:top-6 md:right-6 z-20">
@@ -268,20 +310,12 @@ export default function ModernizationEngine({
 
       {/* Header */}
       <div className="text-center mb-6 md:mb-8">
-        <div className="flex items-center justify-center gap-2.5 mb-2">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: 'var(--color-accent-subtle)' }}
-          >
-            <Brain size={16} style={{ color: 'var(--color-accent)' }} />
-          </div>
-          <h2
-            className="text-lg md:text-xl font-bold tracking-tight"
-            style={{ color: 'var(--color-text-primary)' }}
-          >
-            BI and ETL Modernization
-          </h2>
-        </div>
+        <h2
+          className="text-lg md:text-xl font-bold tracking-tight mb-1"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
+          BI and ETL Modernization
+        </h2>
         <p
           className="text-xs font-medium tracking-wide"
           style={{ color: 'var(--color-text-tertiary)' }}

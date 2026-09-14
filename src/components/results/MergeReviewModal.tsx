@@ -62,10 +62,13 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
           >
             <div className="flex items-center gap-3">
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ backgroundColor: '#F59E0B15' }}
+                className="w-10 h-10 rounded-xl flex items-center justify-center border"
+                style={{
+                  backgroundColor: 'var(--color-accent-subtle)',
+                  borderColor: 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))',
+                }}
               >
-                <GitMerge size={20} style={{ color: '#F59E0B' }} />
+                <GitMerge size={18} style={{ color: 'var(--color-accent)' }} />
               </div>
               <div>
                 <h3 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>
@@ -98,8 +101,17 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
               >
                 <div className="pb-3 flex justify-between items-start gap-2" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#F59E0B' }}>Source View</span>
-                    <h4 className="text-lg font-bold mt-1" style={{ color: 'var(--color-text-primary)' }}>
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
+                      style={{
+                        color: 'var(--color-accent)',
+                        backgroundColor: 'var(--color-accent-subtle)',
+                        borderColor: 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))',
+                      }}
+                    >
+                      Source View
+                    </span>
+                    <h4 className="text-lg font-bold mt-2" style={{ color: 'var(--color-text-primary)' }}>
                       {source?.name}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
@@ -111,7 +123,11 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                   </div>
                   <span
                     className="text-[10px] font-semibold shrink-0 px-2.5 py-0.5 rounded-md border"
-                    style={{ color: '#F59E0B', backgroundColor: '#F59E0B15', borderColor: '#F59E0B30' }}
+                    style={{
+                      backgroundColor: 'var(--color-surface)',
+                      borderColor: 'var(--color-border-primary)',
+                      color: 'var(--color-text-secondary)',
+                    }}
                   >
                     {rec.lastViewed || 'N/A'}
                   </span>
@@ -210,8 +226,17 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
               >
                 <div className="pb-3 flex justify-between items-start gap-2" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#22C55E' }}>Target Consolidate View</span>
-                    <h4 className="text-lg font-bold mt-1" style={{ color: 'var(--color-text-primary)' }}>
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
+                      style={{
+                        color: 'var(--color-accent)',
+                        backgroundColor: 'var(--color-accent-subtle)',
+                        borderColor: 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))',
+                      }}
+                    >
+                      Target Consolidate View
+                    </span>
+                    <h4 className="text-lg font-bold mt-2" style={{ color: 'var(--color-text-primary)' }}>
                       {rec.mergeTarget || target?.name}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
@@ -223,7 +248,11 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                   </div>
                   <span
                     className="text-[10px] font-semibold shrink-0 px-2.5 py-0.5 rounded-md border"
-                    style={{ color: '#22C55E', backgroundColor: '#22C55E15', borderColor: '#22C55E30' }}
+                    style={{
+                      backgroundColor: 'var(--color-surface)',
+                      borderColor: 'var(--color-border-primary)',
+                      color: 'var(--color-text-secondary)',
+                    }}
                   >
                     Active Target
                   </span>
@@ -316,7 +345,7 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
               style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-primary)' }}
             >
               <h4 className="text-sm font-bold uppercase tracking-wider flex items-center gap-1.5 mb-3" style={{ color: 'var(--color-text-primary)' }}>
-                <TrendingUp size={16} style={{ color: '#F59E0B' }} /> AI Governance Rationale
+                <TrendingUp size={16} style={{ color: 'var(--color-accent)' }} /> AI Governance Rationale
               </h4>
               <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{rec.rationale}</p>
             </div>
@@ -327,8 +356,8 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
             className="flex items-center justify-between px-6 py-4 border-t shrink-0"
             style={{ borderColor: 'var(--color-border-primary)', backgroundColor: 'var(--color-bg-tertiary)' }}
           >
-            <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: '#F59E0B' }}>
-              <TrendingUp size={16} style={{ color: '#F59E0B' }} />
+            <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
+              <TrendingUp size={16} style={{ color: 'var(--color-accent)' }} />
               <span>Consolidating saves 1 redundant server extract refresh schedule</span>
             </div>
             <div className="flex items-center gap-3">
@@ -343,8 +372,12 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
               <button
                 type="button"
                 onClick={() => setShowEmail(true)}
-                className="px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors text-white flex items-center gap-1.5"
-                style={{ backgroundColor: '#F59E0B', boxShadow: '0 4px 12px rgba(245,158,11,0.3)', border: 'none', color: '#0F172A' }}
+                className="px-5 py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-shadow text-white flex items-center gap-2"
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                  boxShadow: '0 4px 14px var(--color-accent-glow)',
+                  border: 'none',
+                }}
               >
                 Apply Merger <ArrowRight size={14} />
               </button>

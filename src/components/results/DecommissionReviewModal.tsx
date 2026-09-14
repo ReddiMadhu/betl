@@ -56,10 +56,13 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
           >
             <div className="flex items-center gap-3">
               <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ backgroundColor: '#EF444415' }}
+                className="w-10 h-10 rounded-xl flex items-center justify-center border"
+                style={{
+                  backgroundColor: 'var(--color-accent-subtle)',
+                  borderColor: 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))',
+                }}
               >
-                <Trash2 size={20} style={{ color: '#EF4444' }} />
+                <Trash2 size={18} style={{ color: 'var(--color-accent)' }} />
               </div>
               <div>
                 <h3 className="font-bold text-lg" style={{ color: 'var(--color-text-primary)' }}>
@@ -91,8 +94,17 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
               >
                 <div className="pb-3 flex justify-between items-start gap-2" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#EF4444' }}>Decommission Candidate</span>
-                    <h4 className="text-lg font-bold mt-1 break-words" style={{ color: 'var(--color-text-primary)' }}>
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
+                      style={{
+                        color: 'var(--color-accent)',
+                        backgroundColor: 'var(--color-accent-subtle)',
+                        borderColor: 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))',
+                      }}
+                    >
+                      Decommission Candidate
+                    </span>
+                    <h4 className="text-lg font-bold mt-2 break-words" style={{ color: 'var(--color-text-primary)' }}>
                       {asset?.name}
                     </h4>
                     <div className="flex items-center gap-2 mt-1">
@@ -104,7 +116,11 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
                   </div>
                   <span
                     className="text-[10px] font-semibold shrink-0 px-2.5 py-0.5 rounded-md border"
-                    style={{ color: '#EF4444', backgroundColor: '#EF444415', borderColor: '#EF444430' }}
+                    style={{
+                      backgroundColor: 'var(--color-surface)',
+                      borderColor: 'var(--color-border-primary)',
+                      color: 'var(--color-text-secondary)',
+                    }}
                   >
                     {rec.lastViewed || 'N/A'}
                   </span>
@@ -178,12 +194,23 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
                     <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>Cascade Dependency</h5>
                     <div
                       className="flex items-center gap-2 p-2.5 rounded-lg border text-xs"
-                      style={{ backgroundColor: '#EF444408', borderColor: '#EF444420', color: '#EF4444' }}
+                      style={{
+                        backgroundColor: 'var(--color-surface)',
+                        borderColor: 'var(--color-border-subtle)',
+                        color: 'var(--color-text-primary)',
+                      }}
                     >
                       <img src={TECHNOLOGY_LOGOS[rec.dependentAsset.technology]} alt={rec.dependentAsset.technology} className="w-4 h-4" />
                       <span className="font-semibold">{rec.dependentAsset.name}</span>
                       <span style={{ color: 'var(--color-text-tertiary)' }}>({rec.dependentAsset.technology})</span>
-                      <span className="ml-auto text-[9px] font-bold uppercase px-1.5 py-0.5 rounded" style={{ backgroundColor: '#EF444415', borderColor: '#EF444430' }}>
+                      <span
+                        className="ml-auto text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border"
+                        style={{
+                          backgroundColor: 'var(--color-accent-subtle)',
+                          borderColor: 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))',
+                          color: 'var(--color-accent)',
+                        }}
+                      >
                         CASCADE
                       </span>
                     </div>
@@ -198,7 +225,16 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
               >
                 <div className="space-y-5">
                   <div className="pb-3" style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: '#EF4444' }}>Governance Rationale</span>
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border"
+                      style={{
+                        color: 'var(--color-accent)',
+                        backgroundColor: 'var(--color-accent-subtle)',
+                        borderColor: 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))',
+                      }}
+                    >
+                      Governance Rationale
+                    </span>
                     <h4 className="text-sm font-semibold mt-2" style={{ color: 'var(--color-text-secondary)' }}>Why Decommission?</h4>
                   </div>
 
@@ -221,7 +257,7 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
                     <p className="text-[9px] font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-tertiary)' }}>Platform Cleanliness Violations</p>
                     <div className="space-y-2">
                       <div className="text-xs flex items-start gap-2 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                        <span className="shrink-0 font-bold" style={{ color: '#EF4444' }}>▲</span>
+                        <span className="shrink-0 font-bold" style={{ color: 'var(--color-accent)' }}>▲</span>
                         <span>{rec.rationale}</span>
                       </div>
                     </div>
@@ -254,9 +290,13 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
                   {/* Impact Alert */}
                   <div
                     className="rounded-xl p-4 border text-xs leading-relaxed"
-                    style={{ backgroundColor: '#EF444408', borderColor: '#EF444420', color: '#FCA5A5' }}
+                    style={{
+                      backgroundColor: 'var(--color-surface)',
+                      borderColor: 'var(--color-border-primary)',
+                      color: 'var(--color-text-secondary)',
+                    }}
                   >
-                    <strong>Governance Impact Alert:</strong> This action will notify all active subscribers, disconnect the datasource connections, and archive the metadata in the repository index.
+                    <strong style={{ color: 'var(--color-text-primary)' }}>Governance Impact Alert:</strong> This action will notify all active subscribers, disconnect the datasource connections, and archive the metadata in the repository index.
                   </div>
                 </div>
               </div>
@@ -269,7 +309,7 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
             className="flex items-center justify-between px-6 py-4 border-t shrink-0"
             style={{ borderColor: 'var(--color-border-primary)', backgroundColor: 'var(--color-bg-tertiary)' }}
           >
-            <span className="text-xs font-semibold" style={{ color: '#EF4444' }}>
+            <span className="text-xs font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
               Archiving this view frees database execution threads and server space
             </span>
             <div className="flex items-center gap-3">
@@ -284,8 +324,12 @@ export default function DecommissionReviewModal({ rec, onClose, onToast }: Props
               <button
                 type="button"
                 onClick={() => setShowEmail(true)}
-                className="px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-colors text-white flex items-center gap-1.5"
-                style={{ backgroundColor: '#EF4444', boxShadow: '0 4px 12px rgba(239,68,68,0.3)', border: 'none' }}
+                className="px-5 py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-shadow text-white flex items-center gap-2"
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                  boxShadow: '0 4px 14px var(--color-accent-glow)',
+                  border: 'none',
+                }}
               >
                 Apply Decommission <ArrowRight size={14} />
               </button>

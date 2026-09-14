@@ -100,21 +100,24 @@ export default function MigrationLoading({ onShowResults }: Props) {
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl
-                         text-sm font-semibold text-white cursor-pointer
-                         transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
+                         text-sm font-bold cursor-pointer
+                         transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 border"
               style={{
-                backgroundColor: 'var(--color-accent)',
-                boxShadow: '0 2px 8px var(--color-accent-glow)',
+                background: 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)',
+                borderColor: 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))',
+                color: 'var(--color-accent)',
+                boxShadow: '0 4px 16px rgba(251, 78, 11, 0.15)',
                 outlineColor: 'var(--color-accent)',
-                border: 'none',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.32) 0%, rgba(251, 78, 11, 0.14) 100%)';
+                e.currentTarget.style.borderColor = 'var(--color-accent)';
+                e.currentTarget.style.boxShadow = '0 6px 26px rgba(251, 78, 11, 0.25)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)';
+                e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(251, 78, 11, 0.15)';
               }}
               aria-label="Show Migration Results"
               onClick={onShowResults}

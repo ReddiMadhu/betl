@@ -81,20 +81,13 @@ export default function RationalizationLoading({ onShowResults }: Props) {
           aria-label="BI Rationalization"
         >
           {/* Header */}
-          <div className="mb-5">
+          <div className="mb-4">
             <h2
-              className="text-lg font-bold tracking-tight mb-1"
+              className="text-lg font-bold tracking-tight"
               style={{ color: 'var(--color-text-primary)' }}
             >
               BI Rationalization
             </h2>
-            <p
-              className="text-[13px] leading-relaxed"
-              style={{ color: 'var(--color-text-secondary)' }}
-            >
-              Cross-referencing dashboards and reports — detecting overlapping visual logic,
-              identifying low-utilization reports, and evaluating decommission opportunities.
-            </p>
           </div>
 
           {/* Divider */}
@@ -129,20 +122,13 @@ export default function RationalizationLoading({ onShowResults }: Props) {
           aria-label="ETL Rationalization"
         >
           {/* Header */}
-          <div className="mb-5">
+          <div className="mb-4">
             <h2
-              className="text-lg font-bold tracking-tight mb-1"
+              className="text-lg font-bold tracking-tight"
               style={{ color: 'var(--color-text-primary)' }}
             >
               ETL Rationalization
             </h2>
-            <p
-              className="text-[13px] leading-relaxed"
-              style={{ color: 'var(--color-text-secondary)' }}
-            >
-              Evaluating data pipelines and transformation workflows — detecting redundant
-              prep logic, duplicated processing jobs, and legacy workflow retirement candidates.
-            </p>
           </div>
 
           {/* Divider */}
@@ -180,8 +166,8 @@ export default function RationalizationLoading({ onShowResults }: Props) {
         aria-label="Detecting BI and ETL Interdependence"
       >
         {/* Header */}
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-1">
+        <div className="mb-4">
+          <div className="flex items-center justify-between">
             <h2
               className="text-lg font-bold tracking-tight"
               style={{ color: 'var(--color-text-primary)' }}
@@ -195,13 +181,6 @@ export default function RationalizationLoading({ onShowResults }: Props) {
               </span>
             )}
           </div>
-          <p
-            className="text-[13px] leading-relaxed"
-            style={{ color: 'var(--color-text-secondary)' }}
-          >
-            Evaluating cross-impact dependencies between BI dashboards and ETL pipelines to ensure decommission
-            recommendations on one layer do not disrupt downstream consumers or upstream data flow.
-          </p>
         </div>
 
         {/* Divider */}
