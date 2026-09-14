@@ -36,9 +36,10 @@ const TABS: { id: WorkspaceTab; label: string; icon: typeof Database; count?: nu
 
 interface Props {
   onBack?: () => void;
+  onFinish?: () => void;
 }
 
-export default function TableauPowerBIWorkspace({ onBack }: Props) {
+export default function TableauPowerBIWorkspace({ onBack, onFinish }: Props) {
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('data');
 
   // Search and filter states
@@ -272,7 +273,7 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
             <FileDown size={14} style={{ color: 'var(--color-accent)' }} /> Export PBIP Package
           </button>
           <button
-            onClick={onBack}
+            onClick={onFinish ?? onBack}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer"
             style={{ backgroundColor: 'var(--color-accent)', color: '#ffffff' }}
           >
@@ -908,11 +909,11 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
               {/* Bottom Finish Button */}
               <div className="flex justify-end pt-4">
                 <button
-                  onClick={onBack}
+                  onClick={onFinish ?? onBack}
                   className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold cursor-pointer"
                   style={{ backgroundColor: '#10b981', color: '#ffffff' }}
                 >
-                  <CheckCircle size={15} /> Complete & Return to Hub
+                  <CheckCircle size={15} /> Complete &amp; Take a Glance
                 </button>
               </div>
             </div>

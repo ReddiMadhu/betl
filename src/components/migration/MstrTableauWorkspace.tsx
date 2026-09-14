@@ -32,6 +32,7 @@ type TabId = typeof TABS[number]['id'];
 
 interface Props {
   onBack?: () => void;
+  onFinish?: () => void;
 }
 
 const DOSSIER_PAGES = [
@@ -43,7 +44,7 @@ const DOSSIER_PAGES = [
   { id: 'Adjuster Performance View', label: 'Adjuster Performance', count: 5 },
 ];
 
-export default function MstrTableauWorkspace({ onBack }: Props) {
+export default function MstrTableauWorkspace({ onBack, onFinish }: Props) {
   const [activeTab, setActiveTab] = useState<TabId>('visuals');
 
   // Objects state
@@ -1169,10 +1170,10 @@ export default function MstrTableauWorkspace({ onBack }: Props) {
               </div>
 
               <div className="flex justify-end pt-2">
-                <button onClick={onBack}
+                <button onClick={onFinish ?? onBack}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer"
                   style={{ backgroundColor: '#8b5cf6', color: '#fff' }}>
-                  <CheckCircle size={14} /> Complete Migration
+                  <CheckCircle size={14} /> Complete &amp; Take a Glance
                 </button>
               </div>
             </div>

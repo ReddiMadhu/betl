@@ -16,6 +16,7 @@ import MigrationResults from './components/results/MigrationResults';
 import TableauPowerBIWorkspace from './components/migration/TableauPowerBIWorkspace';
 import MstrTableauWorkspace from './components/migration/MstrTableauWorkspace';
 import AlteryxPythonWorkspace from './components/migration/AlteryxPythonWorkspace';
+import TakeAGlance from './components/TakeAGlance';
 import Sidebar from './components/navigation/Sidebar';
 import TableauDetail from './components/details/TableauDetail';
 import PowerBIDetail from './components/details/PowerBIDetail';
@@ -255,22 +256,36 @@ export default function App() {
           {view === 'migration-results' && (
             <MigrationResults
               selectedAssetIds={selectedMigrationAssetIds}
-              onComplete={() => navigateTo('home')}
+              onComplete={() => navigateTo('take-a-glance')}
               onBackToSelection={() => navigateTo('migration')}
             />
           )}
 
           {/* Migration Workspaces */}
           {view === 'migration-tb-pbi' && (
-            <TableauPowerBIWorkspace onBack={() => navigateTo('migration')} />
+            <TableauPowerBIWorkspace
+              onBack={() => navigateTo('migration')}
+              onFinish={() => navigateTo('take-a-glance')}
+            />
           )}
 
           {view === 'migration-mstr-tb' && (
-            <MstrTableauWorkspace onBack={() => navigateTo('migration')} />
+            <MstrTableauWorkspace
+              onBack={() => navigateTo('migration')}
+              onFinish={() => navigateTo('take-a-glance')}
+            />
           )}
 
           {view === 'migration-alt-py' && (
-            <AlteryxPythonWorkspace onBack={() => navigateTo('migration')} />
+            <AlteryxPythonWorkspace
+              onBack={() => navigateTo('migration')}
+              onFinish={() => navigateTo('take-a-glance')}
+            />
+          )}
+
+          {/* Stage 4: Take a Glance */}
+          {view === 'take-a-glance' && (
+            <TakeAGlance onNavigate={navigateTo} />
           )}
         </main>
 

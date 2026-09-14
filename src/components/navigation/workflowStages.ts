@@ -1,4 +1,4 @@
-import { Compass, GitMerge, ArrowRightLeft } from 'lucide-react';
+import { Compass, GitMerge, ArrowRightLeft, LayoutDashboard } from 'lucide-react';
 
 export type ViewState =
   | 'home'
@@ -12,10 +12,11 @@ export type ViewState =
   | 'migration-results'
   | 'migration-tb-pbi'
   | 'migration-mstr-tb'
-  | 'migration-alt-py';
+  | 'migration-alt-py'
+  | 'take-a-glance';
 
 export interface StageDefinition {
-  id: 'discovery' | 'rationalization' | 'migration';
+  id: 'discovery' | 'rationalization' | 'migration' | 'take-a-glance';
   stageNumber: number;
   title: string;
   shortTitle: string;
@@ -77,6 +78,19 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
       { id: 'migration', label: 'Wave Selection', description: 'Choose target wave' },
       { id: 'migration-loading', label: 'Migration Execution', description: 'Active conversion' },
       { id: 'migration-results', label: 'Migration Results', description: 'Outcome verification' },
+    ],
+  },
+  {
+    id: 'take-a-glance',
+    stageNumber: 4,
+    title: 'Take a Glance',
+    shortTitle: 'At a Glance',
+    subtitle: 'Program-wide executive summary',
+    icon: LayoutDashboard,
+    views: ['take-a-glance'],
+    defaultView: () => 'take-a-glance',
+    subItems: [
+      { id: 'take-a-glance', label: 'Executive Overview', description: 'Cross-stage metrics & outcomes' },
     ],
   },
 ];

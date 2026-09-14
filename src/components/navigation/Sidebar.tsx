@@ -3,6 +3,7 @@ import {
   Compass,
   GitMerge,
   ArrowRightLeft,
+  LayoutDashboard,
   ChevronLeft,
   ChevronRight,
   Zap,
@@ -12,7 +13,7 @@ import type { ViewState } from './workflowStages';
 import ThemeToggle from '../ThemeToggle';
 
 export interface NavItem {
-  id: 'discovery' | 'rationalization' | 'migration';
+  id: 'discovery' | 'rationalization' | 'migration' | 'take-a-glance';
   title: string;
   icon: typeof Compass;
   views: ViewState[];
@@ -24,7 +25,7 @@ const NAV_ITEMS: NavItem[] = [
     id: 'discovery',
     title: 'Assessment',
     icon: Compass,
-    views: ['assessment', 'results'],
+    views: ['assessment', 'results', 'asset-detail'],
     targetView: (visited) => (visited.has('results') ? 'results' : 'assessment'),
   },
   {
@@ -39,12 +40,19 @@ const NAV_ITEMS: NavItem[] = [
     id: 'migration',
     title: 'Migration',
     icon: ArrowRightLeft,
-    views: ['migration', 'migration-loading', 'migration-results'],
+    views: ['migration', 'migration-loading', 'migration-results', 'migration-tb-pbi', 'migration-mstr-tb', 'migration-alt-py'],
     targetView: (visited) => {
       if (visited.has('migration-results')) return 'migration-results';
       if (visited.has('migration-loading')) return 'migration-loading';
       return 'migration';
     },
+  },
+  {
+    id: 'take-a-glance',
+    title: 'Take a Glance',
+    icon: LayoutDashboard,
+    views: ['take-a-glance'],
+    targetView: () => 'take-a-glance',
   },
 ];
 
@@ -184,7 +192,7 @@ export default function Sidebar({
         </div>
       )}
 
-      {/* ── 3 Main Navigation Items ── */}
+      {/* ── Workflow Navigation Items ── */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5" aria-label="Workflow Stages">
         {NAV_ITEMS.map((item) => {
           const isActive = item.views.includes(currentView);

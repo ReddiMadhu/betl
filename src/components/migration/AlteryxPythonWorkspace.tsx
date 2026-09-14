@@ -28,9 +28,10 @@ type TabId = typeof TABS[number]['id'];
 
 interface Props {
   onBack?: () => void;
+  onFinish?: () => void;
 }
 
-export default function AlteryxPythonWorkspace({ onBack }: Props) {
+export default function AlteryxPythonWorkspace({ onBack, onFinish }: Props) {
   const [activeTab, setActiveTab] = useState<TabId>('analysis');
   const [expandedWf, setExpandedWf] = useState<string | null>(null);
   const [expandedCode, setExpandedCode] = useState<string | null>(null);
@@ -366,11 +367,11 @@ export default function AlteryxPythonWorkspace({ onBack }: Props) {
 
               <div className="flex justify-end pt-2">
                 <button
-                  onClick={onBack}
+                  onClick={onFinish ?? onBack}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer"
                   style={{ backgroundColor: '#10b981', color: '#fff' }}
                 >
-                  <CheckCircle size={14} /> Complete Migration
+                  <CheckCircle size={14} /> Complete &amp; Take a Glance
                 </button>
               </div>
             </div>
