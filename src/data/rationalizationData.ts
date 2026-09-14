@@ -225,16 +225,11 @@ export function computeEtlOverlapMetrics(): OverlapMetric[] {
   };
   const biEtlConnections = Object.values(biEtlLineage).reduce((sum: number, deps: string[]) => sum + deps.length, 0);
 
-  // 6. Cross-Technology Overlaps: Alteryx workflows that have verified functional/source/target overlap with Python (c15)
-  const alteryxIds = uniqueCanonicalIds.filter((id) => id !== 'c15');
-  let crossTechCount = 0;
-  for (const altId of alteryxIds) {
-    const hasSrcOverlap = (workflowSources['c15'] ?? []).some((s: string) => (workflowSources[altId] ?? []).includes(s));
-    const hasTgtOverlap = (workflowTargets['c15'] ?? []).some((t: string) => (workflowTargets[altId] ?? []).includes(t));
-    if (hasSrcOverlap || hasTgtOverlap) {
-      crossTechCount += 1;
-    }
-  }
+  // 6. Cross-Technology Overlaps: ETL recommendations that involve multiple technology platforms
+  const etlCrossTechRecommendations = recommendations.filter(
+    (r) => r.category === 'etl-merge' || r.category === 'etl-retire',
+  );
+  const crossTechCount = etlCrossTechRecommendations.filter(isCrossTechRecommendation).length;
 
   return [
     { id: 'etl-source-overlap', label: 'Source Overlaps', value: sourceOverlapCount, highlight: sourceOverlapCount > 10 },
@@ -245,8 +240,6 @@ export function computeEtlOverlapMetrics(): OverlapMetric[] {
     { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: crossTechCount, highlight: crossTechCount > 3 },
   ];
 }
-
-export const etlOverlapMetrics: OverlapMetric[] = computeEtlOverlapMetrics();
 
 /* ── Recommendation types ── */
 export type RecommendationCategory =
@@ -771,6 +764,8 @@ export function isCrossTechRecommendation(rec: Recommendation): boolean {
   if (rec.dependentAsset) techs.add(rec.dependentAsset.technology);
   return techs.size >= 2;
 }
+
+export const etlOverlapMetrics: OverlapMetric[] = computeEtlOverlapMetrics();
 
 /** Count cross-technology recommendations for a given section */
 export function getCrossTechCounts(
