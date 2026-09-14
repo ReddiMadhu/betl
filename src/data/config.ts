@@ -146,14 +146,14 @@ export const ingestionStats: IngestionStat[] = [
     id: 'tableau',
     name: 'Tableau',
     logo: tableauLogo,
-    count: 12,
+    count: 10,
     suffix: 'workbooks ingested',
   },
   {
     id: 'microstrategy',
     name: 'MicroStrategy',
     logo: microstrategyLogo,
-    count: 2,
+    count: 0,
     suffix: 'assets ingested',
   },
   {
@@ -172,4 +172,4 @@ export const ingestionStats: IngestionStat[] = [
   },
 ];
 
-export const totalAssets = 27;
+export const totalAssets = 32;

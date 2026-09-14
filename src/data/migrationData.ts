@@ -356,18 +356,6 @@ export const migrationAssets: MigrationAsset[] = [
     kpiCount: 5,
     description: 'Full form quotation rating verification dashboard. Already on Power BI.',
   },
-  {
-    id: 'ma_pbi13',
-    name: 'Test',
-    technology: 'Power BI',
-    targetTechnology: null,
-    businessArea: 'Underwriting',
-    type: 'bi',
-    complexity: 'Low',
-    estimatedHours: 0,
-    kpiCount: 4,
-    description: 'Underwriting risk scoring experimental dataset. Already on Power BI.',
-  },
 
   /* ── ETL Keep — Alteryx → Python ── */
   {
