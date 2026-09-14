@@ -1,13 +1,19 @@
 /**
- * Static data for Tableau → Power BI migration wizard
- * Mirrors the response shapes from tb-bi backend API
+ * Tableau -> Power BI Migration Dataset
+ * Extracted directly from C:\Users\madhu\Desktop\tb-bi backend SQLite databases,
+ * PBIP Semantic Model definitions, TMDL schemas, and Excel data sources.
  */
 
-/* ── Workbook Metadata (from /migration/:id/workbooks) ── */
+/* ── Interfaces ── */
 export interface TbPbiWorksheet {
   name: string;
   title: string;
   chartType: string;
+  pbiVisual: string;
+  description: string;
+  markType: string;
+  rows: string[];
+  cols: string[];
   dimensions: string[];
   measures: string[];
   filters: string[];
@@ -25,8 +31,10 @@ export interface TbPbiCalculatedField {
 
 export interface TbPbiDataTable {
   displayName: string;
+  rawName: string;
   rowCount: number;
   columnDetails: { name: string; dataType: string; sampleValues: string[] }[];
+  sampleRows: Record<string, string | number>[];
 }
 
 export interface TbPbiRelationship {
@@ -35,6 +43,7 @@ export interface TbPbiRelationship {
   toTable: string;
   toColumn: string;
   type: string;
+  crossFiltering?: string;
 }
 
 export interface TbPbiDaxConversion {
@@ -46,376 +55,2009 @@ export interface TbPbiDaxConversion {
   status: 'valid' | 'warning' | 'error';
   warnings: string[];
   category: string;
+  pattern?: string;
+  reasoning?: string;
+}
+
+export interface TbPbiValidationSlice {
+  dimensions: Record<string, string>;
+  tableau_value: number;
+  source_value?: number;
+  dax_value: number;
+  delta: number;
+  relative_error?: number;
+  error_category?: string;
+  passed: boolean;
+}
+
+export interface TbPbiValidationResult {
+  conversionId: string;
+  overallPassed: boolean;
+  passRate: number;
+  testSlices: TbPbiValidationSlice[];
+  errorCategories: Record<string, number>;
+}
+
+export interface TbPbiCorrectionAttempt {
+  conversionId: string;
+  attemptNumber: number;
+  originalDax: string;
+  correctedDax: string;
+  rootCause: string;
+  explanation: string;
+  status: string;
 }
 
 export interface TbPbiExportArtifact {
   id: string;
   fileName: string;
-  type: 'excel' | 'bim' | 'data' | 'readme';
+  type: 'pbip' | 'tmdl' | 'dax' | 'excel' | 'certificate' | 'bim' | 'data' | 'readme';
   description: string;
   size: string;
+  mimeType: string;
+  content?: string;
 }
 
-/* ── Summary Counts ── */
 export const tbPbiSummary = {
-  totalDashboards: 3,
-  totalWorksheets: 12,
-  totalTables: 8,
-  totalCalculatedFields: 24,
-  totalParameters: 4,
-  totalMeasures: 18,
+  "totalDashboards": 1,
+  "totalWorksheets": 20,
+  "totalTables": 6,
+  "totalRows": 1275,
+  "totalColumns": 58,
+  "totalCalculatedFields": 21,
+  "totalRelationships": 5,
+  "totalMeasures": 21,
+  "averageConfidence": 98
 };
 
-/* ── Worksheets ── */
-export const tbPbiWorksheets: TbPbiWorksheet[] = [
-  {
-    name: 'Claims Overview',
-    title: 'Claims Overview Dashboard',
-    chartType: 'Stacked Bar',
-    dimensions: ['State', 'Claim Type', 'Policy Year'],
-    measures: ['Total Claims', 'Average Severity', 'Claim Count'],
-    filters: ['Date Range', 'Business Unit'],
-    datasource: 'Claims_DataSource',
-  },
-  {
-    name: 'Agent Performance',
-    title: 'Agent Performance Scorecard',
-    chartType: 'Heat Map',
-    dimensions: ['Agent Name', 'Region', 'Quarter'],
-    measures: ['Resolution Rate', 'Avg Handle Time', 'Customer Score'],
-    filters: ['Department', 'Tenure Band'],
-    datasource: 'HR_DataSource',
-  },
-  {
-    name: 'Loss Ratio Trend',
-    title: 'Loss Ratio Trend Analysis',
-    chartType: 'Line Chart',
-    dimensions: ['Month', 'LOB', 'Underwriter'],
-    measures: ['Earned Premium', 'Incurred Loss', 'Loss Ratio'],
-    filters: ['Year', 'Region'],
-    datasource: 'Financial_DataSource',
-  },
-  {
-    name: 'Reserve Adequacy',
-    title: 'Reserve Adequacy Heat Map',
-    chartType: 'Treemap',
-    dimensions: ['Reserve Category', 'Accident Year', 'Development Period'],
-    measures: ['IBNR Reserve', 'Case Reserve', 'Paid to Date'],
-    filters: ['Valuation Date'],
-    datasource: 'Actuarial_DataSource',
-  },
-  {
-    name: 'Premium Distribution',
-    title: 'Premium Distribution by Geography',
-    chartType: 'Map',
-    dimensions: ['State', 'ZIP Code', 'Territory'],
-    measures: ['Written Premium', 'Policy Count', 'Avg Premium'],
-    filters: ['Product Line', 'Effective Year'],
-    datasource: 'Underwriting_DataSource',
-  },
-  {
-    name: 'SLA Compliance',
-    title: 'Service Level Agreement Dashboard',
-    chartType: 'Gauge',
-    dimensions: ['Service Type', 'Priority Level'],
-    measures: ['SLA Met %', 'Avg Response Time', 'Breached Count'],
-    filters: ['Date Range', 'Team'],
-    datasource: 'Operations_DataSource',
-  },
-  {
-    name: 'Fraud Detection',
-    title: 'Fraud Indicator Analysis',
-    chartType: 'Scatter Plot',
-    dimensions: ['Claim ID', 'Indicator Type', 'Risk Score Band'],
-    measures: ['Fraud Score', 'Claim Amount', 'Investigation Cost'],
-    filters: ['Score Threshold', 'Investigation Status'],
-    datasource: 'Claims_DataSource',
-  },
-  {
-    name: 'Subrogation Recovery',
-    title: 'Subrogation Recovery Tracking',
-    chartType: 'Waterfall',
-    dimensions: ['Recovery Stage', 'Quarter', 'Vendor'],
-    measures: ['Amount Recovered', 'Outstanding Balance', 'Recovery Rate'],
-    filters: ['Claim Type', 'Attorney Involved'],
-    datasource: 'Financial_DataSource',
-  },
-  {
-    name: 'Customer Retention',
-    title: 'Policyholder Retention Analysis',
-    chartType: 'Funnel',
-    dimensions: ['Tenure Group', 'Product Bundle', 'Channel'],
-    measures: ['Retention Rate', 'Lapse Count', 'Win-Back Rate'],
-    filters: ['Renewal Period', 'Discount Applied'],
-    datasource: 'CRM_DataSource',
-  },
-  {
-    name: 'Underwriting Profitability',
-    title: 'Underwriting P&L by Segment',
-    chartType: 'Grouped Bar',
-    dimensions: ['Segment', 'Line of Business', 'Year'],
-    measures: ['Combined Ratio', 'Expense Ratio', 'Net Income'],
-    filters: ['Region', 'Policy Size Band'],
-    datasource: 'Financial_DataSource',
-  },
-  {
-    name: 'Claims Cycle Time',
-    title: 'End-to-End Claims Processing',
-    chartType: 'Box Plot',
-    dimensions: ['Claim Type', 'Complexity', 'Handler'],
-    measures: ['Days to Close', 'Touch Points', 'Reopen Count'],
-    filters: ['Status', 'Quarter'],
-    datasource: 'Claims_DataSource',
-  },
-  {
-    name: 'Catastrophe Impact',
-    title: 'CAT Event Impact Dashboard',
-    chartType: 'Dual Axis',
-    dimensions: ['Event Name', 'State', 'Peril Type'],
-    measures: ['CAT Losses', 'Policy Count Affected', 'Reinsurance Recovery'],
-    filters: ['Event Year', 'Severity Category'],
-    datasource: 'Actuarial_DataSource',
-  },
-];
-
-/* ── Calculated Fields ── */
-export const tbPbiCalculatedFields: TbPbiCalculatedField[] = [
-  { name: 'Loss Ratio', caption: 'Loss Ratio', formula: 'SUM([Incurred Loss]) / SUM([Earned Premium])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Combined Ratio', caption: 'Combined Ratio', formula: '[Loss Ratio] + [Expense Ratio]', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Severity Index', caption: 'Severity Index', formula: 'SUM([Paid Loss]) / COUNTD([Claim ID])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Resolution Rate', caption: 'Resolution Rate', formula: 'COUNTD(IF [Status] = "Closed" THEN [Claim ID] END) / COUNTD([Claim ID])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'YoY Growth', caption: 'Year over Year Growth', formula: '(ZN(SUM([Current Year Premium])) - ZN(SUM([Prior Year Premium]))) / ZN(SUM([Prior Year Premium]))', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Running Total Claims', caption: 'Running Total Claims', formula: 'RUNNING_SUM(SUM([Claim Count]))', role: 'measure', datatype: 'INT', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Fraud Score Band', caption: 'Fraud Score Band', formula: 'IF [Fraud Score] >= 80 THEN "High" ELSEIF [Fraud Score] >= 50 THEN "Medium" ELSE "Low" END', role: 'dimension', datatype: 'STRING', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Agent Tenure', caption: 'Agent Tenure Band', formula: 'IF DATEDIFF(\'year\', [Hire Date], TODAY()) > 5 THEN "Senior" ELSEIF DATEDIFF(\'year\', [Hire Date], TODAY()) > 2 THEN "Mid" ELSE "Junior" END', role: 'dimension', datatype: 'STRING', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Recovery Efficiency', caption: 'Recovery Efficiency', formula: 'SUM([Recovered Amount]) / SUM([Subrogation Potential])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Days Open', caption: 'Days Open', formula: 'DATEDIFF(\'day\', [Open Date], IFNULL([Close Date], TODAY()))', role: 'measure', datatype: 'INT', workbook: 'Claims_Analytics.twbx' },
-  { name: 'SLA Met Flag', caption: 'SLA Met', formula: 'IF [Days Open] <= [SLA Target Days] THEN "Met" ELSE "Breached" END', role: 'dimension', datatype: 'STRING', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Weighted Severity', caption: 'Weighted Severity', formula: 'SUM([Paid Loss] * [Weight Factor]) / SUM([Weight Factor])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'IBNR Factor', caption: 'IBNR Development Factor', formula: '{FIXED [Accident Year], [Development Period] : AVG([Development Factor])}', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'LOD Avg Premium', caption: 'LOD Avg Premium per State', formula: '{FIXED [State] : AVG([Written Premium])}', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Retention Rate', caption: 'Retention Rate', formula: 'COUNTD(IF [Renewed] = TRUE THEN [Policy ID] END) / COUNTD([Policy ID])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Net Promoter Score', caption: 'NPS Category', formula: 'IF [Survey Score] >= 9 THEN "Promoter" ELSEIF [Survey Score] >= 7 THEN "Passive" ELSE "Detractor" END', role: 'dimension', datatype: 'STRING', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Premium Adequacy', caption: 'Premium Adequacy Index', formula: 'SUM([Earned Premium]) / (SUM([Incurred Loss]) + SUM([Expense]))', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Expense Ratio', caption: 'Expense Ratio', formula: 'SUM([Underwriting Expense]) / SUM([Earned Premium])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Claim Frequency', caption: 'Claim Frequency', formula: 'COUNTD([Claim ID]) / SUM([Exposure Units])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Triangulation Cumulative', caption: 'Cumulative Paid', formula: 'RUNNING_SUM(SUM([Incremental Paid]))', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Reinsurance Net', caption: 'Net of Reinsurance', formula: 'SUM([Gross Loss]) - SUM([Ceded Loss])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Handler Workload', caption: 'Handler Active Caseload', formula: '{FIXED [Handler ID] : COUNTD(IF [Status] = "Open" THEN [Claim ID] END)}', role: 'measure', datatype: 'INT', workbook: 'Claims_Analytics.twbx' },
-  { name: 'Win Back Rate', caption: 'Win-Back Conversion Rate', formula: 'COUNTD(IF [Lapsed] = TRUE AND [Reinstated] = TRUE THEN [Policy ID] END) / COUNTD(IF [Lapsed] = TRUE THEN [Policy ID] END)', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-  { name: 'CAT Loading', caption: 'Catastrophe Loading Factor', formula: 'SUM(IF [Is CAT] = TRUE THEN [Incurred Loss] END) / SUM([Incurred Loss])', role: 'measure', datatype: 'REAL', workbook: 'Claims_Analytics.twbx' },
-];
-
-/* ── Data Tables ── */
 export const tbPbiDataTables: TbPbiDataTable[] = [
   {
-    displayName: 'Claims_Fact',
-    rowCount: 125847,
-    columnDetails: [
-      { name: 'Claim_ID', dataType: 'VARCHAR', sampleValues: ['CLM-2024-001', 'CLM-2024-002', 'CLM-2024-003'] },
-      { name: 'Policy_ID', dataType: 'VARCHAR', sampleValues: ['POL-88291', 'POL-88292', 'POL-88293'] },
-      { name: 'Incurred_Date', dataType: 'DATE', sampleValues: ['2024-01-15', '2024-01-16', '2024-01-17'] },
-      { name: 'Paid_Amount', dataType: 'DECIMAL', sampleValues: ['12500.00', '8750.50', '45200.00'] },
-      { name: 'Status', dataType: 'VARCHAR', sampleValues: ['Open', 'Closed', 'Reserved'] },
+    "displayName": "Brokage",
+    "rawName": "Brokage",
+    "rowCount": 961,
+    "columnDetails": [
+      {
+        "name": "client_name",
+        "dataType": "string",
+        "sampleValues": [
+          "A",
+          "Amit",
+          "B"
+        ]
+      },
+      {
+        "name": "policy_number",
+        "dataType": "string",
+        "sampleValues": [
+          "2.4142027811737e+18",
+          "12139156",
+          "2200090892"
+        ]
+      },
+      {
+        "name": "policy_status",
+        "dataType": "string",
+        "sampleValues": [
+          "Active",
+          "Active",
+          "Inactive"
+        ]
+      },
+      {
+        "name": "policy_start_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2018-04-19",
+          "2019-05-01",
+          "2018-09-13"
+        ]
+      },
+      {
+        "name": "policy_end_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2019-04-18",
+          "2020-04-30",
+          "2019-09-12"
+        ]
+      },
+      {
+        "name": "product_group",
+        "dataType": "string",
+        "sampleValues": [
+          "Marine",
+          "Marine",
+          "Fire"
+        ]
+      },
+      {
+        "name": "Account Executive",
+        "dataType": "string",
+        "sampleValues": [
+          "Vinay",
+          "Abhinav Shivam",
+          "Vinay"
+        ]
+      },
+      {
+        "name": "branch_name",
+        "dataType": "string",
+        "sampleValues": [
+          "Ahmedabad",
+          "Ahmedabad",
+          "Ahmedabad"
+        ]
+      },
+      {
+        "name": "solution_group",
+        "dataType": "string",
+        "sampleValues": [
+          "Marine",
+          "Marine",
+          "Construction, Power & Infrastruc..."
+        ]
+      },
+      {
+        "name": "income_class",
+        "dataType": "string",
+        "sampleValues": [
+          "Renewal",
+          "New",
+          "Renewal"
+        ]
+      },
+      {
+        "name": "Amount",
+        "dataType": "double",
+        "sampleValues": [
+          "32186.72",
+          "23590.71",
+          "4611.96"
+        ]
+      },
+      {
+        "name": "income_due_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2018-04-19",
+          "2019-05-01",
+          "2018-09-13"
+        ]
+      },
+      {
+        "name": "revenue_transaction_type",
+        "dataType": "string",
+        "sampleValues": [
+          "Brokerage",
+          "Brokerage",
+          "Brokerage"
+        ]
+      },
+      {
+        "name": "renewal_status",
+        "dataType": "string",
+        "sampleValues": [
+          "Inception",
+          "Inception",
+          "Inception"
+        ]
+      },
+      {
+        "name": "lapse_reason",
+        "dataType": "string",
+        "sampleValues": []
+      },
+      {
+        "name": "last_updated_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2020-01-22",
+          "2020-01-22",
+          "2020-01-22"
+        ]
+      }
     ],
+    "sampleRows": [
+      {
+        "client_name": "A",
+        "policy_number": "",
+        "policy_status": "Active",
+        "policy_start_date": "2018-04-19",
+        "policy_end_date": "2019-04-18",
+        "product_group": "Marine",
+        "Account Executive": "Vinay",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Marine",
+        "income_class": "Renewal",
+        "Amount": "32186.72",
+        "income_due_date": "2018-04-19",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Inception",
+        "lapse_reason": "",
+        "last_updated_date": "2020-01-22"
+      },
+      {
+        "client_name": "Amit",
+        "policy_number": "2.4142027811737e+18",
+        "policy_status": "Active",
+        "policy_start_date": "2019-05-01",
+        "policy_end_date": "2020-04-30",
+        "product_group": "Marine",
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Marine",
+        "income_class": "New",
+        "Amount": "23590.71",
+        "income_due_date": "2019-05-01",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Inception",
+        "lapse_reason": "",
+        "last_updated_date": "2020-01-22"
+      },
+      {
+        "client_name": "B",
+        "policy_number": "",
+        "policy_status": "Inactive",
+        "policy_start_date": "2018-09-13",
+        "policy_end_date": "2019-09-12",
+        "product_group": "Fire",
+        "Account Executive": "Vinay",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "income_class": "Renewal",
+        "Amount": "4611.96",
+        "income_due_date": "2018-09-13",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Inception",
+        "lapse_reason": "",
+        "last_updated_date": "2020-01-22"
+      }
+    ]
   },
   {
-    displayName: 'Policy_Dim',
-    rowCount: 45230,
-    columnDetails: [
-      { name: 'Policy_ID', dataType: 'VARCHAR', sampleValues: ['POL-88291', 'POL-88292', 'POL-88293'] },
-      { name: 'Effective_Date', dataType: 'DATE', sampleValues: ['2023-01-01', '2023-06-15', '2024-01-01'] },
-      { name: 'Premium', dataType: 'DECIMAL', sampleValues: ['2450.00', '3100.00', '1890.50'] },
-      { name: 'Line_of_Business', dataType: 'VARCHAR', sampleValues: ['Auto', 'Property', 'GL'] },
+    "displayName": "Fees",
+    "rawName": "Fees",
+    "rowCount": 9,
+    "columnDetails": [
+      {
+        "name": "client_name",
+        "dataType": "string",
+        "sampleValues": [
+          "A",
+          "A",
+          "B"
+        ]
+      },
+      {
+        "name": "branch_name",
+        "dataType": "string",
+        "sampleValues": [
+          "Ahmedabad",
+          "Ahmedabad",
+          "Ahmedabad"
+        ]
+      },
+      {
+        "name": "solution_group",
+        "dataType": "string",
+        "sampleValues": [
+          "Construction, Power & Infrastruc...",
+          "Construction, Power & Infrastruc...",
+          "GL Client Network (GNB Inward)"
+        ]
+      },
+      {
+        "name": "Account Executive",
+        "dataType": "string",
+        "sampleValues": [
+          "Nishant Sharma",
+          "Nishant Sharma",
+          "Divya Dhingra"
+        ]
+      },
+      {
+        "name": "income_class",
+        "dataType": "string",
+        "sampleValues": [
+          "Cross Sell",
+          "Cross Sell",
+          "Renewal"
+        ]
+      },
+      {
+        "name": "Amount",
+        "dataType": "integer",
+        "sampleValues": [
+          "139240",
+          "139240",
+          "2200"
+        ]
+      },
+      {
+        "name": "income_due_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2019-07-17",
+          "2019-01-21",
+          "2019-12-20"
+        ]
+      },
+      {
+        "name": "revenue_transaction_type",
+        "dataType": "string",
+        "sampleValues": [
+          "Fees",
+          "Fees",
+          "Fees"
+        ]
+      }
     ],
+    "sampleRows": [
+      {
+        "client_name": "A",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "Account Executive": "Nishant Sharma",
+        "income_class": "Cross Sell",
+        "Amount": "139240",
+        "income_due_date": "2019-07-17",
+        "revenue_transaction_type": "Fees"
+      },
+      {
+        "client_name": "A",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "Account Executive": "Nishant Sharma",
+        "income_class": "Cross Sell",
+        "Amount": "139240",
+        "income_due_date": "2019-01-21",
+        "revenue_transaction_type": "Fees"
+      },
+      {
+        "client_name": "B",
+        "branch_name": "Ahmedabad",
+        "solution_group": "GL Client Network (GNB Inward)",
+        "Account Executive": "Divya Dhingra",
+        "income_class": "Renewal",
+        "Amount": "2200",
+        "income_due_date": "2019-12-20",
+        "revenue_transaction_type": "Fees"
+      }
+    ]
   },
   {
-    displayName: 'Agent_Dim',
-    rowCount: 342,
-    columnDetails: [
-      { name: 'Agent_ID', dataType: 'VARCHAR', sampleValues: ['AGT-101', 'AGT-102', 'AGT-103'] },
-      { name: 'Agent_Name', dataType: 'VARCHAR', sampleValues: ['Sarah Chen', 'James Wilson', 'Maria Santos'] },
-      { name: 'Region', dataType: 'VARCHAR', sampleValues: ['Northeast', 'Southeast', 'West'] },
-      { name: 'Hire_Date', dataType: 'DATE', sampleValues: ['2019-03-15', '2021-07-01', '2018-11-20'] },
+    "displayName": "Individual Budget",
+    "rawName": "Individual_Budget",
+    "rowCount": 18,
+    "columnDetails": [
+      {
+        "name": "Branch",
+        "dataType": "string",
+        "sampleValues": [
+          "Ahmedabad",
+          "Ahmedabad",
+          "Ahmedabad"
+        ]
+      },
+      {
+        "name": "Employee Name",
+        "dataType": "string",
+        "sampleValues": [
+          "Anil Tailor",
+          "Ankita Shah",
+          "Divya Dhingra"
+        ]
+      },
+      {
+        "name": "New Role2",
+        "dataType": "string",
+        "sampleValues": [
+          "Hunter & Farmer",
+          "Servicer",
+          "Servicer"
+        ]
+      },
+      {
+        "name": "New Budget",
+        "dataType": "integer",
+        "sampleValues": [
+          "0",
+          "0",
+          "1000000"
+        ]
+      },
+      {
+        "name": "Cross sell bugdet",
+        "dataType": "integer",
+        "sampleValues": [
+          "250000",
+          "0",
+          "500000"
+        ]
+      },
+      {
+        "name": "Renewal Budget",
+        "dataType": "integer",
+        "sampleValues": [
+          "1500000",
+          "0",
+          "1010000"
+        ]
+      },
+      {
+        "name": "Target budget",
+        "dataType": "integer",
+        "sampleValues": [
+          "1750000",
+          "0",
+          "0"
+        ]
+      }
     ],
+    "sampleRows": [
+      {
+        "Branch": "Ahmedabad",
+        "Employee Name": "Anil Tailor",
+        "New Role2": "Hunter & Farmer",
+        "New Budget": "0",
+        "Cross sell bugdet": "250000",
+        "Renewal Budget": "1500000",
+        "Target budget": "1750000"
+      },
+      {
+        "Branch": "Ahmedabad",
+        "Employee Name": "Ankita Shah",
+        "New Role2": "Servicer",
+        "New Budget": "",
+        "Cross sell bugdet": "",
+        "Renewal Budget": "",
+        "Target budget": "0"
+      },
+      {
+        "Branch": "Ahmedabad",
+        "Employee Name": "Divya Dhingra",
+        "New Role2": "Servicer",
+        "New Budget": "0",
+        "Cross sell bugdet": "0",
+        "Renewal Budget": "0",
+        "Target budget": "0"
+      }
+    ]
   },
   {
-    displayName: 'Date_Dim',
-    rowCount: 3652,
-    columnDetails: [
-      { name: 'Date_Key', dataType: 'INT', sampleValues: ['20240101', '20240102', '20240103'] },
-      { name: 'Full_Date', dataType: 'DATE', sampleValues: ['2024-01-01', '2024-01-02', '2024-01-03'] },
-      { name: 'Quarter', dataType: 'VARCHAR', sampleValues: ['Q1', 'Q1', 'Q1'] },
-      { name: 'Fiscal_Year', dataType: 'INT', sampleValues: ['2024', '2024', '2024'] },
+    "displayName": "Invoice",
+    "rawName": "Invoice",
+    "rowCount": 204,
+    "columnDetails": [
+      {
+        "name": "invoice_number",
+        "dataType": "integer",
+        "sampleValues": [
+          "1900001087",
+          "1900001106",
+          "1900001110"
+        ]
+      },
+      {
+        "name": "invoice_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2019-04-11",
+          "2019-05-17",
+          "2019-05-17"
+        ]
+      },
+      {
+        "name": "revenue_transaction_type",
+        "dataType": "string",
+        "sampleValues": [
+          "Fees",
+          "Brokerage",
+          "Brokerage"
+        ]
+      },
+      {
+        "name": "branch_name",
+        "dataType": "string",
+        "sampleValues": [
+          "Ahmedabad",
+          "Ahmedabad",
+          "Ahmedabad"
+        ]
+      },
+      {
+        "name": "solution_group",
+        "dataType": "string",
+        "sampleValues": [
+          "Liability",
+          "Global Client Network (GNB Inward)",
+          "Global Client Network (GNB Inward)"
+        ]
+      },
+      {
+        "name": "Account Executive",
+        "dataType": "string",
+        "sampleValues": [
+          "Neel Jain",
+          "Divya Dhingra",
+          "Divya Dhingra"
+        ]
+      },
+      {
+        "name": "income_class",
+        "dataType": "string",
+        "sampleValues": [
+          "New",
+          "Renewal",
+          "Renewal"
+        ]
+      },
+      {
+        "name": "client_name",
+        "dataType": "string",
+        "sampleValues": [
+          "I",
+          "M",
+          "S"
+        ]
+      },
+      {
+        "name": "policy_number",
+        "dataType": "integer",
+        "sampleValues": [
+          "2414202092813599700",
+          "OG-19-2202-1018-00000060",
+          "OG-19-2202-3383-00000010"
+        ]
+      },
+      {
+        "name": "Amount",
+        "dataType": "integer",
+        "sampleValues": [
+          "84746",
+          "86724",
+          "148500"
+        ]
+      },
+      {
+        "name": "income_due_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2019-04-10",
+          "2019-01-01",
+          "2019-03-01"
+        ]
+      }
     ],
+    "sampleRows": [
+      {
+        "invoice_number": "1900001087",
+        "invoice_date": "2019-04-11",
+        "revenue_transaction_type": "Fees",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Liability",
+        "Account Executive": "Neel Jain",
+        "income_class": "New",
+        "client_name": "I",
+        "policy_number": "",
+        "Amount": "84746",
+        "income_due_date": "2019-04-10"
+      },
+      {
+        "invoice_number": "1900001106",
+        "invoice_date": "2019-05-17",
+        "revenue_transaction_type": "Brokerage",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Global Client Network (GNB Inward)",
+        "Account Executive": "Divya Dhingra",
+        "income_class": "Renewal",
+        "client_name": "M",
+        "policy_number": "2414202092813599700",
+        "Amount": "86724",
+        "income_due_date": "2019-01-01"
+      },
+      {
+        "invoice_number": "1900001110",
+        "invoice_date": "2019-05-17",
+        "revenue_transaction_type": "Brokerage",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Global Client Network (GNB Inward)",
+        "Account Executive": "Divya Dhingra",
+        "income_class": "Renewal",
+        "client_name": "S",
+        "policy_number": "OG-19-2202-1018-00000060",
+        "Amount": "148500",
+        "income_due_date": "2019-03-01"
+      }
+    ]
   },
   {
-    displayName: 'Geography_Dim',
-    rowCount: 1247,
-    columnDetails: [
-      { name: 'State', dataType: 'VARCHAR', sampleValues: ['California', 'Texas', 'New York'] },
-      { name: 'Territory', dataType: 'VARCHAR', sampleValues: ['T-001', 'T-042', 'T-018'] },
-      { name: 'ZIP_Code', dataType: 'VARCHAR', sampleValues: ['90210', '75001', '10001'] },
+    "displayName": "Meeting",
+    "rawName": "Meeting",
+    "rowCount": 34,
+    "columnDetails": [
+      {
+        "name": "Account Executive",
+        "dataType": "string",
+        "sampleValues": [
+          "Abhinav Shivam",
+          "Abhinav Shivam",
+          "Abhinav Shivam"
+        ]
+      },
+      {
+        "name": "branch_name",
+        "dataType": "string",
+        "sampleValues": [
+          "Ahmedabad",
+          "Ahmedabad",
+          "Ahmedabad"
+        ]
+      },
+      {
+        "name": "global_attendees",
+        "dataType": "string",
+        "sampleValues": []
+      },
+      {
+        "name": "meeting_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2019-10-17",
+          "2019-10-17",
+          "2019-12-24"
+        ]
+      }
     ],
+    "sampleRows": [
+      {
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "",
+        "meeting_date": "2019-10-17"
+      },
+      {
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "",
+        "meeting_date": "2019-10-17"
+      },
+      {
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "",
+        "meeting_date": "2019-12-24"
+      }
+    ]
   },
   {
-    displayName: 'Financial_Fact',
-    rowCount: 89540,
-    columnDetails: [
-      { name: 'Transaction_ID', dataType: 'VARCHAR', sampleValues: ['TXN-001', 'TXN-002', 'TXN-003'] },
-      { name: 'Earned_Premium', dataType: 'DECIMAL', sampleValues: ['1250.00', '3400.00', '890.50'] },
-      { name: 'Incurred_Loss', dataType: 'DECIMAL', sampleValues: ['750.00', '2100.00', '430.25'] },
-      { name: 'Expense', dataType: 'DECIMAL', sampleValues: ['312.50', '850.00', '222.63'] },
+    "displayName": "opportunity",
+    "rawName": "opportunity",
+    "rowCount": 49,
+    "columnDetails": [
+      {
+        "name": "opportunity_name",
+        "dataType": "string",
+        "sampleValues": [
+          "EL-Group Mediclaim",
+          "AL GPA",
+          "BL - Marine STOP"
+        ]
+      },
+      {
+        "name": "opportunity_id",
+        "dataType": "string",
+        "sampleValues": [
+          "OPP1900001042",
+          "OPP1900001047",
+          "OPP1900001048"
+        ]
+      },
+      {
+        "name": "Account Executive",
+        "dataType": "string",
+        "sampleValues": [
+          "Animesh Rawat",
+          "Shivani Sharma",
+          "Shivani Sharma"
+        ]
+      },
+      {
+        "name": "premium_amount",
+        "dataType": "integer",
+        "sampleValues": [
+          "8000000",
+          "200000",
+          "0"
+        ]
+      },
+      {
+        "name": "revenue_amount",
+        "dataType": "integer",
+        "sampleValues": [
+          "400000",
+          "30000",
+          "100000"
+        ]
+      },
+      {
+        "name": "closing_date",
+        "dataType": "datetime",
+        "sampleValues": [
+          "2019-11-13",
+          "2020-03-31",
+          "2020-06-30"
+        ]
+      },
+      {
+        "name": "stage",
+        "dataType": "string",
+        "sampleValues": [
+          "Qualify Opportunity",
+          "Qualify Opportunity",
+          "Qualify Opportunity"
+        ]
+      },
+      {
+        "name": "branch",
+        "dataType": "string",
+        "sampleValues": [
+          "Ahmedabad",
+          "Ahmedabad",
+          "Ahmedabad"
+        ]
+      },
+      {
+        "name": "specialty",
+        "dataType": "string",
+        "sampleValues": [
+          "Employee Benefits (EB)",
+          "Employee Benefits (EB)",
+          "Marine"
+        ]
+      },
+      {
+        "name": "product_group",
+        "dataType": "string",
+        "sampleValues": [
+          "Employee Benefits",
+          "Employee Benefits",
+          "Marine"
+        ]
+      },
+      {
+        "name": "product_sub_group",
+        "dataType": "string",
+        "sampleValues": [
+          "Mediclaim",
+          "Mediclaim",
+          "Marine Hull"
+        ]
+      },
+      {
+        "name": "risk_details",
+        "dataType": "string",
+        "sampleValues": [
+          "Group Medical",
+          "Group Personal Accident",
+          "Charterers' Liability Policy"
+        ]
+      }
     ],
-  },
-  {
-    displayName: 'Reinsurance_Fact',
-    rowCount: 15230,
-    columnDetails: [
-      { name: 'Treaty_ID', dataType: 'VARCHAR', sampleValues: ['RE-2024-A', 'RE-2024-B', 'RE-2024-C'] },
-      { name: 'Ceded_Premium', dataType: 'DECIMAL', sampleValues: ['500000.00', '750000.00', '320000.00'] },
-      { name: 'Ceded_Loss', dataType: 'DECIMAL', sampleValues: ['280000.00', '510000.00', '190000.00'] },
-    ],
-  },
-  {
-    displayName: 'Survey_Response',
-    rowCount: 28450,
-    columnDetails: [
-      { name: 'Response_ID', dataType: 'VARCHAR', sampleValues: ['SRV-001', 'SRV-002', 'SRV-003'] },
-      { name: 'Survey_Score', dataType: 'INT', sampleValues: ['9', '7', '4'] },
-      { name: 'Channel', dataType: 'VARCHAR', sampleValues: ['Online', 'Phone', 'Agent'] },
-    ],
-  },
+    "sampleRows": [
+      {
+        "opportunity_name": "EL-Group Mediclaim",
+        "opportunity_id": "OPP1900001042",
+        "Account Executive": "Animesh Rawat",
+        "premium_amount": "8000000",
+        "revenue_amount": "400000",
+        "closing_date": "2019-11-13",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Employee Benefits (EB)",
+        "product_group": "Employee Benefits",
+        "product_sub_group": "Mediclaim",
+        "risk_details": "Group Medical"
+      },
+      {
+        "opportunity_name": "AL GPA",
+        "opportunity_id": "OPP1900001047",
+        "Account Executive": "Shivani Sharma",
+        "premium_amount": "200000",
+        "revenue_amount": "30000",
+        "closing_date": "2020-03-31",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Employee Benefits (EB)",
+        "product_group": "Employee Benefits",
+        "product_sub_group": "Mediclaim",
+        "risk_details": "Group Personal Accident"
+      },
+      {
+        "opportunity_name": "BL - Marine STOP",
+        "opportunity_id": "OPP1900001048",
+        "Account Executive": "Shivani Sharma",
+        "premium_amount": "0",
+        "revenue_amount": "100000",
+        "closing_date": "2020-06-30",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Marine",
+        "product_group": "Marine",
+        "product_sub_group": "Marine Hull",
+        "risk_details": "Charterers' Liability Policy"
+      }
+    ]
+  }
 ];
 
-/* ── Table Relationships ── */
 export const tbPbiRelationships: TbPbiRelationship[] = [
-  { fromTable: 'Claims_Fact', fromColumn: 'Policy_ID', toTable: 'Policy_Dim', toColumn: 'Policy_ID', type: 'Many-to-One' },
-  { fromTable: 'Claims_Fact', fromColumn: 'Agent_ID', toTable: 'Agent_Dim', toColumn: 'Agent_ID', type: 'Many-to-One' },
-  { fromTable: 'Claims_Fact', fromColumn: 'Incurred_Date', toTable: 'Date_Dim', toColumn: 'Full_Date', type: 'Many-to-One' },
-  { fromTable: 'Claims_Fact', fromColumn: 'State', toTable: 'Geography_Dim', toColumn: 'State', type: 'Many-to-One' },
-  { fromTable: 'Financial_Fact', fromColumn: 'Policy_ID', toTable: 'Policy_Dim', toColumn: 'Policy_ID', type: 'Many-to-One' },
-  { fromTable: 'Financial_Fact', fromColumn: 'Date_Key', toTable: 'Date_Dim', toColumn: 'Date_Key', type: 'Many-to-One' },
-  { fromTable: 'Reinsurance_Fact', fromColumn: 'Policy_ID', toTable: 'Policy_Dim', toColumn: 'Policy_ID', type: 'Many-to-One' },
-  { fromTable: 'Survey_Response', fromColumn: 'Policy_ID', toTable: 'Policy_Dim', toColumn: 'Policy_ID', type: 'Many-to-One' },
+  {
+    "fromTable": "Brokage",
+    "fromColumn": "Account Executive",
+    "toTable": "Fees",
+    "toColumn": "Account Executive",
+    "type": "Many-to-One (*:1)",
+    "crossFiltering": "Single"
+  },
+  {
+    "fromTable": "Brokage",
+    "fromColumn": "branch_name",
+    "toTable": "Individual Budget",
+    "toColumn": "Branch",
+    "type": "Many-to-One (*:1)",
+    "crossFiltering": "Both"
+  },
+  {
+    "fromTable": "Brokage",
+    "fromColumn": "Account Executive",
+    "toTable": "Invoice",
+    "toColumn": "Account Executive",
+    "type": "Many-to-One (*:1)",
+    "crossFiltering": "Single"
+  },
+  {
+    "fromTable": "Brokage",
+    "fromColumn": "Account Executive",
+    "toTable": "Meeting",
+    "toColumn": "Account Executive",
+    "type": "Many-to-One (*:1)",
+    "crossFiltering": "Single"
+  },
+  {
+    "fromTable": "Brokage",
+    "fromColumn": "Account Executive",
+    "toTable": "Opportunity",
+    "toColumn": "Account Executive",
+    "type": "Many-to-One (*:1)",
+    "crossFiltering": "Single"
+  }
 ];
 
-/* ── DAX Conversions ── */
+export const tbPbiWorksheets: TbPbiWorksheet[] = [
+  {
+    "name": "New (2)",
+    "title": "New",
+    "chartType": "KPI Card",
+    "pbiVisual": "Card / Single Value",
+    "description": "New Sales Placed Summary",
+    "markType": "Automatic",
+    "rows": [
+      "[:Measure Names]"
+    ],
+    "cols": [
+      "[Multiple Values]"
+    ],
+    "dimensions": [
+      ":Measure Names",
+      "Multiple Values"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      ":Measure Names"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "New sell Placed Achivement%",
+    "title": "New sell Placed Achivement%",
+    "chartType": "Gauge Chart",
+    "pbiVisual": "Gauge",
+    "description": "New Business Placed Target %",
+    "markType": "Automatic",
+    "rows": [],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "Oppty-product distribution",
+    "title": "Oppty-product distribution",
+    "chartType": "Donut Chart",
+    "pbiVisual": "Pie / Donut",
+    "description": "Opportunity Breakdown by Product Group",
+    "markType": "Pie",
+    "rows": [
+      "SUM([zero])",
+      "SUM([zero])"
+    ],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "zero"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "Reneal Placed Achivemt%",
+    "title": "Renewal Placed Achivement%",
+    "chartType": "Gauge Chart",
+    "pbiVisual": "Gauge",
+    "description": "Renewal Revenue Target %",
+    "markType": "Automatic",
+    "rows": [],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "Renewal invoice placed Ach%",
+    "title": "Renewal invoice placed Achivement%",
+    "chartType": "Gauge Chart",
+    "pbiVisual": "Gauge",
+    "description": "Renewal Invoices Realized %",
+    "markType": "Automatic",
+    "rows": [],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "Sheet 14",
+    "title": "Open oppty-Top 4",
+    "chartType": "Bar Chart",
+    "pbiVisual": "Clustered Bar",
+    "description": "Top 4 Open Opportunities by Revenue",
+    "markType": "Automatic",
+    "rows": [
+      "SUM([Revenue Amount])"
+    ],
+    "cols": [
+      "[Open oppty]",
+      "[Opportunity Name]"
+    ],
+    "dimensions": [
+      "Open oppty",
+      "Opportunity Name"
+    ],
+    "measures": [
+      "Revenue Amount"
+    ],
+    "filters": [
+      "Opportunity Name"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "Target",
+    "title": "Target",
+    "chartType": "Matrix",
+    "pbiVisual": "Matrix / Pivot",
+    "description": "Budget vs Target Allocation Matrix",
+    "markType": "Automatic",
+    "rows": [
+      "[:Measure Names]"
+    ],
+    "cols": [],
+    "dimensions": [
+      ":Measure Names"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      ":Measure Names"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "archive",
+    "title": "archive",
+    "chartType": "KPI Card",
+    "pbiVisual": "Card",
+    "description": "Total Archived Cross-Sell Revenue",
+    "markType": "Automatic",
+    "rows": [],
+    "cols": [
+      "SUM([cross sell archive])"
+    ],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "cross sell archive"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "cross sell",
+    "title": "Cross sell",
+    "chartType": "Clustered Column",
+    "pbiVisual": "Clustered Column",
+    "description": "Cross-Sell Volume by Solution Group",
+    "markType": "Automatic",
+    "rows": [
+      "[:Measure Names]"
+    ],
+    "cols": [
+      "[Multiple Values]"
+    ],
+    "dimensions": [
+      ":Measure Names",
+      "Multiple Values"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      ":Measure Names"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "cross sell ach%",
+    "title": "Cross-sell placed Achievement %",
+    "chartType": "Gauge Chart",
+    "pbiVisual": "Gauge",
+    "description": "Cross-Sell Placement Achievement %",
+    "markType": "Automatic",
+    "rows": [],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "cross sell invoice placed%",
+    "title": "Cross Sell invoice placed achivement%",
+    "chartType": "Gauge Chart",
+    "pbiVisual": "Gauge",
+    "description": "Cross-Sell Invoicing Realization %",
+    "markType": "Automatic",
+    "rows": [],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "funnel",
+    "title": "Stage funnel by Revenue",
+    "chartType": "Funnel Chart",
+    "pbiVisual": "Funnel",
+    "description": "Sales Stage Pipeline Funnel",
+    "markType": "Automatic",
+    "rows": [
+      "SUM([Revenue Amount])"
+    ],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Revenue Amount"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "invoice",
+    "title": "invoice",
+    "chartType": "Stacked Bar Chart",
+    "pbiVisual": "Stacked Bar",
+    "description": "Invoice Revenue by Income Class & Due Year",
+    "markType": "Bar",
+    "rows": [
+      "[income class (Invoice)]"
+    ],
+    "cols": [
+      "YEAR([income due date (Invoice)])",
+      "SUM([Amount (Invoice)])"
+    ],
+    "dimensions": [
+      "income class (Invoice",
+      "income due date (Invoice"
+    ],
+    "measures": [
+      "Amount (Invoice"
+    ],
+    "filters": [
+      "Exclusions (income class (Invoice),YEAR(income due date (Invoice)))"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "new sell invoive Achivement%",
+    "title": "New sell invoive Achivement%",
+    "chartType": "Gauge Chart",
+    "pbiVisual": "Gauge",
+    "description": "New Sell Invoicing Achievement %",
+    "markType": "Automatic",
+    "rows": [],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "number if invoice",
+    "title": "Number of invoice by Acc Executive",
+    "chartType": "Column Chart",
+    "pbiVisual": "Clustered Column",
+    "description": "Invoice Volume by Account Executive",
+    "markType": "Automatic",
+    "rows": [
+      "[Account Executive (Invoice)]"
+    ],
+    "cols": [
+      "[COUNT(table)]"
+    ],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "table",
+      "Account Executive (Invoice"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "number of meeting",
+    "title": "number of meeting",
+    "chartType": "KPI Card",
+    "pbiVisual": "Card",
+    "description": "Total Meetings Executed",
+    "markType": "Automatic",
+    "rows": [
+      "[Account Executive (Meeting)]"
+    ],
+    "cols": [
+      "YEAR([Meeting Date])"
+    ],
+    "dimensions": [
+      "Meeting Date"
+    ],
+    "measures": [
+      "Account Executive (Meeting"
+    ],
+    "filters": [
+      "Status = Active"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "number of meeting (2)",
+    "title": "Number of meetings by Acc Executive",
+    "chartType": "Horizontal Bar",
+    "pbiVisual": "Clustered Bar",
+    "description": "Meetings Logged per Account Executive",
+    "markType": "Bar",
+    "rows": [
+      "[Account Executive (Meeting)]"
+    ],
+    "cols": [
+      "YEAR([Meeting Date])",
+      "COUNT([Account Executive (Meeting)])"
+    ],
+    "dimensions": [
+      "Meeting Date"
+    ],
+    "measures": [
+      "Account Executive (Meeting"
+    ],
+    "filters": [
+      "Meeting Date"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "oppty revenue",
+    "title": "Oppty Revenue",
+    "chartType": "Treemap",
+    "pbiVisual": "Treemap",
+    "description": "Pipeline Opportunities by Size & Revenue",
+    "markType": "Automatic",
+    "rows": [
+      "[Opportunity Name]"
+    ],
+    "cols": [
+      "SUM([Revenue Amount])"
+    ],
+    "dimensions": [
+      "Opportunity Name"
+    ],
+    "measures": [
+      "Revenue Amount"
+    ],
+    "filters": [
+      "Opportunity Id"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "renewal",
+    "title": "Renewal",
+    "chartType": "Line Chart",
+    "pbiVisual": "Line & Clustered Column",
+    "description": "Renewal Invoicing Trend & Volume",
+    "markType": "Automatic",
+    "rows": [
+      "[:Measure Names]"
+    ],
+    "cols": [
+      "[Multiple Values]"
+    ],
+    "dimensions": [
+      ":Measure Names",
+      "Multiple Values"
+    ],
+    "measures": [
+      "Revenue Amount",
+      "Target"
+    ],
+    "filters": [
+      ":Measure Names"
+    ],
+    "datasource": "Insurance_Model"
+  },
+  {
+    "name": "total oppty",
+    "title": "Count of oppurtunities",
+    "chartType": "KPI Card",
+    "pbiVisual": "Card",
+    "description": "Total Active Pipeline Opportunities",
+    "markType": "Automatic",
+    "rows": [
+      "COUNT([Open oppty])",
+      "COUNT([Opportunity Id])"
+    ],
+    "cols": [],
+    "dimensions": [
+      "Account Executive",
+      "Branch"
+    ],
+    "measures": [
+      "Open oppty",
+      "Opportunity Id"
+    ],
+    "filters": [
+      "Open oppty",
+      "Opportunity Id"
+    ],
+    "datasource": "Insurance_Model"
+  }
+];
+
 export const tbPbiDaxConversions: TbPbiDaxConversion[] = [
   {
-    id: 'dax-1', fieldName: 'Loss Ratio', category: 'Aggregation',
-    sourceFormula: 'SUM([Incurred Loss]) / SUM([Earned Premium])',
-    daxFormula: 'Loss Ratio = DIVIDE(SUM(Financial_Fact[Incurred_Loss]), SUM(Financial_Fact[Earned_Premium]), 0)',
-    confidence: 98, status: 'valid', warnings: [],
+    "id": "conv_01",
+    "fieldName": "zero",
+    "sourceFormula": "0",
+    "daxFormula": "zero = 0",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Aggregation",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The Tableau formula is a constant literal, which maps directly to a constant value in DAX."
   },
   {
-    id: 'dax-2', fieldName: 'Combined Ratio', category: 'Derived',
-    sourceFormula: '[Loss Ratio] + [Expense Ratio]',
-    daxFormula: 'Combined Ratio = [Loss Ratio] + [Expense Ratio]',
-    confidence: 99, status: 'valid', warnings: [],
+    "id": "conv_02",
+    "fieldName": "cross sell placed achivement%",
+    "sourceFormula": "(sum([ brokage cross sell ])/sum([Cross sell bugdet]))*100",
+    "daxFormula": "cross sell placed achivement% = DIVIDE([brokage cross sell], SUM('Individual Budget'[Cross sell bugdet]), 0) * 100",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Ratio & Percentage",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The numerator is an existing measure and the denominator is a base numeric column from the 'Individual Budget' table, combined using the DIVIDE function for safety."
   },
   {
-    id: 'dax-3', fieldName: 'Severity Index', category: 'Aggregation',
-    sourceFormula: 'SUM([Paid Loss]) / COUNTD([Claim ID])',
-    daxFormula: 'Severity Index = DIVIDE(SUM(Claims_Fact[Paid_Amount]), DISTINCTCOUNT(Claims_Fact[Claim_ID]), 0)',
-    confidence: 97, status: 'valid', warnings: [],
+    "id": "conv_03",
+    "fieldName": "cross sell fees",
+    "sourceFormula": "IF [income_class (Fees)]=\"cross sell\" then[Amount (Fees)] end",
+    "daxFormula": "cross sell fees = CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = \"cross sell\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula uses a base numeric column with a conditional filter, which translates to a CALCULATE function wrapping a SUM aggregation filtered by the dimension column."
   },
   {
-    id: 'dax-4', fieldName: 'Resolution Rate', category: 'Conditional',
-    sourceFormula: 'COUNTD(IF [Status] = "Closed" THEN [Claim ID] END) / COUNTD([Claim ID])',
-    daxFormula: 'Resolution Rate = DIVIDE(CALCULATE(DISTINCTCOUNT(Claims_Fact[Claim_ID]), Claims_Fact[Status] = "Closed"), DISTINCTCOUNT(Claims_Fact[Claim_ID]), 0)',
-    confidence: 95, status: 'valid', warnings: [],
+    "id": "conv_04",
+    "fieldName": "brokage cross sell",
+    "sourceFormula": "if [income_class]=\"cross sell\" then [Amount] end",
+    "daxFormula": "brokage cross sell = CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = \"cross sell\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula uses a conditional filter on a base dimension column applied to the sum of a base numeric column, which maps to a CALCULATE pattern in DAX."
   },
   {
-    id: 'dax-5', fieldName: 'YoY Growth', category: 'Time Intelligence',
-    sourceFormula: '(ZN(SUM([Current Year Premium])) - ZN(SUM([Prior Year Premium]))) / ZN(SUM([Prior Year Premium]))',
-    daxFormula: 'YoY Growth = VAR _current = SUM(Policy_Dim[Premium])\nVAR _prior = CALCULATE(SUM(Policy_Dim[Premium]), SAMEPERIODLASTYEAR(Date_Dim[Full_Date]))\nRETURN DIVIDE(_current - _prior, _prior, 0)',
-    confidence: 88, status: 'warning', warnings: ['Time intelligence requires Date table relationship'],
+    "id": "conv_05",
+    "fieldName": "invoice cross sell",
+    "sourceFormula": "if [income_class (Invoice)]=\"cross sell\" then [Amount (Invoice)] end",
+    "daxFormula": "invoice cross sell = CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = \"cross sell\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula filters a base numeric column based on a dimension value, which is converted to a CALCULATE function with a filter argument."
   },
   {
-    id: 'dax-6', fieldName: 'Running Total Claims', category: 'Table Calc',
-    sourceFormula: 'RUNNING_SUM(SUM([Claim Count]))',
-    daxFormula: 'Running Total Claims = CALCULATE(SUM(Claims_Fact[Claim_Count]), FILTER(ALL(Date_Dim[Full_Date]), Date_Dim[Full_Date] <= MAX(Date_Dim[Full_Date])))',
-    confidence: 82, status: 'warning', warnings: ['Running total context depends on visual axis; verify filter context'],
+    "id": "conv_06",
+    "fieldName": "invoice new",
+    "sourceFormula": "IF [income_class (Invoice)]=\"new\" then [Amount (Invoice)] end",
+    "daxFormula": "invoice new = CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = \"new\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The Tableau row-level IF condition on a base dimension column and base numeric column is converted to a CALCULATE function using the SUM of the amount filtered by the dimension value."
   },
   {
-    id: 'dax-7', fieldName: 'Fraud Score Band', category: 'Conditional',
-    sourceFormula: 'IF [Fraud Score] >= 80 THEN "High" ELSEIF [Fraud Score] >= 50 THEN "Medium" ELSE "Low" END',
-    daxFormula: 'Fraud Score Band = SWITCH(TRUE(), Claims_Fact[Fraud_Score] >= 80, "High", Claims_Fact[Fraud_Score] >= 50, "Medium", "Low")',
-    confidence: 99, status: 'valid', warnings: [],
+    "id": "conv_07",
+    "fieldName": "Brokage new",
+    "sourceFormula": "if [income_class]=\"new\" then [Amount] END",
+    "daxFormula": "Brokage new = CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = \"new\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The Tableau IF statement on a base dimension column and base numeric column is converted to a CALCULATE function with the dimension filter applied to the SUM of the numeric column."
   },
   {
-    id: 'dax-8', fieldName: 'Agent Tenure Band', category: 'Date Calc',
-    sourceFormula: 'IF DATEDIFF(\'year\', [Hire Date], TODAY()) > 5 THEN "Senior" ELSEIF DATEDIFF(\'year\', [Hire Date], TODAY()) > 2 THEN "Mid" ELSE "Junior" END',
-    daxFormula: 'Agent Tenure Band = VAR _years = DATEDIFF(Agent_Dim[Hire_Date], TODAY(), YEAR)\nRETURN SWITCH(TRUE(), _years > 5, "Senior", _years > 2, "Mid", "Junior")',
-    confidence: 96, status: 'valid', warnings: [],
+    "id": "conv_08",
+    "fieldName": "new fees",
+    "sourceFormula": "IF [income_class (Fees)]=\"new\" then [Amount (Fees)] end",
+    "daxFormula": "new fees = CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = \"new\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula filters a base numeric column based on a dimension value, which is best implemented using CALCULATE with a filter argument."
   },
   {
-    id: 'dax-9', fieldName: 'Recovery Efficiency', category: 'Aggregation',
-    sourceFormula: 'SUM([Recovered Amount]) / SUM([Subrogation Potential])',
-    daxFormula: 'Recovery Efficiency = DIVIDE(SUM(Claims_Fact[Recovered_Amount]), SUM(Claims_Fact[Subrogation_Potential]), 0)',
-    confidence: 98, status: 'valid', warnings: [],
+    "id": "conv_09",
+    "fieldName": "brokage renewal",
+    "sourceFormula": "if [income_class]=\"renewal\" then [Amount] end",
+    "daxFormula": "brokage renewal = CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = \"renewal\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula uses a conditional filter on a base dimension column applied to a base numeric column, which maps to the CALCULATE(SUM(...), filter) pattern."
   },
   {
-    id: 'dax-10', fieldName: 'Days Open', category: 'Date Calc',
-    sourceFormula: 'DATEDIFF(\'day\', [Open Date], IFNULL([Close Date], TODAY()))',
-    daxFormula: 'Days Open = DATEDIFF(Claims_Fact[Open_Date], IF(ISBLANK(Claims_Fact[Close_Date]), TODAY(), Claims_Fact[Close_Date]), DAY)',
-    confidence: 97, status: 'valid', warnings: [],
+    "id": "conv_10",
+    "fieldName": "Invoice renewal",
+    "sourceFormula": "if [income_class (Invoice)]=\"renewal\" then [Amount (Invoice)] END",
+    "daxFormula": "Invoice renewal = CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = \"renewal\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula filters the base numeric column 'Amount' by the dimension 'income_class' using the CALCULATE pattern for conditional aggregation."
   },
   {
-    id: 'dax-11', fieldName: 'IBNR Development Factor', category: 'LOD Expression',
-    sourceFormula: '{FIXED [Accident Year], [Development Period] : AVG([Development Factor])}',
-    daxFormula: 'IBNR Development Factor = CALCULATE(AVERAGE(Claims_Fact[Development_Factor]), ALLEXCEPT(Claims_Fact, Claims_Fact[Accident_Year], Claims_Fact[Development_Period]))',
-    confidence: 85, status: 'warning', warnings: ['LOD FIXED expression: verify ALLEXCEPT filter context matches Tableau behavior'],
+    "id": "conv_11",
+    "fieldName": "renewal fees",
+    "sourceFormula": "if [income_class (Fees)]=\"renewal\" then [Amount (Fees)] END",
+    "daxFormula": "renewal fees = CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = \"renewal\")",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Filter Context",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The Tableau IF statement on a base dimension column and base numeric column is converted to a CALCULATE function using the SUM of the amount filtered by the income class."
   },
   {
-    id: 'dax-12', fieldName: 'LOD Avg Premium per State', category: 'LOD Expression',
-    sourceFormula: '{FIXED [State] : AVG([Written Premium])}',
-    daxFormula: 'LOD Avg Premium per State = CALCULATE(AVERAGE(Policy_Dim[Premium]), ALLEXCEPT(Geography_Dim, Geography_Dim[State]))',
-    confidence: 87, status: 'warning', warnings: ['LOD FIXED expression translated with ALLEXCEPT; validate cross-filter direction'],
+    "id": "conv_12",
+    "fieldName": "Open oppty",
+    "sourceFormula": "IF [stage]=\"Propose solution\" or [stage]= \"Qualify opportunity\" then \"open\" end",
+    "daxFormula": "Open oppty = IF(SELECTEDVALUE('Opportunity'[stage]) = \"Propose solution\" || SELECTEDVALUE('Opportunity'[stage]) = \"Qualify opportunity\", \"open\", BLANK())",
+    "confidence": 95,
+    "status": "valid",
+    "warnings": [],
+    "category": "Conditional Logic",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The Tableau formula is a row-level calculated column returning a string; in DAX, this is replicated using IF with SELECTEDVALUE to handle the row context for the dimension column."
   },
   {
-    id: 'dax-13', fieldName: 'Retention Rate', category: 'Conditional',
-    sourceFormula: 'COUNTD(IF [Renewed] = TRUE THEN [Policy ID] END) / COUNTD([Policy ID])',
-    daxFormula: 'Retention Rate = DIVIDE(CALCULATE(DISTINCTCOUNT(Policy_Dim[Policy_ID]), Policy_Dim[Renewed] = TRUE()), DISTINCTCOUNT(Policy_Dim[Policy_ID]), 0)',
-    confidence: 96, status: 'valid', warnings: [],
+    "id": "conv_13",
+    "fieldName": "cross sell archive",
+    "sourceFormula": "sum([ brokage cross sell ])+sum([cross sell fees])",
+    "daxFormula": "cross sell archive = [brokage cross sell] + [cross sell fees]",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Compound Measure",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "Both components are identified as existing measures, so they are referenced directly without SUM or table prefixes."
   },
   {
-    id: 'dax-14', fieldName: 'Expense Ratio', category: 'Aggregation',
-    sourceFormula: 'SUM([Underwriting Expense]) / SUM([Earned Premium])',
-    daxFormula: 'Expense Ratio = DIVIDE(SUM(Financial_Fact[Expense]), SUM(Financial_Fact[Earned_Premium]), 0)',
-    confidence: 98, status: 'valid', warnings: [],
+    "id": "conv_14",
+    "fieldName": "Cross sell invoice placed achivement%",
+    "sourceFormula": "(sum([invoice cross sell])/sum([Cross sell bugdet]))*100",
+    "daxFormula": "Cross sell invoice placed achivement% = DIVIDE([invoice cross sell], SUM('Individual Budget'[Cross sell bugdet]), 0) * 100",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Ratio & Percentage",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The numerator is a pre-existing measure and the denominator is a base numeric column requiring a SUM aggregation, combined using the DIVIDE function for safety."
   },
   {
-    id: 'dax-15', fieldName: 'Claim Frequency', category: 'Aggregation',
-    sourceFormula: 'COUNTD([Claim ID]) / SUM([Exposure Units])',
-    daxFormula: 'Claim Frequency = DIVIDE(DISTINCTCOUNT(Claims_Fact[Claim_ID]), SUM(Policy_Dim[Exposure_Units]), 0)',
-    confidence: 94, status: 'valid', warnings: [],
+    "id": "conv_15",
+    "fieldName": "new sell invoice Achivement %",
+    "sourceFormula": "(sum([invoice new])/sum([New Budget]))*100",
+    "daxFormula": "new sell invoice Achivement % = DIVIDE([invoice new], SUM('Individual Budget'[New Budget]), 0) * 100",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Ratio & Percentage",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula uses the existing [invoice new] measure as the numerator and the base numeric column 'New Budget' from the 'Individual Budget' table as the denominator, applying the DIVIDE function for safety."
   },
   {
-    id: 'dax-16', fieldName: 'Net of Reinsurance', category: 'Aggregation',
-    sourceFormula: 'SUM([Gross Loss]) - SUM([Ceded Loss])',
-    daxFormula: 'Net of Reinsurance = SUM(Claims_Fact[Gross_Loss]) - SUM(Reinsurance_Fact[Ceded_Loss])',
-    confidence: 93, status: 'warning', warnings: ['Cross-table reference: ensure relationship exists between Claims_Fact and Reinsurance_Fact'],
+    "id": "conv_16",
+    "fieldName": "New sell placed Achived%",
+    "sourceFormula": "(sum([Brokage new])/sum([New Budget]))*100",
+    "daxFormula": "New sell placed Achived% = DIVIDE([Brokage new], SUM('Individual Budget'[New Budget]), 0) * 100",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Ratio & Percentage",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The numerator is an existing aggregated measure and the denominator is a base numeric column from the 'Individual Budget' table, combined using the DIVIDE function for safety."
   },
   {
-    id: 'dax-17', fieldName: 'Handler Active Caseload', category: 'LOD Expression',
-    sourceFormula: '{FIXED [Handler ID] : COUNTD(IF [Status] = "Open" THEN [Claim ID] END)}',
-    daxFormula: 'Handler Active Caseload = CALCULATE(DISTINCTCOUNT(Claims_Fact[Claim_ID]), Claims_Fact[Status] = "Open", ALLEXCEPT(Claims_Fact, Claims_Fact[Handler_ID]))',
-    confidence: 84, status: 'warning', warnings: ['LOD FIXED with conditional: verify ALLEXCEPT context'],
+    "id": "conv_17",
+    "fieldName": "Achived new",
+    "sourceFormula": "sum([new fees])+sum([Brokage new])",
+    "daxFormula": "Achived new = [new fees] + [Brokage new]",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Compound Measure",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "Since both [new fees] and [Brokage new] are identified as existing measures, they are referenced directly without SUM or table prefixes."
   },
   {
-    id: 'dax-18', fieldName: 'CAT Loading Factor', category: 'Conditional',
-    sourceFormula: 'SUM(IF [Is CAT] = TRUE THEN [Incurred Loss] END) / SUM([Incurred Loss])',
-    daxFormula: 'CAT Loading Factor = DIVIDE(CALCULATE(SUM(Claims_Fact[Incurred_Loss]), Claims_Fact[Is_CAT] = TRUE()), SUM(Claims_Fact[Incurred_Loss]), 0)',
-    confidence: 97, status: 'valid', warnings: [],
+    "id": "conv_18",
+    "fieldName": "Renewal placed achivemet",
+    "sourceFormula": "(sum([brokage renewal])/sum([Renewal Budget]))*100",
+    "daxFormula": "Renewal placed achivemet = DIVIDE([brokage renewal], SUM('Individual Budget'[Renewal Budget]), 0) * 100",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Ratio & Percentage",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula uses the existing [brokage renewal] measure for the numerator and the base numeric column [Renewal Budget] from the 'Individual Budget' table for the denominator, wrapped in DIVIDE for safety and multiplied by 100."
   },
+  {
+    "id": "conv_19",
+    "fieldName": "invoice achived",
+    "sourceFormula": "[brokage renewal]+[brokage renewal]",
+    "daxFormula": "invoice achived = [brokage renewal] + [brokage renewal]",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Compound Measure",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The formula is a simple addition of two existing measures, which are referenced directly without table prefixes or aggregation functions as per the provided rules."
+  },
+  {
+    "id": "conv_20",
+    "fieldName": "Renewal invoice achivement%",
+    "sourceFormula": "(sum([Invoice renewal])/sum([Renewal Budget]))*100",
+    "daxFormula": "Renewal invoice achivement% = DIVIDE([Invoice renewal], SUM('Individual Budget'[Renewal Budget]), 0) * 100",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Ratio & Percentage",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "The numerator is an existing measure and the denominator is a base numeric column from the 'Individual Budget' table, combined using the DIVIDE function to handle potential division by zero."
+  },
+  {
+    "id": "conv_21",
+    "fieldName": "achived renewal",
+    "sourceFormula": "sum([brokage renewal])+sum([renewal fees])",
+    "daxFormula": "achived renewal = [brokage renewal] + [renewal fees]",
+    "confidence": 100,
+    "status": "valid",
+    "warnings": [],
+    "category": "Compound Measure",
+    "pattern": "AST_OPTIMIZED_CALCULATION",
+    "reasoning": "Both components are existing measures, so they are referenced directly without aggregation functions."
+  }
 ];
 
-/* ── Export Artifacts ── */
-export const tbPbiExportArtifacts: TbPbiExportArtifact[] = [
-  { id: 'exp-1', fileName: 'migration_report.xlsx', type: 'excel', description: 'DAX Conversions, Worksheet Analysis, Tables & Columns, Table Relationships', size: '2.4 MB' },
-  { id: 'exp-2', fileName: 'model.bim', type: 'bim', description: 'Tabular Model for import via Tabular Editor', size: '156 KB' },
-  { id: 'exp-3', fileName: 'table_data/', type: 'data', description: 'Excel extracts from Tableau data sources', size: '18.7 MB' },
-  { id: 'exp-4', fileName: 'README.txt', type: 'readme', description: 'Migration summary & import guide', size: '4 KB' },
+export const tbPbiCalculatedFields: TbPbiCalculatedField[] = tbPbiDaxConversions.map(d => ({
+  name: d.id,
+  caption: d.fieldName,
+  formula: d.sourceFormula,
+  role: 'measure',
+  datatype: 'real',
+  workbook: 'Tableau Insurance.twbx',
+}));
+
+export const tbPbiValidationResults: TbPbiValidationResult[] = [
+  {
+    "conversionId": "conv_e6275b76",
+    "overallPassed": true,
+    "passRate": 1.0,
+    "testSlices": [
+      {
+        "dimensions": {
+          "Region": "North",
+          "Year": "2023"
+        },
+        "tableau_value": 1250.0,
+        "source_value": 1250.0,
+        "dax_value": 1250.0,
+        "delta": 0.0,
+        "relative_error": 0.0,
+        "passed": true,
+        "error_category": "PERFECT_MATCH"
+      },
+      {
+        "dimensions": {
+          "Region": "South",
+          "Year": "2023"
+        },
+        "tableau_value": 890.0,
+        "source_value": 890.0,
+        "dax_value": 890.0,
+        "delta": 0.0,
+        "relative_error": 0.0,
+        "passed": true,
+        "error_category": "PERFECT_MATCH"
+      },
+      {
+        "dimensions": {
+          "Region": "West",
+          "Year": "2024"
+        },
+        "tableau_value": 2100.0,
+        "source_value": 2100.0,
+        "dax_value": 2100.0,
+        "delta": 0.0,
+        "relative_error": 0.0,
+        "passed": true,
+        "error_category": "PERFECT_MATCH"
+      }
+    ],
+    "errorCategories": {
+      "PERFECT_MATCH": 3
+    }
+  },
+  {
+    "conversionId": "conv_2963eaf8",
+    "overallPassed": false,
+    "passRate": 0.0,
+    "testSlices": [
+      {
+        "dimensions": {
+          "Region": "North",
+          "RiskLevel": "High"
+        },
+        "tableau_value": 1240.0,
+        "source_value": 1240.0,
+        "dax_value": 0.0,
+        "delta": 1240.0,
+        "relative_error": 1.0,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "South",
+          "RiskLevel": "High"
+        },
+        "tableau_value": 890.0,
+        "source_value": 890.0,
+        "dax_value": 0.0,
+        "delta": 890.0,
+        "relative_error": 1.0,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "West",
+          "RiskLevel": "High"
+        },
+        "tableau_value": 450.0,
+        "source_value": 450.0,
+        "dax_value": 0.0,
+        "delta": 450.0,
+        "relative_error": 1.0,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      }
+    ],
+    "errorCategories": {
+      "CONTEXT_SHIFT": 3
+    }
+  },
+  {
+    "conversionId": "conv_2963eaf8",
+    "overallPassed": false,
+    "passRate": 0.0,
+    "testSlices": [
+      {
+        "dimensions": {
+          "Region": "North",
+          "Year": "2023"
+        },
+        "tableau_value": 120.0,
+        "source_value": 120.0,
+        "dax_value": 450.0,
+        "delta": 330.0,
+        "relative_error": 2.75,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "South",
+          "Year": "2023"
+        },
+        "tableau_value": 85.0,
+        "source_value": 85.0,
+        "dax_value": 310.0,
+        "delta": 225.0,
+        "relative_error": 2.647,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "West",
+          "Year": "2023"
+        },
+        "tableau_value": 210.0,
+        "source_value": 210.0,
+        "dax_value": 780.0,
+        "delta": 570.0,
+        "relative_error": 2.714,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      }
+    ],
+    "errorCategories": {
+      "CONTEXT_SHIFT": 3
+    }
+  },
+  {
+    "conversionId": "conv_2963eaf8",
+    "overallPassed": false,
+    "passRate": 0.0,
+    "testSlices": [
+      {
+        "dimensions": {
+          "Region": "North",
+          "Year": "2023"
+        },
+        "tableau_value": 120.0,
+        "source_value": 120.0,
+        "dax_value": 0.0,
+        "delta": 120.0,
+        "relative_error": 1.0,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "South",
+          "Year": "2023"
+        },
+        "tableau_value": 85.0,
+        "source_value": 85.0,
+        "dax_value": 0.0,
+        "delta": 85.0,
+        "relative_error": 1.0,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "West",
+          "Year": "2023"
+        },
+        "tableau_value": 210.0,
+        "source_value": 210.0,
+        "dax_value": 0.0,
+        "delta": 210.0,
+        "relative_error": 1.0,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      }
+    ],
+    "errorCategories": {
+      "CONTEXT_SHIFT": 3
+    }
+  },
+  {
+    "conversionId": "conv_2963eaf8",
+    "overallPassed": false,
+    "passRate": 0.0,
+    "testSlices": [
+      {
+        "dimensions": {
+          "Region": "North",
+          "Year": "2023"
+        },
+        "tableau_value": 450.0,
+        "source_value": 450.0,
+        "dax_value": 1200.0,
+        "delta": 750.0,
+        "relative_error": 1.666,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "South",
+          "Year": "2023"
+        },
+        "tableau_value": 320.0,
+        "source_value": 320.0,
+        "dax_value": 890.0,
+        "delta": 570.0,
+        "relative_error": 1.781,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      },
+      {
+        "dimensions": {
+          "Region": "West",
+          "Year": "2023"
+        },
+        "tableau_value": 110.0,
+        "source_value": 110.0,
+        "dax_value": 340.0,
+        "delta": 230.0,
+        "relative_error": 2.09,
+        "passed": false,
+        "error_category": "CONTEXT_SHIFT"
+      }
+    ],
+    "errorCategories": {
+      "CONTEXT_SHIFT": 3
+    }
+  },
+  {
+    "conversionId": "conv_644d7d0b",
+    "overallPassed": true,
+    "passRate": 1.0,
+    "testSlices": [
+      {
+        "dimensions": {
+          "Region": "North",
+          "Year": "2023"
+        },
+        "tableau_value": 0.15,
+        "source_value": 0.15,
+        "dax_value": 0.15,
+        "delta": 0.0,
+        "relative_error": 0.0,
+        "passed": true,
+        "error_category": "PERFECT_MATCH"
+      },
+      {
+        "dimensions": {
+          "Region": "South",
+          "Year": "2023"
+        },
+        "tableau_value": 0.08,
+        "source_value": 0.08,
+        "dax_value": 0.08,
+        "delta": 0.0,
+        "relative_error": 0.0,
+        "passed": true,
+        "error_category": "PERFECT_MATCH"
+      },
+      {
+        "dimensions": {
+          "Region": "West",
+          "Year": "2023"
+        },
+        "tableau_value": 0.0,
+        "source_value": 0.0,
+        "dax_value": 0.0,
+        "delta": 0.0,
+        "relative_error": 0.0,
+        "passed": true,
+        "error_category": "PERFECT_MATCH"
+      }
+    ],
+    "errorCategories": {
+      "PERFECT_MATCH": 3
+    }
+  }
 ];
+
+export const tbPbiCorrectionHistory: TbPbiCorrectionAttempt[] = [
+  {
+    "conversionId": "conv_2963eaf8",
+    "attemptNumber": 1,
+    "originalDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), 'chunk_1'[Integrated Risk Band] = \"HIGH\", 'chunk_1'[PolicyStatus] = \"A\")",
+    "correctedDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), FILTER(ALL('chunk_1'), 'chunk_1'[Integrated Score] = \"HIGH\" && 'chunk_1'[PolicyStatus] = \"A\"))",
+    "rootCause": "The original DAX failed because it attempted to filter the 'chunk_1' table using columns that do not exist in that table. The schema context explicitly states that 'Integrated Risk Band' is not a column in 'chunk_1', whereas 'Integrated Score' is. Furthermore, the filter context was likely failing due to the relationship between 'chunk_1' and 'markerchunk_1' not being correctly bridged or the filter columns being misidentified.",
+    "explanation": "Corrected the column reference from the non-existent 'Integrated Risk Band' to 'Integrated Score' based on the provided schema. Used FILTER(ALL(...)) to ensure the measure correctly evaluates the count regardless of the current filter context on the 'chunk_1' table, ensuring the logic matches the ThoughtSpot unique_count_if behavior.",
+    "status": "Healed"
+  },
+  {
+    "conversionId": "conv_2963eaf8",
+    "attemptNumber": 2,
+    "originalDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), FILTER(ALL('chunk_1'), 'chunk_1'[Integrated Score] = \"HIGH\" && 'chunk_1'[PolicyStatus] = \"A\"))",
+    "correctedDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), 'chunk_1'[Integrated Score] = \"HIGH\", 'chunk_1'[PolicyStatus] = \"A\")",
+    "rootCause": "The use of ALL('chunk_1') in the FILTER function removes all filters from the 'chunk_1' table, including the current row context (Region, Year), causing the measure to return a grand total instead of the filtered subset. The original ThoughtSpot formula implicitly respects the current filter context.",
+    "explanation": "Removed the ALL() function to allow the measure to respect the existing filter context (Region, Year). Simplified the CALCULATE syntax by passing the filter conditions directly as arguments, which is standard practice for simple equality filters in DAX.",
+    "status": "Healed"
+  },
+  {
+    "conversionId": "conv_2963eaf8",
+    "attemptNumber": 3,
+    "originalDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), 'chunk_1'[Integrated Score] = \"HIGH\", 'chunk_1'[PolicyStatus] = \"A\")",
+    "correctedDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), FILTER(ALL('chunk_1'), 'chunk_1'[Integrated Score] = \"HIGH\" && 'chunk_1'[PolicyStatus] = \"A\"))",
+    "rootCause": "The previous DAX failed because it attempted to filter the 'chunk_1' table using columns that do not exist or are misaligned with the 'markerchunk_1' table. Specifically, the filter 'Integrated Score' = 'HIGH' was applied to 'chunk_1', but the relationship between 'chunk_1' and 'markerchunk_1' (where PolicyNumber resides) was likely not propagating correctly due to filter context limitations. Additionally, the measure failed to account for the fact that 'PolicyNumber' is in 'markerchunk_1', requiring a cross-table filter context.",
+    "explanation": "The formula was updated to use a FILTER(ALL(...)) pattern to ensure that the filter context from the visual does not prematurely restrict the calculation of the 'Integrated Score' and 'PolicyStatus' conditions. By using ALL('chunk_1'), we ensure the measure evaluates the conditions across the entire dataset before applying the distinct count of PolicyNumber from the marker table.",
+    "status": "Healed"
+  },
+  {
+    "conversionId": "conv_c3229867",
+    "attemptNumber": 1,
+    "originalDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), 'chunk_1'[Integrated Risk Band] = \"HIGH\", 'chunk_1'[PolicyStatus] = \"A\")",
+    "correctedDax": "High Fraud Policies Count = CALCULATE(DISTINCTCOUNT('markerchunk_1'[PolicyNumber]), FILTER(ALL('chunk_1'), 'chunk_1'[RiskClass] = \"HIGH\" && 'chunk_1'[PolicyStatus] = \"A\"))",
+    "rootCause": "The original DAX failed because it attempted to filter the 'chunk_1' table using columns that do not exist in that table ('Integrated Risk Band' is not in the schema context provided for 'chunk_1'). Furthermore, the filter context was likely failing due to a relationship mismatch between 'markerchunk_1' and 'chunk_1'. The filter conditions must be applied to columns that actually exist in the schema.",
+    "explanation": "The filter was updated to use 'RiskClass' instead of the non-existent 'Integrated Risk Band' column. I used the FILTER(ALL(...)) pattern to ensure the measure correctly evaluates the count regardless of the current filter context on the 'chunk_1' table, while still respecting the relationship to 'markerchunk_1'.",
+    "status": "Healed"
+  }
+];
+
+export const tbPbiExportArtifacts: TbPbiExportArtifact[] = [
+  {
+    "id": "art-pbip",
+    "fileName": "Tableau_Insurance_Migration.pbip",
+    "type": "pbip",
+    "description": "Microsoft Power BI Project definition (.pbip) with semantic model and report metadata",
+    "size": "384 KB",
+    "mimeType": "application/json"
+  },
+  {
+    "id": "art-tmdl",
+    "fileName": "model.tmdl",
+    "type": "tmdl",
+    "description": "Tabular Model Definition Language (TMDL) file with full table schemas and relationships",
+    "size": "417 B",
+    "mimeType": "text/plain"
+  },
+  {
+    "id": "art-dax",
+    "fileName": "Tableau_Insurance_DAX_Measures.dax",
+    "type": "dax",
+    "description": "Ready-to-deploy DAX measure expressions with proper lineageTags and formatStrings",
+    "size": "12 KB",
+    "mimeType": "text/plain"
+  },
+  {
+    "id": "art-data",
+    "fileName": "Insurance_Data_Dictionary.xlsx",
+    "type": "excel",
+    "description": "Schema definitions and column statistics across Brokage, Fees, Budget, Invoice, Meeting, Oppty",
+    "size": "114 KB",
+    "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  },
+  {
+    "id": "art-cert",
+    "fileName": "Migration_Verification_Certificate.json",
+    "type": "certificate",
+    "description": "Semantic parity verification audit with 100% column binding and AST validation sign-off",
+    "size": "28 KB",
+    "mimeType": "application/json"
+  }
+];
+
+export const tbPbiTmdlModel: string = "model Model\n\tculture: en-US\n\tdefaultPowerBIDataSourceVersion: powerBI_V3\n\tsourceQueryCulture: en-US\n\tdataAccessOptions\n\t\tlegacyRedirects\n\t\treturnErrorValuesAsNull\n\nannotation __PBI_TimeIntelligenceEnabled = 1\n\nannotation PBI_ProTooling = [\"DevMode\"]\n\n\nref table Meeting\n\nref table Fees\n\nref table 'Individual Budget'\n\nref table Invoice\n\nref table opportunity\n\nref table Brokage\n\nref table MeasuresTable\n";
