@@ -7,20 +7,26 @@ import type { TraceStep } from './ThinkingTrace';
 /* ─────────────────────────────────────────────────────────
  * MigrationLoading — shown after "Start Migration"
  *
- * Single centered section with a Drive pixel-grid loader,
- * descriptive text, and animated ThinkingTrace covering
- * the migration conversion steps.
+ * 2-Stage Migration & Conversion:
+ *   1. BI Migration  — converts dashboards, rebuilds semantic models, converts visual & calculation logic
+ *   2. ETL Migration — converts transformation workflows & logic
+ *
+ * Once both complete, "Show Migration Results" button appears.
  * ───────────────────────────────────────────────────────── */
 
-/* ── Trace steps ── */
-const MIGRATION_STEPS: TraceStep[] = [
-  { label: 'Analyzing source asset definitions & schemas', detail: '8 assets' },
-  { label: 'Mapping Tableau workbooks to Power BI datasets', detail: '2 workbooks' },
-  { label: 'Converting ThoughtSpot liveboards to Power BI reports', detail: '2 liveboards' },
-  { label: 'Transforming MicroStrategy reports to Tableau workbooks' },
-  { label: 'Transpiling Alteryx workflows to Python scripts', detail: '4 workflows' },
-  { label: 'Validating data model compatibility & KPI parity' },
-  { label: 'Generating migration packages & validation reports' },
+/* ── BI Migration Steps ── */
+const BI_MIGRATION_STEPS: TraceStep[] = [
+  { label: 'Assessing source dashboards' },
+  { label: 'Rebuilding semantic models' },
+  { label: 'Converting visual and calculation logic' },
+  { label: 'Validating conversions' },
+];
+
+/* ── ETL Migration Steps ── */
+const ETL_MIGRATION_STEPS: TraceStep[] = [
+  { label: 'Assessing source workflows' },
+  { label: 'Converting transformation logic' },
+  { label: 'Validating conversions' },
 ];
 
 interface Props {
@@ -28,73 +34,116 @@ interface Props {
 }
 
 export default function MigrationLoading({ onShowResults }: Props) {
-  const [done, setDone] = useState(false);
-  const onSettled = useCallback(() => setDone(true), []);
+  const [biDone, setBiDone] = useState(false);
+  const [etlDone, setEtlDone] = useState(false);
+
+  const allDone = biDone && etlDone;
+
+  const onBiSettled = useCallback(() => setBiDone(true), []);
+  const onEtlSettled = useCallback(() => setEtlDone(true), []);
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="max-w-[720px] mx-auto"
+      className="max-w-[1240px] mx-auto"
     >
-      {/* ── Single migration section ── */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
-        className="rounded-2xl border p-6 md:p-8 mb-8 theme-transition"
-        style={{
-          backgroundColor: 'var(--color-bg-elevated)',
-          borderColor: 'var(--color-engine-border)',
-          boxShadow: '0 2px 12px var(--color-card-shadow)',
-        }}
-      >
-        {/* Header */}
-        <div className="mb-4">
-          <h2
-            className="text-lg font-bold tracking-tight mb-1"
-            style={{ color: 'var(--color-text-primary)' }}
-          >
-            Migration
-          </h2>
-          <p
-            className="text-[13px] leading-relaxed"
-            style={{ color: 'var(--color-text-secondary)' }}
-          >
-            The Migration agent is converting asset definitions, transpiling ETL workflows,
-            mapping data models, and generating validated migration packages for all
-            selected platform transitions.
-          </p>
-        </div>
+      {/* ─── Top Row: BI Migration & ETL Migration ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-        {/* Divider */}
-        <div
-          className="h-px mb-4"
+        {/* ── Box 1: BI Migration ── */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15, ease: 'easeOut' }}
+          className="rounded-2xl border p-6 md:p-8 theme-transition flex flex-col"
           style={{
-            background: 'linear-gradient(90deg, var(--color-border-primary), transparent)',
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-engine-border)',
+            boxShadow: '0 2px 12px var(--color-card-shadow)',
           }}
-        />
+          aria-label="BI Migration"
+        >
+          {/* Header */}
+          <div className="mb-4">
+            <h2
+              className="text-lg font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              BI Migration
+            </h2>
+          </div>
 
-        {/* Thinking trace */}
-        <ThinkingTrace
-          activeLabel="Migrating assets…"
-          doneLabel="Migration complete — packages ready"
-          steps={MIGRATION_STEPS}
-          onSettled={onSettled}
-          delayMs={500}
-        />
-      </motion.section>
+          {/* Divider */}
+          <div
+            className="h-px mb-5"
+            style={{
+              background: 'linear-gradient(90deg, var(--color-border-primary), transparent)',
+            }}
+          />
+
+          {/* Thinking trace */}
+          <ThinkingTrace
+            activeLabel="Converting BI dashboards & semantic models…"
+            doneLabel="BI Migration complete — visual & calculation logic converted"
+            steps={BI_MIGRATION_STEPS}
+            onSettled={onBiSettled}
+            delayMs={300}
+          />
+        </motion.section>
+
+        {/* ── Box 2: ETL Migration ── */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25, ease: 'easeOut' }}
+          className="rounded-2xl border p-6 md:p-8 theme-transition flex flex-col"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-engine-border)',
+            boxShadow: '0 2px 12px var(--color-card-shadow)',
+          }}
+          aria-label="ETL Migration"
+        >
+          {/* Header */}
+          <div className="mb-4">
+            <h2
+              className="text-lg font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              ETL Migration
+            </h2>
+          </div>
+
+          {/* Divider */}
+          <div
+            className="h-px mb-5"
+            style={{
+              background: 'linear-gradient(90deg, var(--color-border-primary), transparent)',
+            }}
+          />
+
+          {/* Thinking trace */}
+          <ThinkingTrace
+            activeLabel="Converting ETL workflows & transformation logic…"
+            doneLabel="ETL Migration complete — transformation scripts validated"
+            steps={ETL_MIGRATION_STEPS}
+            onSettled={onEtlSettled}
+            delayMs={400}
+          />
+        </motion.section>
+      </div>
 
       {/* ─── Show Results button — bottom right ─── */}
       <AnimatePresence>
-        {done && (
+        {allDone && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex justify-end"
+            className="flex justify-end mb-8"
           >
             <motion.button
               whileHover={{ scale: 1.02, y: -1 }}

@@ -66,17 +66,8 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
                 className="text-xl md:text-2xl font-bold tracking-tight"
                 style={{ color: 'var(--color-text-primary)' }}
               >
-                Assessment Results - Discovery &amp; Intelligence Agents
+                Assessment - Discovery &amp; Intelligence Agents
               </h1>
-              <span
-                className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
-                style={{
-                  backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                  color: 'rgb(34, 197, 94)',
-                }}
-              >
-                Complete
-              </span>
             </div>
             <p
               className="text-[13px] leading-relaxed"

@@ -139,23 +139,37 @@ export const ingestionStats: IngestionStat[] = [
     id: 'powerbi',
     name: 'Power BI',
     logo: powerbiLogo,
-    count: 10,
+    count: 13,
     suffix: 'dashboards ingested',
-  },
-  {
-    id: 'microstrategy',
-    name: 'MicroStrategy',
-    logo: microstrategyLogo,
-    count: 5,
-    suffix: 'assets ingested',
   },
   {
     id: 'tableau',
     name: 'Tableau',
     logo: tableauLogo,
+    count: 12,
+    suffix: 'workbooks ingested',
+  },
+  {
+    id: 'microstrategy',
+    name: 'MicroStrategy',
+    logo: microstrategyLogo,
     count: 2,
     suffix: 'assets ingested',
   },
+  {
+    id: 'thoughtspot',
+    name: 'ThoughtSpot',
+    logo: thoughtspotLogo,
+    count: 0,
+    suffix: 'liveboards ingested',
+  },
+  {
+    id: 'excel',
+    name: 'Excel',
+    logo: excelLogo,
+    count: 0,
+    suffix: 'spreadsheets ingested',
+  },
 ];
 
-export const totalAssets = 25;
+export const totalAssets = 35;

@@ -18,7 +18,6 @@ export interface MigrationPath {
 
 export const MIGRATION_PATHS: MigrationPath[] = [
   { id: 'tab-pbi', source: 'Tableau', target: 'Power BI', type: 'bi', label: 'Tableau → Power BI' },
-  { id: 'ts-pbi', source: 'ThoughtSpot', target: 'Power BI', type: 'bi', label: 'ThoughtSpot → Power BI' },
   { id: 'ms-pbi', source: 'MicroStrategy', target: 'Power BI', type: 'bi', label: 'MicroStrategy → Power BI' },
   { id: 'ms-tab', source: 'MicroStrategy', target: 'Tableau', type: 'bi', label: 'MicroStrategy → Tableau' },
   { id: 'alt-py', source: 'Alteryx', target: 'Python', type: 'etl', label: 'Alteryx → Python' },
@@ -43,83 +42,311 @@ export const migrationAssets: MigrationAsset[] = [
   /* ── BI Keep — Tableau → Power BI ── */
   {
     id: 'ma1',
-    name: 'agent_performance',
+    name: 'Claims - Agent Performance',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 24,
+    kpiCount: 8,
+    description: 'Primary claims resolution and adjuster throughput dashboard with interactive filters.',
+  },
+  {
+    id: 'ma2',
+    name: 'Claims - Executive Summary',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'High',
+    estimatedHours: 36,
+    kpiCount: 6,
+    description: 'Executive claims overview with paid loss severity and reserve adequacy projections.',
+  },
+  {
+    id: 'ma3',
+    name: 'Claims - State Performance',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 16,
+    kpiCount: 5,
+    description: 'Geographic distribution and regional claims settlement metrics.',
+  },
+  {
+    id: 'ma4',
+    name: 'Healthcare Claim Analysis Dashboard',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'High',
+    estimatedHours: 40,
+    kpiCount: 9,
+    description: 'Comprehensive medical provider analysis with complex ICD diagnostic groupings.',
+  },
+  {
+    id: 'ma5',
+    name: 'Car Insurance Dashboard',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 28,
+    kpiCount: 6,
+    description: 'Auto physical damage claims analysis with vehicle category breakdowns.',
+  },
+  {
+    id: 'ma6',
+    name: 'Motor Insurance Dashboard',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Underwriting',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 24,
+    kpiCount: 7,
+    description: 'Commercial fleet and motor underwriting scorecard with loss frequency calculations.',
+  },
+  {
+    id: 'ma7',
+    name: 'New Business Dashboard',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Policy Administration',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 24,
+    kpiCount: 7,
+    description: 'New policy acquisition tracking with quote-to-bind conversion funnels.',
+  },
+  {
+    id: 'ma8',
+    name: 'Cross Sell Dashboard',
     technology: 'Tableau',
     targetTechnology: 'Power BI',
     businessArea: 'Distribution',
     type: 'bi',
     complexity: 'Medium',
-    estimatedHours: 24,
-    kpiCount: 8,
-    description: 'Primary agent/broker tracking with interactive filtering. Distribution team\'s core operational dashboard.',
+    estimatedHours: 20,
+    kpiCount: 6,
+    description: 'Cross-selling opportunities across multi-line insurance policies.',
   },
   {
-    id: 'ma2',
-    name: 'reserve_adequacy_dashboard',
+    id: 'ma9',
+    name: 'Beneficiary Services v1',
     technology: 'Tableau',
-    targetTechnology: 'Power BI',
-    businessArea: 'Actuarial',
-    type: 'bi',
-    complexity: 'High',
-    estimatedHours: 40,
-    kpiCount: 8,
-    description: 'IBNR reserve monitoring with specialized triangle visualizations. Critical actuarial tool.',
-  },
-
-  /* ── BI Keep — ThoughtSpot → Power BI ── */
-  {
-    id: 'ma3',
-    name: 'customer_360_view',
-    technology: 'ThoughtSpot',
     targetTechnology: 'Power BI',
     businessArea: 'Customer',
     type: 'bi',
-    complexity: 'High',
-    estimatedHours: 36,
-    kpiCount: 10,
-    description: 'Unified customer profile combining policy, claims, billing, and interaction data.',
+    complexity: 'Low',
+    estimatedHours: 16,
+    kpiCount: 6,
+    description: 'Beneficiary service levels, claimant satisfaction, and settlement timeliness.',
   },
   {
-    id: 'ma4',
-    name: 'loss_triangle_workbook',
-    technology: 'ThoughtSpot',
+    id: 'ma10',
+    name: 'Beneficiary Services Aging Dashboard',
+    technology: 'Tableau',
     targetTechnology: 'Power BI',
-    businessArea: 'Actuarial',
+    businessArea: 'Customer',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 16,
+    kpiCount: 5,
+    description: 'Aging analysis of unresolved beneficiary inquiries and open claim files.',
+  },
+  {
+    id: 'ma11',
+    name: 'Insurance Analytics Dashboard (Tableau)',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Finance',
     type: 'bi',
     complexity: 'High',
     estimatedHours: 32,
-    kpiCount: 6,
-    description: 'Interactive loss development analysis with AI search capabilities for actuarial modeling.',
+    kpiCount: 8,
+    description: 'Tableau enterprise analytics workbook with multi-tier financial allocations.',
+  },
+  {
+    id: 'ma12',
+    name: 'Insurance Claim Dashboard',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 22,
+    kpiCount: 7,
+    description: 'Operational claim triage status and litigation risk indicators.',
   },
 
-  /* ── BI Keep — already on Power BI (no migration) ── */
+  /* ── BI Keep — MicroStrategy → Power BI / Tableau ── */
   {
-    id: 'ma5',
-    name: 'financial_overview',
+    id: 'ma_mstr1',
+    name: 'P&C Claims Dashboard v3',
+    technology: 'MicroStrategy',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'High',
+    estimatedHours: 48,
+    kpiCount: 11,
+    description: 'Multi-chapter property and casualty dossier with loss reserve projections and dimensional metrics.',
+  },
+  {
+    id: 'ma_mstr2',
+    name: 'Claims Cube',
+    technology: 'MicroStrategy',
+    targetTechnology: 'Power BI',
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 28,
+    kpiCount: 6,
+    description: 'Multidimensional semantic cube for high-volume claims aggregation and financial reconciliation.',
+  },
+
+  /* ── BI Keep — already on Power BI (no migration required) ── */
+  {
+    id: 'ma_pbi1',
+    name: 'Loss Ratio',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Claims',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 8,
+    description: 'Loss ratio tracking against earned premiums. Already on Power BI — no migration required.',
+  },
+  {
+    id: 'ma_pbi2',
+    name: 'Store Sales',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Distribution',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 7,
+    description: 'Retail branch agency production review. Already on Power BI — no migration required.',
+  },
+  {
+    id: 'ma_pbi3',
+    name: 'Revenue Opportunities',
     technology: 'Power BI',
     targetTechnology: null,
     businessArea: 'Finance',
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 0,
-    kpiCount: 14,
-    description: 'CFO-level dashboard. Already on Power BI — no migration required.',
+    kpiCount: 7,
+    description: 'Pipeline revenue forecasts and premium growth analysis. Already on Power BI.',
   },
   {
-    id: 'ma6',
-    name: 'policy_lifecycle_dashboard',
+    id: 'ma_pbi4',
+    name: 'Sales & Returns Sample v3',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Finance',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 10,
+    description: 'Financial reconciliation of premium billing. Already on Power BI.',
+  },
+  {
+    id: 'ma_pbi5',
+    name: 'IT Spend Analysis Sample',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Finance',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 6,
+    description: 'IT operational expenditure and budget variance tracking. Already on Power BI.',
+  },
+  {
+    id: 'ma_pbi6',
+    name: 'Survival Rate',
     technology: 'Power BI',
     targetTechnology: null,
     businessArea: 'Policy Administration',
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 0,
-    kpiCount: 11,
-    description: 'End-to-end policy visibility. Already on Power BI — no migration required.',
+    kpiCount: 5,
+    description: 'Policy retention curves and lapse analysis. Already on Power BI.',
   },
   {
-    id: 'ma7',
-    name: 'underwriting_pipeline',
+    id: 'ma_pbi7',
+    name: 'Jornaya Dashboard PBI',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Customer',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 6,
+    description: 'Customer journey compliance and consumer intent analysis. Already on Power BI.',
+  },
+  {
+    id: 'ma_pbi8',
+    name: 'Bottom 25% Agents',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Distribution',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 6,
+    description: 'Agent production review identifying lower quartile broker support needs. Already on Power BI.',
+  },
+  {
+    id: 'ma_pbi9',
+    name: 'New Business (Bottom 25% agents)',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Distribution',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 5,
+    description: 'New policy bind counts for bottom quartile distribution channels. Already on Power BI.',
+  },
+  {
+    id: 'ma_pbi10',
+    name: 'Cross Sell Dashboard PBIP',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Distribution',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 6,
+    description: 'Power BI project format cross-sell tracker. Already on Power BI.',
+  },
+  {
+    id: 'ma_pbi11',
+    name: 'Insurance Analytics Dashboard (Power BI)',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Finance',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 9,
+    description: 'Power BI financial reporting with expense breakdown. Already on Power BI.',
+  },
+  {
+    id: 'ma_pbi12',
+    name: 'FFQ Test',
     technology: 'Power BI',
     targetTechnology: null,
     businessArea: 'Underwriting',
@@ -127,50 +354,24 @@ export const migrationAssets: MigrationAsset[] = [
     complexity: 'Low',
     estimatedHours: 0,
     kpiCount: 5,
-    description: 'Active pipeline management dashboard. Already on Power BI — no migration required.',
+    description: 'Full form quotation rating verification dashboard. Already on Power BI.',
   },
   {
-    id: 'ma8',
-    name: 'channel_analytics',
+    id: 'ma_pbi13',
+    name: 'Test',
     technology: 'Power BI',
     targetTechnology: null,
-    businessArea: 'Distribution',
+    businessArea: 'Underwriting',
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 0,
-    kpiCount: 6,
-    description: 'Comprehensive channel performance dashboard. Already on Power BI — no migration required.',
-  },
-
-  /* ── BI Keep — MicroStrategy → Power BI / Tableau ── */
-  {
-    id: 'ma_mstr1',
-    name: 'sales_performance_dossier',
-    technology: 'MicroStrategy',
-    targetTechnology: 'Power BI',
-    businessArea: 'Distribution',
-    type: 'bi',
-    complexity: 'High',
-    estimatedHours: 42,
-    kpiCount: 12,
-    description: 'Executive sales performance dossier with multi-tiered quota and commission attributes.',
-  },
-  {
-    id: 'ma_mstr2',
-    name: 'underwriting_scorecard',
-    technology: 'MicroStrategy',
-    targetTechnology: 'Power BI',
-    businessArea: 'Underwriting',
-    type: 'bi',
-    complexity: 'Medium',
-    estimatedHours: 28,
-    kpiCount: 7,
-    description: 'Underwriting hit-ratio scorecard with risk class metrics and submission volume indicators.',
+    kpiCount: 4,
+    description: 'Underwriting risk scoring experimental dataset. Already on Power BI.',
   },
 
   /* ── ETL Keep — Alteryx → Python ── */
   {
-    id: 'ma9',
+    id: 'ma_etl1',
     name: 'Claims_Extract_Volume',
     technology: 'Alteryx',
     targetTechnology: 'Python',
@@ -178,10 +379,10 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'etl',
     complexity: 'High',
     estimatedHours: 48,
-    description: 'Extracts and enriches claims data from multiple excel sources, summarising claim volume by quarter and status and analysing claims by product type and aging-litigation risk.',
+    description: 'Extracts and enriches claims data from multiple excel sources, summarising claim volume by quarter and status.',
   },
   {
-    id: 'ma10',
+    id: 'ma_etl2',
     name: 'Burritos_Distribution',
     technology: 'Alteryx',
     targetTechnology: 'Python',
@@ -189,10 +390,10 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'etl',
     complexity: 'Low',
     estimatedHours: 32,
-    description: 'Processes operational data from an input excel file, filtering records to include only those where the date falls on a Thursday. It then aggregates the data by calculating the average number of burritos',
+    description: 'Processes operational distribution data with date filtering and volume aggregations.',
   },
   {
-    id: 'ma11',
+    id: 'ma_etl3',
     name: 'Workflow_02',
     technology: 'Alteryx',
     targetTechnology: 'Python',
@@ -200,10 +401,10 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'etl',
     complexity: 'Medium',
     estimatedHours: 28,
-    description: 'Calculates key dates such as Clm_Service_Date and Month_End_Date using predefined formulas and aggregates claim volumes by industry type',
+    description: 'Calculates key dates and aggregates claim volumes by industry type.',
   },
   {
-    id: 'ma12',
+    id: 'ma_etl4',
     name: 'Workflow_03',
     technology: 'Alteryx',
     targetTechnology: 'Python',
@@ -211,32 +412,54 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'etl',
     complexity: 'High',
     estimatedHours: 44,
-    description: 'Consolidates policy, claims and payment data from multiple sources. Categorises policies into premium groupd based on monthly premium accounts and calculates month-end dates for payments',
+    description: 'Consolidates policy, claims and payment data from multiple sources.',
+  },
+  {
+    id: 'ma_etl5',
+    name: 'Workflow_01',
+    technology: 'Alteryx',
+    targetTechnology: 'Python',
+    businessArea: 'Claims',
+    type: 'etl',
+    complexity: 'Medium',
+    estimatedHours: 26,
+    description: 'Consolidates claims and payments data through various transformations.',
+  },
+  {
+    id: 'ma_etl6',
+    name: 'Claims_Extract_Volume_v2',
+    technology: 'Alteryx',
+    targetTechnology: 'Python',
+    businessArea: 'Claims',
+    type: 'etl',
+    complexity: 'Medium',
+    estimatedHours: 28,
+    description: 'Secondary extract workflow for aging-litigation risk categorization.',
+  },
+  {
+    id: 'ma_etl7',
+    name: 'Workflow_04',
+    technology: 'Alteryx',
+    targetTechnology: 'Python',
+    businessArea: 'Underwriting',
+    type: 'etl',
+    complexity: 'High',
+    estimatedHours: 42,
+    description: 'Consolidates operational data across volume performance, geography, and operation metrics.',
   },
 
   /* ── ETL Keep — Python Retained Pipelines ── */
   {
-    id: 'ma13',
+    id: 'ma_etl8',
     name: 'claims_processing',
     technology: 'Python',
-    targetTechnology: null, // Retained as golden standard
-    businessArea: 'Actuarial',
+    targetTechnology: null,
+    businessArea: 'Claims',
     type: 'etl',
     complexity: 'High',
     estimatedHours: 0,
     description: 'Claim modeling data preparation pipeline. Retained on Python / PySpark stack.',
   },
-  // {
-  //   id: 'ma14',
-  //   name: 'endorsement_processing',
-  //   technology: 'Python',
-  //   targetTechnology: null,
-  //   businessArea: 'Policy Administration',
-  //   type: 'etl',
-  //   complexity: 'Medium',
-  //   estimatedHours: 0,
-  //   description: 'Policy endorsement automated processing script with database staging connectors.',
-  // },
 ];
 
 /* ── Calculation & Formula Conversion Model ── */
@@ -256,7 +479,7 @@ export interface CalculationConversion {
 export const calculationConversions: CalculationConversion[] = [
   {
     id: 'calc1',
-    assetName: 'agent_performance',
+    assetName: 'Claims - Agent Performance',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
     fieldName: 'Loss Ratio (Incurred)',
@@ -268,7 +491,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc2',
-    assetName: 'agent_performance',
+    assetName: 'Claims - Agent Performance',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
     fieldName: 'Agent Tier Status',
@@ -280,7 +503,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc3',
-    assetName: 'reserve_adequacy_dashboard',
+    assetName: 'Claims - Executive Summary',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
     fieldName: 'Customer Lifetime Premium (LOD)',
@@ -292,7 +515,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc4',
-    assetName: 'reserve_adequacy_dashboard',
+    assetName: 'Healthcare Claim Analysis Dashboard',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
     fieldName: 'IBNR Reserve Severity',
@@ -304,7 +527,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc5',
-    assetName: 'claims_etl_workflow',
+    assetName: 'Claims_Extract_Volume',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     fieldName: 'State Surcharge Rate',
@@ -316,7 +539,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc6',
-    assetName: 'customer_data_integration',
+    assetName: 'Burritos_Distribution',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     fieldName: 'Fuzzy Customer Match',
@@ -328,7 +551,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc7',
-    assetName: 'sales_performance_dossier',
+    assetName: 'P&C Claims Dashboard v3',
     sourceTechnology: 'MicroStrategy',
     targetTechnology: 'Power BI',
     fieldName: 'Quota Attainment Ratio',
@@ -340,7 +563,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc8',
-    assetName: 'finance_consolidation_etl',
+    assetName: 'Workflow_02',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     fieldName: 'Quarterly Loss Development Factor',
@@ -374,16 +597,16 @@ export const migrationResults: MigrationResult[] = [
   /* Tableau → Power BI */
   {
     id: 'mr1',
-    assetName: 'agent_performance',
+    assetName: 'Claims - Agent Performance',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
-    businessArea: 'Distribution',
+    businessArea: 'Claims',
     type: 'bi',
     status: 'Validated',
     complexity: 'Medium',
     estimatedHours: 24,
     calculationsCount: 8,
-    downloadFileName: 'agent_performance_model.bim',
+    downloadFileName: 'claims_agent_performance_model.bim',
     downloadFileType: 'Tabular Model BIM / JSON',
     packageSnippet: `// Power BI Model & DAX Measure Definitions
 Table: Agent_Performance
@@ -394,105 +617,63 @@ Visual: ClusteredBarChart (Agent_ID, [Loss Ratio], [Written_Premium])`,
   },
   {
     id: 'mr2',
-    assetName: 'reserve_adequacy_dashboard',
+    assetName: 'Claims - Executive Summary',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
-    businessArea: 'Actuarial',
+    businessArea: 'Claims',
     type: 'bi',
     status: 'Migrated',
     complexity: 'High',
-    estimatedHours: 40,
+    estimatedHours: 36,
     calculationsCount: 8,
-    downloadFileName: 'reserve_adequacy_visuals.json',
+    downloadFileName: 'claims_executive_summary_visuals.json',
     downloadFileType: 'PBI Visual Specification / DAX',
     packageSnippet: `// IBNR Reserve Calculation Module
 Table: Actuarial_Reserve
 Measure: Customer Lifetime Premium = CALCULATE(SUM(Policy[Total_Premium]), ALLEXCEPT(Customer, Customer[Customer_ID]))
 Measure: IBNR Severity = AVERAGE(Claims[Outstanding_Reserve]) * SELECTEDVALUE(Parameters[Inflation_Factor], 1.04)`,
-    migrationNotes: 'Triangle visualizations rebuilt as custom Power BI visuals. IBNR reserve calculations preserved via DAX measures.',
+    migrationNotes: 'Executive summary loss visualizations rebuilt as custom Power BI visuals. IBNR reserve calculations preserved via DAX measures.',
   },
-
-  /* ThoughtSpot → Power BI */
   {
     id: 'mr3',
-    assetName: 'customer_360_view',
-    sourceTechnology: 'ThoughtSpot',
+    assetName: 'Healthcare Claim Analysis Dashboard',
+    sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
-    businessArea: 'Customer',
+    businessArea: 'Claims',
     type: 'bi',
     status: 'Validated',
     complexity: 'High',
-    estimatedHours: 36,
-    calculationsCount: 10,
-    downloadFileName: 'customer_360_semantic_model.pbix.json',
+    estimatedHours: 40,
+    calculationsCount: 9,
+    downloadFileName: 'healthcare_claims_semantic_model.pbix.json',
     downloadFileType: 'Power BI Schema Definition',
-    packageSnippet: `// Customer 360 Semantic Model
+    packageSnippet: `// Healthcare Claims Semantic Model
 Relationships:
-  Customer[Cust_ID] 1:* Policy[Cust_ID]
-  Policy[Policy_ID] 1:* Claims[Policy_ID]
+  Provider[Provider_ID] 1:* Claims[Provider_ID]
+  Diagnosis[ICD_Code] 1:* Claims[ICD_Code]
 Measures:
-  [Customer Lifetime Value] = CALCULATE(SUM(Policy[Premium]), ALLSELECTED(Policy))`,
-    migrationNotes: '10 KPIs migrated. AI search capabilities replaced with Power BI Q&A natural language queries. Data model preserved.',
+  [Average Cost per Claim] = CALCULATE(AVERAGE(Claims[Paid_Amount]), ALLSELECTED(Claims))`,
+    migrationNotes: '9 KPIs migrated. Clinical diagnostic hierarchies and medical billing fields preserved.',
   },
   {
     id: 'mr4',
-    assetName: 'loss_triangle_workbook',
-    sourceTechnology: 'ThoughtSpot',
-    targetTechnology: 'Power BI',
-    businessArea: 'Actuarial',
-    type: 'bi',
-    status: 'Optimized',
-    complexity: 'High',
-    estimatedHours: 32,
-    calculationsCount: 6,
-    downloadFileName: 'loss_triangle_report.rdl',
-    downloadFileType: 'Paginated Report RDL / Spec',
-    packageSnippet: `// Loss Development Triangle Matrix
-Matrix: Accident_Year x Development_Month
-Cell Expression: Sum(LossFact[Incremental_Paid_Loss])
-Cumulative Measure: CALCULATE(SUM(LossFact[Incremental_Paid_Loss]), FILTER(ALL(DevMonths), DevMonths[Month] <= MAX(DevMonths[Month])))`,
-    migrationNotes: 'Loss development analysis rebuilt with Power BI paginated reports. AI search replaced by Copilot integration.',
-  },
-
-  /* MicroStrategy → Power BI */
-  {
-    id: 'mr_mstr1',
-    assetName: 'sales_performance_dossier',
+    assetName: 'P&C Claims Dashboard v3',
     sourceTechnology: 'MicroStrategy',
     targetTechnology: 'Power BI',
-    businessArea: 'Distribution',
+    businessArea: 'Claims',
     type: 'bi',
     status: 'Validated',
     complexity: 'High',
-    estimatedHours: 42,
-    calculationsCount: 12,
-    downloadFileName: 'sales_performance_dossier.pbix.json',
+    estimatedHours: 48,
+    calculationsCount: 11,
+    downloadFileName: 'pc_claims_dossier.pbix.json',
     downloadFileType: 'Power BI Fabric Dataset / Schema',
     packageSnippet: `// MicroStrategy Dossier Conversion
-Table: Sales_Performance
+Table: PC_Claims
 Measure: Quota Attainment Ratio = DIVIDE(CALCULATE(SUM(Sales[Written_Premium]), ALLEXCEPT(Agent, Agent[Region])), SUM(Targets[Quota_Amount]), 0)
-Measure: Commission Tier = IF([Quota Attainment Ratio] >= 1.2, "Tier 1 Overachiever", "Standard")
-Visual: DecompositionTree (Sales[Region] -> Sales[Agent] -> [Quota Attainment Ratio])`,
-    migrationNotes: 'Multi-tiered sales attributes converted to DAX hierarchies. Dimensional metric qualifications rebuilt with ALLEXCEPT.',
-  },
-  {
-    id: 'mr_mstr2',
-    assetName: 'underwriting_scorecard',
-    sourceTechnology: 'MicroStrategy',
-    targetTechnology: 'Power BI',
-    businessArea: 'Underwriting',
-    type: 'bi',
-    status: 'Optimized',
-    complexity: 'Medium',
-    estimatedHours: 28,
-    calculationsCount: 7,
-    downloadFileName: 'underwriting_scorecard_report.pbix.json',
-    downloadFileType: 'Power BI Interactive Scorecard',
-    packageSnippet: `// Underwriting Hit-Ratio Metric
-Table: Underwriting_Scorecard
-Measure: Hit Ratio = DIVIDE(COUNTROWS(FILTER(Submissions, Submissions[Status] == "Bound")), COUNTROWS(Submissions), 0)
-Measure: Risk Class Factor = SWITCH(SELECTEDVALUE(RiskTier[Code]), "A", 0.85, "B", 1.0, "C", 1.25, 1.0)`,
-    migrationNotes: 'Scorecard grids and hit-ratio thresholds transpiled to Power BI KPI visual cards and conditional formatting rules.',
+Measure: Loss Severity Tier = IF([Loss Severity] >= 50000, "High Severity", "Standard")
+Visual: DecompositionTree (Claims[Coverage] -> Claims[State] -> [Loss Severity])`,
+    migrationNotes: 'Multi-chapter property and casualty dossier converted to DAX hierarchies. Dimensional metric qualifications rebuilt with ALLEXCEPT.',
   },
 
   /* Alteryx → Python */
@@ -513,7 +694,7 @@ Measure: Risk Class Factor = SWITCH(SELECTEDVALUE(RiskTier[Code]), "A", 0.85, "B
 import numpy as np
 
 def run_claims_etl(raw_claims_df, policy_dim_df):
-    """Transpiled from Alteryx Workflow claims_etl_workflow.yxmd"""
+    """Transpiled from Alteryx Workflow Claims_Extract_Volume.yxmd"""
     # Node 4: Filter active policies
     active = policy_dim_df[policy_dim_df['Status'] == 'Active']
     # Node 7: Join claims on Policy_ID
@@ -534,19 +715,16 @@ def run_claims_etl(raw_claims_df, policy_dim_df):
     complexity: 'Medium',
     estimatedHours: 32,
     calculationsCount: 7,
-    downloadFileName: 'customer_dedup_service.py',
+    downloadFileName: 'distribution_service.py',
     downloadFileType: 'Python PySpark Script',
     packageSnippet: `from pyspark.sql import functions as F
 from rapidfuzz import fuzz
 
-def deduplicate_customers(crm_df, billing_df):
-    """Transpiled from Alteryx Fuzzy Match Tool node"""
-    joined = crm_df.crossJoin(billing_df)
-    # Token sort ratio calculation
-    score_udf = F.udf(lambda s1, s2: fuzz.token_sort_ratio(s1, s2) if s1 and s2 else 0)
-    deduped = joined.withColumn('match_score', score_udf(F.col('crm_name'), F.col('billing_name')))
-    return deduped.filter(F.col('match_score') >= 85)`,
-    migrationNotes: 'CRM and billing connectors rebuilt as Python API clients. Data deduplication logic preserved with fuzzy matching.',
+def process_distribution(sales_df, branch_df):
+    """Transpiled from Alteryx Distribution Workflow"""
+    joined = sales_df.join(branch_df, 'Branch_ID')
+    return joined.filter(F.dayofweek(F.col('Date')) == 5)`,
+    migrationNotes: 'Distribution pipeline converted to Python with automated data transformation assertions.',
   },
   {
     id: 'mr7',
@@ -576,7 +754,7 @@ def deduplicate_customers(crm_df, billing_df):
     type: 'etl',
     status: 'Optimized',
     complexity: 'High',
-    estimatedHours: 44,
+    estimatedHours: 42,
     calculationsCount: 9,
     downloadFileName: 'underwriting_risk_model.py',
     downloadFileType: 'Python Vectorized Pipeline',
@@ -645,8 +823,8 @@ export interface VisualConversionItem {
 export const visualConversions: VisualConversionItem[] = [
   {
     id: 'viz1',
-    worksheetName: 'Agent Loss Ratio & Quota Distribution',
-    assetName: 'agent_performance',
+    worksheetName: 'Adjuster Loss Ratio & SLA Distribution',
+    assetName: 'Claims - Agent Performance',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
     chartType: 'Clustered Bar Chart',
@@ -680,8 +858,8 @@ export const visualConversions: VisualConversionItem[] = [
   },
   {
     id: 'viz2',
-    worksheetName: 'IBNR Reserve Development Triangle',
-    assetName: 'reserve_adequacy_dashboard',
+    worksheetName: 'Executive Loss & Reserve Summary Triangle',
+    assetName: 'Claims - Executive Summary',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
     chartType: 'Matrix / Heat Map',
@@ -714,66 +892,66 @@ export const visualConversions: VisualConversionItem[] = [
   },
   {
     id: 'viz3',
-    worksheetName: 'Customer 360 Lifetime Value Matrix',
-    assetName: 'customer_360_view',
-    sourceTechnology: 'ThoughtSpot',
+    worksheetName: 'Healthcare Clinical Diagnostic Breakdown',
+    assetName: 'Healthcare Claim Analysis Dashboard',
+    sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
     chartType: 'Scatter & Density Plot',
     status: '100% Parity',
     sourceVisual: {
       type: 'Bubble Plot',
-      rows: ['[Tenure Years]'],
-      columns: ['[Total Lifetime Premium]'],
-      color: '[Customer Segment]',
-      size: '[Active Policies Count]',
-      filters: ['[Account Status] = "Active"'],
-      metrics: ['[Customer LTV Score]', '[Retention Probability]'],
-      tooltips: ['[Primary Agent]', '[Last Interaction Date]'],
+      rows: ['[Provider Specialty]'],
+      columns: ['[Total Incurred Cost]'],
+      color: '[Diagnostic Group]',
+      size: '[Patient Volume]',
+      filters: ['[Claim Status] = "Adjudicated"'],
+      metrics: ['[Average Treatment Cost]', '[Readmission Rate]'],
+      tooltips: ['[Primary Facility]', '[Service Date]'],
     },
     targetVisual: {
       markType: 'pbi-scatter-chart',
-      rowsShelf: ['Customer[Tenure_Years]'],
-      columnsShelf: ['Customer[Total_Lifetime_Premium]'],
-      colorEncoding: 'CategoricalPalette(Customer[Segment])',
-      sizeEncoding: 'Customer[Active_Policies_Count]',
-      slicers: ['Customer[Account_Status]', 'Customer[Region]'],
-      tooltipsShelf: ['Customer[Primary_Agent]', 'Customer[Last_Interaction_Date]'],
-      xmlSpec: `<scatterChart visualId="c360_scatter">
-  <xAxis field="Customer.Total_Lifetime_Premium" displayUnits="Thousands" />
-  <yAxis field="Customer.Tenure_Years" />
-  <sizeField field="Customer.Active_Policies_Count" bubbleSizeRange="5-25px" />
-  <legend field="Customer.Segment" />
+      rowsShelf: ['Provider[Specialty]'],
+      columnsShelf: ['Claims[Total_Incurred_Cost]'],
+      colorEncoding: 'CategoricalPalette(Diagnosis[Diagnostic_Group])',
+      sizeEncoding: 'Claims[Patient_Volume]',
+      slicers: ['Claims[Adjudication_Status]', 'Provider[State]'],
+      tooltipsShelf: ['Provider[Facility_Name]', 'Claims[Service_Date]'],
+      xmlSpec: `<scatterChart visualId="healthcare_scatter">
+  <xAxis field="Claims.Total_Incurred_Cost" displayUnits="Thousands" />
+  <yAxis field="Provider.Specialty" />
+  <sizeField field="Claims.Patient_Volume" bubbleSizeRange="5-25px" />
+  <legend field="Diagnosis.Diagnostic_Group" />
 </scatterChart>`,
     },
   },
   {
     id: 'viz4',
-    worksheetName: 'Sales Quota & Commission Dossier Grid',
-    assetName: 'sales_performance_dossier',
+    worksheetName: 'P&C Loss Reserve & Severity Waterfall',
+    assetName: 'P&C Claims Dashboard v3',
     sourceTechnology: 'MicroStrategy',
     targetTechnology: 'Power BI',
     chartType: 'KPI Scorecard & Waterfall',
     status: 'Validated',
     sourceVisual: {
       type: 'MSTR Micro-Chart & Grid',
-      rows: ['[Sales Territory]', '[District Manager]'],
-      columns: ['[Fiscal Quarter]'],
-      color: '[Attainment Tier]',
-      filters: ['[Organization Unit] = "Commercial Lines"'],
-      metrics: ['[Written Premium]', '[Quota Target]', '[Variance %]'],
-      tooltips: ['[Bonus Multiplier]', '[Pipeline Weighted]'],
+      rows: ['[Coverage Line]', '[Loss Tier]'],
+      columns: ['[Accident Quarter]'],
+      color: '[Settlement Status]',
+      filters: ['[Business Unit] = "Commercial Property"'],
+      metrics: ['[Paid Loss]', '[Outstanding Reserve]', '[Variance %]'],
+      tooltips: ['[Litigation Flag]', '[Severity Index]'],
     },
     targetVisual: {
       markType: 'pbi-waterfall-card',
-      rowsShelf: ['Sales[Territory]', 'Sales[District_Manager]'],
-      columnsShelf: ['Date[Fiscal_Quarter]'],
+      rowsShelf: ['Claims[Coverage_Line]', 'Claims[Loss_Tier]'],
+      columnsShelf: ['Date[Accident_Quarter]'],
       colorEncoding: 'Rule(Variance >= 0: #10B981, Variance < 0: #EF4444)',
-      slicers: ['Organization[Unit_Name]', 'Date[Fiscal_Year]'],
-      tooltipsShelf: ['Sales[Bonus_Multiplier]', 'Sales[Pipeline_Weighted]'],
-      xmlSpec: `<waterfallVisual id="sales_quota_waterfall">
-  <category field="Date.Fiscal_Quarter" />
-  <breakdown field="Sales.Territory" />
-  <yAxis field="Measures.Quota_Variance_Amount" />
+      slicers: ['Organization[Business_Unit]', 'Date[Calendar_Year]'],
+      tooltipsShelf: ['Claims[Litigation_Flag]', 'Claims[Severity_Index]'],
+      xmlSpec: `<waterfallVisual id="pc_claims_waterfall">
+  <category field="Date.Accident_Quarter" />
+  <breakdown field="Claims.Coverage_Line" />
+  <yAxis field="Measures.Reserve_Variance_Amount" />
   <sentimentColors positive="#10B981" negative="#EF4444" total="#3B82F6" />
 </waterfallVisual>`,
     },
@@ -796,7 +974,7 @@ export interface ExportArtifactItem {
 export const exportArtifacts: ExportArtifactItem[] = [
   {
     id: 'art1',
-    fileName: 'agent_performance_model.bim',
+    fileName: 'claims_agent_performance_model.bim',
     targetTechnology: 'Power BI',
     category: 'Semantic Model',
     fileSize: '2.4 MB',
@@ -804,7 +982,7 @@ export const exportArtifacts: ExportArtifactItem[] = [
     description: 'Complete Tabular Model BIM with automated DAX measures, table relationships, and Direct Lake partitions.',
     sha256: '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08',
     codeSnippet: `{
-  "name": "Agent_Performance_Semantic_Model",
+  "name": "Claims_Agent_Performance_Model",
   "compatibilityLevel": 1600,
   "model": {
     "culture": "en-US",
@@ -822,18 +1000,18 @@ export const exportArtifacts: ExportArtifactItem[] = [
   },
   {
     id: 'art2',
-    fileName: 'reserve_adequacy_cloud.twbx',
+    fileName: 'claims_executive_summary_cloud.twbx',
     targetTechnology: 'Tableau',
     category: 'Packaged Workbook',
     fileSize: '4.1 MB',
     environment: 'Production',
-    description: 'Production Tableau Packaged Workbook with extracted Hyper schemas, Level-of-Detail calcs, and mobile layout.',
+    description: 'Production Tableau Packaged Workbook with extracted Hyper schemas, Level-of-Detail calcs, and executive mobile layout.',
     sha256: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
     codeSnippet: `<?xml version='1.0' encoding='utf-8' ?>
 <workbook source-build='2025.1.0' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
   <datasources>
-    <datasource caption='Actuarial Reserve Hyper' inline='true' name='hyper.actuarial'>
-      <connection class='hyper' filename='Data/Extracts/reserve_adequacy.hyper' />
+    <datasource caption='Claims Executive Hyper' inline='true' name='hyper.claims_exec'>
+      <connection class='hyper' filename='Data/Extracts/claims_executive.hyper' />
     </datasource>
   </datasources>
 </workbook>`,
