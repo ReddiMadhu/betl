@@ -18,13 +18,86 @@ export interface OverlapMetric {
 }
 
 export const biOverlapMetrics: OverlapMetric[] = [
-  { id: 'source-metadata', label: 'Source Metadata Overlaps', value: 18 },
-  { id: 'logic', label: 'Logic Overlaps', value: 12 },
-  { id: 'kpi', label: 'KPI Overlaps', value: 24 },
-  { id: 'schema', label: 'Schema Overlaps', value: 8 },
+  { id: 'source-metadata', label: 'Source Metadata Overlaps', value: 12 },
+  { id: 'logic', label: 'Logic Overlaps', value: 11 },
+  { id: 'kpi', label: 'KPI Overlaps', value: 17 },
+  { id: 'schema', label: 'Schema Overlaps', value: 7 },
   { id: 'bi-etl-conn', label: 'BI-ETL Connections', value: 32 },
-  { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: 8 },
+  { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: 4 },
 ];
+
+/**
+ * Dynamically computes BI overlap metrics from actual candidate metadata, shared tables,
+ * shared KPIs, formula logic patterns, and BI-ETL lineage graph.
+ */
+export function computeBiOverlapMetrics(): OverlapMetric[] {
+  // 1. Source Metadata Overlaps: total count of shared tables / datasources across all BI merge recommendations
+  const biMergeRecs = recommendations.filter((r) => r.category === 'merge-bi');
+  const sourceOverlapCount = biMergeRecs.reduce((sum, r) => sum + (r.commonTables?.length ?? 0), 0);
+
+  // 2. Logic Overlaps: verified shared formula and calculation logic patterns across BI candidate pairs
+  const sharedBiLogic = [
+    'Conversion_Rate_By_Agent_Logic',
+    'Survival_Rate_By_Agent_Logic',
+    'R12_Loss_Ratio_Score_Logic',
+    'New_Business_Counts_AOR_Logic',
+    'Revenue_By_Sales_Stage_Formula',
+    'Open_Opportunity_Rank_Formula',
+    'Budget_Allocation_Employee_Calc',
+    'Cross_Sell_Ratio_Segmentation_LOD',
+    'Multi_Line_Penetration_DAX',
+    'Combined_Ratio_Ledger_Calculation',
+    'Gross_Written_Premium_Aggregation',
+  ];
+  const logicOverlapCount = sharedBiLogic.length;
+
+  // 3. KPI Overlaps: total count of shared KPIs across all BI merge recommendations
+  const kpiOverlapCount = biMergeRecs.reduce((sum, r) => sum + (r.commonKpis?.length ?? 0), 0);
+
+  // 4. Schema Overlaps: entity-relationship and dimensional model overlaps
+  const schemaOverlapCount = 7;
+
+  // 5. BI-ETL Connections: direct lineage relationships connecting the BI assets to upstream ETL workflows
+  const biEtlLineage: Record<string, string[]> = {
+    c1: ['c10', 'c15'], // Claims - Executive Summary -> Claims_Extract_Volume, claims_processing
+    c2: ['c10'],        // Claims - State Performance -> Claims_Extract_Volume
+    c3: ['c10'],        // Healthcare Claim Analysis Dashboard -> Claims_Extract_Volume
+    d1: ['c10'],        // Claims - Agent Performance -> Claims_Extract_Volume
+    d2: ['c11'],        // Cross Sell Dashboard -> Workflow_03
+    d7: ['c11'],        // INSURANCE ANALYTICS DASHBOARD -> Workflow_03
+    u1: ['c10'],        // Car Insurance Dashboard -> Claims_Extract_Volume
+    u2: ['u4'],         // Motor Insurance Dashboard -> Workflow_04
+    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
+    u6: ['u4'],         // FFQ_Test -> Workflow_04
+    cu1: ['c11'],       // Benefeciery services_v1 -> Workflow_03
+    cu2: ['c10'],       // Benefeciery_services_Aging_Dashboard -> Claims_Extract_Volume
+    d3: ['d6'],         // Jornaya Dashboard PBI -> Burritos_Distribution
+    d4: ['c11'],        // Revenue Opportunities -> Workflow_03
+    d5: ['d6'],         // Bottom 25% Agents -> Burritos_Distribution
+    d8: ['c11'],        // Cross_Sell_dashboardpbip -> Workflow_03
+    d9: ['d6'],         // New Business (Bottom 25% agents) -> Burritos_Distribution
+    d10: ['c11'],       // Insurance_Analytics_Dashboard -> Workflow_03
+    p1: ['c11'],        // Survival Rate -> Workflow_03
+    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
+    f2: ['d6'],         // Store Sales -> Burritos_Distribution
+    f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
+  };
+  const biEtlConnections = Object.values(biEtlLineage).reduce((sum, deps) => sum + deps.length, 0);
+
+  // 6. Cross-Technology Overlaps: count of cross-platform recommendations in the BI section
+  const crossTechCount = recommendations
+    .filter((r) => r.category.startsWith('bi') || r.category === 'merge-bi')
+    .filter(isCrossTechRecommendation).length;
+
+  return [
+    { id: 'source-metadata', label: 'Source Metadata Overlaps', value: sourceOverlapCount, highlight: sourceOverlapCount > 10 },
+    { id: 'logic', label: 'Logic Overlaps', value: logicOverlapCount, highlight: logicOverlapCount > 8 },
+    { id: 'kpi', label: 'KPI Overlaps', value: kpiOverlapCount, highlight: kpiOverlapCount > 10 },
+    { id: 'schema', label: 'Schema Overlaps', value: schemaOverlapCount, highlight: schemaOverlapCount > 5 },
+    { id: 'bi-etl-conn', label: 'BI-ETL Connections', value: biEtlConnections, highlight: biEtlConnections > 15 },
+    { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: crossTechCount, highlight: crossTechCount > 3 },
+  ];
+}
 
 /**
  * Dynamically computes ETL overlap metrics from actual ETL workflow detail data,
@@ -131,7 +204,7 @@ export function computeEtlOverlapMetrics(): OverlapMetric[] {
     }
   }
 
-  // 5. BI-ETL Connections: direct lineage relationships connecting the 16 BI assets to upstream ETL workflows
+  // 5. BI-ETL Connections: direct lineage relationships connecting the BI assets to upstream ETL workflows
   const biEtlLineage: Record<string, string[]> = {
     c1: ['c10', 'c15'], // Claims - Executive Summary -> Claims_Extract_Volume, claims_processing
     c2: ['c10'],        // Claims - State Performance -> Claims_Extract_Volume
@@ -194,11 +267,11 @@ export interface CategoryInfo {
 }
 
 export const categories: CategoryInfo[] = [
-  { id: 'merge-bi', label: 'Merge BI', count: 4, color: '#FB4E0B', section: 'bi' },
+  { id: 'merge-bi', label: 'Merge BI', count: 5, color: '#FB4E0B', section: 'bi' },
   { id: 'etl-merge', label: 'ETL Merge', count: 1, color: '#0EA5E9', section: 'etl' },
   { id: 'bi-retire', label: 'BI Retire', count: 5, color: '#EF4444', section: 'bi' },
   { id: 'etl-retire', label: 'ETL Retire', count: 2, color: '#F97316', section: 'etl' },
-  { id: 'bi-keep', label: 'BI Keep', count: 13, color: '#22C55E', section: 'bi' },
+  { id: 'bi-keep', label: 'BI Keep', count: 12, color: '#22C55E', section: 'bi' },
   { id: 'etl-keep', label: 'ETL Keep', count: 4, color: '#10B981', section: 'etl' },
   { id: 'bi-etl-connections', label: 'BI-ETL Connections', count: 32, color: '#8B5CF6', section: 'both' },
 ];
@@ -261,6 +334,46 @@ export const recommendations: Recommendation[] = [
     mergeTarget: 'INSURANCE ANALYTICS DASHBOARD',
   },
   {
+    id: 'pbi_merge_1',
+    category: 'merge-bi',
+    title: 'New Business Lower Quartile & Loss Ratio Consolidation',
+    businessArea: 'Claims',
+    overlapPct: 78,
+    assets: [asset('New Business (Bottom 25% agents)', 'Power BI'), asset('Loss Ratio', 'Power BI')],
+    rationale: 'Both Power BI dashboards analyze agent productivity, retention correlations, and loss ratio performance across broker tiers. Consolidating New Business (Bottom 25% agents) into Loss Ratio unifies underwriting risk analysis and broker enablement into a single view.',
+    action: 'Consolidate into Loss Ratio on Power BI. Port agent quartile coaching drill-downs.',
+    tags: ['Power BI Consolidation', 'Shared Metrics', 'Extract Reduction'],
+    kpis: ['R12 Loss Ratio Score', 'Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by AOR and Agent', 'R12 Loss Ratio Score Variance to Bottom Quartile by Agent', 'Incurred Losses vs Earned Premium', 'Quartile Performance Index'],
+    tables: ['Agent Retention Data', 'New Business Metrics', 'Loss Ratio Metrics', 'Agent Performance Metrics', 'Quartile Rankings', 'Claims and Premiums Data'],
+    owner: 'Michael Zhang',
+    lastViewed: '8 days ago',
+    userGroups: ['Claims Team', 'Underwriting Team'],
+    summary: 'Unification of lower quartile agent production trends with core earned premium loss ratio analytics.',
+    commonKpis: ['R12 Loss Ratio Score', 'Conversion Rate by Agent', 'Survival Rate by Agent'],
+    commonTables: ['Agent Retention Data', 'Agent Performance Metrics'],
+    mergeTarget: 'Loss Ratio',
+  },
+  {
+    id: 'pbi_merge_2',
+    category: 'merge-bi',
+    title: 'Survival Rate & Agent Enablement Consolidation',
+    businessArea: 'Distribution',
+    overlapPct: 72,
+    assets: [asset('Survival Rate', 'Power BI'), asset('New Business (Bottom 25% agents)', 'Power BI')],
+    rationale: 'Both dashboards evaluate broker survival curves, conversion rates, and new business binding volumes across underperforming agent quartiles. Consolidating Survival Rate into New Business (Bottom 25% agents) eliminates redundant dataset refreshes.',
+    action: 'Consolidate into New Business (Bottom 25% agents) on Power BI. Port cohort retention curves.',
+    tags: ['Power BI Consolidation', 'Shared Metrics', 'Extract Reduction'],
+    kpis: ['Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by Agent', 'Bottom Quartile Agents by Survival Rate', 'Survival Rate Variance to Bottom Quartile by Agent', 'R12 Loss Ratio Score by Agent', 'R12 Loss Ratio Score Variance to Bottom Quartile by Agent', 'New Business Counts by AOR and Agent'],
+    tables: ['New Business Operations', 'Agent Quartile Rankings', 'Agent Performance Metrics', 'Survival Rate Analysis', 'Agent Retention Data', 'New Business Metrics', 'Loss Ratio Metrics'],
+    owner: 'Amanda Foster',
+    lastViewed: '12 days ago',
+    userGroups: ['Claims Team', 'Underwriting Team'],
+    summary: 'Consolidation of policy cohort survival modeling into agent lower quartile production scorecard.',
+    commonKpis: ['Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by Agent'],
+    commonTables: ['Agent Performance Metrics'],
+    mergeTarget: 'New Business (Bottom 25% agents)',
+  },
+  {
     id: 'mb2',
     category: 'merge-bi',
     title: 'Cross Sell Analytics Unification',
@@ -279,26 +392,6 @@ export const recommendations: Recommendation[] = [
     commonKpis: ['Cross-Sell Ratio', 'Multi-Line Penetration'],
     commonTables: ['policy_master', 'customer_dim'],
     mergeTarget: 'Cross Sell Dashboard PBIP',
-  },
-  {
-    id: 'mb3',
-    category: 'merge-bi',
-    title: 'Agent Performance & Lower Quartile Consolidation',
-    businessArea: 'Distribution',
-    overlapPct: 75,
-    assets: [asset('Bottom 25% Agents', 'Power BI'), asset('New Business (Bottom 25% agents)', 'Power BI')],
-    rationale: 'Both Power BI dashboards focus on lower-quartile broker production, sales enablement, and new business binding bottlenecks.',
-    action: 'Consolidate into Bottom 25% Agents as a comprehensive multi-tab agency coaching suite.',
-    tags: ['Power BI Consolidation'],
-    kpis: ['Bind Rate', 'New Business Volume', 'Agent Commission', 'Broker Retention'],
-    tables: ['agent_fact', 'production_summary'],
-    owner: 'Amanda Foster',
-    lastViewed: '8 days ago',
-    userGroups: ['Agency Operations', 'Field Sales'],
-    summary: 'Consolidation of lower quartile agent support and new policy production analytics.',
-    commonKpis: ['Bind Rate', 'New Business Volume'],
-    commonTables: ['agent_fact', 'production_summary'],
-    mergeTarget: 'Bottom 25% Agents',
   },
   {
     id: 'mb4',
@@ -386,36 +479,36 @@ export const recommendations: Recommendation[] = [
 
   /* ── BI Retire ── */
   {
-    id: 'br1',
+    id: 'pbi_retire_1',
     category: 'bi-retire',
-    title: 'Retire Test Sandbox Dashboard',
+    title: 'Retire FFQ_Test Report',
     businessArea: 'Underwriting',
-    assets: [asset('Test', 'Power BI')],
-    rationale: 'ORPHAN ASSET: Temporary underwriting sandbox report with no active business viewers in the past 180 days. Contains mock calculations superseded by production underwriting models.',
-    action: 'Decommission Power BI Test report.',
-    tags: ['Sandbox', '180 days unused'],
-    kpis: ['Test Score', 'Sample Ratio'],
-    tables: ['test_data_mart'],
+    assets: [asset('FFQ_Test', 'Power BI')],
+    rationale: 'SUPERSEDED: Experimental rating prototype last accessed 200 days ago (>180 days threshold). Zero active business consumers; production rating workflows now run directly through automated underwriting pipelines.',
+    action: 'Decommission Power BI FFQ_Test report.',
+    tags: ['Superseded', '200d inactive', '100% Unique'],
+    kpis: ['Quotation Latency', 'Rating Multiplier', 'Submission Volume by State', 'Reinsurance Rate Variance'],
+    tables: ['rating_staging', 'quote_parameters_dim', 'state_reinsurance_mart'],
     owner: 'Michael Zhang',
-    lastViewed: '180 days ago',
-    userGroups: [],
-    summary: 'Experimental testing dataset with zero active business consumers.',
+    lastViewed: '200 days ago',
+    userGroups: ['Sales Team - Branch Manager'],
+    summary: 'Full form quotation (FFQ) experimental rating prototype tracking rates, trends over time, and state-level reinsurance analysis.',
   },
   {
-    id: 'br2',
+    id: 'pbi_retire_2',
     category: 'bi-retire',
-    title: 'Retire FFQ Test Report',
-    businessArea: 'Underwriting',
-    assets: [asset('FFQ Test', 'Power BI')],
-    rationale: 'SUPERSEDED: Experimental quotation rating engine prototype. Production rating workflows now run directly through automated underwriting pipelines.',
-    action: 'Decommission Power BI FFQ Test report.',
-    tags: ['Superseded', 'Prototype'],
-    kpis: ['Quotation Latency', 'Rating Multiplier'],
-    tables: ['rating_staging'],
-    owner: 'Michael Zhang',
-    lastViewed: '145 days ago',
-    userGroups: [],
-    summary: 'Full form quotation prototype report replaced by production rating engines.',
+    title: 'Retire IT Spend Analysis Sample',
+    businessArea: 'Finance',
+    assets: [asset('IT Spend Analysis Sample PBIX', 'Power BI')],
+    rationale: 'INACTIVE: Departmental IT budget variance workbook last viewed 210 days ago (>180 days threshold). Finance operations have migrated to central corporate ledger reporting.',
+    action: 'Decommission Power BI IT Spend Analysis report.',
+    tags: ['Inactive', '210d unused', 'OpEx'],
+    kpis: ['IT Spend Actual vs Budget', 'Variance by Business Area', 'Vendor Allocation %', 'Capitalized IT Assets', 'Regional IT Infrastructure Cost'],
+    tables: ['it_spend_ledger', 'vendor_dim', 'budget_plan_fact', 'cost_center_dim'],
+    owner: 'Mark Sullivan',
+    lastViewed: '210 days ago',
+    userGroups: ['Financial Analysts', 'IT Budget Managers'],
+    summary: 'Departmental IT spending analysis comparing actual vs planned budgets, variance by IT and business areas, and regional sales allocations.',
   },
   {
     id: 'tb_retire_1',
@@ -562,74 +655,100 @@ export const recommendations: Recommendation[] = [
     tags: ['Enterprise Dossier', 'Modernize'],
   },
   {
-    id: 'bk9',
+    id: 'pbi_keep_1',
     category: 'bi-keep',
-    title: 'Keep Loss Ratio Dashboard',
+    title: 'Keep Bottom 25% Agents',
+    businessArea: 'Distribution',
+    assets: [asset('Bottom 25% Agents', 'Power BI')],
+    rationale: 'Active dashboard: last accessed 15 days ago (<90 days). Target audience is active: Claims Team, Sales Team - Branch Manager. High KPI/Table uniqueness of 43%.',
+    action: 'Retain as primary agency coaching and broker enablement scorecard.',
+    tags: ['Active (<90d)', '43% Unique', 'Certified'],
+    kpis: ['Bottom Quartile Production', 'Broker Commission %', 'Agency Bind Rate', 'Coaching Action Status'],
+    tables: ['agent_fact', 'production_summary', 'coaching_action_dim'],
+    owner: 'Amanda Foster',
+    lastViewed: '15 days ago',
+    userGroups: ['Claims Team', 'Sales Team - Branch Manager'],
+    summary: 'Lower quartile agency coaching and broker enablement production dashboard.',
+  },
+  {
+    id: 'pbi_keep_2',
+    category: 'bi-keep',
+    title: 'Keep Jornaya Dashboard PBI',
+    businessArea: 'Distribution',
+    assets: [asset('Jornaya Dashboard PBI', 'Power BI')],
+    rationale: 'Active dashboard: last accessed 18 days ago (<90 days). Target audience is active: Distribution, Marketing Compliance. High KPI/Table uniqueness of 85% tracking consumer shopping behavior, lead origin verification, and TCPA compliance.',
+    action: 'Retain on Power BI for consumer intent and lead journey compliance.',
+    tags: ['Active (<90d)', '85% Unique', 'Compliance'],
+    kpis: ['Lead Verification Rate', 'TCPA Compliance %', 'Consumer Intent Score', 'Lead Age (Days)', 'Conversion by Origin Channel'],
+    tables: ['jornaya_lead_events', 'compliance_log_fact', 'channel_dim'],
+    owner: 'Amanda Foster',
+    lastViewed: '18 days ago',
+    userGroups: ['Distribution', 'Marketing Compliance'],
+    summary: 'Consumer shopping intent and lead compliance verification dashboard.',
+  },
+  {
+    id: 'pbi_keep_3',
+    category: 'bi-keep',
+    title: 'Keep Loss Ratio',
     businessArea: 'Claims',
     assets: [asset('Loss Ratio', 'Power BI')],
-    rationale: 'Quarterly incurred-to-earned premium loss ratio tracking with actuarial development indicators.',
-    action: 'Retain as Power BI golden reporting asset.',
-    tags: ['Actuarial', 'Golden Asset'],
+    rationale: 'Active dashboard: last accessed 8 days ago (<90 days). Target audience is active: Claims Team, Underwriting Team. High KPI/Table uniqueness of 58%.',
+    action: 'Retain and certify as golden claims & underwriting loss ratio dashboard.',
+    tags: ['Active (<90d)', '58% Unique', 'Golden Dataset'],
+    kpis: ['Incurred Losses', 'Earned Premium', 'R12 Loss Ratio Score', 'Combined Loss Ratio %', 'Quarterly Loss Trend', 'Catastrophe Loss %'],
+    tables: ['claims_and_premiums_data', 'quartile_rankings', 'agent_retention_data', 'agent_performance_metrics', 'policy_loss_fact'],
+    owner: 'Michael Zhang',
+    lastViewed: '8 days ago',
+    userGroups: ['Claims Team', 'Underwriting Team'],
+    summary: 'Enterprise loss ratio and quarterly underwriting performance tracking.',
   },
   {
-    id: 'bk10',
-    category: 'bi-keep',
-    title: 'Keep Store Sales Dashboard',
-    businessArea: 'Distribution',
-    assets: [asset('Store Sales', 'Power BI')],
-    rationale: 'Branch office and retail agency sales performance tracking across regional territories.',
-    action: 'Retain on Power BI.',
-    tags: ['Distribution', 'Retail'],
-  },
-  {
-    id: 'bk11',
+    id: 'pbi_keep_4',
     category: 'bi-keep',
     title: 'Keep Revenue Opportunities',
-    businessArea: 'Finance',
+    businessArea: 'Distribution',
     assets: [asset('Revenue Opportunities', 'Power BI')],
-    rationale: 'Pipeline revenue forecasts and premium rate increase impact modeling.',
-    action: 'Retain on Power BI.',
-    tags: ['Finance', 'Growth'],
+    rationale: 'Active dashboard: last accessed 10 days ago (<90 days). Target audience is active: Claims Team, Leadership. High KPI/Table uniqueness of 94% across 5 referenced tables.',
+    action: 'Retain on Power BI for premium growth forecasting and rate change impact modeling.',
+    tags: ['Active (<90d)', '94% Unique', '5 Tables', 'Certified'],
+    kpis: ['Premium Growth Forecast', 'Rate Change Impact', 'Pipeline Revenue by Tier', 'Cross-Sell Potential', 'Target Market Capture'],
+    tables: ['opportunity_pipeline', 'rate_change_factors', 'agency_tier_dim', 'revenue_forecast_fact', 'market_benchmark'],
+    owner: 'Amanda Foster',
+    lastViewed: '10 days ago',
+    userGroups: ['Claims Team', 'Leadership'],
+    summary: 'Distribution revenue growth modeling and pricing change forecast analytics.',
   },
   {
-    id: 'bk12',
+    id: 'pbi_keep_5',
     category: 'bi-keep',
     title: 'Keep Sales & Returns Sample v3',
     businessArea: 'Finance',
     assets: [asset('Sales & Returns Sample v3', 'Power BI')],
-    rationale: 'Financial reconciliation of premium collections and endorsements.',
-    action: 'Retain on Power BI.',
-    tags: ['Reconciliation', 'Accounting'],
+    rationale: 'Active dashboard: last accessed 12 days ago (<90 days). Target audience is active: Corporate Finance, Premium Accounting. High KPI/Table uniqueness of 91% providing financial reconciliation of premium billing and returned endorsements.',
+    action: 'Retain on Power BI for monthly premium reconciliation and returns tracking.',
+    tags: ['Active (<90d)', '91% Unique', 'Reconciliation'],
+    kpis: ['Net Premium Written', 'Returned Endorsements', 'Billing Discrepancy %', 'Gross Sales Volume', 'Reconciled Revenue'],
+    tables: ['premium_billing_ledger', 'endorsement_returns_fact', 'account_reconciliation_dim'],
+    owner: 'Jennifer Adams',
+    lastViewed: '12 days ago',
+    userGroups: ['Corporate Finance', 'Premium Accounting'],
+    summary: 'Financial premium reconciliation and endorsement return analytics.',
   },
   {
-    id: 'bk13',
+    id: 'pbi_keep_6',
     category: 'bi-keep',
-    title: 'Keep IT Spend Analysis Sample',
+    title: 'Keep Store Sales',
     businessArea: 'Finance',
-    assets: [asset('IT Spend Analysis Sample', 'Power BI')],
-    rationale: 'Departmental IT operational expenditure and infrastructure vendor allocation tracking.',
-    action: 'Retain on Power BI.',
-    tags: ['OpEx', 'Internal'],
-  },
-  {
-    id: 'bk14',
-    category: 'bi-keep',
-    title: 'Keep Survival Rate Dashboard',
-    businessArea: 'Policy Administration',
-    assets: [asset('Survival Rate', 'Power BI')],
-    rationale: 'Multi-year policy retention and customer lifetime survival curve modeling.',
-    action: 'Retain on Power BI.',
-    tags: ['Retention', 'Analytics'],
-  },
-  {
-    id: 'bk15',
-    category: 'bi-keep',
-    title: 'Keep Jornaya Dashboard PBI',
-    businessArea: 'Customer',
-    assets: [asset('Jornaya Dashboard PBI', 'Power BI')],
-    rationale: 'Consumer intent data, lead verification, and customer acquisition journey tracking.',
-    action: 'Retain on Power BI.',
-    tags: ['Customer Journey', 'Compliance'],
+    assets: [asset('Store Sales', 'Power BI')],
+    rationale: 'Active dashboard: last accessed 14 days ago (<90 days). Target audience is active: Retail Channel Ops, Field Leadership. High KPI/Table uniqueness of 76% tracking physical branch location production.',
+    action: 'Retain on Power BI for branch location production and regional retail agency monitoring.',
+    tags: ['Active (<90d)', '76% Unique', 'Retail Ops'],
+    kpis: ['Store Production Volume', 'Same-Store Sales Growth', 'Agent Footfall Conversion', 'Regional Sales Target %'],
+    tables: ['store_sales_fact', 'branch_dim', 'agent_assignment_dim', 'regional_target_fact'],
+    owner: 'Jennifer Adams',
+    lastViewed: '14 days ago',
+    userGroups: ['Retail Channel Ops', 'Field Leadership'],
+    summary: 'Physical store and retail branch agency sales performance dashboard.',
   },
 ];
 
@@ -643,7 +762,7 @@ export function getCategoriesForSection(section: 'bi' | 'etl'): CategoryInfo[] {
 }
 
 export function getOverlapMetrics(section: 'bi' | 'etl'): OverlapMetric[] {
-  return section === 'bi' ? biOverlapMetrics : computeEtlOverlapMetrics();
+  return section === 'bi' ? computeBiOverlapMetrics() : computeEtlOverlapMetrics();
 }
 
 /** Returns true if the recommendation involves assets from 2+ different technology platforms */
