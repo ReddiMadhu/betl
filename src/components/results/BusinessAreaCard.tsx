@@ -85,34 +85,50 @@ export default function BusinessAreaCard({ area, index, onAssetClick }: Props) {
         )}
       </div>
 
-      {/* ── Divider ── */}
-      <div
-        className="h-px mx-5"
-        style={{
-          background: 'linear-gradient(90deg, var(--color-border-primary), transparent)',
-        }}
-      />
-
       {/* ── Asset list with line between BI & ETL ── */}
       <div className="p-2 flex flex-col" role="list">
+        {/* Line for BI assets at top */}
+        {biAssets.length > 0 && (
+          <div className="mb-2 px-2 flex items-center gap-2.5" role="separator" aria-label="BI Assets">
+            <div
+              className="h-px flex-1"
+              style={{ backgroundColor: 'var(--color-border-primary)' }}
+            />
+            <span
+              className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border"
+              style={{
+                backgroundColor: 'rgba(30, 41, 59, 0.85)',
+                borderColor: 'var(--color-border-secondary)',
+                color: '#FFFFFF',
+              }}
+            >
+              BI
+            </span>
+            <div
+              className="h-px flex-1"
+              style={{ backgroundColor: 'var(--color-border-primary)' }}
+            />
+          </div>
+        )}
+
         {/* BI Assets */}
         {biAssets.map((asset) => (
           <AssetRow key={asset.id} asset={asset} onClick={onAssetClick} />
         ))}
 
         {/* Line separating BI and ETL assets */}
-        {biAssets.length > 0 && etlAssets.length > 0 && (
+        {etlAssets.length > 0 && (
           <div className="my-2 px-2 flex items-center gap-2.5" role="separator" aria-label="ETL Assets">
             <div
               className="h-px flex-1"
               style={{ backgroundColor: 'var(--color-border-primary)' }}
             />
             <span
-              className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+              className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border"
               style={{
-                backgroundColor: 'var(--color-bg-tertiary)',
-                borderColor: 'var(--color-border-subtle)',
-                color: 'var(--color-text-tertiary)',
+                backgroundColor: 'rgba(30, 41, 59, 0.85)',
+                borderColor: 'var(--color-border-secondary)',
+                color: '#FFFFFF',
               }}
             >
               ETL

@@ -1,494 +1,485 @@
 import { useState, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, ArrowRightLeft, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MIGRATION_PATHS,
-  getAssetsNeedingMigration,
-  getAssetsNoMigration,
-  getAssetsByPath,
+  ArrowRight,
+} from 'lucide-react';
+import { BiLogo, EtlLogo } from './icons/CategoryLogos';
+import {
+  migrationAssets as defaultMigrationAssets,
 } from '../data/migrationData';
 import { TECHNOLOGY_LOGOS } from '../data/discoveryData';
-import type { MigrationPath } from '../data/migrationData';
+import type { TechnologyName } from '../data/discoveryData';
+import type { MigrationAsset } from '../data/migrationData';
+import MigrationTargetModal from './migration/MigrationTargetModal';
 
 /* ─────────────────────────────────────────────────────────
- * MigrationSelection — choose which keep assets to migrate
- *
- * Users can check / uncheck individual assets or toggle
- * all assets within a migration path. The header pill and
- * CTA update dynamically based on selected assets.
+ * MigrationSelection — Migration Planning (Migration Agent)
  * ───────────────────────────────────────────────────────── */
 
-/* ── Custom checkbox ── */
-function Checkbox({
-  checked,
-  onChange,
-  accentColor,
-}: {
-  checked: boolean;
-  onChange: () => void;
-  accentColor: string;
-}) {
-  return (
-    <button
-      type="button"
-      role="checkbox"
-      aria-checked={checked}
-      onClick={(e) => { e.stopPropagation(); onChange(); }}
-      className="w-[18px] h-[18px] rounded-md border-2 flex items-center justify-center shrink-0 cursor-pointer transition-all duration-200"
-      style={{
-        backgroundColor: checked ? accentColor : 'transparent',
-        borderColor: checked ? accentColor : 'var(--color-border-secondary)',
-        boxShadow: checked ? `0 0 0 2px ${accentColor}20` : 'none',
-      }}
-    >
-      {checked && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
-    </button>
-  );
-}
-
-/* ── Path card with selectable asset list ── */
-function PathCard({
-  path,
-  index,
-  selectedIds,
-  onToggle,
-  onToggleAll,
-}: {
-  path: MigrationPath;
-  index: number;
-  selectedIds: Set<string>;
-  onToggle: (id: string) => void;
-  onToggleAll: (pathId: string) => void;
-}) {
-  const [expanded, setExpanded] = useState(true);
-  const assets = useMemo(() => getAssetsByPath(path.id), [path.id]);
-
-  if (assets.length === 0) return null;
-
-  const selectedCount = assets.filter((a) => selectedIds.has(a.id)).length;
-  const allSelected = selectedCount === assets.length;
-  const someSelected = selectedCount > 0 && !allSelected;
-
-  const accentColor = path.type === 'bi' ? '#6366F1' : '#0EA5E9';
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.15 + index * 0.08, duration: 0.4, ease: 'easeOut' }}
-      className="rounded-2xl border theme-transition overflow-hidden"
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        borderColor: 'var(--color-border-primary)',
-        boxShadow: '0 1px 4px var(--color-card-shadow)',
-      }}
-    >
-      {/* Card header */}
-      <button
-        type="button"
-        onClick={() => setExpanded((e) => !e)}
-        className="w-full flex items-center justify-between gap-4 p-5 cursor-pointer transition-colors duration-150"
-        style={{ border: 'none', background: 'transparent' }}
-        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface-hover)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-      >
-        <div className="flex items-center gap-4">
-          {/* Source → Target logos */}
-          <div className="flex items-center gap-2.5">
-            <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center p-1.5 border"
-              style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-primary)' }}
-            >
-              <img src={TECHNOLOGY_LOGOS[path.source]} alt={path.source} className="w-full h-full object-contain" />
-            </div>
-            <ArrowRight size={16} style={{ color: accentColor, flexShrink: 0 }} />
-            <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center p-1.5 border"
-              style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-primary)' }}
-            >
-              <img src={TECHNOLOGY_LOGOS[path.target]} alt={path.target} className="w-full h-full object-contain" />
-            </div>
-          </div>
-
-          {/* Path label + meta */}
-          <div className="text-left">
-            <h3 className="text-[14px] font-bold" style={{ color: 'var(--color-text-primary)' }}>
-              {path.label}
-            </h3>
-            <p className="text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
-              {selectedCount}/{assets.length} selected
-            </p>
-          </div>
-        </div>
-
-        {/* Right side: badge + chevron */}
-        <div className="flex items-center gap-3">
-          <span
-            className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border"
-            style={{
-              color: accentColor,
-              backgroundColor: accentColor + '10',
-              borderColor: accentColor + '20',
-            }}
-          >
-            {path.type === 'bi' ? 'BI' : 'ETL'}
-          </span>
-          <svg
-            width="14" height="14" viewBox="0 0 24 24" fill="none"
-            stroke="var(--color-text-tertiary)" strokeWidth="2.2"
-            strokeLinecap="round" strokeLinejoin="round"
-            style={{ transition: 'transform 0.3s ease', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </div>
-      </button>
-
-      {/* Expandable asset list */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateRows: expanded ? '1fr' : '0fr',
-          transition: 'grid-template-rows 400ms cubic-bezier(0.23,1,0.32,1)',
-        }}
-      >
-        <div style={{ overflow: 'hidden' }}>
-          <div className="px-5 pb-5" style={{ borderTop: '1px solid var(--color-border-subtle)' }}>
-            {/* Select All toggle */}
-            <div className="flex items-center justify-between pt-4 pb-2.5">
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); onToggleAll(path.id); }}
-                className="flex items-center gap-2 text-[11px] font-semibold cursor-pointer transition-colors duration-150 px-2 py-1 rounded-md"
-                style={{
-                  border: 'none',
-                  background: 'transparent',
-                  color: allSelected ? accentColor : 'var(--color-text-secondary)',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-surface-hover)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
-              >
-                <Checkbox checked={allSelected} onChange={() => onToggleAll(path.id)} accentColor={accentColor} />
-                {allSelected ? 'Deselect All' : someSelected ? `Select All (${assets.length - selectedCount} remaining)` : 'Select All'}
-              </button>
-              <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                {selectedCount} of {assets.length}
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-2.5">
-              {assets.map((asset) => {
-                const isSelected = selectedIds.has(asset.id);
-                return (
-                  <div
-                    key={asset.id}
-                    onClick={() => onToggle(asset.id)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-150 cursor-pointer"
-                    style={{
-                      backgroundColor: isSelected ? accentColor + '06' : 'var(--color-surface)',
-                      borderColor: isSelected ? accentColor + '30' : 'var(--color-border-primary)',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isSelected) e.currentTarget.style.borderColor = accentColor + '40';
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isSelected) e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-                    }}
-                  >
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={() => onToggle(asset.id)}
-                      accentColor={accentColor}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span
-                          className="text-[13px] font-semibold truncate"
-                          style={{ color: 'var(--color-text-primary)' }}
-                        >
-                          {asset.name}
-                        </span>
-                        <span
-                          className="text-[10px] font-medium px-2 py-0.5 rounded-md border shrink-0"
-                          style={{
-                            backgroundColor:
-                              asset.complexity === 'High' ? '#EF444410' :
-                              asset.complexity === 'Medium' ? '#F59E0B10' : '#22C55E10',
-                            color:
-                              asset.complexity === 'High' ? '#EF4444' :
-                              asset.complexity === 'Medium' ? '#F59E0B' : '#22C55E',
-                            borderColor:
-                              asset.complexity === 'High' ? '#EF444420' :
-                              asset.complexity === 'Medium' ? '#F59E0B20' : '#22C55E20',
-                          }}
-                        >
-                          {asset.complexity}
-                        </span>
-                      </div>
-                      <p className="text-[11px] leading-relaxed line-clamp-1" style={{ color: 'var(--color-text-tertiary)' }}>
-                        {asset.businessArea} · {asset.description}
-                      </p>
-                    </div>
-                    <ArrowRightLeft size={14} style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }} />
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ── Main component ── */
 interface Props {
-  onStartMigration?: () => void;
+  onStartMigration?: (selectedIds?: string[]) => void;
 }
 
 export default function MigrationSelection({ onStartMigration }: Props) {
-  const needsMigration = useMemo(() => getAssetsNeedingMigration(), []);
-  const noMigration = useMemo(() => getAssetsNoMigration(), []);
-  const activePaths = useMemo(
-    () => MIGRATION_PATHS.filter((p) => getAssetsByPath(p.id).length > 0),
-    [],
+  // Local state for all assets to allow in-memory target adjustments
+  const [assets, setAssets] = useState<MigrationAsset[]>(() => defaultMigrationAssets);
+
+  // Active target selection modal asset
+  const [editingAsset, setEditingAsset] = useState<MigrationAsset | null>(null);
+
+  // Filter tabs inside BI & ETL cards
+  const [biFilter, setBiFilter] = useState<'ALL' | 'Tableau' | 'Power BI' | 'MicroStrategy'>('ALL');
+  const [etlFilter, setEtlFilter] = useState<'ALL' | 'Alteryx' | 'Python'>('ALL');
+
+  // Grouped assets
+  const biAssets = useMemo(() => assets.filter((a) => a.type === 'bi'), [assets]);
+  const etlAssets = useMemo(() => assets.filter((a) => a.type === 'etl'), [assets]);
+
+  // Filtered lists
+  const filteredBiAssets = useMemo(() => {
+    if (biFilter === 'ALL') return biAssets;
+    return biAssets.filter((a) => a.technology === biFilter);
+  }, [biAssets, biFilter]);
+
+  const filteredEtlAssets = useMemo(() => {
+    if (etlFilter === 'ALL') return etlAssets;
+    return etlAssets.filter((a) => a.technology === etlFilter);
+  }, [etlAssets, etlFilter]);
+
+  // Counts for BI technologies
+  const tableauCount = useMemo(() => biAssets.filter((a) => a.technology === 'Tableau').length, [biAssets]);
+  const powerBiCount = useMemo(() => biAssets.filter((a) => a.technology === 'Power BI').length, [biAssets]);
+  const mstrCount = useMemo(() => biAssets.filter((a) => a.technology === 'MicroStrategy').length, [biAssets]);
+
+  // Counts for ETL technologies
+  const alteryxCount = useMemo(() => etlAssets.filter((a) => a.technology === 'Alteryx').length, [etlAssets]);
+  const pythonCount = useMemo(() => etlAssets.filter((a) => a.technology === 'Python').length, [etlAssets]);
+
+  // Handle target change from modal and start migration loading screen
+  const handleUpdateTarget = useCallback(
+    (assetId: string, newTarget: TechnologyName | null) => {
+      setAssets((prev) =>
+        prev.map((a) => {
+          if (a.id === assetId) {
+            return {
+              ...a,
+              targetTechnology: newTarget,
+            };
+          }
+          return a;
+        }),
+      );
+      setEditingAsset(null);
+      // Immediately navigate to migration transpilation loading screen
+      onStartMigration?.([assetId]);
+    },
+    [onStartMigration],
   );
-
-  // Selection state — all needing-migration assets selected by default
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(
-    () => new Set(needsMigration.map((a) => a.id)),
-  );
-
-  const toggleAsset = useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
-  const toggleAllForPath = useCallback((pathId: string) => {
-    const pathAssets = getAssetsByPath(pathId);
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      const allSelected = pathAssets.every((a) => next.has(a.id));
-      if (allSelected) {
-        pathAssets.forEach((a) => next.delete(a.id));
-      } else {
-        pathAssets.forEach((a) => next.add(a.id));
-      }
-      return next;
-    });
-  }, []);
-
-  const selectedAssets = needsMigration.filter((a) => selectedIds.has(a.id));
-  const totalSelected = selectedAssets.length;
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="space-y-5"
+      className="space-y-6 pb-12"
     >
-      {/* ════ Header ════ */}
+      {/* ── Heading: Select Assets to Migrate ── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="rounded-2xl border p-6 theme-transition"
-        style={{
-          backgroundColor: 'var(--color-bg-elevated)',
-          borderColor: 'var(--color-engine-border)',
-          boxShadow: '0 2px 12px var(--color-card-shadow)',
-        }}
+        className="flex items-center justify-between gap-4 pt-1"
       >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-          <h1
-            className="text-xl md:text-2xl font-bold tracking-tight"
-            style={{ color: 'var(--color-text-primary)' }}
-          >
-            Migration Planning
-          </h1>
-          <div className="flex items-center gap-3">
-            <span
-              className="text-[11px] font-semibold px-3 py-1.5 rounded-lg border"
-              style={{
-                backgroundColor: totalSelected > 0 ? 'var(--color-accent-subtle)' : 'var(--color-surface)',
-                borderColor: totalSelected > 0
-                  ? 'color-mix(in srgb, var(--color-accent) 25%, var(--color-border-primary))'
-                  : 'var(--color-border-primary)',
-                color: totalSelected > 0 ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-              }}
-            >
-              {totalSelected} of {needsMigration.length} assets selected
-            </span>
-            <motion.button
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={onStartMigration}
-              className="group relative inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{
-                backgroundColor: 'var(--color-accent)',
-                boxShadow: '0 2px 8px var(--color-accent-glow)',
-                outlineColor: 'var(--color-accent)',
-                border: 'none',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
-              }}
-              aria-label="Start Migration"
-            >
-              Start Migration
-              <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
-            </motion.button>
-          </div>
-        </div>
+        <h1
+          className="text-2xl lg:text-3xl font-bold tracking-tight"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
+          Select Assets to Migrate
+        </h1>
+      </motion.div>
 
-        {/* Summary metric pills */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {activePaths.map((path, i) => {
-            const assets = getAssetsByPath(path.id);
-            const selectedInPath = assets.filter((a) => selectedIds.has(a.id));
-            const accentColor = path.type === 'bi' ? '#6366F1' : '#0EA5E9';
-            return (
-              <motion.div
-                key={path.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 + i * 0.05, duration: 0.3 }}
-                className="rounded-xl border p-4 theme-transition"
+      {/* ═════════════════════════════════════════════════════════
+          TWO PRIMARY CARDS:
+          CARD 1: BI Retained Dashboards (Tableau, Power BI, MicroStrategy)
+          CARD 2: ETL Retained Workflows (Alteryx, Python)
+          ═════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {/* ── CARD 1: BI RETAINED DASHBOARDS ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+          className="rounded-2xl border flex flex-col overflow-hidden theme-transition"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+            boxShadow: '0 2px 10px var(--color-card-shadow)',
+          }}
+        >
+          {/* BI Card Header */}
+          <div
+            className="p-5 border-b"
+            style={{
+              borderColor: 'var(--color-border-primary)',
+              background: 'linear-gradient(180deg, var(--color-surface) 0%, transparent 100%)',
+            }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center p-1.5 border shadow-sm shrink-0"
+                style={{
+                  backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                  borderColor: 'rgba(59, 130, 246, 0.22)',
+                }}
+              >
+                <BiLogo className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                  BI Retained Dashboards
+                </h2>
+                <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                  Tableau · Power BI · MicroStrategy
+                </p>
+              </div>
+            </div>
+
+            {/* Sub-filter tabs inside BI: All | Tableau | Power BI | MicroStrategy */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setBiFilter('ALL')}
+                className="px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all border"
+                style={{
+                  background:
+                    biFilter === 'ALL'
+                      ? 'linear-gradient(135deg, rgba(251, 78, 11, 0.18) 0%, rgba(251, 78, 11, 0.05) 100%)'
+                      : 'var(--color-surface)',
+                  color: biFilter === 'ALL' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  borderColor:
+                    biFilter === 'ALL'
+                      ? 'color-mix(in srgb, var(--color-accent) 40%, var(--color-border-primary))'
+                      : 'var(--color-border-primary)',
+                  boxShadow: biFilter === 'ALL' ? '0 2px 8px rgba(251, 78, 11, 0.12)' : 'none',
+                }}
+              >
+                All BI ({biAssets.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setBiFilter('Tableau')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all border"
+                style={{
+                  background:
+                    biFilter === 'Tableau'
+                      ? 'linear-gradient(135deg, rgba(251, 78, 11, 0.18) 0%, rgba(251, 78, 11, 0.05) 100%)'
+                      : 'var(--color-surface)',
+                  color: biFilter === 'Tableau' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  borderColor:
+                    biFilter === 'Tableau'
+                      ? 'color-mix(in srgb, var(--color-accent) 40%, var(--color-border-primary))'
+                      : 'var(--color-border-primary)',
+                  boxShadow: biFilter === 'Tableau' ? '0 2px 8px rgba(251, 78, 11, 0.12)' : 'none',
+                }}
+              >
+                <img src={TECHNOLOGY_LOGOS['Tableau']} alt="Tableau" className="w-3.5 h-3.5 object-contain" />
+                Tableau ({tableauCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setBiFilter('Power BI')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all border"
+                style={{
+                  background:
+                    biFilter === 'Power BI'
+                      ? 'linear-gradient(135deg, rgba(251, 78, 11, 0.18) 0%, rgba(251, 78, 11, 0.05) 100%)'
+                      : 'var(--color-surface)',
+                  color: biFilter === 'Power BI' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  borderColor:
+                    biFilter === 'Power BI'
+                      ? 'color-mix(in srgb, var(--color-accent) 40%, var(--color-border-primary))'
+                      : 'var(--color-border-primary)',
+                  boxShadow: biFilter === 'Power BI' ? '0 2px 8px rgba(251, 78, 11, 0.12)' : 'none',
+                }}
+              >
+                <img src={TECHNOLOGY_LOGOS['Power BI']} alt="Power BI" className="w-3.5 h-3.5 object-contain" />
+                Power BI ({powerBiCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setBiFilter('MicroStrategy')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all border"
+                style={{
+                  background:
+                    biFilter === 'MicroStrategy'
+                      ? 'linear-gradient(135deg, rgba(251, 78, 11, 0.18) 0%, rgba(251, 78, 11, 0.05) 100%)'
+                      : 'var(--color-surface)',
+                  color: biFilter === 'MicroStrategy' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  borderColor:
+                    biFilter === 'MicroStrategy'
+                      ? 'color-mix(in srgb, var(--color-accent) 40%, var(--color-border-primary))'
+                      : 'var(--color-border-primary)',
+                  boxShadow: biFilter === 'MicroStrategy' ? '0 2px 8px rgba(251, 78, 11, 0.12)' : 'none',
+                }}
+              >
+                <img src={TECHNOLOGY_LOGOS['MicroStrategy']} alt="MicroStrategy" className="w-3.5 h-3.5 object-contain" />
+                MicroStrategy ({mstrCount})
+              </button>
+            </div>
+          </div>
+
+          {/* BI Asset List */}
+          <div className="p-4 space-y-2.5 overflow-y-auto max-h-[640px] flex-1">
+            {filteredBiAssets.map((asset) => (
+              <div
+                key={asset.id}
+                onClick={() => setEditingAsset(asset)}
+                className="rounded-xl border px-4 py-3.5 transition-all duration-200 cursor-pointer relative group flex items-center justify-between gap-3"
                 style={{
                   backgroundColor: 'var(--color-surface)',
                   borderColor: 'var(--color-border-primary)',
                   boxShadow: '0 1px 3px var(--color-card-shadow)',
                 }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-accent)';
+                  e.currentTarget.style.backgroundColor = 'var(--color-accent-subtle)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                  e.currentTarget.style.transform = 'none';
+                }}
+                title="Click to configure destination target technology"
               >
-                <div className="flex items-center gap-2 mb-2">
+                {/* Tech Logo & Name */}
+                <div className="flex items-center gap-3 min-w-0">
                   <div
-                    className="w-6 h-6 rounded flex items-center justify-center p-0.5"
-                    style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
+                    className="w-7 h-7 rounded-md flex items-center justify-center p-1 border shrink-0"
+                    style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-primary)' }}
                   >
-                    <img src={TECHNOLOGY_LOGOS[path.source]} alt={path.source} className="w-full h-full object-contain" />
+                    <img
+                      src={TECHNOLOGY_LOGOS[asset.technology]}
+                      alt={asset.technology}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <ArrowRight size={12} style={{ color: accentColor }} />
-                  <div
-                    className="w-6 h-6 rounded flex items-center justify-center p-0.5"
-                    style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
+                  <h3
+                    className="text-xs sm:text-sm font-bold truncate group-hover:text-[var(--color-accent)] transition-colors"
+                    style={{ color: 'var(--color-text-primary)' }}
                   >
-                    <img src={TECHNOLOGY_LOGOS[path.target]} alt={path.target} className="w-full h-full object-contain" />
-                  </div>
-                </div>
-                <span className="text-lg font-bold tabular-nums" style={{ color: accentColor }}>
-                  {selectedInPath.length}
-                  <span className="text-[11px] font-normal" style={{ color: 'var(--color-text-tertiary)' }}>
-                    /{assets.length}
-                  </span>
-                </span>
-                <span className="text-[10px] font-medium block" style={{ color: 'var(--color-text-tertiary)' }}>
-                  {path.label}
-                </span>
-              </motion.div>
-            );
-          })}
-        </div>
-      </motion.div>
-
-      {/* ════ Migration path cards ════ */}
-      {activePaths.map((path, i) => (
-        <PathCard
-          key={path.id}
-          path={path}
-          index={i}
-          selectedIds={selectedIds}
-          onToggle={toggleAsset}
-          onToggleAll={toggleAllForPath}
-        />
-      ))}
-
-      {/* ════ No migration needed section ════ */}
-      {noMigration.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.4 }}
-          className="rounded-2xl border p-5 theme-transition"
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            borderColor: 'var(--color-border-primary)',
-            boxShadow: '0 1px 4px var(--color-card-shadow)',
-          }}
-        >
-          <div className="flex items-center gap-2.5 mb-4">
-            <CheckCircle2 size={16} style={{ color: '#22C55E' }} />
-            <h2 className="text-[14px] font-bold" style={{ color: 'var(--color-text-primary)' }}>
-              No Migration Required
-            </h2>
-            <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded-md border"
-              style={{ color: '#22C55E', backgroundColor: '#22C55E10', borderColor: '#22C55E20' }}
-            >
-              {noMigration.length} assets
-            </span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-            {noMigration.map((asset) => (
-              <div
-                key={asset.id}
-                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border"
-                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}
-              >
-                <div
-                  className="w-7 h-7 rounded-lg flex items-center justify-center p-1 shrink-0"
-                  style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-                >
-                  <img src={TECHNOLOGY_LOGOS[asset.technology]} alt={asset.technology} className="w-full h-full object-contain" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[12px] font-semibold truncate block" style={{ color: 'var(--color-text-primary)' }}>
                     {asset.name}
+                  </h3>
+                </div>
+
+                {/* Arrow indicating click to configure */}
+                <div className="flex items-center gap-1.5 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-accent)] transition-colors shrink-0">
+                  <span className="text-[11px] font-medium hidden sm:inline opacity-0 group-hover:opacity-100 transition-opacity">
+                    Configure
                   </span>
-                  <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                    {asset.businessArea} · {asset.technology}
-                  </span>
+                  <ArrowRight
+                    size={16}
+                    className="transition-transform duration-200 group-hover:translate-x-1"
+                  />
                 </div>
               </div>
             ))}
           </div>
         </motion.div>
-      )}
 
-      {/* ════ Start Migration CTA ════ */}
+        {/* ── CARD 2: ETL RETAINED WORKFLOWS ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.2 }}
+          className="rounded-2xl border flex flex-col overflow-hidden theme-transition"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+            boxShadow: '0 2px 10px var(--color-card-shadow)',
+          }}
+        >
+          {/* ETL Card Header */}
+          <div
+            className="p-5 border-b"
+            style={{
+              borderColor: 'var(--color-border-primary)',
+              background: 'linear-gradient(180deg, var(--color-surface) 0%, transparent 100%)',
+            }}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center p-1.5 border shadow-sm shrink-0"
+                style={{
+                  backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                  borderColor: 'rgba(16, 185, 129, 0.22)',
+                }}
+              >
+                <EtlLogo className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                  ETL Retained Workflows
+                </h2>
+                <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                  Alteryx · Python / PySpark
+                </p>
+              </div>
+            </div>
+
+            {/* Sub-filter tabs inside ETL: All | Alteryx | Python */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setEtlFilter('ALL')}
+                className="px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all border"
+                style={{
+                  background:
+                    etlFilter === 'ALL'
+                      ? 'linear-gradient(135deg, rgba(251, 78, 11, 0.18) 0%, rgba(251, 78, 11, 0.05) 100%)'
+                      : 'var(--color-surface)',
+                  color: etlFilter === 'ALL' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  borderColor:
+                    etlFilter === 'ALL'
+                      ? 'color-mix(in srgb, var(--color-accent) 40%, var(--color-border-primary))'
+                      : 'var(--color-border-primary)',
+                  boxShadow: etlFilter === 'ALL' ? '0 2px 8px rgba(251, 78, 11, 0.12)' : 'none',
+                }}
+              >
+                All ETL ({etlAssets.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setEtlFilter('Alteryx')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all border"
+                style={{
+                  background:
+                    etlFilter === 'Alteryx'
+                      ? 'linear-gradient(135deg, rgba(251, 78, 11, 0.18) 0%, rgba(251, 78, 11, 0.05) 100%)'
+                      : 'var(--color-surface)',
+                  color: etlFilter === 'Alteryx' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  borderColor:
+                    etlFilter === 'Alteryx'
+                      ? 'color-mix(in srgb, var(--color-accent) 40%, var(--color-border-primary))'
+                      : 'var(--color-border-primary)',
+                  boxShadow: etlFilter === 'Alteryx' ? '0 2px 8px rgba(251, 78, 11, 0.12)' : 'none',
+                }}
+              >
+                <img src={TECHNOLOGY_LOGOS['Alteryx']} alt="Alteryx" className="w-3.5 h-3.5 object-contain" />
+                Alteryx ({alteryxCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setEtlFilter('Python')}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all border"
+                style={{
+                  background:
+                    etlFilter === 'Python'
+                      ? 'linear-gradient(135deg, rgba(251, 78, 11, 0.18) 0%, rgba(251, 78, 11, 0.05) 100%)'
+                      : 'var(--color-surface)',
+                  color: etlFilter === 'Python' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                  borderColor:
+                    etlFilter === 'Python'
+                      ? 'color-mix(in srgb, var(--color-accent) 40%, var(--color-border-primary))'
+                      : 'var(--color-border-primary)',
+                  boxShadow: etlFilter === 'Python' ? '0 2px 8px rgba(251, 78, 11, 0.12)' : 'none',
+                }}
+              >
+                <img src={TECHNOLOGY_LOGOS['Python']} alt="Python" className="w-3.5 h-3.5 object-contain" />
+                Python ({pythonCount})
+              </button>
+            </div>
+          </div>
+
+          {/* ETL Asset List */}
+          <div className="p-4 space-y-2.5 overflow-y-auto max-h-[640px] flex-1">
+            {filteredEtlAssets.map((asset) => (
+              <div
+                key={asset.id}
+                onClick={() => setEditingAsset(asset)}
+                className="rounded-xl border px-4 py-3.5 transition-all duration-200 cursor-pointer relative group flex items-center justify-between gap-3"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-accent)';
+                  e.currentTarget.style.backgroundColor = 'var(--color-accent-subtle)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                  e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                  e.currentTarget.style.transform = 'none';
+                }}
+                title="Click to configure destination target technology"
+              >
+                {/* Tech Logo & Name */}
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className="w-7 h-7 rounded-md flex items-center justify-center p-1 border shrink-0"
+                    style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-primary)' }}
+                  >
+                    <img
+                      src={TECHNOLOGY_LOGOS[asset.technology]}
+                      alt={asset.technology}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <h3
+                    className="text-xs sm:text-sm font-bold truncate group-hover:text-[var(--color-accent)] transition-colors"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
+                    {asset.name}
+                  </h3>
+                </div>
+
+                {/* Arrow indicating click to configure */}
+                <div className="flex items-center gap-1.5 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-accent)] transition-colors shrink-0">
+                  <span className="text-[11px] font-medium hidden sm:inline opacity-0 group-hover:opacity-100 transition-opacity">
+                    Configure
+                  </span>
+                  <ArrowRight
+                    size={16}
+                    className="transition-transform duration-200 group-hover:translate-x-1"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ═════════════════════════════════════════════════════════
+          BOTTOM CTA: START MIGRATION
+          ═════════════════════════════════════════════════════════ */}
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.4 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
         className="flex justify-end pb-4"
       >
         <motion.button
           whileHover={{ scale: 1.02, y: -1 }}
           whileTap={{ scale: 0.98 }}
-          onClick={onStartMigration}
-          className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-semibold text-white cursor-pointer transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
+          onClick={() => onStartMigration?.(assets.map((a) => a.id))}
+          className="group relative inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-sm font-bold cursor-pointer transition-all border"
           style={{
-            backgroundColor: 'var(--color-accent)',
-            boxShadow: '0 2px 8px var(--color-accent-glow)',
-            outlineColor: 'var(--color-accent)',
-            border: 'none',
+            background: 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)',
+            borderColor: 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))',
+            color: 'var(--color-accent)',
+            boxShadow: '0 4px 16px rgba(251, 78, 11, 0.15)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
-            e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.32) 0%, rgba(251, 78, 11, 0.14) 100%)';
+            e.currentTarget.style.borderColor = 'var(--color-accent)';
+            e.currentTarget.style.boxShadow = '0 6px 24px rgba(251, 78, 11, 0.25)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-            e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)';
+            e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(251, 78, 11, 0.15)';
           }}
           aria-label="Start Migration"
         >
@@ -496,6 +487,17 @@ export default function MigrationSelection({ onStartMigration }: Props) {
           <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
         </motion.button>
       </motion.div>
+
+      {/* ── Modal for selecting target technology ── */}
+      <AnimatePresence>
+        {editingAsset && (
+          <MigrationTargetModal
+            asset={editingAsset}
+            onClose={() => setEditingAsset(null)}
+            onSelectTarget={handleUpdateTarget}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

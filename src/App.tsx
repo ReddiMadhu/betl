@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu } from 'lucide-react';
 import Header from './components/Header';
 import TechnologySources from './components/TechnologySources';
 import ModernizationEngine from './components/ModernizationEngine';
-import IngestionStats from './components/IngestionStats';
 import ConnectionLines from './components/ConnectionLines';
 import LaunchAssessmentButton from './components/LaunchAssessmentButton';
 import AssessmentDiscovery from './components/AssessmentDiscovery';
@@ -28,6 +28,7 @@ export default function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [selectedMigrationAssetIds, setSelectedMigrationAssetIds] = useState<string[]>([]);
 
   // Navigation handler tracking visited stages
   const navigateTo = useCallback((nextView: ViewState) => {
@@ -56,56 +57,80 @@ export default function App() {
     setSidebarCollapsed((prev) => !prev);
   }, []);
 
+  const [ingestionState, setIngestionState] = useState<'idle' | 'ingesting' | 'complete'>('idle');
+
+  const handleStartIngestion = useCallback(() => {
+    if (ingestionState === 'ingesting') return;
+    setIngestionState('ingesting');
+    setTimeout(() => {
+      setIngestionState('complete');
+    }, 4000);
+  }, [ingestionState]);
+
   /* ─────────────────────────────────────────────────────────
    * 1. LANDING PAGE — No sidebar, full-width presentation
    * ───────────────────────────────────────────────────────── */
   if (view === 'home') {
     return (
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+      <div
+        className="min-h-screen xl:h-screen flex flex-col justify-between overflow-x-hidden"
+        style={{ backgroundColor: 'var(--color-bg-primary)' }}
+      >
         <Header />
 
-        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-          {/* ─── Desktop layout: 20% | 10% gap | 52.5% | 2.5% gap | 15% ─── */}
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 flex flex-col justify-center py-2 relative">
+          {/* ─── Desktop layout: Centered Combined Workspace + Modernization Engine in the middle ─── */}
           <div
             id="main-layout"
-            className="relative flex flex-col xl:flex-row items-start xl:items-center"
+            className="relative flex flex-col xl:flex-row items-start xl:items-center justify-center max-w-[1260px] mx-auto w-full my-auto"
           >
             {/* SVG connection lines (desktop only) */}
-            <ConnectionLines />
+            <ConnectionLines ingestionState={ingestionState} />
 
-            {/* Left — Technology Sources (20%) */}
-            <div className="w-full xl:w-[20%] shrink-0 order-1 relative z-10 mb-6 xl:mb-0">
+            {/* Left — Technology Sources / Organizational Workspace */}
+            <div className="w-full xl:w-[320px] shrink-0 order-1 relative z-10 mb-6 xl:mb-0">
               <TechnologySources />
             </div>
 
-            {/* Center — AI Modernization Engine (52.5%) */}
-            <div className="w-full xl:w-[52.5%] xl:ml-[10%] shrink-0 order-2 flex flex-col items-stretch relative z-10 mb-6 xl:mb-0">
-              <ModernizationEngine />
+            {/* Center — BI and ETL Modernization (820px, with ~110px connector gap) */}
+            <div className="w-full xl:w-[820px] xl:ml-[110px] shrink-0 order-2 flex flex-col items-stretch relative z-10 mb-6 xl:mb-0">
+              <ModernizationEngine
+                ingestionState={ingestionState}
+                onStartIngestion={handleStartIngestion}
+              />
             </div>
-
-            {/* Right — Ingestion Stats (15%) */}
-            <div className="w-full xl:w-[15%] xl:ml-auto shrink-0 order-3 relative z-10">
-              <IngestionStats />
-            </div>
-          </div>
-
-          {/* CTA — bottom right */}
-          <div className="flex justify-end mt-8">
-            <LaunchAssessmentButton onClick={() => navigateTo('assessment')} />
           </div>
         </main>
 
+        {/* Floating Launch Assessment Button — appears only after Ingestion completion */}
+        <AnimatePresence>
+          {ingestionState === 'complete' && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 12 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+              className="fixed bottom-5 right-6 sm:bottom-6 sm:right-8 lg:bottom-7 lg:right-10 z-40"
+            >
+              <LaunchAssessmentButton onClick={() => navigateTo('assessment')} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Landing Footer */}
-        <footer className="mt-auto border-t theme-transition" style={{ borderColor: 'var(--color-border-subtle)' }}>
-          <div className="max-w-[1600px] mx-auto px-6 lg:px-10 py-6 flex items-center justify-between">
+        <footer
+          className="mt-auto border-t theme-transition"
+          style={{ borderColor: 'var(--color-border-subtle)' }}
+        >
+          <div className="max-w-[1600px] mx-auto px-6 lg:px-10 py-3 flex items-center justify-between">
             <span
               className="text-[11px]"
               style={{ color: 'var(--color-text-tertiary)' }}
             >
-              © 2026 BI.ETL.AI. All rights reserved.
+              © 2026 AI on BI and ETL. All rights reserved.
             </span>
             <span
-              className="text-[11px]"
+              className="text-[11px] pr-52 hidden sm:inline"
               style={{ color: 'var(--color-text-tertiary)' }}
             >
               Enterprise BI & ETL Modernization Platform
@@ -119,7 +144,7 @@ export default function App() {
   /* ─────────────────────────────────────────────────────────
    * 2. WORKFLOW PAGES — Clean layout with Collapsible Sidebar
    *    3 Core Stages:
-   *      1. Discovery & Intelligence
+   *      1. Assessment
    *      2. Rationalization
    *      3. Migration
    * ───────────────────────────────────────────────────────── */
@@ -154,7 +179,7 @@ export default function App() {
       {/* ── Main Content Area (No top bar) ── */}
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
-          {/* Stage 1: Discovery & Intelligence */}
+          {/* Stage 1: Assessment */}
           {view === 'assessment' && (
             <AssessmentDiscovery onShowResults={() => navigateTo('results')} />
           )}
@@ -197,7 +222,14 @@ export default function App() {
 
           {/* Stage 3: Migration */}
           {view === 'migration' && (
-            <MigrationSelection onStartMigration={() => navigateTo('migration-loading')} />
+            <MigrationSelection
+              onStartMigration={(selectedIds) => {
+                if (selectedIds) {
+                  setSelectedMigrationAssetIds(selectedIds);
+                }
+                navigateTo('migration-loading');
+              }}
+            />
           )}
 
           {view === 'migration-loading' && (
@@ -205,7 +237,11 @@ export default function App() {
           )}
 
           {view === 'migration-results' && (
-            <MigrationResults onComplete={() => navigateTo('home')} />
+            <MigrationResults
+              selectedAssetIds={selectedMigrationAssetIds}
+              onComplete={() => navigateTo('home')}
+              onBackToSelection={() => navigateTo('migration')}
+            />
           )}
         </main>
 
@@ -215,7 +251,7 @@ export default function App() {
           style={{ borderColor: 'var(--color-border-subtle)' }}
         >
           <div className="max-w-[1600px] mx-auto flex items-center justify-between text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
-            <span>BI.ETL.AI Modernization Platform</span>
+            <span>AI on BI and ETL Modernization Platform</span>
             <span>Enterprise Cloud Edition</span>
           </div>
         </footer>

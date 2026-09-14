@@ -1,12 +1,9 @@
-import { motion } from 'framer-motion';
-import { useReducedMotion } from '../hooks/useAnimations';
 
 interface Props {
   direction: 'horizontal' | 'vertical';
 }
 
 export default function AgentFlow({ direction }: Props) {
-  const reduced = useReducedMotion();
   const isHorizontal = direction === 'horizontal';
 
   return (
@@ -44,26 +41,6 @@ export default function AgentFlow({ direction }: Props) {
               strokeLinejoin="round"
               fill="none"
             />
-            {/* Animated particle */}
-            {!reduced && (
-              <motion.circle
-                cx="4"
-                cy="24"
-                r="2.5"
-                fill="var(--color-accent)"
-                initial={{ cx: 4, opacity: 0 }}
-                animate={{
-                  cx: [4, 28, 4],
-                  opacity: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  repeatDelay: 1,
-                }}
-              />
-            )}
           </>
         ) : (
           <>
@@ -86,26 +63,6 @@ export default function AgentFlow({ direction }: Props) {
               strokeLinejoin="round"
               fill="none"
             />
-            {/* Animated particle */}
-            {!reduced && (
-              <motion.circle
-                cx="24"
-                cy="4"
-                r="2.5"
-                fill="var(--color-accent)"
-                initial={{ cy: 4, opacity: 0 }}
-                animate={{
-                  cy: [4, 28, 4],
-                  opacity: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  repeatDelay: 1,
-                }}
-              />
-            )}
           </>
         )}
       </svg>

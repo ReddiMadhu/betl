@@ -12,41 +12,6 @@ import type { TraceStep } from './ThinkingTrace';
  * the migration conversion steps.
  * ───────────────────────────────────────────────────────── */
 
-/* ── Drive loader grid ── */
-const chevron = Array.from({ length: 9 }, (_, i) => {
-  const r = Math.floor(i / 3), c = i % 3;
-  return (c + Math.abs(r - 1)) * 90;
-});
-
-function LoaderGrid({ active = true }: { active?: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className="grid shrink-0"
-      style={{
-        gridTemplateColumns: 'repeat(3, 5px)',
-        gap: '2px',
-      }}
-    >
-      {chevron.map((delay, index) => (
-        <span
-          key={index}
-          style={{
-            width: '5px',
-            height: '5px',
-            borderRadius: '1px',
-            backgroundColor: 'var(--color-accent)',
-            opacity: active ? 0.15 : 0.35,
-            animation: active
-              ? `pixel-on 650ms ease-in-out ${delay}ms infinite`
-              : 'none',
-          }}
-        />
-      ))}
-    </span>
-  );
-}
-
 /* ── Trace steps ── */
 const MIGRATION_STEPS: TraceStep[] = [
   { label: 'Analyzing source asset definitions & schemas', detail: '8 assets' },
@@ -85,30 +50,22 @@ export default function MigrationLoading({ onShowResults }: Props) {
           boxShadow: '0 2px 12px var(--color-card-shadow)',
         }}
       >
-        {/* Header with Drive loader */}
-        <div className="flex items-start gap-3.5 mb-4">
-          <div
-            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-            style={{ backgroundColor: 'var(--color-accent-subtle)' }}
+        {/* Header */}
+        <div className="mb-4">
+          <h2
+            className="text-lg font-bold tracking-tight mb-1"
+            style={{ color: 'var(--color-text-primary)' }}
           >
-            <LoaderGrid active={!done} />
-          </div>
-          <div className="min-w-0">
-            <h2
-              className="text-lg font-bold tracking-tight mb-1"
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              Migration
-            </h2>
-            <p
-              className="text-[13px] leading-relaxed"
-              style={{ color: 'var(--color-text-secondary)' }}
-            >
-              The Migration agent is converting asset definitions, transpiling ETL workflows,
-              mapping data models, and generating validated migration packages for all
-              selected platform transitions.
-            </p>
-          </div>
+            Migration
+          </h2>
+          <p
+            className="text-[13px] leading-relaxed"
+            style={{ color: 'var(--color-text-secondary)' }}
+          >
+            The Migration agent is converting asset definitions, transpiling ETL workflows,
+            mapping data models, and generating validated migration packages for all
+            selected platform transitions.
+          </p>
         </div>
 
         {/* Divider */}
@@ -143,21 +100,24 @@ export default function MigrationLoading({ onShowResults }: Props) {
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl
-                         text-sm font-semibold text-white cursor-pointer
-                         transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
+                         text-sm font-bold cursor-pointer
+                         transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 border"
               style={{
-                backgroundColor: 'var(--color-accent)',
-                boxShadow: '0 2px 8px var(--color-accent-glow)',
+                background: 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)',
+                borderColor: 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))',
+                color: 'var(--color-accent)',
+                boxShadow: '0 4px 16px rgba(251, 78, 11, 0.15)',
                 outlineColor: 'var(--color-accent)',
-                border: 'none',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.32) 0%, rgba(251, 78, 11, 0.14) 100%)';
+                e.currentTarget.style.borderColor = 'var(--color-accent)';
+                e.currentTarget.style.boxShadow = '0 6px 26px rgba(251, 78, 11, 0.25)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)';
+                e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(251, 78, 11, 0.15)';
               }}
               aria-label="Show Migration Results"
               onClick={onShowResults}

@@ -16,7 +16,7 @@ export default function TechnologyCard({ tech, index }: Props) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 + index * 0.07, duration: 0.4, ease: 'easeOut' }}
       whileHover={{ y: -2, transition: { duration: 0.2 } }}
-      className="group relative flex items-center gap-3 px-3.5 py-3 rounded-xl border cursor-default
+      className="group relative flex items-center gap-3 px-3 py-2 rounded-xl border cursor-default
                  theme-transition"
       style={{
         backgroundColor: 'var(--color-surface)',
@@ -28,7 +28,7 @@ export default function TechnologyCard({ tech, index }: Props) {
     >
       {/* Logo */}
       <div
-        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 overflow-hidden p-1.5 theme-transition"
+        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 overflow-hidden p-1 theme-transition"
         style={{
           backgroundColor: 'var(--color-bg-tertiary)',
         }}

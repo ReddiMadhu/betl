@@ -31,8 +31,8 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
   {
     id: 'discovery',
     stageNumber: 1,
-    title: 'Discovery & Intelligence',
-    shortTitle: 'Discovery & Intel',
+    title: 'Assessment',
+    shortTitle: 'Assessment',
     subtitle: 'Scan platforms & catalog',
     icon: Compass,
     views: ['assessment', 'results', 'asset-detail'],

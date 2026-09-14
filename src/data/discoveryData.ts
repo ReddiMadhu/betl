@@ -8,7 +8,7 @@ import pythonLogo from '../assets/logos/python.svg';
 /* ─────────────────────────────────────────────────────────
  * Discovery Data — typed models, mock data, and helpers
  *
- * Represents the output of the Discovery & Intelligence
+ * Represents the output of the Assessment
  * agents, organized by insurance business areas.
  * ───────────────────────────────────────────────────────── */
 

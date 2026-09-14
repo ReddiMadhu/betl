@@ -23,7 +23,7 @@ export default function Header() {
             className="text-lg font-semibold tracking-tight"
             style={{ color: 'var(--color-text-primary)' }}
           >
-            BI.ETL.<span style={{ color: 'var(--color-accent)' }}>AI</span>
+            <span style={{ color: 'var(--color-accent)' }}>AI</span> on BI and ETL
           </span>
         </div>
 
