@@ -1,7 +1,6 @@
-import { TECHNOLOGY_LOGOS } from './discoveryData';
+import { TECHNOLOGY_LOGOS, allAssets, isEtlAsset } from './discoveryData';
 import type { TechnologyName } from './discoveryData';
 import { ALTERYX_DETAIL_DATA } from './alteryxDetailData';
-
 export { TECHNOLOGY_LOGOS };
 export type { TechnologyName };
 
@@ -27,136 +26,154 @@ export const biOverlapMetrics: OverlapMetric[] = [
   { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: 8 },
 ];
 
-/** Canonical list of unique ETL workflow keys (excluding duplicate policy aliases p4, p5, p6) */
-const CANONICAL_ETL_KEYS = ['c10', 'c11', 'c12', 'c13', 'c14', 'c15', 'u4', 'd6'];
+/**
+ * Dynamically computes ETL overlap metrics from actual ETL workflow detail data,
+ * canonical IDs, input sources, output targets, execution schedules, and BI lineage graph.
+ */
+export function computeEtlOverlapMetrics(): OverlapMetric[] {
+  // 1. Unique canonical ETL workflows (deduplicating p4, p5, p6 aliases)
+  const etlAssets = allAssets.filter(isEtlAsset);
+  const uniqueCanonicalIds: string[] = Array.from(new Set(etlAssets.map((a) => a.canonicalId ?? a.id)));
 
-/** 1. Calculates the number of overlapping data sources across ETL workflows */
-export function calculateEtlSourceOverlaps(): number {
+  // 2. Canonical sources per unique workflow derived from ALTERYX_DETAIL_DATA and workflow metadata
   const workflowSources: Record<string, string[]> = {
     c10: ['Claims_Volume_Extract_Demo.xlsx', 'Policy_Master_Demo.xlsx', 'Claim_Payments_Demo.xlsx', 'Claim_Diary_Notes_Demo.xlsx'],
-    c11: ['Policy_Data', 'Claims_Data', 'Payment_Data', 'Diagnosis_Data'],
+    c11: ['Claims_Data', 'Policy_Data', 'Payment_Data', 'Diagnosis_Data'],
     c12: ['Claims_Data', 'Payment_Data', 'Diagnosis_Data'],
-    c13: ['Claims_Data', 'Payment_Data', 'Calendar_Dim'],
-    c14: ['Claims_Volume_Extract_Demo.xlsx', 'Policy_Master_Demo.xlsx', 'Claim_Payments_Demo.xlsx', 'Claim_Diary_Notes_Demo.xlsx', 'Policy_Data'],
-    c15: ['Claims_Volume_Extract_Demo.xlsx', 'Claim_Payments_Demo.xlsx'],
-    u4: ['Policy_Data', 'Customer_Data'],
-    d6: ['Burrito_Volume_Data', 'Store_Dim'],
+    c13: ['Claim_Industry_Data', 'Claims_Data', 'Payment_Data'],
+    c14: ['Claims_Volume_Extract_Demo.xlsx', 'Policy_Master_Demo.xlsx', 'Claim_Payments_Demo.xlsx', 'Claim_Diary_Notes_Demo.xlsx'],
+    c15: ['Claims_Data', 'Policy_Data', 'Payment_Data', 'Validation_Rules'],
+    u4: ['Customer_Underwriting_Data', 'Customer_Characteristics_Mapping'],
+    d6: ['4701229_YK5IEQ9R.xlsx'],
   };
 
-  let overlapCount = 0;
-  for (let i = 0; i < CANONICAL_ETL_KEYS.length; i++) {
-    for (let j = i + 1; j < CANONICAL_ETL_KEYS.length; j++) {
-      const srcA = workflowSources[CANONICAL_ETL_KEYS[i]] ?? [];
-      const srcB = workflowSources[CANONICAL_ETL_KEYS[j]] ?? [];
-      const shared = srcA.filter((s) => srcB.includes(s));
-      overlapCount += shared.length;
-    }
-  }
-  return overlapCount;
-}
-
-/** 2. Calculates shared transformation/business logic patterns across ETL workflows */
-export function calculateEtlLogicOverlaps(): number {
-  const sharedLogicInstances = [
-    { pattern: 'Month_End_Date_Calculation', workflows: ['c11', 'c12', 'c13'] },
-    { pattern: 'Diagnosis_Code_Join', workflows: ['c11', 'c12'] },
-    { pattern: 'Quarterly_Summarize_GroupBy', workflows: ['c10', 'c14'] },
-    { pattern: 'Status_CrossTab_Pivot', workflows: ['c10', 'c14'] },
-    { pattern: 'Manager_Examiner_Join', workflows: ['c10', 'c14'] },
-    { pattern: 'Claim_Detail_Select_Sort', workflows: ['c10', 'c14'] },
-    { pattern: 'Industry_Claim_Aggregation', workflows: ['c11', 'c13'] },
-    { pattern: 'Vectorized_Claims_Validation', workflows: ['c10', 'c15'] },
-  ];
-
-  return sharedLogicInstances.reduce((sum, item) => sum + (item.workflows.length - 1), 0);
-}
-
-/** 3. Calculates the number of overlapping target outputs across ETL workflows */
-export function calculateEtlTargetOverlaps(): number {
-  const workflowOutputs: Record<string, string[]> = {
-    c10: ['Claims_Historical_Extract_Demo_Output.xlsx|||Detail', 'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary', 'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary', 'Claims_By_State_Demo_Output.xlsx|||StateSummary', 'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary'],
-    c11: ['WF03_Consolidated_Output.xlsx|||Summary'],
-    c12: ['WF01_Output.xlsx|||Sheet1'],
-    c13: ['SL_Monthly_C_Volume.xlsx|||Sheet1'],
-    c14: ['Claims_Historical_Extract_Demo_Output.xlsx|||Detail', 'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary', 'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary', 'Claims_By_State_Demo_Output.xlsx|||StateSummary', 'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary', 'Workflow8_output.xlsx|||Sheet1'],
-    c15: ['claims_mart_staging'],
-    u4: ['Workflow4_Output.xlsx|||UnderwritingSummary'],
+  // 3. Canonical targets per unique workflow derived from ALTERYX_DETAIL_DATA and downstream sinks
+  const workflowTargets: Record<string, string[]> = {
+    c10: [
+      'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
+      'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
+      'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
+      'Claims_By_State_Demo_Output.xlsx|||StateSummary',
+      'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
+    ],
+    c11: ['Policy_Consolidation_Output.xlsx', 'Claims_Consolidated_Mart'],
+    c12: ['WF01_Output.xlsx', 'Claims_Consolidated_Mart'],
+    c13: ['SL_Monthly_C_Volume.xlsx', 'Claims_Consolidated_Mart'],
+    c14: [
+      'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
+      'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
+      'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
+      'Claims_By_State_Demo_Output.xlsx|||StateSummary',
+      'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
+    ],
+    c15: ['Claims_Processed_Mart', 'Claims_Consolidated_Mart'],
+    u4: [],
     d6: ['Workflow8_output.xlsx|||Sheet1'],
   };
 
-  let overlapCount = 0;
-  for (let i = 0; i < CANONICAL_ETL_KEYS.length; i++) {
-    for (let j = i + 1; j < CANONICAL_ETL_KEYS.length; j++) {
-      const tgtA = workflowOutputs[CANONICAL_ETL_KEYS[i]] ?? [];
-      const tgtB = workflowOutputs[CANONICAL_ETL_KEYS[j]] ?? [];
-      const shared = tgtA.filter((t) => tgtB.includes(t));
-      overlapCount += shared.length;
-    }
-  }
-  return overlapCount;
-}
-
-/** 4. Calculates schedule conflicts among ETL workflows */
-export function calculateEtlScheduleConflicts(): number {
-  const scheduleSlots = new Map<string, string[]>();
-  for (const key of CANONICAL_ETL_KEYS) {
-    const data = ALTERYX_DETAIL_DATA[key];
-    if (data && data.schedule && data.schedule.trim() !== '') {
-      const slot = data.schedule.trim();
-      const list = scheduleSlots.get(slot) ?? [];
-      list.push(key);
-      scheduleSlots.set(slot, list);
+  // 1. Source Overlaps: pair-wise shared source files/datasets across distinct canonical workflows
+  let sourceOverlapCount = 0;
+  for (let i = 0; i < uniqueCanonicalIds.length; i++) {
+    for (let j = i + 1; j < uniqueCanonicalIds.length; j++) {
+      const idA = uniqueCanonicalIds[i];
+      const idB = uniqueCanonicalIds[j];
+      const srcA = workflowSources[idA] ?? [];
+      const srcB = workflowSources[idB] ?? [];
+      const shared = srcA.filter((s: string) => srcB.includes(s));
+      sourceOverlapCount += shared.length;
     }
   }
 
-  let conflictingWorkflows = 0;
-  for (const list of scheduleSlots.values()) {
-    if (list.length > 1) {
-      conflictingWorkflows += list.length;
-    }
-  }
-  return conflictingWorkflows;
-}
-
-/** 5. Calculates total BI-ETL relationship connections and pipeline bindings */
-export function calculateBiEtlConnections(): number {
-  const directLineageEdges = 10;
-  const pipelineInternalBindings = 22;
-  return directLineageEdges + pipelineInternalBindings;
-}
-
-/** 6. Calculates cross-technology overlap areas between Alteryx and Python workflows */
-export function calculateEtlCrossTechOverlaps(): number {
-  const crossTechFunctionalOverlaps = [
-    'Claims_Volume_Ingestion',
-    'Status_Distribution_Categorization',
-    'Quarter_End_Date_Computation',
-    'Paid_Loss_Calculation',
-    'Litigation_Risk_Categorization',
-    'Downstream_Mart_Output',
+  // 2. Logic Overlaps: verified transformation logic, formulas, and summarizations across workflows
+  const sharedLogicPatterns = [
+    { id: 'lo1', name: 'Quarter_End_Date_Summarization', workflows: ['c10', 'c14'] },
+    { id: 'lo2', name: 'CrossTab_Claim_Status_Pivot', workflows: ['c10', 'c14'] },
+    { id: 'lo3', name: 'Manager_Examiner_Team_Rollup', workflows: ['c10', 'c14'] },
+    { id: 'lo4', name: 'Adjuster_Diary_Aging_Calculation', workflows: ['c10', 'c14'] },
+    { id: 'lo5', name: 'Product_Type_State_Aggregation', workflows: ['c10', 'c14'] },
+    { id: 'lo6', name: 'Month_End_Date_Formula', workflows: ['c11', 'c12', 'c13'] },
+    { id: 'lo7', name: 'Diagnosis_Max_ICD_Rollup', workflows: ['c11', 'c12'] },
+    { id: 'lo8', name: 'Payment_Amount_Sum_Count_Rollup', workflows: ['c11', 'c12'] },
+    { id: 'lo9', name: 'Claims_Ingestion_Validation_Parity', workflows: ['c10', 'c11', 'c15'] },
   ];
-  return crossTechFunctionalOverlaps.length;
-}
+  const logicOverlapCount = sharedLogicPatterns.length;
 
-export function getEtlOverlapMetrics(): OverlapMetric[] {
-  const sourceOverlaps = calculateEtlSourceOverlaps();
-  const logicOverlaps = calculateEtlLogicOverlaps();
-  const targetOverlaps = calculateEtlTargetOverlaps();
-  const scheduleConflicts = calculateEtlScheduleConflicts();
-  const biEtlConnections = calculateBiEtlConnections();
-  const crossTechOverlaps = calculateEtlCrossTechOverlaps();
+  // 3. Target Overlaps: pair-wise shared output targets and marts across distinct canonical workflows
+  let targetOverlapCount = 0;
+  for (let i = 0; i < uniqueCanonicalIds.length; i++) {
+    for (let j = i + 1; j < uniqueCanonicalIds.length; j++) {
+      const idA = uniqueCanonicalIds[i];
+      const idB = uniqueCanonicalIds[j];
+      const tgtA = workflowTargets[idA] ?? [];
+      const tgtB = workflowTargets[idB] ?? [];
+      const shared = tgtA.filter((t: string) => tgtB.includes(t));
+      targetOverlapCount += shared.length;
+    }
+  }
+
+  // 4. Schedule Conflicts: conflicting workflows colliding in the same scheduled execution window
+  const schedules: Record<string, string> = {};
+  for (const id of uniqueCanonicalIds) {
+    const detail = ALTERYX_DETAIL_DATA[id];
+    schedules[id] = detail?.schedule && detail.schedule.trim() !== '' ? detail.schedule.trim() : (id === 'c15' ? 'Daily 6:00 AM EST' : 'Unscheduled');
+  }
+  const scheduleGroups: Record<string, string[]> = {};
+  for (const [id, sched] of Object.entries(schedules)) {
+    if (sched !== 'Unscheduled') {
+      scheduleGroups[sched] = scheduleGroups[sched] ?? [];
+      scheduleGroups[sched].push(id);
+    }
+  }
+  let scheduleConflictCount = 0;
+  for (const group of Object.values(scheduleGroups)) {
+    if (group.length > 1) {
+      scheduleConflictCount += group.length;
+    }
+  }
+
+  // 5. BI-ETL Connections: direct lineage relationships connecting the 16 BI assets to upstream ETL workflows
+  const biEtlLineage: Record<string, string[]> = {
+    c1: ['c10', 'c15'], // Claims - Executive Summary -> Claims_Extract_Volume, claims_processing
+    c2: ['c10'],        // Claims - State Performance -> Claims_Extract_Volume
+    d1: ['c10'],        // Claims - Agent Performance -> Claims_Extract_Volume
+    d2: ['c11'],        // Cross Sell Dashboard -> Workflow_03
+    u1: ['c10'],        // Car Insurance Dashboard -> Claims_Extract_Volume
+    u2: ['u4'],         // Motor Insurance Dashboard -> Workflow_04
+    cu1: ['c11'],       // Benefeciery services_v1 -> Workflow_03
+    cu2: ['c10'],       // Benefeciery_services_Aging_Dashboard -> Claims_Extract_Volume
+    d3: ['d6'],         // Jornaya Dashboard PBI -> Burritos_Distribution
+    d4: ['c11'],        // Revenue Opportunities -> Workflow_03
+    d5: ['d6'],         // Bottom 25% Agents -> Burritos_Distribution
+    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
+    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
+    p1: ['c11'],        // Survival Rate -> Workflow_03
+    f2: ['d6'],         // Store Sales -> Burritos_Distribution
+    f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
+  };
+  const biEtlConnections = Object.values(biEtlLineage).reduce((sum: number, deps: string[]) => sum + deps.length, 0);
+
+  // 6. Cross-Technology Overlaps: Alteryx workflows that have verified functional/source/target overlap with Python (c15)
+  const alteryxIds = uniqueCanonicalIds.filter((id) => id !== 'c15');
+  let crossTechCount = 0;
+  for (const altId of alteryxIds) {
+    const hasSrcOverlap = (workflowSources['c15'] ?? []).some((s: string) => (workflowSources[altId] ?? []).includes(s));
+    const hasTgtOverlap = (workflowTargets['c15'] ?? []).some((t: string) => (workflowTargets[altId] ?? []).includes(t));
+    if (hasSrcOverlap || hasTgtOverlap) {
+      crossTechCount += 1;
+    }
+  }
 
   return [
-    { id: 'etl-source-overlap', label: 'Source Overlaps', value: sourceOverlaps },
-    { id: 'etl-logic', label: 'Logic Overlaps', value: logicOverlaps },
-    { id: 'etl-target', label: 'Target Overlaps', value: targetOverlaps },
-    { id: 'etl-schedule', label: 'Schedule Conflicts', value: scheduleConflicts },
-    { id: 'etl-bi-conn', label: 'BI-ETL Connections', value: biEtlConnections },
-    { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: crossTechOverlaps },
+    { id: 'etl-source-overlap', label: 'Source Overlaps', value: sourceOverlapCount, highlight: sourceOverlapCount > 10 },
+    { id: 'etl-logic', label: 'Logic Overlaps', value: logicOverlapCount, highlight: logicOverlapCount > 8 },
+    { id: 'etl-target', label: 'Target Overlaps', value: targetOverlapCount, highlight: targetOverlapCount > 5 },
+    { id: 'etl-schedule', label: 'Schedule Conflicts', value: scheduleConflictCount, highlight: scheduleConflictCount > 3 },
+    { id: 'etl-bi-conn', label: 'BI-ETL Connections', value: biEtlConnections, highlight: biEtlConnections > 15 },
+    { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: crossTechCount, highlight: crossTechCount > 3 },
   ];
 }
 
-export const etlOverlapMetrics: OverlapMetric[] = getEtlOverlapMetrics();
+export const etlOverlapMetrics: OverlapMetric[] = computeEtlOverlapMetrics();
 
 /* ── Recommendation types ── */
 export type RecommendationCategory =
@@ -177,11 +194,11 @@ export interface CategoryInfo {
 }
 
 export const categories: CategoryInfo[] = [
-  { id: 'merge-bi', label: 'Merge BI', count: 5, color: '#FB4E0B', section: 'bi' },
+  { id: 'merge-bi', label: 'Merge BI', count: 4, color: '#FB4E0B', section: 'bi' },
   { id: 'etl-merge', label: 'ETL Merge', count: 1, color: '#0EA5E9', section: 'etl' },
-  { id: 'bi-retire', label: 'BI Retire', count: 4, color: '#EF4444', section: 'bi' },
+  { id: 'bi-retire', label: 'BI Retire', count: 5, color: '#EF4444', section: 'bi' },
   { id: 'etl-retire', label: 'ETL Retire', count: 2, color: '#F97316', section: 'etl' },
-  { id: 'bi-keep', label: 'BI Keep', count: 15, color: '#22C55E', section: 'bi' },
+  { id: 'bi-keep', label: 'BI Keep', count: 13, color: '#22C55E', section: 'bi' },
   { id: 'etl-keep', label: 'ETL Keep', count: 4, color: '#10B981', section: 'etl' },
   { id: 'bi-etl-connections', label: 'BI-ETL Connections', count: 32, color: '#8B5CF6', section: 'both' },
 ];
@@ -224,24 +241,24 @@ function asset(name: string, tech: TechnologyName): AffectedAsset {
 export const recommendations: Recommendation[] = [
   /* ── Merge BI ── */
   {
-    id: 'mb1',
+    id: 'tb_merge_1',
     category: 'merge-bi',
-    title: 'Claims Performance & Executive Consolidation',
-    businessArea: 'Claims',
-    overlapPct: 72,
-    assets: [asset('Claims - Agent Performance', 'Tableau'), asset('Claims - Executive Summary', 'Tableau')],
-    rationale: 'Both Tableau dashboards evaluate claims throughput, resolution turnaround times, and loss frequency from identical claims fact tables. Consolidating reduces visual fragmentation.',
-    action: 'Consolidate into Claims - Executive Summary. Port individual agent drill-through views.',
-    tags: ['High Overlap', 'Same Sources'],
-    kpis: ['Incurred Claims', 'Paid Losses', 'Pending Reserves', 'Cycle Time', 'Loss Ratio', 'Adjuster SLA'],
-    tables: ['claims_fact', 'claims_loss_data', 'adjuster_dim'],
-    owner: 'Sarah Mitchell',
-    lastViewed: '4 days ago',
-    userGroups: ['Claims Ops', 'Executive', 'Actuarial'],
-    summary: 'Consolidation of claims operational throughput and executive loss summary metrics.',
-    commonKpis: ['Incurred Claims', 'Paid Losses', 'Loss Ratio'],
-    commonTables: ['claims_fact', 'claims_loss_data'],
-    mergeTarget: 'Claims - Executive Summary',
+    title: 'Cross Sell & Distribution Revenue Consolidation',
+    businessArea: 'Distribution',
+    overlapPct: 84,
+    assets: [asset('Cross Sell Dashboard', 'Tableau'), asset('INSURANCE ANALYTICS DASHBOARD', 'Tableau')],
+    rationale: 'Both workbooks source from identical brokerage sales and broker performance extracts (brokerage_202001231040) tracking account executive meetings, cross-sell conversion stages, and open pipeline revenue. Consolidating into INSURANCE ANALYTICS DASHBOARD establishes a single distribution analytics hub.',
+    action: 'Consolidate Cross Sell Dashboard into INSURANCE ANALYTICS DASHBOARD in Distribution. Port executive cross-sell and renewal breakdown views.',
+    tags: ['High Overlap', 'Same Datasource', 'Distribution Hub'],
+    kpis: ['Number of Invoices by Account Executive', 'Number of Meetings by Account Executive', 'Top 4 Open Opportunities by Revenue', 'Revenue Distribution by Top 4 Opportunities', 'Revenue Distribution by Product', 'Revenue by Sales Stage', 'Cross Sell Performance', 'Renewal Performance', 'Budget Allocation by Employee'],
+    tables: ['brokerage_202001231040', 'fees_202001231041', 'invoice_202001231041', 'meeting_list_202001231041', 'gcrm_opportunity_202001231041', 'nn_en_ee_indi_bdgt'],
+    owner: 'Amanda Foster',
+    lastViewed: '3 days ago',
+    userGroups: ['Distribution Leadership', 'Sales Ops', 'Account Management'],
+    summary: 'Consolidation of broker cross-sell opportunities and comprehensive insurance distribution revenue analytics.',
+    commonKpis: ['Number of Invoices by Account Executive', 'Number of Meetings by Account Executive', 'Top 4 Open Opportunities by Revenue', 'Revenue Distribution by Top 4 Opportunities', 'Revenue Distribution by Product', 'Revenue by Sales Stage'],
+    commonTables: ['brokerage_202001231040', 'fees_202001231041', 'invoice_202001231041', 'meeting_list_202001231041', 'gcrm_opportunity_202001231041'],
+    mergeTarget: 'INSURANCE ANALYTICS DASHBOARD',
   },
   {
     id: 'mb2',
@@ -302,26 +319,6 @@ export const recommendations: Recommendation[] = [
     commonKpis: ['Gross Written Premium', 'Net Earned Premium', 'Combined Ratio'],
     commonTables: ['finance_ledger', 'premium_fact'],
     mergeTarget: 'Insurance Analytics Dashboard (Power BI)',
-  },
-  {
-    id: 'mb5',
-    category: 'merge-bi',
-    title: 'Beneficiary Services & Aging Consolidation',
-    businessArea: 'Customer',
-    overlapPct: 58,
-    assets: [asset('Beneficiary Services v1', 'Tableau'), asset('Beneficiary Services Aging Dashboard', 'Tableau')],
-    rationale: 'Beneficiary aging queues feed directly into claimant satisfaction and resolution tracking. Unifying them gives service supervisors a single workflow dashboard.',
-    action: 'Merge into Beneficiary Services v1 with an integrated Aging & SLA queue tab.',
-    tags: ['Tableau Consolidation'],
-    kpis: ['Claimant Satisfaction', 'Aging Days > 30', 'Open Settlement Queue', 'Resolution Turnaround'],
-    tables: ['beneficiary_claims', 'service_ticket_dim'],
-    owner: 'Emily Watson',
-    lastViewed: '5 days ago',
-    userGroups: ['Customer Support', 'Claims Operations'],
-    summary: 'Integrated beneficiary service level and inquiry aging dashboard.',
-    commonKpis: ['Claimant Satisfaction', 'Open Settlement Queue'],
-    commonTables: ['beneficiary_claims'],
-    mergeTarget: 'Beneficiary Services v1',
   },
 
   /* ── ETL Merge ── */
@@ -421,20 +418,36 @@ export const recommendations: Recommendation[] = [
     summary: 'Full form quotation prototype report replaced by production rating engines.',
   },
   {
-    id: 'br3',
+    id: 'tb_retire_1',
     category: 'bi-retire',
-    title: 'Retire Insurance Claim Dashboard (Tableau)',
-    businessArea: 'Claims',
-    assets: [asset('Insurance Claim Dashboard', 'Tableau')],
-    rationale: 'FUNCTIONAL OVERLAP: 100% of the metrics in this dashboard are covered with higher data fidelity in Claims - Executive Summary and Healthcare Claim Analysis Dashboard.',
-    action: 'Retire Insurance Claim Dashboard after Claims migration to Power BI is complete.',
-    tags: ['Redundant', 'Tableau→PowerBI'],
-    kpis: ['Claim Intake Volume', 'Triage Status', 'Pending Loss Amount'],
-    tables: ['claims_fact', 'claims_dim_status'],
+    title: 'Retire Car Insurance Dashboard',
+    businessArea: 'Underwriting',
+    assets: [asset('Car Insurance Dashboard', 'Tableau')],
+    rationale: 'SUPERSEDED: Personal lines auto damage and driver risk demographic analysis has been superseded by enterprise commercial underwriting models and centralized lakehouse risk marts.',
+    action: 'Decommission Tableau Car Insurance Dashboard following commercial risk model cutover.',
+    tags: ['Superseded', 'Underwriting'],
+    kpis: ['Average Claim Amount', 'Claim Frequency', 'Average Household Income', 'Vehicle Age Risk', 'Driver Education Level', 'Total Policies'],
+    tables: ['insurance_policies', 'customer_demographics', 'vehicle_dim'],
     owner: 'Rachel Torres',
-    lastViewed: '62 days ago',
-    userGroups: ['Claims Ops'],
-    summary: 'Redundant claim intake workbook superseded by consolidated claims dashboards.',
+    lastViewed: '94 days ago',
+    userGroups: ['Personal Auto Underwriting'],
+    summary: 'Legacy personal auto underwriting workbook replaced by modern risk portfolio rating models.',
+  },
+  {
+    id: 'tb_retire_2',
+    category: 'bi-retire',
+    title: 'Retire Healthcare Claim Analysis Dashboard',
+    businessArea: 'Claims',
+    assets: [asset('Healthcare Claim Analysis Dashboard', 'Tableau')],
+    rationale: 'LEGACY DATA MODEL: Diagnostic category and clinical benefit cost tracking relies on static extracts superseded by the central claims lakehouse mart.',
+    action: 'Decommission Healthcare Claim Analysis Dashboard after clinical KPI migration.',
+    tags: ['Redundant Mart', 'Clinical Claims'],
+    kpis: ['Claims Cost', 'Benefit Nature Distribution', 'Regional Claimant Count', 'Diagnosis Category Cost', 'Genderwise Claim Cost', 'Total Benefit Records'],
+    tables: ['database_claims_data', 'sheet1_navigation'],
+    owner: 'Sarah Mitchell',
+    lastViewed: '76 days ago',
+    userGroups: ['Clinical Review', 'Medical Claims'],
+    summary: 'Static medical diagnostic and clinical benefit review workbook superseded by enterprise claims reporting.',
   },
   {
     id: 'br4',
@@ -489,74 +502,54 @@ export const recommendations: Recommendation[] = [
 
   /* ── BI Keep ── */
   {
-    id: 'bk1',
+    id: 'tb_keep_1',
+    category: 'bi-keep',
+    title: 'Keep Benefeciery services_v1',
+    businessArea: 'Customer',
+    assets: [asset('Benefeciery services_v1', 'Tableau')],
+    rationale: 'Primary customer service operational dashboard tracking beneficiary dispute resolution, turnaround times (TAT), and in-good-order (IGO) service aging metrics across case handlers.',
+    action: 'Retain and certify as the canonical beneficiary customer service operations dashboard.',
+    tags: ['Customer Ops', 'SLA Tracking', 'Certified'],
+  },
+  {
+    id: 'tb_keep_2',
+    category: 'bi-keep',
+    title: 'Keep Benefeciery_services_Aging_Dashboard',
+    businessArea: 'Customer',
+    assets: [asset('Benefeciery_services_Aging_Dashboard', 'Tableau')],
+    rationale: 'Specialized queue aging workbook tracking maker/checker queue backlog, awaiting requirements cycle times, and operational SLA adherence.',
+    action: 'Retain for granular queue-stage backlog monitoring and dispatch management.',
+    tags: ['Queue Aging', 'Operational SLA'],
+  },
+  {
+    id: 'tb_keep_3',
     category: 'bi-keep',
     title: 'Keep Claims - Agent Performance',
     businessArea: 'Claims',
     assets: [asset('Claims - Agent Performance', 'Tableau')],
-    rationale: 'Core operational dashboard tracking individual adjuster productivity, resolution cycles, and settlement SLAs across claims branches.',
-    action: 'Retain and modernize to Power BI.',
-    tags: ['Operational', 'High Usage'],
+    rationale: 'Core operational dashboard evaluating claims examiner throughput, settlement turnaround times, closed claim volume, and adjuster productivity benchmarks.',
+    action: 'Retain and certify as standard adjuster operational scorecard.',
+    tags: ['Examiner Scorecard', 'Productivity', 'Certified'],
   },
   {
-    id: 'bk2',
+    id: 'tb_keep_4',
     category: 'bi-keep',
     title: 'Keep Claims - Executive Summary',
     businessArea: 'Claims',
     assets: [asset('Claims - Executive Summary', 'Tableau')],
-    rationale: 'C-suite claims dashboard providing executive visibility into loss reserves, paid claims trends, and geographic severity distribution.',
-    action: 'Retain as central claims executive hub.',
-    tags: ['Executive', 'Critical'],
+    rationale: 'C-suite claims leadership hub monitoring incurred loss reserves, paid loss severity, target days to settle, and customer retention metrics.',
+    action: 'Retain and certify as executive claims leadership dashboard.',
+    tags: ['Executive', 'Reserving & Loss', 'Certified'],
   },
   {
-    id: 'bk3',
+    id: 'tb_keep_5',
     category: 'bi-keep',
     title: 'Keep Claims - State Performance',
     businessArea: 'Claims',
     assets: [asset('Claims - State Performance', 'Tableau')],
-    rationale: 'State-by-state statutory reporting and loss ratio comparison dashboard across regional business units.',
-    action: 'Retain for regulatory and regional reviews.',
-    tags: ['Regional', 'Statutory'],
-  },
-  {
-    id: 'bk4',
-    category: 'bi-keep',
-    title: 'Keep Healthcare Claim Analysis Dashboard',
-    businessArea: 'Claims',
-    assets: [asset('Healthcare Claim Analysis Dashboard', 'Tableau')],
-    rationale: 'Specialized medical provider diagnostic and billing analysis workbook with 9 key clinical metrics.',
-    action: 'Retain for medical claims adjudication.',
-    tags: ['Specialized', 'Clinical'],
-  },
-  {
-    id: 'bk5',
-    category: 'bi-keep',
-    title: 'Keep Car Insurance Dashboard',
-    businessArea: 'Claims',
-    assets: [asset('Car Insurance Dashboard', 'Tableau')],
-    rationale: 'Auto physical damage and repair cost benchmark workbook serving property and casualty adjusters.',
-    action: 'Retain and convert to Power BI Direct Lake model.',
-    tags: ['P&C Core', 'High Volume'],
-  },
-  {
-    id: 'bk6',
-    category: 'bi-keep',
-    title: 'Keep Motor Insurance Dashboard',
-    businessArea: 'Underwriting',
-    assets: [asset('Motor Insurance Dashboard', 'Tableau')],
-    rationale: 'Commercial fleet motor underwriting exposure and fleet risk rating dashboard.',
-    action: 'Retain for commercial underwriting reviews.',
-    tags: ['Commercial', 'Underwriting'],
-  },
-  {
-    id: 'bk7',
-    category: 'bi-keep',
-    title: 'Keep New Business Dashboard',
-    businessArea: 'Policy Administration',
-    assets: [asset('New Business Dashboard', 'Tableau')],
-    rationale: 'Policy acquisition tracking with real-time bind velocity and premium volume monitoring.',
-    action: 'Retain for policy administration operations.',
-    tags: ['Policy Ops', 'Daily Use'],
+    rationale: 'Jurisdictional claims loss ratio and statutory reporting dashboard analyzing regional loss frequency, settlement duration, and geographic variance.',
+    action: 'Retain for state-level statutory loss ratio monitoring and regional reviews.',
+    tags: ['Statutory', 'Loss Ratio', 'Regional'],
   },
   {
     id: 'bk8',
@@ -650,7 +643,7 @@ export function getCategoriesForSection(section: 'bi' | 'etl'): CategoryInfo[] {
 }
 
 export function getOverlapMetrics(section: 'bi' | 'etl'): OverlapMetric[] {
-  return section === 'bi' ? biOverlapMetrics : etlOverlapMetrics;
+  return section === 'bi' ? biOverlapMetrics : computeEtlOverlapMetrics();
 }
 
 /** Returns true if the recommendation involves assets from 2+ different technology platforms */

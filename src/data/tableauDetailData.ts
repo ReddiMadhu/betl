@@ -17024,4 +17024,834 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       }
     ]
   }
+,
+  "c3": {
+  "summary": {
+    "totalDashboards": 1,
+    "totalWorksheets": 8,
+    "totalTables": 2,
+    "totalCalculatedFields": 7
+  },
+  "worksheets": [
+    {
+      "id": "ws_1",
+      "name": "Benefit Nature Analysis",
+      "chartType": "Pie Chart",
+      "dimensions": [
+        "Benefit Nature",
+        "Date Paid",
+        "Gender"
+      ],
+      "measures": [
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        },
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "",
+        "columns": ""
+      }
+    },
+    {
+      "id": "ws_2",
+      "name": "Benefit Nature Funnel Analysis",
+      "chartType": "Line Chart",
+      "dimensions": [
+        "Benefit Nature"
+      ],
+      "measures": [
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        },
+        {
+          "name": "Number of Records",
+          "type": "base_measure"
+        },
+        {
+          "name": "Calculation_551409483925925928",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.10nzymh1ntikze1e7oi780si87k3].[none:Benefit Nature:nk]",
+        "columns": "([federated.10nzymh1ntikze1e7oi780si87k3].[Multiple Values] + [federated.10nzymh1ntikze1e7oi780si87k3].[Multiple Values])"
+      }
+    },
+    {
+      "id": "ws_3",
+      "name": "Benefit Tree Map",
+      "chartType": "Automatic",
+      "dimensions": [
+        "Benefit Nature",
+        "Date Paid",
+        "Gender"
+      ],
+      "measures": [
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "",
+        "columns": ""
+      }
+    },
+    {
+      "id": "ws_4",
+      "name": "Claims by Region",
+      "chartType": "Pie Chart",
+      "dimensions": [
+        "District Name"
+      ],
+      "measures": [
+        {
+          "name": "Claimant No.",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "",
+        "columns": ""
+      }
+    },
+    {
+      "id": "ws_5",
+      "name": "Diagnosis",
+      "chartType": "Scatter / Bubble",
+      "dimensions": [
+        "Date Paid",
+        "Diagnosis Name",
+        "Gender"
+      ],
+      "measures": [
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "",
+        "columns": ""
+      }
+    },
+    {
+      "id": "ws_6",
+      "name": "Diagnosis Line Chart",
+      "chartType": "Line Chart",
+      "dimensions": [
+        "Date Paid",
+        "Diagnosis Name"
+      ],
+      "measures": [
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        },
+        {
+          "name": "Date Paid",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.10nzymh1ntikze1e7oi780si87k3].[sum:Claims Cost:qk]",
+        "columns": "[federated.10nzymh1ntikze1e7oi780si87k3].[tmn:Date Paid:qk]"
+      }
+    },
+    {
+      "id": "ws_7",
+      "name": "Genderwise Claim Cost",
+      "chartType": "Pie Chart",
+      "dimensions": [
+        "Date Paid",
+        "Gender"
+      ],
+      "measures": [
+        {
+          "name": "Number of Records",
+          "type": "base_measure"
+        },
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        },
+        {
+          "name": "Claims Cost",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "([federated.10nzymh1ntikze1e7oi780si87k3].[min:Number of Records:qk] + [federated.10nzymh1ntikze1e7oi780si87k3].[min:Number of Records:qk])",
+        "columns": ""
+      }
+    },
+    {
+      "id": "ws_8",
+      "name": "Genderwise Total Records",
+      "chartType": "Automatic",
+      "dimensions": [
+        "Date Paid",
+        "Gender"
+      ],
+      "measures": [
+        {
+          "name": "Number of Records",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "",
+        "columns": "[federated.10nzymh1ntikze1e7oi780si87k3].[none:Gender:nk]"
+      }
+    }
+  ],
+  "calculatedFields": [
+    {
+      "id": "calc_1",
+      "name": "Select District",
+      "formula": "\"All\"",
+      "role": "measure",
+      "datatype": "string",
+      "usedInSheets": [
+        "Benefit Nature Analysis"
+      ]
+    },
+    {
+      "id": "calc_2",
+      "name": "Calculation1",
+      "formula": "WINDOW_SUM([Calculation_551409483925925928], -2, 0)",
+      "role": "measure",
+      "datatype": "real",
+      "usedInSheets": [
+        "Benefit Nature Analysis"
+      ]
+    },
+    {
+      "id": "calc_3",
+      "name": "- Claim Cost",
+      "formula": "- SUM([Claims Cost])",
+      "role": "measure",
+      "datatype": "real",
+      "usedInSheets": [
+        "Benefit Nature Analysis"
+      ]
+    },
+    {
+      "id": "calc_4",
+      "name": "District Filter",
+      "formula": "[District Name] = [Parameters].[Parameter 1] or [Parameters].[Parameter 1] = \"All\"",
+      "role": "dimension",
+      "datatype": "boolean",
+      "usedInSheets": [
+        "Benefit Nature Analysis"
+      ]
+    },
+    {
+      "id": "calc_5",
+      "name": "Number of Records",
+      "formula": "1",
+      "role": "measure",
+      "datatype": "integer",
+      "usedInSheets": [
+        "Benefit Nature Funnel Analysis",
+        "Genderwise Claim Cost",
+        "Genderwise Total Records"
+      ]
+    },
+    {
+      "id": "calc_6",
+      "name": "Select District",
+      "formula": "\"All\"",
+      "role": "measure",
+      "datatype": "string",
+      "usedInSheets": [
+        "Benefit Nature Analysis"
+      ]
+    },
+    {
+      "id": "calc_7",
+      "name": "Number of Records",
+      "formula": "1",
+      "role": "measure",
+      "datatype": "integer",
+      "usedInSheets": [
+        "Benefit Nature Funnel Analysis",
+        "Genderwise Claim Cost",
+        "Genderwise Total Records"
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "tableName": "database_(claims_data_-_case_study_-__tableau_-new)",
+      "displayName": "Database (Claims Data - Case study -  Tableau -New)",
+      "rowCount": 2400,
+      "dataSource": "Tableau Extract (.hyper)",
+      "columns": [
+        {
+          "name": "Policy",
+          "type": "integer"
+        },
+        {
+          "name": "SubOffice",
+          "type": "integer"
+        },
+        {
+          "name": "Sub Office Name",
+          "type": "string"
+        },
+        {
+          "name": "Claimant No.",
+          "type": "integer"
+        },
+        {
+          "name": "Gender",
+          "type": "string"
+        },
+        {
+          "name": "Product Name",
+          "type": "string"
+        },
+        {
+          "name": "Ben Desc",
+          "type": "string"
+        },
+        {
+          "name": "Benefit Nature",
+          "type": "string"
+        },
+        {
+          "name": "HMO Clinical Benefit Desc",
+          "type": "string"
+        },
+        {
+          "name": "BenPlan",
+          "type": "integer"
+        },
+        {
+          "name": "Currency Symbol",
+          "type": "string"
+        },
+        {
+          "name": "Claims Cost",
+          "type": "real"
+        },
+        {
+          "name": "Provider Name",
+          "type": "string"
+        },
+        {
+          "name": "District Name",
+          "type": "string"
+        },
+        {
+          "name": "Diagnosis Name",
+          "type": "string"
+        },
+        {
+          "name": "Date Paid",
+          "type": "date"
+        },
+        {
+          "name": "Dep Type",
+          "type": "string"
+        },
+        {
+          "name": "Ben Plan",
+          "type": "integer"
+        },
+        {
+          "name": "Benefit Nature",
+          "type": "string"
+        },
+        {
+          "name": "Calculation1",
+          "type": "real"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Policy": 100,
+          "SubOffice": 100,
+          "Sub Office Name": "Sample 1",
+          "Claimant No.": 100,
+          "Gender": "Sample 1",
+          "Product Name": "Sample 1"
+        },
+        {
+          "Policy": 200,
+          "SubOffice": 200,
+          "Sub Office Name": "Sample 2",
+          "Claimant No.": 200,
+          "Gender": "Sample 2",
+          "Product Name": "Sample 2"
+        },
+        {
+          "Policy": 300,
+          "SubOffice": 300,
+          "Sub Office Name": "Sample 3",
+          "Claimant No.": 300,
+          "Gender": "Sample 3",
+          "Product Name": "Sample 3"
+        }
+      ]
+    },
+    {
+      "tableName": "sheet1_(navigation)",
+      "displayName": "Sheet1 (Navigation)",
+      "rowCount": 2400,
+      "dataSource": "Tableau Extract (.hyper)",
+      "columns": [
+        {
+          "name": "Page ID",
+          "type": "integer"
+        },
+        {
+          "name": "Page Desc",
+          "type": "string"
+        },
+        {
+          "name": "Number of Records",
+          "type": "integer"
+        },
+        {
+          "name": "Page Desc",
+          "type": "string"
+        },
+        {
+          "name": "Page ID",
+          "type": "integer"
+        },
+        {
+          "name": "Migrated Data",
+          "type": "table"
+        },
+        {
+          "name": "Page ID",
+          "type": "integer"
+        },
+        {
+          "name": "Page Desc",
+          "type": "string"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Page ID": 100,
+          "Page Desc": "Sample 1",
+          "Number of Records": 100,
+          "Migrated Data": 100
+        },
+        {
+          "Page ID": 200,
+          "Page Desc": "Sample 2",
+          "Number of Records": 200,
+          "Migrated Data": 200
+        },
+        {
+          "Page ID": 300,
+          "Page Desc": "Sample 3",
+          "Number of Records": 300,
+          "Migrated Data": 300
+        }
+      ]
+    }
+  ]
+},
+  "d7": {
+  "summary": {
+    "totalDashboards": 1,
+    "totalWorksheets": 9,
+    "totalTables": 1,
+    "totalCalculatedFields": 7
+  },
+  "worksheets": [
+    {
+      "id": "ws_1",
+      "name": "New",
+      "chartType": "Automatic",
+      "dimensions": [
+        "Category",
+        "Segment"
+      ],
+      "measures": [
+        {
+          "name": "Amount",
+          "type": "base_measure"
+        },
+        {
+          "name": "New Budget",
+          "type": "base_measure"
+        },
+        {
+          "name": "Calculation_531987722593701892",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[:Measure Names]",
+        "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[Multiple Values]"
+      }
+    },
+    {
+      "id": "ws_2",
+      "name": "No of invoice by Accnt Exec",
+      "chartType": "Automatic",
+      "dimensions": [
+        "Account Executive (invoice!202001231041)"
+      ],
+      "measures": [
+        {
+          "name": "invoice_number",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Account Executive (invoice!202001231041):nk]",
+        "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:invoice_number:qk]"
+      }
+    },
+    {
+      "id": "ws_3",
+      "name": "No of meeting by Accnt Exec",
+      "chartType": "Automatic",
+      "dimensions": [
+        "Account Executive (meeting!list!202001231041)"
+      ],
+      "measures": [
+        {
+          "name": "__tableau_internal_object_id__].[meeting!list!202001231041_8DEA75082D9B4E319F02AD26040B6DD1",
+          "type": "base_measure"
+        },
+        {
+          "name": "meeting_date",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Account Executive (meeting!list!202001231041):nk]",
+        "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[__tableau_internal_object_id__].[cnt:meeting!list!202001231041_8DEA75082D9B4E319F02AD26040B6DD1:qk]"
+      }
+    },
+    {
+      "id": "ws_4",
+      "name": "Open Oppty-Top 4",
+      "chartType": "Bar Chart",
+      "dimensions": [
+        "opportunity_name"
+      ],
+      "measures": [
+        {
+          "name": "revenue_amount",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:revenue_amount:qk]",
+        "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:opportunity_name:nk]"
+      }
+    },
+    {
+      "id": "ws_5",
+      "name": "Oppty by Revenue - Top 4",
+      "chartType": "Pie Chart",
+      "dimensions": [
+        "opportunity_name"
+      ],
+      "measures": [
+        {
+          "name": "revenue_amount",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "",
+        "columns": ""
+      }
+    },
+    {
+      "id": "ws_6",
+      "name": "Oppty by product",
+      "chartType": "Pie Chart",
+      "dimensions": [
+        "product_group (gcrm!opportunity!202001231041)"
+      ],
+      "measures": [
+        {
+          "name": "opportunity_name",
+          "type": "base_measure"
+        },
+        {
+          "name": "product_group (gcrm!opportunity!202001231041)",
+          "type": "base_measure"
+        },
+        {
+          "name": "Calculation_1027383682329116673",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "([federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:Calculation_1027383682329116673:qk] + [federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:Calculation_1027383682329116673:qk])",
+        "columns": ""
+      }
+    },
+    {
+      "id": "ws_7",
+      "name": "Renewal",
+      "chartType": "Automatic",
+      "dimensions": [
+        "Category",
+        "Segment"
+      ],
+      "measures": [
+        {
+          "name": "Renewal Budget",
+          "type": "base_measure"
+        },
+        {
+          "name": "Calculation_531987722592980994",
+          "type": "base_measure"
+        },
+        {
+          "name": "Calculation_531987722593865733",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[:Measure Names]",
+        "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[Multiple Values]"
+      }
+    },
+    {
+      "id": "ws_8",
+      "name": "Stage by revenue",
+      "chartType": "Automatic",
+      "dimensions": [
+        "stage"
+      ],
+      "measures": [
+        {
+          "name": "stage",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:stage:nk]",
+        "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:stage:qk]"
+      }
+    },
+    {
+      "id": "ws_9",
+      "name": "budget",
+      "chartType": "Automatic",
+      "dimensions": [
+        "Employee Name"
+      ],
+      "measures": [
+        {
+          "name": "New Budget",
+          "type": "base_measure"
+        }
+      ],
+      "axes": {
+        "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Employee Name:nk]",
+        "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:New Budget:qk]"
+      }
+    }
+  ],
+  "calculatedFields": [
+    {
+      "id": "calc_1",
+      "name": "zero",
+      "formula": "0",
+      "role": "measure",
+      "datatype": "integer",
+      "usedInSheets": [
+        "New"
+      ]
+    },
+    {
+      "id": "calc_2",
+      "name": "Achieved",
+      "formula": "SUM([Amount (fees!202001231041)])+SUM([Amount])",
+      "role": "measure",
+      "datatype": "real",
+      "usedInSheets": [
+        "New"
+      ]
+    },
+    {
+      "id": "calc_3",
+      "name": "Achieved_Cross_Sell",
+      "formula": "SUM([Amount]) - 21547181",
+      "role": "measure",
+      "datatype": "real",
+      "usedInSheets": [
+        "New"
+      ]
+    },
+    {
+      "id": "calc_4",
+      "name": "Achieved_Renewal",
+      "formula": "SUM([Amount]) - 16755532",
+      "role": "measure",
+      "datatype": "real",
+      "usedInSheets": [
+        "New"
+      ]
+    },
+    {
+      "id": "calc_5",
+      "name": "Invoice_cross_sell",
+      "formula": "SUM([Amount (invoice!202001231041)]) - 9412706",
+      "role": "measure",
+      "datatype": "integer",
+      "usedInSheets": [
+        "New"
+      ]
+    },
+    {
+      "id": "calc_6",
+      "name": "Invoice_new",
+      "formula": "SUM([Amount (invoice!202001231041)]) - 11692706",
+      "role": "measure",
+      "datatype": "integer",
+      "usedInSheets": [
+        "New"
+      ]
+    },
+    {
+      "id": "calc_7",
+      "name": "Invoice_Renewal",
+      "formula": "SUM([Amount (invoice!202001231041)]) - 4322211",
+      "role": "measure",
+      "datatype": "integer",
+      "usedInSheets": [
+        "New"
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "tableName": "brokerage_202001231040_(multiple_connections)",
+      "displayName": "brokerage_202001231040 (Multiple Connections)",
+      "rowCount": 1850,
+      "dataSource": "Tableau Extract (.hyper)",
+      "columns": [
+        {
+          "name": "client_name",
+          "type": "string"
+        },
+        {
+          "name": "policy_number",
+          "type": "string"
+        },
+        {
+          "name": "policy_status",
+          "type": "string"
+        },
+        {
+          "name": "policy_start_date",
+          "type": "date"
+        },
+        {
+          "name": "policy_end_date",
+          "type": "date"
+        },
+        {
+          "name": "product_group",
+          "type": "string"
+        },
+        {
+          "name": "Account Exe ID",
+          "type": "integer"
+        },
+        {
+          "name": "Exe Name",
+          "type": "string"
+        },
+        {
+          "name": "branch_name",
+          "type": "string"
+        },
+        {
+          "name": "solution_group",
+          "type": "string"
+        },
+        {
+          "name": "income_class",
+          "type": "string"
+        },
+        {
+          "name": "Amount",
+          "type": "real"
+        },
+        {
+          "name": "income_due_date",
+          "type": "date"
+        },
+        {
+          "name": "revenue_transaction_type",
+          "type": "string"
+        },
+        {
+          "name": "renewal_status",
+          "type": "string"
+        },
+        {
+          "name": "lapse_reason",
+          "type": "string"
+        },
+        {
+          "name": "last_updated_date",
+          "type": "date"
+        },
+        {
+          "name": "client_name",
+          "type": "string"
+        },
+        {
+          "name": "branch_name",
+          "type": "string"
+        },
+        {
+          "name": "solution_group",
+          "type": "string"
+        }
+      ],
+      "sampleRows": [
+        {
+          "client_name": "Sample 1",
+          "policy_number": "Sample 1",
+          "policy_status": "Sample 1",
+          "policy_start_date": 100,
+          "policy_end_date": 100,
+          "product_group": "Sample 1"
+        },
+        {
+          "client_name": "Sample 2",
+          "policy_number": "Sample 2",
+          "policy_status": "Sample 2",
+          "policy_start_date": 200,
+          "policy_end_date": 200,
+          "product_group": "Sample 2"
+        },
+        {
+          "client_name": "Sample 3",
+          "policy_number": "Sample 3",
+          "policy_status": "Sample 3",
+          "policy_start_date": 300,
+          "policy_end_date": 300,
+          "product_group": "Sample 3"
+        }
+      ]
+    }
+  ]
+}
 };

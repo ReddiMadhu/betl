@@ -3256,4 +3256,901 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
       }
     ]
   }
+,
+  "d8": {
+  "summary": {
+    "totalPages": 0,
+    "totalVisuals": 0,
+    "totalTables": 0,
+    "totalDAXMeasures": 0
+  },
+  "pages": [],
+  "daxMeasures": [],
+  "tables": []
+},
+  "d9": {
+  "summary": {
+    "totalPages": 1,
+    "totalVisuals": 22,
+    "totalTables": 6,
+    "totalDAXMeasures": 4
+  },
+  "pages": [
+    {
+      "id": "pg_1",
+      "name": "Page 1",
+      "visualType": "textbox",
+      "dimensions": [
+        "Agent)"
+      ],
+      "measures": [
+        {
+          "name": "Agency State",
+          "type": "explicit"
+        },
+        {
+          "name": "Line of Business",
+          "type": "explicit"
+        },
+        {
+          "name": "Reporting Period",
+          "type": "explicit"
+        },
+        {
+          "name": "Agency state",
+          "type": "explicit"
+        },
+        {
+          "name": "Line of Business",
+          "type": "explicit"
+        },
+        {
+          "name": "Reporting Period",
+          "type": "explicit"
+        }
+      ],
+      "visualSlots": {
+        "values": "Page 1 Primary Metric Grid",
+        "axes": "Page 1 Categorical Breakdown"
+      }
+    }
+  ],
+  "daxMeasures": [
+    {
+      "id": "dax_1",
+      "name": "Total New Business Premium",
+      "expression": "SUM(Production[New_Business_Amount])",
+      "homeTable": "Production",
+      "formatString": "0,##0",
+      "usedInPages": [
+        "Page 1"
+      ]
+    },
+    {
+      "id": "dax_2",
+      "name": "Bottom Quartile Agent Count",
+      "expression": "CALCULATE(COUNTROWS(Agent), Agent[Production_Quartile] = 4)",
+      "homeTable": "Agent",
+      "formatString": "#,##0",
+      "usedInPages": [
+        "Page 1"
+      ]
+    },
+    {
+      "id": "dax_3",
+      "name": "Average Bind Velocity (Days)",
+      "expression": "AVERAGE(Production[Days_To_Bind])",
+      "homeTable": "Production",
+      "formatString": "0.0",
+      "usedInPages": [
+        "Page 1"
+      ]
+    },
+    {
+      "id": "dax_4",
+      "name": "Conversion Rate",
+      "expression": "DIVIDE([Policies Bound], [Quotes Submitted], 0)",
+      "homeTable": "Production",
+      "formatString": "0.0%",
+      "usedInPages": [
+        "Page 1"
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "tableName": "PBI Data",
+      "displayName": "PBI Data",
+      "rowCount": 3500,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "AOR + Agent",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Agency State",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "District",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Line of Business",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Reporting Period",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "AOR + Agent": 150,
+          "Agency State": 150,
+          "District": 150,
+          "Line of Business": 150,
+          "Reporting Period": 150
+        },
+        {
+          "AOR + Agent": 300,
+          "Agency State": 300,
+          "District": 300,
+          "Line of Business": 300,
+          "Reporting Period": 300
+        },
+        {
+          "AOR + Agent": 450,
+          "Agency State": 450,
+          "District": 450,
+          "Line of Business": 450,
+          "Reporting Period": 450
+        }
+      ]
+    },
+    {
+      "tableName": "PBI Data (2)",
+      "displayName": "PBI Data (2)",
+      "rowCount": 3500,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "AOR + Agent",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Agency state",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Line of Business",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Reporting Period",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "AOR + Agent": 150,
+          "Agency state": 150,
+          "Line of Business": 150,
+          "Reporting Period": 150
+        },
+        {
+          "AOR + Agent": 300,
+          "Agency state": 300,
+          "Line of Business": 300,
+          "Reporting Period": 300
+        },
+        {
+          "AOR + Agent": 450,
+          "Agency state": 450,
+          "Line of Business": 450,
+          "Reporting Period": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Sum(PBI Data",
+      "displayName": "Sum(PBI Data",
+      "rowCount": 3500,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "NB Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "NB Counts Agents in Bottom Quartile",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "NB Counts": 150,
+          "NB Counts Agents in Bottom Quartile": 150
+        },
+        {
+          "NB Counts": 300,
+          "NB Counts Agents in Bottom Quartile": 300
+        },
+        {
+          "NB Counts": 450,
+          "NB Counts Agents in Bottom Quartile": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Sum(PBI Data (2)",
+      "displayName": "Sum(PBI Data (2)",
+      "rowCount": 3500,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "R12 Loss Score Ratio Var to Bottom Quartile",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "R12_OVERALL_SCORE",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "R12 Loss Score Ratio Var to Bottom Quartile": 150,
+          "R12_OVERALL_SCORE": 150
+        },
+        {
+          "R12 Loss Score Ratio Var to Bottom Quartile": 300,
+          "R12_OVERALL_SCORE": 300
+        },
+        {
+          "R12 Loss Score Ratio Var to Bottom Quartile": 450,
+          "R12_OVERALL_SCORE": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Min(PBI Data (2)",
+      "displayName": "Min(PBI Data (2)",
+      "rowCount": 3500,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Agent",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Agent": 150
+        },
+        {
+          "Agent": 300
+        },
+        {
+          "Agent": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Min(PBI Data",
+      "displayName": "Min(PBI Data",
+      "rowCount": 3500,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Agent",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Agent": 150
+        },
+        {
+          "Agent": 300
+        },
+        {
+          "Agent": 450
+        }
+      ]
+    }
+  ]
+},
+  "d10": {
+  "summary": {
+    "totalPages": 0,
+    "totalVisuals": 0,
+    "totalTables": 0,
+    "totalDAXMeasures": 0
+  },
+  "pages": [],
+  "daxMeasures": [],
+  "tables": []
+},
+  "u5": {
+  "summary": {
+    "totalPages": 2,
+    "totalVisuals": 19,
+    "totalTables": 6,
+    "totalDAXMeasures": 3
+  },
+  "pages": [
+    {
+      "id": "pg_1",
+      "name": "Page 1",
+      "visualType": "slicer",
+      "dimensions": [
+        "MTD Conversion Rate)",
+        "MTD NB Counts)",
+        "MTD Quote Counts)",
+        "Month Year.Variation.Date Hierarchy.Month",
+        "Month Year.Variation.Date Hierarchy.Year"
+      ],
+      "measures": [
+        {
+          "name": "Month Year.Variation.Date Hierarchy.Year",
+          "type": "explicit"
+        },
+        {
+          "name": "Month Year.Variation.Date Hierarchy.Month",
+          "type": "explicit"
+        },
+        {
+          "name": "MTD NB Counts",
+          "type": "explicit"
+        },
+        {
+          "name": "MTD Quote Counts",
+          "type": "explicit"
+        },
+        {
+          "name": "MTD Conversion Rate1",
+          "type": "explicit"
+        },
+        {
+          "name": "YTD NB Counts",
+          "type": "explicit"
+        }
+      ],
+      "visualSlots": {
+        "values": "Page 1 Primary Metric Grid",
+        "axes": "Page 1 Categorical Breakdown"
+      }
+    },
+    {
+      "id": "pg_2",
+      "name": "Page 2",
+      "visualType": "waterfallChart",
+      "dimensions": [
+        "Commision)",
+        "Metric"
+      ],
+      "measures": [
+        {
+          "name": "Total Premium",
+          "type": "explicit"
+        },
+        {
+          "name": "Policies Bound",
+          "type": "explicit"
+        }
+      ],
+      "visualSlots": {
+        "values": "Page 2 Primary Metric Grid",
+        "axes": "Page 2 Categorical Breakdown"
+      }
+    }
+  ],
+  "daxMeasures": [
+    {
+      "id": "dax_1",
+      "name": "Underwriting Loss Ratio",
+      "expression": "DIVIDE(SUM(Losses[Incurred]), SUM(Premiums[Earned]), 0)",
+      "homeTable": "Fact_Loss",
+      "formatString": "0.0%",
+      "usedInPages": [
+        "Page 1"
+      ]
+    },
+    {
+      "id": "dax_2",
+      "name": "Submission Approval Rate",
+      "expression": "DIVIDE([Approved Submissions], [Total Submissions], 0)",
+      "homeTable": "Submissions",
+      "formatString": "0.0%",
+      "usedInPages": [
+        "Page 1",
+        "Page 2"
+      ]
+    },
+    {
+      "id": "dax_3",
+      "name": "Average Risk Score",
+      "expression": "AVERAGE(Risk[Score])",
+      "homeTable": "Risk",
+      "formatString": "0.0",
+      "usedInPages": [
+        "Page 1"
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "tableName": "Sheet1",
+      "displayName": "Sheet1",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "DM Conversion Rate1",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "MTD Conversion Rate1",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Month Year.Variation.Date Hierarchy.Month",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Month Year.Variation.Date Hierarchy.Year",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Rolling Conversion Rate1",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "YTD Conversion Rate1",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "DM Conversion Rate1": 150,
+          "MTD Conversion Rate1": 150,
+          "Month Year.Variation.Date Hierarchy.Month": 150,
+          "Month Year.Variation.Date Hierarchy.Year": 150,
+          "Rolling Conversion Rate1": 150,
+          "YTD Conversion Rate1": 150
+        },
+        {
+          "DM Conversion Rate1": 300,
+          "MTD Conversion Rate1": 300,
+          "Month Year.Variation.Date Hierarchy.Month": 300,
+          "Month Year.Variation.Date Hierarchy.Year": 300,
+          "Rolling Conversion Rate1": 300,
+          "YTD Conversion Rate1": 300
+        },
+        {
+          "DM Conversion Rate1": 450,
+          "MTD Conversion Rate1": 450,
+          "Month Year.Variation.Date Hierarchy.Month": 450,
+          "Month Year.Variation.Date Hierarchy.Year": 450,
+          "Rolling Conversion Rate1": 450,
+          "YTD Conversion Rate1": 450
+        }
+      ]
+    },
+    {
+      "tableName": "CountNonNull(Sheet1",
+      "displayName": "CountNonNull(Sheet1",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "MTD NB Counts",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "MTD NB Counts": 150
+        },
+        {
+          "MTD NB Counts": 300
+        },
+        {
+          "MTD NB Counts": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Sum(Sheet1",
+      "displayName": "Sum(Sheet1",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Conversion Rate Disengaged Agents",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "DM Conversion Rate Var%",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "DM NB Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "DM NB Counts Var%",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "DM Quote Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "DM Quote Counts Var%",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "MTD Conversion Rate",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "MTD NB Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "MTD Quote Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Rolling NB Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Rolling Quote Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "YTD NB Counts",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "YTD Quote Counts",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Conversion Rate Disengaged Agents": 150,
+          "DM Conversion Rate Var%": 150,
+          "DM NB Counts": 150,
+          "DM NB Counts Var%": 150,
+          "DM Quote Counts": 150,
+          "DM Quote Counts Var%": 150
+        },
+        {
+          "Conversion Rate Disengaged Agents": 300,
+          "DM Conversion Rate Var%": 300,
+          "DM NB Counts": 300,
+          "DM NB Counts Var%": 300,
+          "DM Quote Counts": 300,
+          "DM Quote Counts Var%": 300
+        },
+        {
+          "Conversion Rate Disengaged Agents": 450,
+          "DM Conversion Rate Var%": 450,
+          "DM NB Counts": 450,
+          "DM NB Counts Var%": 450,
+          "DM Quote Counts": 450,
+          "DM Quote Counts Var%": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Min(Sheet1",
+      "displayName": "Min(Sheet1",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Blank Column 1",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Blank Column 2",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Blank Column 1": 150,
+          "Blank Column 2": 150
+        },
+        {
+          "Blank Column 1": 300,
+          "Blank Column 2": 300
+        },
+        {
+          "Blank Column 1": 450,
+          "Blank Column 2": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Sum(Sheet2 (2)",
+      "displayName": "Sum(Sheet2 (2)",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Commision",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Commision": 150
+        },
+        {
+          "Commision": 300
+        },
+        {
+          "Commision": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Sheet2 (2)",
+      "displayName": "Sheet2 (2)",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Metric",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Metric": 150
+        },
+        {
+          "Metric": 300
+        },
+        {
+          "Metric": 450
+        }
+      ]
+    }
+  ]
+},
+  "u6": {
+  "summary": {
+    "totalPages": 2,
+    "totalVisuals": 8,
+    "totalTables": 2,
+    "totalDAXMeasures": 3
+  },
+  "pages": [
+    {
+      "id": "pg_1",
+      "name": "Page 1",
+      "visualType": "slicer",
+      "dimensions": [
+        "Daily Assigned Import Rate by CY",
+        "Import Assigned-Rate",
+        "Imported datetime adjusted",
+        "State"
+      ],
+      "measures": [
+        {
+          "name": "Imported datetime adjusted",
+          "type": "explicit"
+        },
+        {
+          "name": "State",
+          "type": "explicit"
+        },
+        {
+          "name": "LOB",
+          "type": "explicit"
+        },
+        {
+          "name": "Daily Assigned Import Rate by CY",
+          "type": "explicit"
+        },
+        {
+          "name": "Import Assigned-Rate",
+          "type": "explicit"
+        }
+      ],
+      "visualSlots": {
+        "values": "Page 1 Primary Metric Grid",
+        "axes": "Page 1 Categorical Breakdown"
+      }
+    },
+    {
+      "id": "pg_2",
+      "name": "Page 2",
+      "visualType": "areaChart",
+      "dimensions": [
+        "Allocated_IND)",
+        "bind"
+      ],
+      "measures": [
+        {
+          "name": "Total Premium",
+          "type": "explicit"
+        },
+        {
+          "name": "Policies Bound",
+          "type": "explicit"
+        }
+      ],
+      "visualSlots": {
+        "values": "Page 2 Primary Metric Grid",
+        "axes": "Page 2 Categorical Breakdown"
+      }
+    }
+  ],
+  "daxMeasures": [
+    {
+      "id": "dax_1",
+      "name": "Quotation Latency (s)",
+      "expression": "AVERAGE(Rating[Engine_Response_Ms]) / 1000",
+      "homeTable": "Rating",
+      "formatString": "0.00s",
+      "usedInPages": [
+        "Page 1"
+      ]
+    },
+    {
+      "id": "dax_2",
+      "name": "Rating Factor Multiplier",
+      "expression": "PRODUCT(RatingFactors[Factor_Weight])",
+      "homeTable": "RatingFactors",
+      "formatString": "0.000",
+      "usedInPages": [
+        "Page 1",
+        "Page 2"
+      ]
+    },
+    {
+      "id": "dax_3",
+      "name": "Active Submissions",
+      "expression": "COUNTROWS(FILTER(Submissions, Submissions[Status] = \"In Review\"))",
+      "homeTable": "Submissions",
+      "formatString": "#,##0",
+      "usedInPages": [
+        "Page 1"
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "tableName": "Sheet1",
+      "displayName": "Sheet1",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Daily Assigned Import Rate by CY",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Import Assigned-Rate",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "Imported datetime adjusted",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "LOB",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "State",
+          "type": "NUMERIC(14,2)"
+        },
+        {
+          "name": "bind",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Daily Assigned Import Rate by CY": 150,
+          "Import Assigned-Rate": 150,
+          "Imported datetime adjusted": 150,
+          "LOB": 150,
+          "State": 150,
+          "bind": 150
+        },
+        {
+          "Daily Assigned Import Rate by CY": 300,
+          "Import Assigned-Rate": 300,
+          "Imported datetime adjusted": 300,
+          "LOB": 300,
+          "State": 300,
+          "bind": 300
+        },
+        {
+          "Daily Assigned Import Rate by CY": 450,
+          "Import Assigned-Rate": 450,
+          "Imported datetime adjusted": 450,
+          "LOB": 450,
+          "State": 450,
+          "bind": 450
+        }
+      ]
+    },
+    {
+      "tableName": "Sum(Sheet1",
+      "displayName": "Sum(Sheet1",
+      "rowCount": 1250,
+      "source": "Import (Direct Lake)",
+      "relationships": [
+        "1:* to Fact_Production"
+      ],
+      "columns": [
+        {
+          "name": "Allocated_IND",
+          "type": "NUMERIC(14,2)"
+        }
+      ],
+      "sampleRows": [
+        {
+          "Allocated_IND": 150
+        },
+        {
+          "Allocated_IND": 300
+        },
+        {
+          "Allocated_IND": 450
+        }
+      ]
+    }
+  ]
+}
 };
