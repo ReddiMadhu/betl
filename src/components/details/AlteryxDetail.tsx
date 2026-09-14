@@ -16,10 +16,11 @@ import {
   ArrowRight,
   FileInput,
   FileOutput,
-  Cpu,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
+import type { AlteryxDetailData } from '../../data/alteryxDetailData';
+import { ALTERYX_DETAIL_DATA } from '../../data/alteryxDetailData';
 
 /* ─────────────────────────────────────────────────────────
  * AlteryxDetail — full-page detail view for Alteryx ETL
@@ -31,64 +32,6 @@ import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 interface Props {
   asset: Asset;
   onBack: () => void;
-}
-
-interface AlteryxTool {
-  id: string;
-  name: string;
-  category: 'Input' | 'Preparation' | 'Join' | 'Parse' | 'Transform' | 'Output';
-  description: string;
-  configuration: string;
-  status: 'valid' | 'warning' | 'error';
-}
-
-interface ConnectionInfo {
-  id: string;
-  name: string;
-  type: string;
-  details: string;
-  direction: 'input' | 'output';
-}
-
-interface PipelineStage {
-  id: string;
-  label: string;
-  tools: number;
-  icon: typeof FileInput;
-  color: string;
-}
-
-/* ── Mock data ── */
-function getMockData() {
-  const tools: AlteryxTool[] = [
-    { id: 't1', name: 'Input Data', category: 'Input', description: 'Read from SQL Server claims table', configuration: 'Server: PROD-DB01\\INS · Database: ClaimsDB · Table: dbo.fact_claims', status: 'valid' },
-    { id: 't2', name: 'Input Data', category: 'Input', description: 'Read from policy dimension table', configuration: 'Server: PROD-DB01\\INS · Database: PolicyDB · Table: dbo.dim_policy', status: 'valid' },
-    { id: 't3', name: 'Select', category: 'Preparation', description: 'Filter columns and rename fields', configuration: 'Selected: 18 of 42 columns · Renamed: 5 fields', status: 'valid' },
-    { id: 't4', name: 'Filter', category: 'Preparation', description: 'Active policies only', configuration: 'Expression: [Status] = "Active" AND [Effective_Date] >= "2024-01-01"', status: 'valid' },
-    { id: 't5', name: 'Join', category: 'Join', description: 'Join claims to policies', configuration: 'Join on: Claims.policy_id = Policy.policy_id · Type: Left Outer', status: 'valid' },
-    { id: 't6', name: 'Multi-Row Formula', category: 'Transform', description: 'Calculate running loss ratio', configuration: 'GroupBy: [Region], [LOB] · Expression: RunningSum([Claim_Amount]) / RunningSum([Premium])', status: 'warning' },
-    { id: 't7', name: 'Summarize', category: 'Transform', description: 'Aggregate by business area', configuration: 'GroupBy: Region, LOB, Month · Sum: Claim_Amount, Premium · Count: Claim_ID', status: 'valid' },
-    { id: 't8', name: 'RegEx', category: 'Parse', description: 'Extract policy type code', configuration: 'Field: Policy_Number · Expression: ([A-Z]{3})\\d+ · Output: Policy_Type_Code', status: 'valid' },
-    { id: 't9', name: 'Output Data', category: 'Output', description: 'Write to Claims Data Mart', configuration: 'Server: ANALYTICS-DW · Database: Insurance_DW · Table: dbo.claims_mart', status: 'valid' },
-    { id: 't10', name: 'Output Data', category: 'Output', description: 'Write summary to Tableau extract', configuration: 'File: \\\\share\\tableau\\claims_summary.hyper · Mode: Create/Replace', status: 'valid' },
-  ];
-
-  const connections: ConnectionInfo[] = [
-    { id: 'c1', name: 'Claims Source Database', type: 'SQL Server', details: 'PROD-DB01\\INS · ClaimsDB · 890K rows', direction: 'input' },
-    { id: 'c2', name: 'Policy Dimension', type: 'SQL Server', details: 'PROD-DB01\\INS · PolicyDB · 2.4M rows', direction: 'input' },
-    { id: 'c3', name: 'Agent Reference File', type: 'Excel', details: '\\\\share\\reference\\agents.xlsx · 1.2K rows', direction: 'input' },
-    { id: 'c4', name: 'Claims Data Mart', type: 'SQL Server', details: 'ANALYTICS-DW · Insurance_DW · Truncate & Load', direction: 'output' },
-    { id: 'c5', name: 'Tableau Extract', type: 'Hyper File', details: '\\\\share\\tableau\\claims_summary.hyper', direction: 'output' },
-    { id: 'c6', name: 'Audit Log', type: 'CSV', details: '\\\\share\\logs\\etl_claims_{YYYY-MM-DD}.csv', direction: 'output' },
-  ];
-
-  const pipelineStages: PipelineStage[] = [
-    { id: 's1', label: 'Extract', tools: 3, icon: FileInput, color: '#3B82F6' },
-    { id: 's2', label: 'Transform', tools: 4, icon: Cpu, color: '#F59E0B' },
-    { id: 's3', label: 'Load', tools: 3, icon: FileOutput, color: '#22C55E' },
-  ];
-
-  return { tools, connections, pipelineStages };
 }
 
 /* ── Stat Card ── */
@@ -163,7 +106,15 @@ function StatusBadge({ status }: { status: 'valid' | 'warning' | 'error' }) {
 }
 
 export default function AlteryxDetail({ asset, onBack }: Props) {
-  const { tools, connections, pipelineStages } = getMockData();
+  const detailData: AlteryxDetailData = ALTERYX_DETAIL_DATA[asset.id] ?? {
+    tools: [],
+    connections: [],
+    pipelineStages: [],
+    schedule: '',
+    lastRunStatus: '',
+    avgRuntime: '-',
+  };
+  const { tools, connections, pipelineStages } = detailData;
   const [expandedTool, setExpandedTool] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'pipeline' | 'tools' | 'connections'>('pipeline');
 
@@ -225,10 +176,12 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
                   {asset.assetType}
                 </span>
               )}
-              <span className="flex items-center gap-1">
-                <Clock size={11} />
-                Schedule: Daily 5:30 AM EST
-              </span>
+              {detailData.schedule && (
+                <span className="flex items-center gap-1">
+                  <Clock size={11} />
+                  Schedule: {detailData.schedule}
+                </span>
+              )}
               {asset.owner && (
                 <span className="flex items-center gap-1">
                   <User size={11} />
@@ -250,13 +203,15 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
           </div>
         </div>
 
-        <div
-          className="flex items-center gap-2 px-4 py-2 rounded-xl shrink-0"
-          style={{ backgroundColor: 'rgba(34, 197, 94, 0.08)', color: '#22C55E', fontWeight: 700, fontSize: '0.875rem' }}
-        >
-          <Play size={14} />
-          <span>Last Run: Success</span>
-        </div>
+        {detailData.lastRunStatus && (
+          <div
+            className="flex items-center gap-2 px-4 py-2 rounded-xl shrink-0"
+            style={{ backgroundColor: 'rgba(34, 197, 94, 0.08)', color: '#22C55E', fontWeight: 700, fontSize: '0.875rem' }}
+          >
+            <Play size={14} />
+            <span>Last Run: {detailData.lastRunStatus}</span>
+          </div>
+        )}
       </motion.div>
 
       {/* ── Stats ── */}
@@ -269,7 +224,7 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
         <StatCard icon={Settings} label="Tool Count" value={tools.length} color="#8B5CF6" />
         <StatCard icon={FileInput} label="Input Sources" value={asset.sourceCount ?? inputConns.length} color="#3B82F6" />
         <StatCard icon={FileOutput} label="Output Targets" value={asset.targetCount ?? outputConns.length} color="#22C55E" />
-        <StatCard icon={Clock} label="Avg Runtime" value="4m 32s" color="#F59E0B" />
+        <StatCard icon={Clock} label="Avg Runtime" value={detailData.avgRuntime || '-'} color="#F59E0B" />
       </motion.div>
 
       {/* ── Tabs ── */}
