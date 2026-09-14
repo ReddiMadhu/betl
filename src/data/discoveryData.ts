@@ -43,6 +43,7 @@ export interface Asset {
   relatedAssets?: string[];
   lastUpdated?: string;
   description?: string;
+  canonicalId?: string;
 }
 
 export interface BusinessArea {
@@ -84,9 +85,9 @@ const allAssets: Asset[] = [
   { id: 'p1', name: 'policy_lifecycle_dashboard', technology: 'Power BI', businessArea: 'Policy Administration', assetType: 'Dashboard', owner: 'Chris Morgan', sourceCount: 6, targetCount: 3, kpiCount: 11, dependencies: ['Policy_Consolidation_Workflow'], relatedAssets: ['policy_renewal_tracker'], lastUpdated: '2026-09-04', description: 'End-to-end policy lifecycle visibility from new business through renewal, endorsement, and cancellation.' },
   { id: 'p2', name: 'policy_renewal_tracker', technology: 'Power BI', businessArea: 'Policy Administration', assetType: 'Dashboard', owner: 'Chris Morgan', sourceCount: 3, targetCount: 1, kpiCount: 5, lastUpdated: '2026-08-22' },
   { id: 'p3', name: 'policy_book_analysis', technology: 'Tableau', businessArea: 'Policy Administration', assetType: 'Report', owner: 'Diana Lee', sourceCount: 4, targetCount: 2, kpiCount: 7, lastUpdated: '2026-08-18' },
-  { id: 'p4', name: 'Workflow_03', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 5, targetCount: 3, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates policy, claims and payment data from multiple sources. Categorises policies into premium groupd based on monthly premium accounts and calculates month-end dates for payments' },
-  { id: 'p5', name: 'Workflow_01', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates claims and payments data. Processes diagnosis, claims and payments information through various transformations.' },
-  { id: 'p6', name: 'Workflow_02', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Calculates key dates such as Clm_Service_Date and Month_End_Date using predefined formulas and aggregates claim volumes by industry type'},
+  { id: 'p4', canonicalId: 'c7', name: 'Workflow_03', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 5, targetCount: 3, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates policy, claims and payment data from multiple sources. Categorises policies into premium groupd based on monthly premium accounts and calculates month-end dates for payments' },
+  { id: 'p5', canonicalId: 'c8', name: 'Workflow_01', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates claims and payments data. Processes diagnosis, claims and payments information through various transformations.' },
+  { id: 'p6', canonicalId: 'c9', name: 'Workflow_02', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Calculates key dates such as Clm_Service_Date and Month_End_Date using predefined formulas and aggregates claim volumes by industry type'},
 
   // ─── Finance ───
   { id: 'f1', name: 'financial_overview', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'Jennifer Adams', sourceCount: 7, targetCount: 4, kpiCount: 14, dependencies: ['Workflow_02'], relatedAssets: ['premium_revenue_report', 'loss_ratio_analysis'], lastUpdated: '2026-09-06', description: 'CFO-level financial dashboard covering premium revenue, combined ratio, investment income, and expense ratios.' },
@@ -143,9 +144,11 @@ export function getSummaryMetrics(): SummaryMetric[] {
   const dashboards = allAssets.filter(
     (a) => a.assetType === 'Dashboard' || a.assetType === 'Report',
   ).length;
-  const etlWorkflows = allAssets.filter(
-    (a) => a.assetType === 'ETL Workflow' || a.assetType === 'ETL Script',
-  ).length;
+  const etlWorkflows = new Set(
+    allAssets
+      .filter((a) => a.assetType === 'ETL Workflow' || a.assetType === 'ETL Script')
+      .map((a) => a.canonicalId ?? a.id),
+  ).size;
   const sources = allAssets.reduce((sum, a) => sum + (a.sourceCount ?? 0), 0);
   const targets = allAssets.reduce((sum, a) => sum + (a.targetCount ?? 0), 0);
   const kpis = allAssets.reduce((sum, a) => sum + (a.kpiCount ?? 0), 0);
