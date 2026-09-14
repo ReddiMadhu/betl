@@ -43,6 +43,17 @@ const BI_TARGET_OPTIONS: TargetOption[] = [
       'Cloud extract scheduling and multi-tenant security filters',
     ],
   },
+  {
+    id: 'ThoughtSpot',
+    name: 'ThoughtSpot Analytics',
+    tagline: 'Search & AI-driven liveboards powered by ThoughtSpot Modeling Language (TML)',
+    compatibilityScore: '95% Parity',
+    features: [
+      'Search-first liveboards with natural language querying',
+      'Automated TML YAML schema generation',
+      'Direct-to-cloud-warehouse pushdown queries',
+    ],
+  },
 ];
 
 const ETL_TARGET_OPTIONS: TargetOption[] = [

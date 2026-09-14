@@ -1,6 +1,8 @@
+import thoughtspotLogo from '../assets/logos/thoughtspot.svg';
 import powerbiLogo from '../assets/logos/powerbi.svg';
 import tableauLogo from '../assets/logos/tableau.svg';
 import microstrategyLogo from '../assets/logos/microstrategy.svg';
+import excelLogo from '../assets/logos/excel.svg';
 import alteryxLogo from '../assets/logos/alteryx.svg';
 import pythonLogo from '../assets/logos/python.svg';
 import sqlLogo from '../assets/logos/sql.svg';
@@ -18,6 +20,13 @@ export interface Technology {
 }
 
 export const technologies: Technology[] = [
+  {
+    id: 'thoughtspot',
+    name: 'ThoughtSpot',
+    category: 'BI',
+    logo: thoughtspotLogo,
+    status: 'connected',
+  },
   {
     id: 'powerbi',
     name: 'Power BI',
@@ -37,6 +46,13 @@ export const technologies: Technology[] = [
     name: 'MicroStrategy',
     category: 'BI',
     logo: microstrategyLogo,
+    status: 'connected',
+  },
+  {
+    id: 'excel',
+    name: 'Excel',
+    category: 'BI',
+    logo: excelLogo,
     status: 'connected',
   },
   {
@@ -137,10 +153,23 @@ export const ingestionStats: IngestionStat[] = [
     id: 'microstrategy',
     name: 'MicroStrategy',
     logo: microstrategyLogo,
-    count: 1,
-    suffix: 'dossier ingested',
+    count: 2,
+    suffix: 'assets ingested',
+  },
+  {
+    id: 'thoughtspot',
+    name: 'ThoughtSpot',
+    logo: thoughtspotLogo,
+    count: 0,
+    suffix: 'liveboards ingested',
+  },
+  {
+    id: 'excel',
+    name: 'Excel',
+    logo: excelLogo,
+    count: 0,
+    suffix: 'spreadsheets ingested',
   },
 ];
 
 export const totalAssets = 35;
-

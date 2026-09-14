@@ -12,12 +12,11 @@ import type { TraceStep } from './ThinkingTrace';
  * the migration conversion steps.
  * ───────────────────────────────────────────────────────── */
 
-/* ── Trace steps ── */
 const MIGRATION_STEPS: TraceStep[] = [
-  { label: 'Analyzing source asset definitions & schemas', detail: '8 assets' },
-  { label: 'Mapping Tableau workbooks to Power BI datasets', detail: '3 workbooks' },
-  { label: 'Transforming MicroStrategy dossiers to Power BI / Tableau', detail: '1 dossier' },
-  { label: 'Transpiling Alteryx workflows to Python scripts', detail: '4 workflows' },
+  { label: 'Analyzing source asset definitions & schemas', detail: '35 assets' },
+  { label: 'Mapping Tableau workbooks to Power BI datasets', detail: '12 workbooks' },
+  { label: 'Transforming MicroStrategy dossiers to Power BI / Tableau', detail: '2 assets' },
+  { label: 'Transpiling Alteryx workflows to Python scripts', detail: '7 workflows' },
   { label: 'Validating data model compatibility & KPI parity' },
   { label: 'Generating migration packages & validation reports' },
 ];
