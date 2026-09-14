@@ -172,4 +172,4 @@ export const ingestionStats: IngestionStat[] = [
   },
 ];
 
-export const totalAssets = 35;
+export const totalAssets = 27;
