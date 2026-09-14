@@ -442,7 +442,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
   // Filter recs by section, tab, and search
   const sectionRecs = useMemo(() => {
     const biCats = ['merge-bi', 'bi-retire', 'bi-keep', 'bi-etl-connections'];
-    const etlCats = ['etl-merge', 'etl-retire'];
+    const etlCats = ['etl-merge', 'etl-retire', 'etl-keep'];
     return recommendations.filter((r) =>
       activeSection === 'bi' ? biCats.includes(r.category) : etlCats.includes(r.category),
     );
@@ -468,8 +468,10 @@ export default function RationalizationResults({ onStartMigration }: Props) {
     [sectionRecs, search, activeSection],
   );
   const keepRecs = useMemo(
-    () => filterBySearch(sectionRecs.filter((r) => r.category === 'bi-keep')),
-    [sectionRecs, search],
+    () => filterBySearch(
+      sectionRecs.filter((r) => r.category === (activeSection === 'bi' ? 'bi-keep' : 'etl-keep')),
+    ),
+    [sectionRecs, search, activeSection],
   );
 
   const totalCount = mergeRecs.length + retireRecs.length + keepRecs.length;
@@ -810,7 +812,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           )}
 
           {/* KEEP & CERTIFY COLUMN */}
-          {(activeTab === 'all' || activeTab === 'keep') && activeSection === 'bi' && (
+          {(activeTab === 'all' || activeTab === 'keep') && (
             <div className="space-y-4 flex flex-col">
               <ColumnHeader icon={ShieldCheck} label="Keep & Certify" count={keepRecs.length} countLabel="Recommendations" color="#22C55E" />
               {keepRecs.map((r) => (
