@@ -37,7 +37,7 @@ export interface AlteryxDetailData {
 }
 
 export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
-  c6: {
+  c10: {
     tools: [
       { id: 't1', name: 'Input Data', category: 'Input', description: 'Reads the claims volume Excel workbook.', configuration: '.\\Data\\Claims_Volume_Extract_Demo.xlsx|||Sheet1$', status: 'valid' },
       { id: 't2', name: 'Block Until Done', category: 'Preparation', description: 'Reads the workbook once, then fans out to downstream branches.', configuration: 'Sequential branch execution', status: 'valid' },
@@ -100,7 +100,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     lastRunStatus: 'Success',
     avgRuntime: '32s',
   },
-  c7: {
+  c11: {
     tools: [
       { id: '#1', name: 'TextInput', category: 'Input', description: 'Provides a sample dataset with policy information including Policy_ID, Policy Type, Plan, and Policy_Start_Date.', configuration: 'XML Tool Name: AlteryxBasePluginsGui.TextInput.TextInput\nTool Type: TextInput', status: 'valid' },
       { id: '#2', name: 'TextToColumns', category: 'Parse', description: "Splits the values in 'Field1' into separate columns.", configuration: 'XML Tool Name: AlteryxBasePluginsGui.TextToColumns.TextToColumns\nTool Type: TextToColumns', status: 'valid' },
@@ -205,7 +205,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     lastRunStatus: 'Success',
     avgRuntime: '15s',
   },
-  c8: {
+  c12: {
   tools: [
     {
       id: '#1',
@@ -429,7 +429,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
   lastRunStatus: '',
   avgRuntime: '16s',
 },
-    c9: {
+    c13: {
     tools: [
       {
         id: '#1',
@@ -677,7 +677,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     lastRunStatus: '',
     avgRuntime: '16s',
   },
-  c10: {
+  c14: {
     tools: [
       { id: 't1', name: 'Input Data', category: 'Input', description: 'Reads the claims volume Excel workbook.', configuration: '.\\Data\\Claims_Volume_Extract_Demo.xlsx|||Sheet1$', status: 'valid' },
       { id: 't2', name: 'Block Until Done', category: 'Preparation', description: 'Reads the workbook once, then fans out to downstream branches.', configuration: 'Sequential branch execution', status: 'valid' },
@@ -740,7 +740,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     lastRunStatus: 'Success',
     avgRuntime: '32s',
   },
-    u5: {
+    u4: {
     tools: [
       {
         id: '#30',
@@ -831,7 +831,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     lastRunStatus: '',
     avgRuntime: '',
   },
-    d4: {
+    d6: {
     tools: [
       {
         id: '#1',
@@ -960,6 +960,6 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
 };
 
 // Policy Administration workflows use the same underlying Alteryx workflow definitions.
-ALTERYX_DETAIL_DATA.p4 = ALTERYX_DETAIL_DATA.c7; // Workflow_03
-ALTERYX_DETAIL_DATA.p5 = ALTERYX_DETAIL_DATA.c8; // Workflow_01
-ALTERYX_DETAIL_DATA.p6 = ALTERYX_DETAIL_DATA.c9; // Workflow_02
+ALTERYX_DETAIL_DATA.p4 = ALTERYX_DETAIL_DATA.c11; // Workflow_03
+ALTERYX_DETAIL_DATA.p5 = ALTERYX_DETAIL_DATA.c12; // Workflow_01
+ALTERYX_DETAIL_DATA.p6 = ALTERYX_DETAIL_DATA.c13; // Workflow_02

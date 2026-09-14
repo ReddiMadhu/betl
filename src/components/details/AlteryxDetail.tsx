@@ -106,7 +106,7 @@ function StatusBadge({ status }: { status: 'valid' | 'warning' | 'error' }) {
 }
 
 export default function AlteryxDetail({ asset, onBack }: Props) {
-  const detailData: AlteryxDetailData = ALTERYX_DETAIL_DATA[asset.id] ?? {
+  const detailData: AlteryxDetailData = ALTERYX_DETAIL_DATA[asset.canonicalId ?? asset.id] ?? ALTERYX_DETAIL_DATA[asset.id] ?? {
     tools: [],
     connections: [],
     pipelineStages: [],

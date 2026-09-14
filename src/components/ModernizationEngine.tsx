@@ -15,11 +15,11 @@ function IngestionStatsBar() {
   const totalCount = useCountUp(totalAssets, 1100, 100);
   const biCount = useCountUp(17, 1000, 150);
   const etlCount = useCountUp(8, 1000, 200);
-  const pbiCount = useCountUp(10, 900, 250);
-  const mstrCount = useCountUp(5, 900, 300);
-  const altCount = useCountUp(5, 900, 350);
-  const tabCount = useCountUp(2, 900, 400);
-  const pyCount = useCountUp(3, 900, 450);
+  const pbiCount = useCountUp(8, 900, 250);
+  const mstrCount = useCountUp(1, 900, 300);
+  const altCount = useCountUp(7, 900, 350);
+  const tabCount = useCountUp(8, 900, 400);
+  const pyCount = useCountUp(1, 900, 450);
 
   return (
     <div
