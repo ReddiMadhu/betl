@@ -21,6 +21,7 @@ import { useCountUp } from '../../hooks/useAnimations';
 import type { OverlapMetric } from '../../data/rationalizationData';
 import MergeReviewModal from './MergeReviewModal';
 import DecommissionReviewModal from './DecommissionReviewModal';
+import DownloadDocumentationButton from './DownloadDocumentationButton';
 
 /* ─────────────────────────────────────────────────────────
  * RationalizationResults — BI Compass-inspired layout
@@ -565,6 +566,9 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 </button>
               ))}
             </div>
+
+            {/* Download Documentation Button */}
+            <DownloadDocumentationButton type="rationalization" />
 
             {/* Start Migration button moved to top right */}
             {onStartMigration && (

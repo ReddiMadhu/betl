@@ -1,0 +1,487 @@
+{
+  "generatedAt": "2026-09-14T11:12:31.868Z",
+  "assessment": [
+    {
+      "path": "BI/MicroStrategy/Claims Cube/Claims Cube_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/MicroStrategy/Claims Cube/Claims Cube_Assessment.xlsx",
+      "size": 24409
+    },
+    {
+      "path": "BI/MicroStrategy/Claims Cube/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/MicroStrategy/Claims Cube/Technical_Specification.md",
+      "size": 903
+    },
+    {
+      "path": "BI/MicroStrategy/P&C Claims Dashboard v3/P&C Claims Dashboard v3_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/MicroStrategy/P&C Claims Dashboard v3/P&C Claims Dashboard v3_Assessment.xlsx",
+      "size": 26154
+    },
+    {
+      "path": "BI/MicroStrategy/P&C Claims Dashboard v3/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/MicroStrategy/P&C Claims Dashboard v3/Technical_Specification.md",
+      "size": 1042
+    },
+    {
+      "path": "BI/Power BI/Bottom 25% Agents/Bottom 25_ Agents_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Bottom 25% Agents/Bottom 25_ Agents_Assessment.xlsx",
+      "size": 24871
+    },
+    {
+      "path": "BI/Power BI/Bottom 25% Agents/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Bottom 25% Agents/Technical_Specification.md",
+      "size": 956
+    },
+    {
+      "path": "BI/Power BI/Cross Sell Dashboard PBIP/Cross Sell Dashboard PBIP_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Cross Sell Dashboard PBIP/Cross Sell Dashboard PBIP_Assessment.xlsx",
+      "size": 24437
+    },
+    {
+      "path": "BI/Power BI/Cross Sell Dashboard PBIP/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Cross Sell Dashboard PBIP/Technical_Specification.md",
+      "size": 937
+    },
+    {
+      "path": "BI/Power BI/FFQ Test/FFQ Test_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/FFQ Test/FFQ Test_Assessment.xlsx",
+      "size": 24151
+    },
+    {
+      "path": "BI/Power BI/FFQ Test/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/FFQ Test/Technical_Specification.md",
+      "size": 836
+    },
+    {
+      "path": "BI/Power BI/Insurance Analytics Dashboard (Power BI)/Insurance Analytics Dashboard (Power BI)_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Insurance Analytics Dashboard (Power BI)/Insurance Analytics Dashboard (Power BI)_Assessment.xlsx",
+      "size": 25773
+    },
+    {
+      "path": "BI/Power BI/Insurance Analytics Dashboard (Power BI)/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Insurance Analytics Dashboard (Power BI)/Technical_Specification.md",
+      "size": 1052
+    },
+    {
+      "path": "BI/Power BI/IT Spend Analysis Sample/IT Spend Analysis Sample_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/IT Spend Analysis Sample/IT Spend Analysis Sample_Assessment.xlsx",
+      "size": 24650
+    },
+    {
+      "path": "BI/Power BI/IT Spend Analysis Sample/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/IT Spend Analysis Sample/Technical_Specification.md",
+      "size": 909
+    },
+    {
+      "path": "BI/Power BI/Jornaya Dashboard PBI/Jornaya Dashboard PBI_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Jornaya Dashboard PBI/Jornaya Dashboard PBI_Assessment.xlsx",
+      "size": 24685
+    },
+    {
+      "path": "BI/Power BI/Jornaya Dashboard PBI/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Jornaya Dashboard PBI/Technical_Specification.md",
+      "size": 945
+    },
+    {
+      "path": "BI/Power BI/Loss Ratio/Loss Ratio_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Loss Ratio/Loss Ratio_Assessment.xlsx",
+      "size": 25239
+    },
+    {
+      "path": "BI/Power BI/Loss Ratio/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Loss Ratio/Technical_Specification.md",
+      "size": 946
+    },
+    {
+      "path": "BI/Power BI/New Business (Bottom 25% agents)/New Business (Bottom 25_ agents)_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/New Business (Bottom 25% agents)/New Business (Bottom 25_ agents)_Assessment.xlsx",
+      "size": 24205
+    },
+    {
+      "path": "BI/Power BI/New Business (Bottom 25% agents)/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/New Business (Bottom 25% agents)/Technical_Specification.md",
+      "size": 890
+    },
+    {
+      "path": "BI/Power BI/Revenue Opportunities/Revenue Opportunities_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Revenue Opportunities/Revenue Opportunities_Assessment.xlsx",
+      "size": 25101
+    },
+    {
+      "path": "BI/Power BI/Revenue Opportunities/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Revenue Opportunities/Technical_Specification.md",
+      "size": 995
+    },
+    {
+      "path": "BI/Power BI/Sales & Returns Sample v3/Sales & Returns Sample v3_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Sales & Returns Sample v3/Sales & Returns Sample v3_Assessment.xlsx",
+      "size": 26484
+    },
+    {
+      "path": "BI/Power BI/Sales & Returns Sample v3/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Sales & Returns Sample v3/Technical_Specification.md",
+      "size": 1151
+    },
+    {
+      "path": "BI/Power BI/Store Sales/Store Sales_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Store Sales/Store Sales_Assessment.xlsx",
+      "size": 25043
+    },
+    {
+      "path": "BI/Power BI/Store Sales/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Store Sales/Technical_Specification.md",
+      "size": 942
+    },
+    {
+      "path": "BI/Power BI/Survival Rate/Survival Rate_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Survival Rate/Survival Rate_Assessment.xlsx",
+      "size": 24212
+    },
+    {
+      "path": "BI/Power BI/Survival Rate/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Survival Rate/Technical_Specification.md",
+      "size": 906
+    },
+    {
+      "path": "BI/Power BI/Test/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Power BI/Test/Technical_Specification.md",
+      "size": 766
+    },
+    {
+      "path": "BI/Power BI/Test/Test_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Power BI/Test/Test_Assessment.xlsx",
+      "size": 23660
+    },
+    {
+      "path": "BI/Tableau/Beneficiary Services Aging Dashboard/Beneficiary Services Aging Dashboard_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Beneficiary Services Aging Dashboard/Beneficiary Services Aging Dashboard_Assessment.xlsx",
+      "size": 24186
+    },
+    {
+      "path": "BI/Tableau/Beneficiary Services Aging Dashboard/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Beneficiary Services Aging Dashboard/Technical_Specification.md",
+      "size": 856
+    },
+    {
+      "path": "BI/Tableau/Beneficiary Services v1/Beneficiary Services v1_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Beneficiary Services v1/Beneficiary Services v1_Assessment.xlsx",
+      "size": 24875
+    },
+    {
+      "path": "BI/Tableau/Beneficiary Services v1/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Beneficiary Services v1/Technical_Specification.md",
+      "size": 951
+    },
+    {
+      "path": "BI/Tableau/Car Insurance Dashboard/Car Insurance Dashboard_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Car Insurance Dashboard/Car Insurance Dashboard_Assessment.xlsx",
+      "size": 24578
+    },
+    {
+      "path": "BI/Tableau/Car Insurance Dashboard/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Car Insurance Dashboard/Technical_Specification.md",
+      "size": 887
+    },
+    {
+      "path": "BI/Tableau/Claims - Agent Performance/Claims - Agent Performance_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Claims - Agent Performance/Claims - Agent Performance_Assessment.xlsx",
+      "size": 25202
+    },
+    {
+      "path": "BI/Tableau/Claims - Agent Performance/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Claims - Agent Performance/Technical_Specification.md",
+      "size": 904
+    },
+    {
+      "path": "BI/Tableau/Claims - Executive Summary/Claims - Executive Summary_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Claims - Executive Summary/Claims - Executive Summary_Assessment.xlsx",
+      "size": 24355
+    },
+    {
+      "path": "BI/Tableau/Claims - Executive Summary/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Claims - Executive Summary/Technical_Specification.md",
+      "size": 843
+    },
+    {
+      "path": "BI/Tableau/Claims - State Performance/Claims - State Performance_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Claims - State Performance/Claims - State Performance_Assessment.xlsx",
+      "size": 23904
+    },
+    {
+      "path": "BI/Tableau/Claims - State Performance/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Claims - State Performance/Technical_Specification.md",
+      "size": 813
+    },
+    {
+      "path": "BI/Tableau/Cross Sell Dashboard/Cross Sell Dashboard_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Cross Sell Dashboard/Cross Sell Dashboard_Assessment.xlsx",
+      "size": 24432
+    },
+    {
+      "path": "BI/Tableau/Cross Sell Dashboard/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Cross Sell Dashboard/Technical_Specification.md",
+      "size": 926
+    },
+    {
+      "path": "BI/Tableau/Healthcare Claim Analysis Dashboard/Healthcare Claim Analysis Dashboard_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Healthcare Claim Analysis Dashboard/Healthcare Claim Analysis Dashboard_Assessment.xlsx",
+      "size": 25955
+    },
+    {
+      "path": "BI/Tableau/Healthcare Claim Analysis Dashboard/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Healthcare Claim Analysis Dashboard/Technical_Specification.md",
+      "size": 1049
+    },
+    {
+      "path": "BI/Tableau/Insurance Analytics Dashboard (Tableau)/Insurance Analytics Dashboard (Tableau)_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Insurance Analytics Dashboard (Tableau)/Insurance Analytics Dashboard (Tableau)_Assessment.xlsx",
+      "size": 25299
+    },
+    {
+      "path": "BI/Tableau/Insurance Analytics Dashboard (Tableau)/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Insurance Analytics Dashboard (Tableau)/Technical_Specification.md",
+      "size": 1002
+    },
+    {
+      "path": "BI/Tableau/Insurance Claim Dashboard/Insurance Claim Dashboard_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Insurance Claim Dashboard/Insurance Claim Dashboard_Assessment.xlsx",
+      "size": 25044
+    },
+    {
+      "path": "BI/Tableau/Insurance Claim Dashboard/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Insurance Claim Dashboard/Technical_Specification.md",
+      "size": 932
+    },
+    {
+      "path": "BI/Tableau/Motor Insurance Dashboard/Motor Insurance Dashboard_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/Motor Insurance Dashboard/Motor Insurance Dashboard_Assessment.xlsx",
+      "size": 25051
+    },
+    {
+      "path": "BI/Tableau/Motor Insurance Dashboard/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/Motor Insurance Dashboard/Technical_Specification.md",
+      "size": 945
+    },
+    {
+      "path": "BI/Tableau/New Business Dashboard/New Business Dashboard_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/Tableau/New Business Dashboard/New Business Dashboard_Assessment.xlsx",
+      "size": 25095
+    },
+    {
+      "path": "BI/Tableau/New Business Dashboard/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/Tableau/New Business Dashboard/Technical_Specification.md",
+      "size": 998
+    },
+    {
+      "path": "BI/ThoughtSpot/Liveboards Summary/Liveboards Summary_Assessment.xlsx",
+      "url": "/documentation/assessment/BI/ThoughtSpot/Liveboards Summary/Liveboards Summary_Assessment.xlsx",
+      "size": 26796
+    },
+    {
+      "path": "BI/ThoughtSpot/Liveboards Summary/Technical_Specification.md",
+      "url": "/documentation/assessment/BI/ThoughtSpot/Liveboards Summary/Technical_Specification.md",
+      "size": 1271
+    },
+    {
+      "path": "ETL/Alteryx/Burritos_Distribution/Burritos_Distribution_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Burritos_Distribution/Burritos_Distribution_Assessment.xlsx",
+      "size": 23017
+    },
+    {
+      "path": "ETL/Alteryx/Burritos_Distribution/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Burritos_Distribution/Workflow_Specification.md",
+      "size": 1298
+    },
+    {
+      "path": "ETL/Alteryx/Claims_Extract_Volume/Claims_Extract_Volume_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Claims_Extract_Volume/Claims_Extract_Volume_Assessment.xlsx",
+      "size": 24780
+    },
+    {
+      "path": "ETL/Alteryx/Claims_Extract_Volume/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Claims_Extract_Volume/Workflow_Specification.md",
+      "size": 2018
+    },
+    {
+      "path": "ETL/Alteryx/Claims_Extract_Volume_v2/Claims_Extract_Volume_v2_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Claims_Extract_Volume_v2/Claims_Extract_Volume_v2_Assessment.xlsx",
+      "size": 22348
+    },
+    {
+      "path": "ETL/Alteryx/Claims_Extract_Volume_v2/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Claims_Extract_Volume_v2/Workflow_Specification.md",
+      "size": 1099
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_01/Workflow_01_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_01/Workflow_01_Assessment.xlsx",
+      "size": 22300
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_01/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_01/Workflow_Specification.md",
+      "size": 1049
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_02/Workflow_02_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_02/Workflow_02_Assessment.xlsx",
+      "size": 22277
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_02/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_02/Workflow_Specification.md",
+      "size": 1026
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_03/Workflow_03_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_03/Workflow_03_Assessment.xlsx",
+      "size": 23240
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_03/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_03/Workflow_Specification.md",
+      "size": 1353
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_04/Workflow_04_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_04/Workflow_04_Assessment.xlsx",
+      "size": 23804
+    },
+    {
+      "path": "ETL/Alteryx/Workflow_04/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_04/Workflow_Specification.md",
+      "size": 1619
+    },
+    {
+      "path": "ETL/Python/claims_processing/claims_processing_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Python/claims_processing/claims_processing_Assessment.xlsx",
+      "size": 23631
+    },
+    {
+      "path": "ETL/Python/claims_processing/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Python/claims_processing/Workflow_Specification.md",
+      "size": 1545
+    },
+    {
+      "path": "Portfolio_Assessment_Executive_Summary.xlsx",
+      "url": "/documentation/assessment/Portfolio_Assessment_Executive_Summary.xlsx",
+      "size": 21723
+    },
+    {
+      "path": "Portfolio_Assessment_Overview.md",
+      "url": "/documentation/assessment/Portfolio_Assessment_Overview.md",
+      "size": 1201
+    }
+  ],
+  "rationalization": [
+    {
+      "path": "BI/MicroStrategy/P&C Legacy Migration & Retirement/Decommission___Migration_Plan.md",
+      "url": "/documentation/rationalization/BI/MicroStrategy/P&C Legacy Migration & Retirement/Decommission___Migration_Plan.md",
+      "size": 854
+    },
+    {
+      "path": "BI/MicroStrategy/P&C Legacy Migration & Retirement/P&C Legacy Migration & Retirement_Rationalization.xlsx",
+      "url": "/documentation/rationalization/BI/MicroStrategy/P&C Legacy Migration & Retirement/P&C Legacy Migration & Retirement_Rationalization.xlsx",
+      "size": 21667
+    },
+    {
+      "path": "BI/Power BI/Distribution Agent Performance Merge/Consolidation_Plan.md",
+      "url": "/documentation/rationalization/BI/Power BI/Distribution Agent Performance Merge/Consolidation_Plan.md",
+      "size": 864
+    },
+    {
+      "path": "BI/Power BI/Distribution Agent Performance Merge/Distribution Agent Performance Merge_Rationalization.xlsx",
+      "url": "/documentation/rationalization/BI/Power BI/Distribution Agent Performance Merge/Distribution Agent Performance Merge_Rationalization.xlsx",
+      "size": 21768
+    },
+    {
+      "path": "BI/Power BI/Finance Analytics Cross-Platform Merge/Consolidation_Plan.md",
+      "url": "/documentation/rationalization/BI/Power BI/Finance Analytics Cross-Platform Merge/Consolidation_Plan.md",
+      "size": 953
+    },
+    {
+      "path": "BI/Power BI/Finance Analytics Cross-Platform Merge/Finance Analytics Cross-Platform Merge_Rationalization.xlsx",
+      "url": "/documentation/rationalization/BI/Power BI/Finance Analytics Cross-Platform Merge/Finance Analytics Cross-Platform Merge_Rationalization.xlsx",
+      "size": 21985
+    },
+    {
+      "path": "BI/Power BI/Underwriting Sandbox Decommission/Decommission_Plan.md",
+      "url": "/documentation/rationalization/BI/Power BI/Underwriting Sandbox Decommission/Decommission_Plan.md",
+      "size": 716
+    },
+    {
+      "path": "BI/Power BI/Underwriting Sandbox Decommission/Underwriting Sandbox Decommission_Rationalization.xlsx",
+      "url": "/documentation/rationalization/BI/Power BI/Underwriting Sandbox Decommission/Underwriting Sandbox Decommission_Rationalization.xlsx",
+      "size": 21375
+    },
+    {
+      "path": "BI/Tableau/Beneficiary Services Consolidation/Beneficiary Services Consolidation_Rationalization.xlsx",
+      "url": "/documentation/rationalization/BI/Tableau/Beneficiary Services Consolidation/Beneficiary Services Consolidation_Rationalization.xlsx",
+      "size": 21739
+    },
+    {
+      "path": "BI/Tableau/Beneficiary Services Consolidation/Consolidation_Plan.md",
+      "url": "/documentation/rationalization/BI/Tableau/Beneficiary Services Consolidation/Consolidation_Plan.md",
+      "size": 831
+    },
+    {
+      "path": "BI/Tableau/Claims Performance & Executive Consolidation/Claims Performance & Executive Consolidation_Rationalization.xlsx",
+      "url": "/documentation/rationalization/BI/Tableau/Claims Performance & Executive Consolidation/Claims Performance & Executive Consolidation_Rationalization.xlsx",
+      "size": 22060
+    },
+    {
+      "path": "BI/Tableau/Claims Performance & Executive Consolidation/Consolidation_Plan.md",
+      "url": "/documentation/rationalization/BI/Tableau/Claims Performance & Executive Consolidation/Consolidation_Plan.md",
+      "size": 898
+    },
+    {
+      "path": "BI/ThoughtSpot/Enterprise Liveboards Modernization/Enterprise Liveboards Modernization_Rationalization.xlsx",
+      "url": "/documentation/rationalization/BI/ThoughtSpot/Enterprise Liveboards Modernization/Enterprise Liveboards Modernization_Rationalization.xlsx",
+      "size": 21270
+    },
+    {
+      "path": "BI/ThoughtSpot/Enterprise Liveboards Modernization/Retain___Expand_Plan.md",
+      "url": "/documentation/rationalization/BI/ThoughtSpot/Enterprise Liveboards Modernization/Retain___Expand_Plan.md",
+      "size": 796
+    },
+    {
+      "path": "ETL/Alteryx/Claims Extract Workflows Merge/Claims Extract Workflows Merge_Rationalization.xlsx",
+      "url": "/documentation/rationalization/ETL/Alteryx/Claims Extract Workflows Merge/Claims Extract Workflows Merge_Rationalization.xlsx",
+      "size": 21555
+    },
+    {
+      "path": "ETL/Alteryx/Claims Extract Workflows Merge/Consolidation_Plan.md",
+      "url": "/documentation/rationalization/ETL/Alteryx/Claims Extract Workflows Merge/Consolidation_Plan.md",
+      "size": 888
+    },
+    {
+      "path": "ETL/Alteryx/Legacy Alteryx Workflows Retirement/Decommission_Plan.md",
+      "url": "/documentation/rationalization/ETL/Alteryx/Legacy Alteryx Workflows Retirement/Decommission_Plan.md",
+      "size": 731
+    },
+    {
+      "path": "ETL/Alteryx/Legacy Alteryx Workflows Retirement/Legacy Alteryx Workflows Retirement_Rationalization.xlsx",
+      "url": "/documentation/rationalization/ETL/Alteryx/Legacy Alteryx Workflows Retirement/Legacy Alteryx Workflows Retirement_Rationalization.xlsx",
+      "size": 21110
+    },
+    {
+      "path": "ETL/Python/Vectorized Claims Pipeline Modernization/Retain___Scale_Plan.md",
+      "url": "/documentation/rationalization/ETL/Python/Vectorized Claims Pipeline Modernization/Retain___Scale_Plan.md",
+      "size": 828
+    },
+    {
+      "path": "ETL/Python/Vectorized Claims Pipeline Modernization/Vectorized Claims Pipeline Modernization_Rationalization.xlsx",
+      "url": "/documentation/rationalization/ETL/Python/Vectorized Claims Pipeline Modernization/Vectorized Claims Pipeline Modernization_Rationalization.xlsx",
+      "size": 21148
+    },
+    {
+      "path": "Portfolio_Rationalization_Strategy.xlsx",
+      "url": "/documentation/rationalization/Portfolio_Rationalization_Strategy.xlsx",
+      "size": 21903
+    },
+    {
+      "path": "Portfolio_Rationalization_Summary.md",
+      "url": "/documentation/rationalization/Portfolio_Rationalization_Summary.md",
+      "size": 996
+    }
+  ]
+}

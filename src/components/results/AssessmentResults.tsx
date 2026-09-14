@@ -5,6 +5,7 @@ import { getBusinessAreas, getSummaryMetrics } from '../../data/discoveryData';
 import type { Asset } from '../../data/discoveryData';
 import SummaryMetrics from './SummaryMetrics';
 import BusinessAreaCard from './BusinessAreaCard';
+import DownloadDocumentationButton from './DownloadDocumentationButton';
 
 /* ─────────────────────────────────────────────────────────
  * AssessmentResults — Assessment results page
@@ -77,24 +78,30 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
             </p>
           </div>
 
-          {/* Search */}
-          <div
-            className="flex items-center gap-2 px-3 py-2 rounded-lg border shrink-0 w-full sm:w-64"
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              borderColor: 'var(--color-border-primary)',
-            }}
-          >
-            <Search size={14} style={{ color: 'var(--color-text-tertiary)' }} />
-            <input
-              type="text"
-              placeholder="Search assets or business areas..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none text-[13px]"
-              style={{ color: 'var(--color-text-primary)' }}
-              aria-label="Search assets"
-            />
+          {/* Right Controls: Search + Download Documentation Button */}
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            {/* Search */}
+            <div
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border w-full sm:w-60"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border-primary)',
+              }}
+            >
+              <Search size={14} style={{ color: 'var(--color-text-tertiary)' }} />
+              <input
+                type="text"
+                placeholder="Search assets..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent border-none outline-none text-[13px]"
+                style={{ color: 'var(--color-text-primary)' }}
+                aria-label="Search assets"
+              />
+            </div>
+
+            {/* Download Documentation Button */}
+            <DownloadDocumentationButton type="assessment" />
           </div>
         </div>
       </motion.div>
