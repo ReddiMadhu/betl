@@ -937,7 +937,7 @@ export const tbPbiRelationships: TbPbiRelationship[] = [
 export const tbPbiWorksheets: TbPbiWorksheet[] = [
   {
     "name": "New (2)",
-    "title": "New",
+    "title": "New Sales Placed Summary",
     "chartType": "KPI Card",
     "pbiVisual": "Card / Single Value",
     "description": "New Sales Placed Summary",

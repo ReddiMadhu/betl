@@ -3,36 +3,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Database, ArrowLeft, Download, CheckCircle,
   Table2, GitBranch, Code2, FileDown, ChevronDown, ChevronRight, Search,
-  FileSpreadsheet, Layers, BarChart3, Eye, Copy, Check, Sparkles,
-  FileCode, CheckCheck, RefreshCw, PieChart, LineChart, Sliders
+  FileSpreadsheet, Layers, BarChart3, Eye, Copy, Check,
+  FileCode, CheckCheck, PieChart, LineChart, Sliders
 } from 'lucide-react';
 import {
   tbPbiSummary, tbPbiWorksheets,
   tbPbiDataTables, tbPbiRelationships, tbPbiDaxConversions,
-  tbPbiValidationResults, tbPbiCorrectionHistory,
   tbPbiExportArtifacts, tbPbiTmdlModel
 } from '../../data/tableauPowerBIData';
 import type { TbPbiDataTable } from '../../data/tableauPowerBIData';
+import ModelRelationshipGraph from './ModelRelationshipGraph';
 
 /* ─────────────────────────────────────────────────────────
- * TableauPowerBIWorkspace — 5-Step Migration Workspace
+ * TableauPowerBIWorkspace — 4-Step Migration Workspace
  *
  * Replicates the complete architecture and real dataset from
  * C:\Users\madhu\Desktop\tb-bi (frntnd & bknd):
  *   1. Data Understanding (Tables, Columns, Multi-Row Data Preview)
  *   2. Model Intelligence & Visuals (ER Diagram & 20 Worksheets)
  *   3. DAX Conversion (21 Converted Formulas, AST Categories)
- *   4. Validation & Self-Healing (Multi-Slice Parity & Correction Logs)
- *   5. Export Center (Functional PBIP, TMDL, DAX, Excel Downloads)
+ *   4. Export Center (Functional PBIP, TMDL, DAX, Excel Downloads)
  * ───────────────────────────────────────────────────────── */
 
-type WorkspaceTab = 'data' | 'model' | 'dax' | 'healing' | 'export';
+type WorkspaceTab = 'data' | 'model' | 'dax' | 'export';
 
 const TABS: { id: WorkspaceTab; label: string; icon: typeof Database; count?: number }[] = [
   { id: 'data', label: 'Data Understanding', icon: Database, count: tbPbiDataTables.length },
-  { id: 'model', label: 'Model & Visuals', icon: Layers, count: tbPbiWorksheets.length },
+  { id: 'model', label: 'Visuals', icon: Layers, count: tbPbiWorksheets.length },
   { id: 'dax', label: 'DAX Conversion', icon: Code2, count: tbPbiDaxConversions.length },
-  { id: 'healing', label: 'Validation & Healing', icon: Sparkles, count: tbPbiValidationResults.length },
   { id: 'export', label: 'Export Center', icon: FileDown, count: tbPbiExportArtifacts.length },
 ];
 
@@ -50,11 +48,11 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
 
   const [wsSearch, setWsSearch] = useState('');
   const [wsTypeFilter, setWsTypeFilter] = useState('all');
-  const [expandedWs, setExpandedWs] = useState<Set<string>>(new Set());
+  const [expandedWs, setExpandedWs] = useState<Set<string>>(new Set(['New (2)']));
 
   const [daxSearch, setDaxSearch] = useState('');
   const [daxCategoryFilter, setDaxCategoryFilter] = useState('All');
-  const [expandedDaxIds, setExpandedDaxIds] = useState<Set<string>>(new Set());
+  const [expandedDaxIds, setExpandedDaxIds] = useState<Set<string>>(new Set(['dax-01']));
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Download state
@@ -135,6 +133,9 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
     });
   };
 
+  const expandAllWs = () => setExpandedWs(new Set(tbPbiWorksheets.map(w => w.name)));
+  const collapseAllWs = () => setExpandedWs(new Set());
+
   const toggleDaxExpand = (id: string) => {
     setExpandedDaxIds(prev => {
       const next = new Set(prev);
@@ -142,6 +143,9 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
       return next;
     });
   };
+
+  const expandAllDax = () => setExpandedDaxIds(new Set(tbPbiDaxConversions.map(d => d.id)));
+  const collapseAllDax = () => setExpandedDaxIds(new Set());
 
   /* ── Real Download Handler ── */
   const handleDownloadArtifact = (art: typeof tbPbiExportArtifacts[0]) => {
@@ -245,17 +249,9 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
             </button>
           )}
           <div>
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl lg:text-3xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                Tableau → Power BI Migration
-              </h1>
-              <span
-                className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: '#10b98120', color: '#10b981', border: '1px solid #10b98140' }}
-              >
-                100% Validated
-              </span>
-            </div>
+            <h1 className="text-2xl lg:text-3xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              Tableau → Power BI Migration
+            </h1>
             <p className="text-sm mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
               Sales & Revenue Performance Operations · 1 Dashboard · {tbPbiSummary.totalWorksheets} Worksheets · {tbPbiSummary.totalTables} Tables · {tbPbiSummary.totalCalculatedFields} Measures
             </p>
@@ -336,30 +332,8 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
              ══════════════════════════════════════════════════════════════ */}
           {activeTab === 'data' && (
             <div className="space-y-4">
-              {/* Stat Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { label: 'Data Tables', value: tbPbiDataTables.length, desc: '6 Ingested Extracts', icon: Table2, color: 'var(--color-accent)' },
-                  { label: 'Total Ingested Rows', value: tbPbiSummary.totalRows.toLocaleString(), desc: '100% Record Parity', icon: Database, color: '#10b981' },
-                  { label: 'Data Model Columns', value: tbPbiSummary.totalColumns, desc: '58 Bound Columns', icon: BarChart3, color: '#3b82f6' },
-                  { label: 'Model Relationships', value: tbPbiRelationships.length, desc: 'Star Schema (*:1)', icon: GitBranch, color: '#8b5cf6' },
-                ].map(stat => (
-                  <div
-                    key={stat.label}
-                    className="rounded-xl border p-4 theme-transition"
-                    style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${stat.color}15` }}>
-                        <stat.icon size={15} style={{ color: stat.color }} />
-                      </div>
-                    </div>
-                    <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>{stat.value}</div>
-                    <div className="text-xs font-semibold mt-0.5" style={{ color: 'var(--color-text-primary)' }}>{stat.label}</div>
-                    <div className="text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>{stat.desc}</div>
-                  </div>
-                ))}
-              </div>
+              {/* Data Model Relationships (Star Schema Graph & Table) */}
+              <ModelRelationshipGraph />
 
               {/* Search & Action Bar */}
               <div className="flex items-center justify-between gap-3">
@@ -527,53 +501,14 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
           )}
 
           {/* ══════════════════════════════════════════════════════════════
-              TAB 2: MODEL INTELLIGENCE & VISUALS (20 Worksheets + ER Schema)
+              TAB 2: VISUALS (20 Worksheets Visual Conversion)
              ══════════════════════════════════════════════════════════════ */}
           {activeTab === 'model' && (
-            <div className="space-y-5">
-              {/* ER Relationships Canvas / Card Strip */}
-              <div
-                className="rounded-xl border p-5 theme-transition space-y-3"
-                style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
-              >
-                <div className="flex items-center justify-between pb-2 border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                  <div className="flex items-center gap-2">
-                    <GitBranch size={16} style={{ color: 'var(--color-accent)' }} />
-                    <h3 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>Data Model Relationships (Star Schema)</h3>
-                  </div>
-                  <span className="text-xs font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Primary Fact: <strong>Brokage</strong> (961 rows)
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {tbPbiRelationships.map((rel, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-lg border theme-transition"
-                      style={{ backgroundColor: 'var(--color-bg-secondary)', borderColor: 'var(--color-border-subtle)' }}
-                    >
-                      <div className="flex items-center justify-between text-xs mb-1.5">
-                        <span className="font-bold" style={{ color: 'var(--color-accent)' }}>{rel.fromTable}</span>
-                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg-elevated)', color: '#8b5cf6' }}>
-                          {rel.type}
-                        </span>
-                        <span className="font-bold" style={{ color: '#3b82f6' }}>{rel.toTable}</span>
-                      </div>
-                      <div className="text-[11px] font-mono flex items-center justify-between" style={{ color: 'var(--color-text-tertiary)' }}>
-                        <span>[{rel.fromColumn}]</span>
-                        <span style={{ color: 'var(--color-text-quaternary)' }}>═▶</span>
-                        <span>[{rel.toColumn}]</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+            <div className="space-y-4">
               {/* Worksheets Header & Filters */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold" style={{ color: 'var(--color-text-tertiary)' }}>Filter Visual:</span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-xs font-bold mr-1" style={{ color: 'var(--color-text-tertiary)' }}>Filter Visual:</span>
                   {[
                     { id: 'all', label: 'All 20 Visuals' },
                     { id: 'gauge', label: 'Gauges (6)' },
@@ -599,125 +534,137 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
                   ))}
                 </div>
 
-                <div className="relative max-w-xs">
-                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-quaternary)' }} />
-                  <input
-                    type="text"
-                    placeholder="Search worksheets..."
-                    value={wsSearch}
-                    onChange={(e) => setWsSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 rounded-lg border text-xs theme-transition"
-                    style={{
-                      backgroundColor: 'var(--color-bg-elevated)',
-                      borderColor: 'var(--color-border-primary)',
-                      color: 'var(--color-text-primary)',
-                    }}
-                  />
+                <div className="flex items-center gap-2">
+                  <div className="relative w-60">
+                    <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-quaternary)' }} />
+                    <input
+                      type="text"
+                      placeholder="Search worksheets..."
+                      value={wsSearch}
+                      onChange={(e) => setWsSearch(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 rounded-lg border text-xs theme-transition"
+                      style={{
+                        backgroundColor: 'var(--color-bg-elevated)',
+                        borderColor: 'var(--color-border-primary)',
+                        color: 'var(--color-text-primary)',
+                      }}
+                    />
+                  </div>
+                  <button
+                    onClick={expandAllWs}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer hover:opacity-80 transition-colors whitespace-nowrap"
+                    style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)', color: 'var(--color-text-secondary)' }}
+                    title="Expand All Cards"
+                  >
+                    Expand All
+                  </button>
+                  <button
+                    onClick={collapseAllWs}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer hover:opacity-80 transition-colors whitespace-nowrap"
+                    style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)', color: 'var(--color-text-secondary)' }}
+                    title="Collapse All Cards"
+                  >
+                    Collapse All
+                  </button>
                 </div>
               </div>
 
-              {/* 20 Worksheets Visual Conversion Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              {/* 20 Worksheets Collapsible Accordion Cards List (Single card per row) */}
+              <div className="space-y-3">
                 {filteredWorksheets.map(ws => {
                   const isExpanded = expandedWs.has(ws.name);
                   return (
                     <div
                       key={ws.name}
-                      className="rounded-xl border p-4 theme-transition flex flex-col justify-between"
-                      style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
+                      className="rounded-xl border theme-transition overflow-hidden shadow-xs"
+                      style={{
+                        backgroundColor: 'var(--color-bg-elevated)',
+                        borderColor: isExpanded ? 'var(--color-accent)' : 'var(--color-border-primary)',
+                      }}
                     >
-                      <div>
-                        {/* Title & Badge */}
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
-                              {getVisualIcon(ws.pbiVisual)}
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                                {ws.title}
-                              </h4>
-                              <span className="text-[11px] font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
-                                Sheet: {ws.name}
-                              </span>
-                            </div>
+                      {/* Accordion Header Row */}
+                      <div
+                        onClick={() => toggleWsExpand(ws.name)}
+                        className="px-4 py-3.5 flex items-center justify-between gap-3 cursor-pointer hover:opacity-95 transition-colors"
+                        style={{
+                          backgroundColor: isExpanded ? 'var(--color-accent-muted)' : 'transparent',
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <span style={{ color: isExpanded ? 'var(--color-accent)' : 'var(--color-text-quaternary)' }}>
+                            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                          </span>
+                          <div className="flex items-center gap-2 flex-wrap min-w-0">
+                            <h4 className="text-sm font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
+                              {ws.title}
+                            </h4>
+                            <span
+                              className="text-[11px] font-mono px-2 py-0.5 rounded"
+                              style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-tertiary)' }}
+                            >
+                              Sheet: {ws.name}
+                            </span>
                           </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
                           <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded font-mono shrink-0"
-                            style={{ backgroundColor: '#10b98115', color: '#10b981', border: '1px solid #10b98130' }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
+                            style={{ backgroundColor: '#10b98115', color: '#10b981' }}
                           >
-                            {ws.pbiVisual}
+                            <CheckCircle size={12} /> Valid
                           </span>
                         </div>
-
-                        <p className="text-xs mb-3" style={{ color: 'var(--color-text-secondary)' }}>
-                          {ws.description}
-                        </p>
-
-                        {/* Shelf Bindings */}
-                        <div className="p-2.5 rounded-lg border space-y-1.5 text-xs font-mono" style={{ backgroundColor: 'var(--color-bg-secondary)', borderColor: 'var(--color-border-subtle)' }}>
-                          <div className="flex items-center justify-between">
-                            <span style={{ color: 'var(--color-text-tertiary)' }}>Mark Type:</span>
-                            <span className="font-semibold" style={{ color: 'var(--color-accent)' }}>{ws.markType}</span>
-                          </div>
-                          <div className="flex items-start justify-between gap-2">
-                            <span style={{ color: 'var(--color-text-tertiary)' }}>Measures:</span>
-                            <span className="text-right truncate font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                              {ws.measures.join(', ') || 'SUM([Amount])'}
-                            </span>
-                          </div>
-                          <div className="flex items-start justify-between gap-2">
-                            <span style={{ color: 'var(--color-text-tertiary)' }}>Dimensions:</span>
-                            <span className="text-right truncate" style={{ color: 'var(--color-text-secondary)' }}>
-                              {ws.dimensions.join(', ') || 'Account Executive'}
-                            </span>
-                          </div>
-                          {ws.filters.length > 0 && (
-                            <div className="flex items-start justify-between gap-2">
-                              <span style={{ color: 'var(--color-text-tertiary)' }}>Filters:</span>
-                              <span className="text-right truncate" style={{ color: '#f59e0b' }}>
-                                {ws.filters.join(', ')}
-                              </span>
-                            </div>
-                          )}
-                        </div>
                       </div>
 
-                      {/* Expand XML / TMDL mapping */}
-                      <div className="pt-3 mt-3 border-t flex items-center justify-between" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                        <span className="text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                          Tableau XML → Power BI Visual
-                        </span>
-                        <button
-                          onClick={() => toggleWsExpand(ws.name)}
-                          className="flex items-center gap-1 text-xs font-semibold cursor-pointer hover:opacity-80"
-                          style={{ color: 'var(--color-accent)' }}
-                        >
-                          {isExpanded ? 'Less' : 'TMDL Spec'}
-                          <ChevronDown size={13} style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-                        </button>
-                      </div>
-
+                      {/* Collapsible Expanded Body */}
                       <AnimatePresence>
                         {isExpanded && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden mt-2"
+                            transition={{ duration: 0.2 }}
+                            className="p-4 border-t space-y-3.5"
+                            style={{
+                              borderColor: 'var(--color-border-subtle)',
+                              backgroundColor: 'var(--color-bg-secondary)'
+                            }}
                           >
-                            <pre
-                              className="text-[11px] font-mono p-2.5 rounded-lg whitespace-pre-wrap overflow-x-auto"
-                              style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border-subtle)' }}
-                            >
-{`visual "${ws.title}"
-  type: ${ws.pbiVisual}
-  sourceSheet: "${ws.name}"
-  markParity: 100%
-  rows: [${ws.rows.join(', ') || 'none'}]
-  cols: [${ws.cols.join(', ') || 'none'}]
-  targetSemanticModel: "Insurance_Model"`}
-                            </pre>
+                            {/* Source Datasource */}
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-mono text-[11px] px-2 py-0.5 rounded border" style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
+                                Source Dataset: <strong style={{ color: 'var(--color-text-primary)' }}>{ws.datasource}</strong>
+                              </span>
+                            </div>
+
+                            {/* 3-Box Shelf Bindings Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+                              <div className="p-3 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] uppercase font-bold block mb-1" style={{ color: 'var(--color-text-tertiary)' }}>Tableau Mark Type</span>
+                                <span className="font-semibold" style={{ color: 'var(--color-accent)' }}>{ws.markType}</span>
+                              </div>
+                              <div className="p-3 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] uppercase font-bold block mb-1" style={{ color: 'var(--color-text-tertiary)' }}>Measures / Values Shelf</span>
+                                <span className="font-semibold truncate block" style={{ color: 'var(--color-text-primary)' }} title={ws.measures.join(', ')}>
+                                  {ws.measures.join(', ') || 'SUM([Amount])'}
+                                </span>
+                              </div>
+                              <div className="p-3 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] uppercase font-bold block mb-1" style={{ color: 'var(--color-text-tertiary)' }}>Dimensions / Rows Shelf</span>
+                                <span className="truncate block" style={{ color: 'var(--color-text-secondary)' }} title={ws.dimensions.join(', ')}>
+                                  {ws.dimensions.join(', ') || 'Account Executive'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Filters if present */}
+                            {ws.filters.length > 0 && (
+                              <div className="px-3 py-2 rounded-lg border flex items-center gap-2 text-xs font-mono" style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] uppercase font-bold text-amber-500 shrink-0">Active Filters:</span>
+                                <span style={{ color: 'var(--color-text-primary)' }}>{ws.filters.join(', ')}</span>
+                              </div>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -752,20 +699,38 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
                   ))}
                 </div>
 
-                <div className="relative max-w-xs w-full">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-quaternary)' }} />
-                  <input
-                    type="text"
-                    placeholder="Search DAX measures..."
-                    value={daxSearch}
-                    onChange={(e) => setDaxSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 rounded-lg border text-xs theme-transition"
-                    style={{
-                      backgroundColor: 'var(--color-bg-elevated)',
-                      borderColor: 'var(--color-border-primary)',
-                      color: 'var(--color-text-primary)',
-                    }}
-                  />
+                <div className="flex items-center gap-2">
+                  <div className="relative w-60">
+                    <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-quaternary)' }} />
+                    <input
+                      type="text"
+                      placeholder="Search DAX measures..."
+                      value={daxSearch}
+                      onChange={(e) => setDaxSearch(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 rounded-lg border text-xs theme-transition"
+                      style={{
+                        backgroundColor: 'var(--color-bg-elevated)',
+                        borderColor: 'var(--color-border-primary)',
+                        color: 'var(--color-text-primary)',
+                      }}
+                    />
+                  </div>
+                  <button
+                    onClick={expandAllDax}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer hover:opacity-80 transition-colors whitespace-nowrap"
+                    style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)', color: 'var(--color-text-secondary)' }}
+                    title="Expand All Measures"
+                  >
+                    Expand All
+                  </button>
+                  <button
+                    onClick={collapseAllDax}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer hover:opacity-80 transition-colors whitespace-nowrap"
+                    style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)', color: 'var(--color-text-secondary)' }}
+                    title="Collapse All Measures"
+                  >
+                    Collapse All
+                  </button>
                 </div>
               </div>
 
@@ -776,91 +741,96 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
                   return (
                     <div
                       key={dax.id}
-                      className="rounded-xl border theme-transition overflow-hidden"
-                      style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
+                      className="rounded-xl border theme-transition overflow-hidden shadow-xs"
+                      style={{
+                        backgroundColor: 'var(--color-bg-elevated)',
+                        borderColor: isExpanded ? 'var(--color-accent)' : 'var(--color-border-primary)',
+                      }}
                     >
                       {/* Card Header */}
                       <div
                         onClick={() => toggleDaxExpand(dax.id)}
-                        className="px-4 py-3 flex items-center justify-between cursor-pointer hover:opacity-90"
+                        className="px-4 py-3.5 flex items-center justify-between gap-3 cursor-pointer hover:opacity-95 transition-colors"
+                        style={{
+                          backgroundColor: isExpanded ? 'var(--color-accent-muted)' : 'transparent',
+                        }}
                       >
-                        <div className="flex items-center gap-3">
-                          <CheckCircle size={16} style={{ color: '#10b981', flexShrink: 0 }} />
-                          <div>
-                            <span className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-                              [{dax.fieldName}]
-                            </span>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded" style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-accent)' }}>
-                                {dax.category}
-                              </span>
-                              <span className="text-[10px] font-mono" style={{ color: 'var(--color-text-quaternary)' }}>
-                                AST: {dax.pattern}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          <span
-                            className="text-xs font-mono font-bold px-2 py-0.5 rounded"
-                            style={{
-                              backgroundColor: dax.confidence >= 95 ? '#10b98115' : '#f59e0b15',
-                              color: dax.confidence >= 95 ? '#10b981' : '#f59e0b',
-                            }}
-                          >
-                            {dax.confidence}% Parity
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <span style={{ color: isExpanded ? 'var(--color-accent)' : 'var(--color-text-quaternary)' }}>
+                            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                           </span>
-                          <ChevronDown size={14} style={{ color: 'var(--color-text-quaternary)', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-                        </div>
-                      </div>
-
-                      {/* Side-by-Side Formula View */}
-                      <div className="px-4 pb-4 space-y-3 pt-1 border-t" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                        {/* Tableau Source */}
-                        <div>
-                          <div className="text-[10px] font-bold uppercase mb-1" style={{ color: 'var(--color-text-tertiary)' }}>
-                            Tableau Source Calculation
-                          </div>
-                          <pre
-                            className="text-[11px] font-mono p-3 rounded-lg overflow-x-auto whitespace-pre-wrap"
-                            style={{ backgroundColor: 'var(--color-bg-secondary)', color: '#ec4899', border: '1px solid var(--color-border-subtle)' }}
-                          >
-                            {dax.sourceFormula}
-                          </pre>
-                        </div>
-
-                        {/* Converted DAX */}
-                        <div>
-                          <div className="text-[10px] font-bold uppercase mb-1 flex items-center justify-between" style={{ color: 'var(--color-text-tertiary)' }}>
-                            <span>Power BI DAX Measure</span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleCopy(dax.daxFormula, dax.id);
-                              }}
-                              className="flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-semibold hover:opacity-80 cursor-pointer"
-                              style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-accent)', border: '1px solid var(--color-border-subtle)' }}
+                          <div className="flex items-center gap-2 flex-wrap min-w-0">
+                            <h4 className="text-sm font-bold truncate font-mono" style={{ color: 'var(--color-text-primary)' }}>
+                              {dax.fieldName.replace(/^\[|\]$/g, '')}
+                            </h4>
+                            <span
+                              className="text-[10px] font-bold px-2 py-0.5 rounded font-mono shrink-0"
+                              style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-accent)' }}
                             >
-                              {copiedId === dax.id ? <><Check size={10} /> Copied!</> : <><Copy size={10} /> Copy DAX</>}
-                            </button>
+                              {dax.category}
+                            </span>
                           </div>
-                          <pre
-                            className="text-[11px] font-mono p-3 rounded-lg overflow-x-auto whitespace-pre-wrap"
-                            style={{ backgroundColor: '#10b98110', color: '#10b981', border: '1px solid #10b98130' }}
-                          >
-                            {dax.daxFormula}
-                          </pre>
                         </div>
 
-                        {/* Semantic Validation Note */}
-                        {dax.reasoning && (
-                          <div className="text-[11px] p-2 rounded-lg" style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)' }}>
-                            <span className="font-semibold" style={{ color: 'var(--color-accent)' }}>Validation Note: </span>
-                            {dax.reasoning}
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
+                            style={{ backgroundColor: '#10b98115', color: '#10b981' }}
+                          >
+                            <CheckCircle size={12} /> Valid
+                          </span>
+                        </div>
                       </div>
+
+                      {/* Collapsible Formula View */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="p-4 border-t space-y-3"
+                            style={{ borderColor: 'var(--color-border-subtle)', backgroundColor: 'var(--color-bg-secondary)' }}
+                          >
+                            {/* Tableau Source */}
+                            <div>
+                              <div className="text-[10px] font-bold uppercase mb-1" style={{ color: 'var(--color-text-tertiary)' }}>
+                                Tableau Source Calculation
+                              </div>
+                              <pre
+                                className="text-[11px] font-mono p-3 rounded-lg overflow-x-auto whitespace-pre-wrap"
+                                style={{ backgroundColor: 'var(--color-bg-primary)', color: '#ec4899', border: '1px solid var(--color-border-subtle)' }}
+                              >
+                                {dax.sourceFormula}
+                              </pre>
+                            </div>
+
+                            {/* Converted DAX */}
+                            <div>
+                              <div className="text-[10px] font-bold uppercase mb-1 flex items-center justify-between" style={{ color: 'var(--color-text-tertiary)' }}>
+                                <span>Power BI DAX Measure</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCopy(dax.daxFormula, dax.id);
+                                  }}
+                                  className="flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-semibold hover:opacity-80 cursor-pointer border transition-colors"
+                                  style={{ backgroundColor: 'var(--color-bg-elevated)', color: 'var(--color-accent)', borderColor: 'var(--color-border-subtle)' }}
+                                >
+                                  {copiedId === dax.id ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy DAX</>}
+                                </button>
+                              </div>
+                              <pre
+                                className="text-[11px] font-mono p-3 rounded-lg overflow-x-auto whitespace-pre-wrap"
+                                style={{ backgroundColor: '#10b98110', color: '#10b981', border: '1px solid #10b98130' }}
+                              >
+                                {dax.daxFormula}
+                              </pre>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 })}
@@ -869,168 +839,10 @@ export default function TableauPowerBIWorkspace({ onBack }: Props) {
           )}
 
           {/* ══════════════════════════════════════════════════════════════
-              TAB 4: VALIDATION & SELF-HEALING ENGINE
-             ══════════════════════════════════════════════════════════════ */}
-          {activeTab === 'healing' && (
-            <div className="space-y-5">
-              {/* Engine Summary */}
-              <div
-                className="rounded-xl border p-5 theme-transition flex items-center justify-between gap-4"
-                style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Sparkles size={18} style={{ color: 'var(--color-accent)' }} />
-                    <h3 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                      Automated DAX Self-Healing & Verification Engine
-                    </h3>
-                  </div>
-                  <p className="text-xs mt-1" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Continuous semantic verification against source slices, detecting filter context shifts and correcting table bindings automatically.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="text-right">
-                    <div className="text-lg font-bold" style={{ color: '#10b981' }}>100%</div>
-                    <div className="text-[10px]" style={{ color: 'var(--color-text-quaternary)' }}>AST Parity</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Multi-Slice Verification Results */}
-              <div
-                className="rounded-xl border p-5 theme-transition space-y-3"
-                style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
-              >
-                <div className="flex items-center justify-between pb-2 border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                  <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                    Multi-Dimensional Test Slice Executions
-                  </h4>
-                  <span className="text-xs font-mono" style={{ color: '#10b981' }}>0 Unreconciled Deltas</span>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs font-mono">
-                    <thead>
-                      <tr className="border-b" style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-                        <th className="text-left py-2 px-3">Slice Context</th>
-                        <th className="text-right py-2 px-3">Tableau Value</th>
-                        <th className="text-right py-2 px-3">Power BI Value</th>
-                        <th className="text-right py-2 px-3">Delta</th>
-                        <th className="text-center py-2 px-3">Result</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                      {[
-                        { context: 'Region = "North", Year = "2023"', tb: '1,250.00', pbi: '1,250.00', delta: '0.00', passed: true },
-                        { context: 'IncomeClass = "cross sell", Status = "Active"', tb: '$48,230.00', pbi: '$48,230.00', delta: '0.00', passed: true },
-                        { context: 'Stage = "Propose solution", Branch = "Central"', tb: '14 opptys', pbi: '14 opptys', delta: '0', passed: true },
-                        { context: 'Executive = "All", Year = "2024"', tb: '961 policies', pbi: '961 policies', delta: '0', passed: true },
-                      ].map((s, i) => (
-                        <tr key={i} className="hover:opacity-90">
-                          <td className="py-2.5 px-3 font-medium" style={{ color: 'var(--color-text-primary)' }}>{s.context}</td>
-                          <td className="py-2.5 px-3 text-right" style={{ color: '#ec4899' }}>{s.tb}</td>
-                          <td className="py-2.5 px-3 text-right" style={{ color: '#10b981' }}>{s.pbi}</td>
-                          <td className="py-2.5 px-3 text-right text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>{s.delta}</td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold" style={{ backgroundColor: '#10b98115', color: '#10b981' }}>
-                              PASSED
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Self-Healing Attempt Logs */}
-              <div
-                className="rounded-xl border p-5 theme-transition space-y-4"
-                style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
-              >
-                <div className="flex items-center justify-between pb-2 border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                  <div className="flex items-center gap-2">
-                    <RefreshCw size={15} style={{ color: 'var(--color-accent)' }} />
-                    <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                      Self-Healing Correction Traces
-                    </h4>
-                  </div>
-                  <span className="text-xs font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
-                    From tb-bi correction attempts store
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  {tbPbiCorrectionHistory.map((corr, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 rounded-lg border space-y-2.5 text-xs theme-transition"
-                      style={{ backgroundColor: 'var(--color-bg-secondary)', borderColor: 'var(--color-border-subtle)' }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                          Attempt #{corr.attemptNumber}: Context Resolution on [{corr.conversionId}]
-                        </span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ backgroundColor: '#10b98115', color: '#10b981' }}>
-                          {corr.status}
-                        </span>
-                      </div>
-
-                      {/* Root cause */}
-                      <div className="text-[12px] leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                        <strong style={{ color: 'var(--color-accent)' }}>Diagnostic: </strong>
-                        {corr.rootCause}
-                      </div>
-
-                      {/* Correction comparison */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px] font-mono">
-                        <div>
-                          <span className="text-[10px] font-bold uppercase" style={{ color: '#ef4444' }}>Initial Attempt</span>
-                          <pre className="p-2 rounded mt-1 overflow-x-auto whitespace-pre-wrap" style={{ backgroundColor: 'var(--color-bg-elevated)', color: '#ef4444' }}>
-                            {corr.originalDax}
-                          </pre>
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-bold uppercase" style={{ color: '#10b981' }}>Self-Healed DAX</span>
-                          <pre className="p-2 rounded mt-1 overflow-x-auto whitespace-pre-wrap" style={{ backgroundColor: 'var(--color-bg-elevated)', color: '#10b981' }}>
-                            {corr.correctedDax}
-                          </pre>
-                        </div>
-                      </div>
-
-                      {/* Explanation */}
-                      <div className="text-[11px] italic" style={{ color: 'var(--color-text-tertiary)' }}>
-                        Fix: {corr.explanation}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ══════════════════════════════════════════════════════════════
-              TAB 5: EXPORT CENTER (PBIP, TMDL, DAX, Excel Downloads)
+              TAB 4: EXPORT CENTER (PBIP, TMDL, DAX, Excel Downloads)
              ══════════════════════════════════════════════════════════════ */}
           {activeTab === 'export' && (
             <div className="space-y-5">
-              {/* Header */}
-              <div
-                className="rounded-xl border p-6 text-center theme-transition"
-                style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}
-              >
-                <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ backgroundColor: '#10b98115' }}>
-                  <CheckCircle size={30} style={{ color: '#10b981' }} />
-                </div>
-                <h2 className="text-xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
-                  Migration Ready for Deployment
-                </h2>
-                <p className="text-xs max-w-xl mx-auto" style={{ color: 'var(--color-text-tertiary)' }}>
-                  All 20 worksheets, 6 tables, and 21 DAX measures have been compiled into Microsoft Power BI Project (.pbip) format and verified for 100% semantic fidelity.
-                </p>
-              </div>
-
               {/* Artifacts Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {tbPbiExportArtifacts.map(art => {
