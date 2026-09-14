@@ -96,7 +96,7 @@ function isBiEtlDecommission(rec: Recommendation): boolean {
   const isDecom = rec.category === 'bi-retire' || rec.category === 'etl-retire';
   if (!isDecom) return false;
 
-  const biTechs: TechnologyName[] = ['Tableau', 'Power BI', 'MicroStrategy', 'ThoughtSpot'];
+  const biTechs: TechnologyName[] = ['Tableau', 'Power BI', 'MicroStrategy'];
   const etlTechs: TechnologyName[] = ['Alteryx', 'Python'];
 
   const allAssets = [...rec.assets];

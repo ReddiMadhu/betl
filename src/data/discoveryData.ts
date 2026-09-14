@@ -1,4 +1,3 @@
-import thoughtspotLogo from '../assets/logos/thoughtspot.svg';
 import powerbiLogo from '../assets/logos/powerbi.svg';
 import tableauLogo from '../assets/logos/tableau.svg';
 import microstrategyLogo from '../assets/logos/microstrategy.svg';
@@ -13,7 +12,6 @@ import pythonLogo from '../assets/logos/python.svg';
  * ───────────────────────────────────────────────────────── */
 
 export type TechnologyName =
-  | 'ThoughtSpot'
   | 'Power BI'
   | 'Tableau'
   | 'MicroStrategy'
@@ -21,7 +19,6 @@ export type TechnologyName =
   | 'Python';
 
 export const TECHNOLOGY_LOGOS: Record<TechnologyName, string> = {
-  ThoughtSpot: thoughtspotLogo,
   'Power BI': powerbiLogo,
   Tableau: tableauLogo,
   MicroStrategy: microstrategyLogo,
@@ -52,57 +49,56 @@ export interface BusinessArea {
   assets: Asset[];
 }
 
-/* ── Mock discovered assets ── */
+/* ── Discovered assets based on ingested directories & db ── */
 const allAssets: Asset[] = [
   // ─── Claims ───
-  { id: 'c1', name: 'claims_overview', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Sarah Mitchell', sourceCount: 4, targetCount: 2, kpiCount: 8, dependencies: ['Claims_Extract_Volume', 'claims_loss_data'], relatedAssets: ['claims_performance', 'claims_loss_ratio'], lastUpdated: '2026-08-28', description: 'Executive overview of claims operations including open/closed ratios, average cycle time, and regional breakdown.' },
-  { id: 'c2', name: 'claims_performance', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Sarah Mitchell', sourceCount: 3, targetCount: 1, kpiCount: 6, dependencies: ['Claims_Extract_Volume'], relatedAssets: ['claims_overview'], lastUpdated: '2026-09-02' },
-  { id: 'c3', name: 'claims_loss_ratio', technology: 'Tableau', businessArea: 'Claims', assetType: 'Report', owner: 'James Chen', sourceCount: 2, targetCount: 1, kpiCount: 4, lastUpdated: '2026-07-15' },
-  { id: 'c4', name: 'claims_executive_dashboard', technology: 'Power BI', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Rachel Torres', sourceCount: 5, targetCount: 3, kpiCount: 12, dependencies: ['claims_data_mart'], relatedAssets: ['claims_operations_dashboard'], lastUpdated: '2026-09-05', description: 'C-suite claims dashboard with real-time KPIs, trend analysis, and fraud detection metrics.' },
-  { id: 'c5', name: 'claims_operations_dashboard', technology: 'Power BI', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Rachel Torres', sourceCount: 3, targetCount: 2, kpiCount: 7, lastUpdated: '2026-08-20' },
-  { id: 'c6', name: 'Claims_Extract_Volume', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 4, targetCount: 5, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Extracts and enriches claims data from multiple excel sources, summarising claim volume by quarter and status and analysing claims by product type and aging-litigation risk' },
-  { id: 'c7', name: 'Workflow_03', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 5, targetCount: 3, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates policy, claims and payment data from multiple sources. Categorises policies into premium groupd based on monthly premium accounts and calculates month-end dates for payments'},
-  { id: 'c8', name: 'Workflow_01', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates claims and payments data. Processes diagnosis, claims and payments information through various transformations.' },
-  { id: 'c9', name: 'Workflow_02', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Calculates key dates such as Clm_Service_Date and Month_End_Date using predefined formulas and aggregates claim volumes by industry type'},
-  { id: 'c10', name: 'Claims_Extract_Volume_v2', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 4, targetCount: 5, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Extracts and enriches claims data from multiple excel sources, summarising claim volume by quarter and status and analysing claims by product type and aging-litigation risk' },
-  { id: 'c11', name: 'claims_processing', technology: 'Python', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'EXL', sourceCount: 4, targetCount: 5, lastUpdated: '2026-09-01' },
+  { id: 'c1', name: 'Claims - Executive Summary', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Sarah Mitchell', sourceCount: 4, targetCount: 2, kpiCount: 8, dependencies: ['Claims_Extract_Volume'], relatedAssets: ['Claims - Agent Performance', 'Claims - State Performance'], lastUpdated: '2026-08-28', description: 'Executive summary of claims operations including open/closed ratios, cycle times, and regional loss breakdown.' },
+  { id: 'c2', name: 'Claims - Agent Performance', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Sarah Mitchell', sourceCount: 3, targetCount: 1, kpiCount: 6, dependencies: ['Claims_Extract_Volume'], relatedAssets: ['Claims - Executive Summary'], lastUpdated: '2026-09-02' },
+  { id: 'c3', name: 'Claims - State Performance', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'James Chen', sourceCount: 3, targetCount: 1, kpiCount: 5, lastUpdated: '2026-07-15' },
+  { id: 'c4', name: 'Healthcare Claim Analysis Dashboard', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Rachel Torres', sourceCount: 5, targetCount: 2, kpiCount: 9, lastUpdated: '2026-09-05' },
+  { id: 'c5', name: 'Insurance Claim Dashboard', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Rachel Torres', sourceCount: 4, targetCount: 2, kpiCount: 7, lastUpdated: '2026-08-20' },
+  { id: 'c6', name: 'Benefeciery_services_Aging_Dashboard', technology: 'Tableau', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Sarah Mitchell', sourceCount: 3, targetCount: 1, kpiCount: 6, lastUpdated: '2026-08-22' },
+  { id: 'c7', name: 'Insurance_Analytics_Dashboard', technology: 'Power BI', businessArea: 'Claims', assetType: 'Dashboard', owner: 'Michael Zhang', sourceCount: 5, targetCount: 3, kpiCount: 12, dependencies: ['claims_processing'], lastUpdated: '2026-09-04', description: 'Enterprise Power BI claims intelligence suite covering incurred losses, claim severity, and litigation trends.' },
+  { id: 'c8', name: 'P&C Claims Dashboard_v3', technology: 'MicroStrategy', businessArea: 'Claims', assetType: 'Dossier', owner: 'Administrator', sourceCount: 6, targetCount: 2, kpiCount: 14, dependencies: ['Claims_Extract_Volume_v2'], lastUpdated: '2026-08-20', description: 'MicroStrategy core dossier with 66 metrics and 40 attributes for Property & Casualty litigation and fraud analytics.' },
+  { id: 'c9', name: 'Claims_Extract_Volume', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 4, targetCount: 5, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Extracts and enriches claims data from multiple sources, summarising claim volume by quarter and aging risk.' },
+  { id: 'c10', name: 'Workflow_03', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 5, targetCount: 3, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates policy, claims and payment data from multiple sources and calculates month-end dates for payments.' },
+  { id: 'c11', name: 'Workflow_01', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates claims and payments data and processes diagnosis and claims through various transformations.' },
+  { id: 'c12', name: 'Workflow_02', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Calculates key dates such as Clm_Service_Date and Month_End_Date using predefined formulas.' },
+  { id: 'c13', name: 'Claims_Extract_Volume_v2', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 4, targetCount: 5, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Enhanced claims volume extract with multidimensional fraud flags and state litigation risk indexes.' },
+  { id: 'c14', name: 'claims_processing', technology: 'Python', businessArea: 'Claims', assetType: 'ETL Script', owner: 'EXL', sourceCount: 4, targetCount: 5, lastUpdated: '2026-09-01' },
 
   // ─── Underwriting ───
-  { id: 'u1', name: 'underwriting_scorecard', technology: 'Power BI', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'Michael Zhang', sourceCount: 4, targetCount: 2, kpiCount: 9, dependencies: ['Workflow_04'], relatedAssets: ['risk_appetite_monitor'], lastUpdated: '2026-09-03', description: 'Underwriting performance scorecard with hit ratios, quote-to-bind conversion, and average premium analysis.' },
-  { id: 'u2', name: 'underwriting_pipeline', technology: 'Power BI', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'Michael Zhang', sourceCount: 3, targetCount: 1, kpiCount: 5, lastUpdated: '2026-08-30' },
-  { id: 'u3', name: 'risk_appetite_monitor', technology: 'Tableau', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'Lisa Wang', sourceCount: 5, targetCount: 2, kpiCount: 7, dependencies: ['Workflow_04'], lastUpdated: '2026-09-04' },
-  { id: 'u4', name: 'submission_tracker', technology: 'MicroStrategy', businessArea: 'Underwriting', assetType: 'Report', owner: 'Tom Harrison', sourceCount: 2, targetCount: 1, kpiCount: 4, lastUpdated: '2026-08-15' },
-  { id: 'u5', name: 'Workflow_04', technology: 'Alteryx', businessArea: 'Underwriting', assetType: 'ETL Workflow', owner: 'Kevin Liu', sourceCount: 7, targetCount: 3, lastUpdated: '2026-09-02', description: 'Consolidates operational data from multiple sources and which is it with reference master data and dates, multidimensional reporting across volume performance, geography, and operation metrics' },
+  { id: 'u1', name: 'Car Insurance Dashboard', technology: 'Tableau', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'Lisa Wang', sourceCount: 4, targetCount: 2, kpiCount: 8, dependencies: ['Workflow_04'], lastUpdated: '2026-09-04', description: 'Vehicle line underwriting risk assessment with driver tiering and quote-to-bind conversion tracking.' },
+  { id: 'u2', name: 'Motor Insurance Dashboard', technology: 'Tableau', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'Lisa Wang', sourceCount: 3, targetCount: 1, kpiCount: 6, lastUpdated: '2026-09-02' },
+  { id: 'u3', name: 'New_Business Dashboard', technology: 'Tableau', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'Michael Zhang', sourceCount: 4, targetCount: 2, kpiCount: 7, lastUpdated: '2026-08-30' },
+  { id: 'u4', name: 'FFQ_Test', technology: 'Power BI', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'Michael Zhang', sourceCount: 3, targetCount: 1, kpiCount: 5, lastUpdated: '2026-09-03', description: 'Financial feasibility questionnaire and risk appetite scorecard.' },
+  { id: 'u5', name: 'Workflow_04', technology: 'Alteryx', businessArea: 'Underwriting', assetType: 'ETL Workflow', owner: 'Kevin Liu', sourceCount: 7, targetCount: 3, lastUpdated: '2026-09-02', description: 'Consolidates operational underwriting data with reference master data and geographic risk metrics.' },
 
   // ─── Distribution ───
-  { id: 'd1', name: 'agent_performance', technology: 'Tableau', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'Amanda Foster', sourceCount: 3, targetCount: 1, kpiCount: 8, lastUpdated: '2026-09-01', description: 'Agent/broker performance tracking with commission, production volume, and retention metrics.' },
-  { id: 'd2', name: 'channel_analytics', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'Amanda Foster', sourceCount: 4, targetCount: 2, kpiCount: 6, dependencies: ['Burritos_Distribution'], lastUpdated: '2026-08-28' },
-  { id: 'd3', name: 'broker_commission_report', technology: 'MicroStrategy', businessArea: 'Distribution', assetType: 'Report', owner: 'Steve Williams', sourceCount: 2, targetCount: 1, kpiCount: 3, lastUpdated: '2026-07-30' },
-  { id: 'd4', name: 'Burritos_Distribution', technology: 'Alteryx', businessArea: 'Distribution', assetType: 'ETL Workflow', owner: 'Nina Patel', sourceCount: 5, targetCount: 3, lastUpdated: '2026-09-03' , description: 'Processes operational data from an input excel file, filtering records to include only those where the date falls on a Thursday. It then aggregates the data by calculating the average number of burritos'},
+  { id: 'd1', name: 'Cross Sell Dashboard', technology: 'Tableau', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'Amanda Foster', sourceCount: 3, targetCount: 1, kpiCount: 8, lastUpdated: '2026-09-01', description: 'Multi-line product cross-selling trends across agent channels and commercial broker tiers.' },
+  { id: 'd2', name: 'Bottom 25% Agents', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'Amanda Foster', sourceCount: 3, targetCount: 1, kpiCount: 6, lastUpdated: '2026-08-28' },
+  { id: 'd3', name: 'Cross_Sell_dashboardpbip', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'Amanda Foster', sourceCount: 4, targetCount: 2, kpiCount: 7, dependencies: ['Burritos_Distribution'], lastUpdated: '2026-08-29' },
+  { id: 'd4', name: 'New Business (Bottom 25% agents)', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'Steve Williams', sourceCount: 3, targetCount: 1, kpiCount: 5, lastUpdated: '2026-07-30' },
+  { id: 'd5', name: 'Store Sales', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'Amanda Foster', sourceCount: 3, targetCount: 1, kpiCount: 6, lastUpdated: '2026-08-15' },
+  { id: 'd6', name: 'Burritos_Distribution', technology: 'Alteryx', businessArea: 'Distribution', assetType: 'ETL Workflow', owner: 'Nina Patel', sourceCount: 5, targetCount: 3, lastUpdated: '2026-09-03', description: 'Processes operational distribution data and aggregates agent channel throughput.' },
 
   // ─── Policy Administration ───
-  { id: 'p1', name: 'policy_lifecycle_dashboard', technology: 'Power BI', businessArea: 'Policy Administration', assetType: 'Dashboard', owner: 'Chris Morgan', sourceCount: 6, targetCount: 3, kpiCount: 11, dependencies: ['Policy_Consolidation_Workflow'], relatedAssets: ['policy_renewal_tracker'], lastUpdated: '2026-09-04', description: 'End-to-end policy lifecycle visibility from new business through renewal, endorsement, and cancellation.' },
-  { id: 'p2', name: 'policy_renewal_tracker', technology: 'Power BI', businessArea: 'Policy Administration', assetType: 'Dashboard', owner: 'Chris Morgan', sourceCount: 3, targetCount: 1, kpiCount: 5, lastUpdated: '2026-08-22' },
-  { id: 'p3', name: 'policy_book_analysis', technology: 'Tableau', businessArea: 'Policy Administration', assetType: 'Report', owner: 'Diana Lee', sourceCount: 4, targetCount: 2, kpiCount: 7, lastUpdated: '2026-08-18' },
-  { id: 'p4', name: 'Workflow_03', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 5, targetCount: 3, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates policy, claims and payment data from multiple sources. Categorises policies into premium groupd based on monthly premium accounts and calculates month-end dates for payments' },
-  { id: 'p5', name: 'Workflow_01', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Consolidates claims and payments data. Processes diagnosis, claims and payments information through various transformations.' },
-  { id: 'p6', name: 'Workflow_02', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 3, targetCount: 1, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-01', description: 'Calculates key dates such as Clm_Service_Date and Month_End_Date using predefined formulas and aggregates claim volumes by industry type'},
+  { id: 'p1', name: 'Benefeciery services_v1', technology: 'Tableau', businessArea: 'Policy Administration', assetType: 'Dashboard', owner: 'Diana Lee', sourceCount: 4, targetCount: 2, kpiCount: 7, lastUpdated: '2026-08-18', description: 'Policyholder beneficiary service tracking, lifecycle renewals, and endorsement logs.' },
+  { id: 'p2', name: 'Sales & Returns Sample v3', technology: 'Power BI', businessArea: 'Policy Administration', assetType: 'Dashboard', owner: 'Chris Morgan', sourceCount: 4, targetCount: 2, kpiCount: 8, dependencies: ['Policy_Consolidation_Workflow'], lastUpdated: '2026-09-04' },
+  { id: 'p3', name: 'Policy_Consolidation_Workflow', technology: 'Alteryx', businessArea: 'Policy Administration', assetType: 'ETL Workflow', owner: 'Mass Mutual', sourceCount: 5, targetCount: 3, lastUpdated: '2026-09-01', description: 'Consolidates policy, claims and payment master tables into centralized data lake extracts.' },
 
   // ─── Finance ───
-  { id: 'f1', name: 'financial_overview', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'Jennifer Adams', sourceCount: 7, targetCount: 4, kpiCount: 14, dependencies: ['Workflow_02'], relatedAssets: ['premium_revenue_report', 'loss_ratio_analysis'], lastUpdated: '2026-09-06', description: 'CFO-level financial dashboard covering premium revenue, combined ratio, investment income, and expense ratios.' },
-  { id: 'f2', name: 'premium_revenue_report', technology: 'MicroStrategy', businessArea: 'Finance', assetType: 'Report', owner: 'Mark Sullivan', sourceCount: 3, targetCount: 1, kpiCount: 6, lastUpdated: '2026-08-25' },
-  { id: 'f3', name: 'loss_ratio_analysis', technology: 'Tableau', businessArea: 'Finance', assetType: 'Dashboard', owner: 'Jennifer Adams', sourceCount: 4, targetCount: 2, kpiCount: 5, lastUpdated: '2026-09-01' },
-  
+  { id: 'f1', name: 'INSURANCE ANALYTICS DASHBOARD', technology: 'Tableau', businessArea: 'Finance', assetType: 'Dashboard', owner: 'Jennifer Adams', sourceCount: 5, targetCount: 3, kpiCount: 12, lastUpdated: '2026-09-06', description: 'Executive enterprise financial intelligence covering gross written premium, loss ratio, and investment yield.' },
+  { id: 'f2', name: 'IT Spend Analysis Sample PBIX', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'Jennifer Adams', sourceCount: 4, targetCount: 2, kpiCount: 8, lastUpdated: '2026-09-01' },
+  { id: 'f3', name: 'Loss Ratio', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'Mark Sullivan', sourceCount: 3, targetCount: 1, kpiCount: 6, lastUpdated: '2026-08-25' },
+  { id: 'f4', name: 'Revenue Opportunities', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'Jennifer Adams', sourceCount: 4, targetCount: 2, kpiCount: 9, lastUpdated: '2026-09-02' },
 
   // ─── Customer ───
-  { id: 'cu1', name: 'customer_360_view', technology: 'ThoughtSpot', businessArea: 'Customer', assetType: 'Dashboard', owner: 'Emily Watson', sourceCount: 6, targetCount: 2, kpiCount: 10, dependencies: ['Burritos_Distribution'], relatedAssets: ['customer_retention_dashboard'], lastUpdated: '2026-09-03', description: '360-degree customer view combining policy, claims, billing, and interaction history for a unified customer profile.' },
-  { id: 'cu2', name: 'customer_retention_dashboard', technology: 'Power BI', businessArea: 'Customer', assetType: 'Dashboard', owner: 'Emily Watson', sourceCount: 4, targetCount: 1, kpiCount: 7, lastUpdated: '2026-08-29' },
-  { id: 'cu3', name: 'nps_survey_analysis', technology: 'Tableau', businessArea: 'Customer', assetType: 'Report', owner: 'Paul Kim', sourceCount: 2, targetCount: 1, kpiCount: 4, lastUpdated: '2026-07-20' },
+  { id: 'cu1', name: 'Jornaya Dashboard PBI', technology: 'Power BI', businessArea: 'Customer', assetType: 'Dashboard', owner: 'Emily Watson', sourceCount: 4, targetCount: 2, kpiCount: 8, lastUpdated: '2026-09-03', description: 'Customer journey analytics, lead verification scores, and consumer engagement tracking.' },
 
   // ─── Actuarial ───
-  { id: 'a1', name: 'reserve_adequacy_dashboard', technology: 'Tableau', businessArea: 'Actuarial', assetType: 'Dashboard', owner: 'Dr. Robert Lin', sourceCount: 5, targetCount: 2, kpiCount: 8, dependencies: ['actuarial_data_pipeline'], lastUpdated: '2026-09-04', description: 'IBNR reserve adequacy monitoring with triangle development, loss emergence patterns, and reserve release tracking.' },
-  { id: 'a2', name: 'pricing_adequacy_report', technology: 'MicroStrategy', businessArea: 'Actuarial', assetType: 'Report', owner: 'Dr. Robert Lin', sourceCount: 3, targetCount: 1, kpiCount: 6, lastUpdated: '2026-08-15' },
-  { id: 'a3', name: 'loss_triangle_workbook', technology: 'ThoughtSpot', businessArea: 'Actuarial', assetType: 'Dashboard', owner: 'Anna Chen', sourceCount: 4, targetCount: 2, kpiCount: 5, lastUpdated: '2026-08-30' },
+  { id: 'a1', name: 'Survival Rate', technology: 'Power BI', businessArea: 'Actuarial', assetType: 'Dashboard', owner: 'Dr. Robert Lin', sourceCount: 4, targetCount: 2, kpiCount: 8, lastUpdated: '2026-09-04', description: 'Policy retention and cohort survival rate analysis across insurance underwriting classes.' },
+  { id: 'a2', name: 'Test', technology: 'Power BI', businessArea: 'Actuarial', assetType: 'Dashboard', owner: 'Anna Chen', sourceCount: 3, targetCount: 1, kpiCount: 5, lastUpdated: '2026-08-30' },
 ];
 
 /* ── Derive business areas from the asset data ── */

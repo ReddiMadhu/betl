@@ -1,8 +1,6 @@
-import thoughtspotLogo from '../assets/logos/thoughtspot.svg';
 import powerbiLogo from '../assets/logos/powerbi.svg';
 import tableauLogo from '../assets/logos/tableau.svg';
 import microstrategyLogo from '../assets/logos/microstrategy.svg';
-import excelLogo from '../assets/logos/excel.svg';
 import alteryxLogo from '../assets/logos/alteryx.svg';
 import pythonLogo from '../assets/logos/python.svg';
 import sqlLogo from '../assets/logos/sql.svg';
@@ -20,13 +18,6 @@ export interface Technology {
 }
 
 export const technologies: Technology[] = [
-  {
-    id: 'thoughtspot',
-    name: 'ThoughtSpot',
-    category: 'BI',
-    logo: thoughtspotLogo,
-    status: 'connected',
-  },
   {
     id: 'powerbi',
     name: 'Power BI',
@@ -46,13 +37,6 @@ export const technologies: Technology[] = [
     name: 'MicroStrategy',
     category: 'BI',
     logo: microstrategyLogo,
-    status: 'connected',
-  },
-  {
-    id: 'excel',
-    name: 'Excel',
-    category: 'BI',
-    logo: excelLogo,
     status: 'connected',
   },
   {
@@ -139,23 +123,24 @@ export const ingestionStats: IngestionStat[] = [
     id: 'powerbi',
     name: 'Power BI',
     logo: powerbiLogo,
-    count: 10,
+    count: 13,
     suffix: 'dashboards ingested',
-  },
-  {
-    id: 'microstrategy',
-    name: 'MicroStrategy',
-    logo: microstrategyLogo,
-    count: 5,
-    suffix: 'assets ingested',
   },
   {
     id: 'tableau',
     name: 'Tableau',
     logo: tableauLogo,
-    count: 2,
-    suffix: 'assets ingested',
+    count: 12,
+    suffix: 'workbooks ingested',
+  },
+  {
+    id: 'microstrategy',
+    name: 'MicroStrategy',
+    logo: microstrategyLogo,
+    count: 1,
+    suffix: 'dossier ingested',
   },
 ];
 
-export const totalAssets = 25;
+export const totalAssets = 35;
+
