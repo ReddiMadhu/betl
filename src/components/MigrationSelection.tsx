@@ -17,7 +17,7 @@ import MigrationTargetModal from './migration/MigrationTargetModal';
  * ───────────────────────────────────────────────────────── */
 
 interface Props {
-  onStartMigration?: (selectedIds?: string[]) => void;
+  onStartMigration?: (selectedIds?: string[], mode?: 'bi' | 'etl' | 'all', migrationPath?: 'tb-pbi' | 'mstr-tb' | 'alt-py') => void;
 }
 
 export default function MigrationSelection({ onStartMigration }: Props) {
@@ -58,6 +58,17 @@ export default function MigrationSelection({ onStartMigration }: Props) {
   // Handle target change from modal and start migration loading screen
   const handleUpdateTarget = useCallback(
     (assetId: string, newTarget: TechnologyName | null) => {
+      const asset = assets.find((a) => a.id === assetId);
+      const mode = asset?.type === 'bi' ? 'bi' : 'etl';
+
+      // Determine migration path from source → target
+      let migrationPath: 'tb-pbi' | 'mstr-tb' | 'alt-py' = 'tb-pbi';
+      if (asset?.technology === 'Tableau' && newTarget === 'Power BI') migrationPath = 'tb-pbi';
+      else if (asset?.technology === 'MicroStrategy' && newTarget === 'Tableau') migrationPath = 'mstr-tb';
+      else if (asset?.technology === 'MicroStrategy' && newTarget === 'Power BI') migrationPath = 'tb-pbi';
+      else if (asset?.technology === 'Alteryx' && newTarget === 'Python') migrationPath = 'alt-py';
+      else if (mode === 'etl') migrationPath = 'alt-py';
+
       setAssets((prev) =>
         prev.map((a) => {
           if (a.id === assetId) {
@@ -70,10 +81,10 @@ export default function MigrationSelection({ onStartMigration }: Props) {
         }),
       );
       setEditingAsset(null);
-      // Immediately navigate to migration transpilation loading screen
-      onStartMigration?.([assetId]);
+      // Immediately navigate to migration loading screen for that specific domain
+      onStartMigration?.([assetId], mode, migrationPath);
     },
-    [onStartMigration],
+    [assets, onStartMigration],
   );
 
   return (
@@ -450,43 +461,6 @@ export default function MigrationSelection({ onStartMigration }: Props) {
           </div>
         </motion.div>
       </div>
-
-      {/* ═════════════════════════════════════════════════════════
-          BOTTOM CTA: START MIGRATION
-          ═════════════════════════════════════════════════════════ */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
-        className="flex justify-end pb-4"
-      >
-        <motion.button
-          whileHover={{ scale: 1.02, y: -1 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => onStartMigration?.(assets.map((a) => a.id))}
-          className="group relative inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-sm font-bold cursor-pointer transition-all border"
-          style={{
-            background: 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)',
-            borderColor: 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))',
-            color: 'var(--color-accent)',
-            boxShadow: '0 4px 16px rgba(251, 78, 11, 0.15)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.32) 0%, rgba(251, 78, 11, 0.14) 100%)';
-            e.currentTarget.style.borderColor = 'var(--color-accent)';
-            e.currentTarget.style.boxShadow = '0 6px 24px rgba(251, 78, 11, 0.25)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg, rgba(251, 78, 11, 0.20) 0%, rgba(251, 78, 11, 0.08) 100%)';
-            e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-accent) 45%, var(--color-border-primary))';
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(251, 78, 11, 0.15)';
-          }}
-          aria-label="Start Migration"
-        >
-          Start Migration
-          <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-        </motion.button>
-      </motion.div>
 
       {/* ── Modal for selecting target technology ── */}
       <AnimatePresence>

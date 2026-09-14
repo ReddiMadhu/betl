@@ -9,7 +9,10 @@ export type ViewState =
   | 'rationalization-results'
   | 'migration'
   | 'migration-loading'
-  | 'migration-results';
+  | 'migration-results'
+  | 'migration-tb-pbi'
+  | 'migration-mstr-tb'
+  | 'migration-alt-py';
 
 export interface StageDefinition {
   id: 'discovery' | 'rationalization' | 'migration';
@@ -63,8 +66,9 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
     shortTitle: 'Migration',
     subtitle: 'Select waves & migrate',
     icon: ArrowRightLeft,
-    views: ['migration', 'migration-loading', 'migration-results'],
+    views: ['migration', 'migration-loading', 'migration-results', 'migration-tb-pbi', 'migration-mstr-tb', 'migration-alt-py'],
     defaultView: (visited) => {
+      if (visited.has('migration-tb-pbi') || visited.has('migration-mstr-tb') || visited.has('migration-alt-py')) return 'migration';
       if (visited.has('migration-results')) return 'migration-results';
       if (visited.has('migration-loading')) return 'migration-loading';
       return 'migration';

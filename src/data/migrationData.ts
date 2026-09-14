@@ -956,6 +956,131 @@ export const visualConversions: VisualConversionItem[] = [
 </waterfallVisual>`,
     },
   },
+  {
+    id: 'viz5',
+    worksheetName: 'Earned Premium & Incurred Trend',
+    assetName: 'Policy Underwriting Risk Model',
+    sourceTechnology: 'Tableau',
+    targetTechnology: 'Power BI',
+    chartType: 'Line & Clustered Column',
+    status: '100% Parity',
+    sourceVisual: {
+      type: 'Dual Axis Combo',
+      rows: ['[Calendar Year Month]'],
+      columns: ['SUM([Earned Premium])', 'SUM([Incurred Loss])', '[Loss Ratio %]'],
+      color: 'Measure Names',
+      filters: ['[Policy Status] = "Active"'],
+      metrics: ['[Earned Premium]', '[Incurred Loss]', '[Loss Ratio %]'],
+      tooltips: ['[Retention Rate]', '[Audit Variance]'],
+    },
+    targetVisual: {
+      markType: 'pbi-line-column-combo',
+      rowsShelf: ['Date[YearMonth]'],
+      columnsShelf: ['[Earned_Premium_USD]', '[Incurred_Loss_USD]'],
+      colorEncoding: 'Rules(Primary: #3B82F6, Secondary: #EF4444, Line: #10B981)',
+      slicers: ['Policy[Status]', 'Geography[State]'],
+      tooltipsShelf: ['[Retention_Rate_Measure]', '[Audit_Variance_Measure]'],
+      xmlSpec: `<lineAndStackedColumnCombo id="underwriting_combo">
+  <category field="Date.YearMonth" />
+  <columnValues field="Measures.Earned_Premium_USD" />
+  <columnValues field="Measures.Incurred_Loss_USD" />
+  <lineValues field="Measures.Loss_Ratio_Percent" />
+</lineAndStackedColumnCombo>`,
+    },
+  },
+  {
+    id: 'viz6',
+    worksheetName: 'Catastrophe Exposure & Flood Zone Risk',
+    assetName: 'Catastrophe Loss Model',
+    sourceTechnology: 'Tableau',
+    targetTechnology: 'Power BI',
+    chartType: 'Shape Map / Choropleth',
+    status: '100% Parity',
+    sourceVisual: {
+      type: 'Filled Map',
+      rows: ['[State FIPS]', '[County Name]'],
+      columns: ['SUM([Total Insured Value])'],
+      color: '[Flood Risk Zone Score]',
+      filters: ['[PML Category] IN ("Zone A", "Zone V")'],
+      metrics: ['[TIV Exposure]', '[Probable Maximum Loss]'],
+      tooltips: ['[Policy Count]', '[Building Deductible]'],
+    },
+    targetVisual: {
+      markType: 'pbi-shape-map',
+      rowsShelf: ['Geography[County_Name]', 'Geography[State_FIPS]'],
+      columnsShelf: ['[TIV_Total_Measure]'],
+      colorEncoding: 'ContinuousDiverging(#10B981 -> #F59E0B -> #EF4444)',
+      slicers: ['Risk[PML_Zone]', 'Date[Effective_Year]'],
+      tooltipsShelf: ['[Policy_Count_Measure]', '[Avg_Deductible_Measure]'],
+      xmlSpec: `<shapeMapVisual id="cat_exposure_map">
+  <location field="Geography.County_FIPS" />
+  <colorSaturation field="Measures.PML_Ratio" />
+  <projection type="albersUsa" />
+</shapeMapVisual>`,
+    },
+  },
+  {
+    id: 'viz7',
+    worksheetName: 'Subrogation & Fraud Recovery Pipeline',
+    assetName: 'SIU Investigative Analytics',
+    sourceTechnology: 'Tableau',
+    targetTechnology: 'Power BI',
+    chartType: 'Funnel / Process Stage Flow',
+    status: '100% Parity',
+    sourceVisual: {
+      type: 'Funnel Chart',
+      rows: ['[SIU Stage Name]'],
+      columns: ['COUNTD([Investigation ID])', 'SUM([Potential Recovery USD])'],
+      color: '[Stage Tier]',
+      filters: ['[Investigation Disposition] != "Closed - No Action"'],
+      metrics: ['[Recovery Rate]', '[Days in Investigation]'],
+      tooltips: ['[Lead Investigator]', '[Prosecution Flag]'],
+    },
+    targetVisual: {
+      markType: 'pbi-funnel-chart',
+      rowsShelf: ['Investigation[Stage_Name]'],
+      columnsShelf: ['[Investigation_Count]', '[Potential_Recovery_USD]'],
+      colorEncoding: 'CategoricalThemePalette(NavyToCyan)',
+      slicers: ['Disposition[Category]', 'Investigator[Unit]'],
+      tooltipsShelf: ['[Avg_Investigation_Days]', '[Prosecution_Flag]'],
+      xmlSpec: `<funnelVisual id="siu_recovery_funnel">
+  <category field="Investigation.Stage_Name" />
+  <values field="Measures.Investigation_Count" />
+  <tooltips field="Measures.Recovery_Rate" />
+</funnelVisual>`,
+    },
+  },
+  {
+    id: 'viz8',
+    worksheetName: 'Litigation Expense & Counsel Severity',
+    assetName: 'Legal & Bodily Injury Claims',
+    sourceTechnology: 'Tableau',
+    targetTechnology: 'Power BI',
+    chartType: 'Treemap & Hierarchical Decomposition',
+    status: '100% Parity',
+    sourceVisual: {
+      type: 'Treemap',
+      rows: ['[Defense Firm Name]', '[Jurisdiction State]'],
+      columns: ['SUM([Legal Expense Incurred])'],
+      color: '[Expense Variance Benchmark %]',
+      filters: ['[Claim Severity Band] IN ("Tier 3", "Tier 4 - Catastrophic")'],
+      metrics: ['[Avg Defense Cost Per Day]', '[Settlement Success Rate]'],
+      tooltips: ['[Trial Rate %]', '[Judge Rating]'],
+    },
+    targetVisual: {
+      markType: 'pbi-treemap-card',
+      rowsShelf: ['Counsel[Defense_Firm]', 'Court[Jurisdiction_State]'],
+      columnsShelf: ['[Legal_Expense_Total]'],
+      colorEncoding: 'DivergingGradient(#3B82F6 -> #F59E0B -> #EF4444, Midpoint=0)',
+      slicers: ['Claims[Severity_Tier]', 'Date[Filing_Year]'],
+      tooltipsShelf: ['[Settlement_Success_Measure]', '[Trial_Rate_Measure]'],
+      xmlSpec: `<treemapVisual id="legal_severity_treemap">
+  <group field="Counsel.Defense_Firm" />
+  <details field="Court.Jurisdiction_State" />
+  <values field="Measures.Legal_Expense_Total" />
+</treemapVisual>`,
+    },
+  },
 ];
 
 /* ── Export Center Artifact Model ── */

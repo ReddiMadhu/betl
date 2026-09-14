@@ -73,164 +73,32 @@ interface MstrMetricMapping {
   method: string;
 }
 
+import { mstrVisualConversions } from '../../data/mstrTableauData';
+
 function getMicroStrategyData(_assetName: string) {
-  const visuals: ConversionCardItem[] = [
-    {
-      id: 'vis1',
-      worksheetName: 'Executive Underwriting Overview',
-      chartType: 'Clustered Bar Chart',
-      status: 'SUCCESS',
-      mstr: {
-        type: 'Bar Chart (Standard Grid Visualization)',
-        rows: ['[Earned Premium]', '[Loss Ratio]'],
-        columns: ['[Region Name]', '[Line of Business]'],
-        color: '[Line of Business]',
-        metrics: ['Total Earned Premium', 'Incurred Loss Ratio', 'Binding Count'],
-        attributes: ['Region Name', 'Line of Business', 'Underwriting Team'],
-      },
-      target: {
-        markType: 'Bar',
-        columnsShelf: ['[Region Name]', '[Line of Business]'],
-        rowsShelf: ['SUM([Earned Premium])', '[Loss Ratio]'],
-        colorEncoding: '[Line of Business]',
-        labelEncoding: 'SUM([Earned Premium])',
-        worksheetXmlSpec: `<worksheet name="Executive Underwriting Overview">
-  <table>
-    <rows>[Region Name][Line of Business]</rows>
-    <cols>SUM([Earned Premium])[Loss Ratio]</cols>
-    <encodings>
-      <color column="[Line of Business]" palette="Tableau 10" />
-      <text column="SUM([Earned Premium])" />
-    </encodings>
-  </table>
-</worksheet>`,
-      },
+  const visuals: ConversionCardItem[] = mstrVisualConversions.map(v => ({
+    id: v.id,
+    worksheetName: v.worksheetName,
+    chartType: v.chartType,
+    status: v.status,
+    failureReason: v.failureReason,
+    mstr: {
+      type: v.mstrVisualType || v.mstr.type || 'Standard Visual',
+      rows: v.mstr.rows,
+      columns: v.mstr.columns,
+      color: v.mstr.color,
+      metrics: v.mstr.metrics || [],
+      attributes: v.mstr.attributes || [],
     },
-    {
-      id: 'vis2',
-      worksheetName: 'Claims Severity Distribution',
-      chartType: 'Histogram / Frequency Bar',
-      status: 'SUCCESS',
-      mstr: {
-        type: 'Interactive MicroChart (Histogram)',
-        rows: ['[Claim Frequency Count]'],
-        columns: ['[Severity Band Bucket]'],
-        color: null,
-        metrics: ['Claim Frequency Count', 'Average Incurred Loss'],
-        attributes: ['Severity Band Bucket', 'Catastrophe Indicator'],
-      },
-      target: {
-        markType: 'Bar (Binned)',
-        columnsShelf: ['[Severity Band Bucket (bin)]'],
-        rowsShelf: ['COUNT([Claim ID])'],
-        colorEncoding: null,
-        labelEncoding: 'COUNT([Claim ID])',
-        worksheetXmlSpec: `<worksheet name="Claims Severity Distribution">
-  <table>
-    <rows>[Severity Band Bucket (bin)]</rows>
-    <cols>COUNT([Claim ID])</cols>
-    <encodings>
-      <text column="COUNT([Claim ID])" />
-    </encodings>
-  </table>
-</worksheet>`,
-      },
+    target: {
+      markType: v.tableau.markType,
+      columnsShelf: v.tableau.columnsShelf,
+      rowsShelf: v.tableau.rowsShelf,
+      colorEncoding: v.tableau.colorEncoding,
+      labelEncoding: v.tableau.labelEncoding,
+      worksheetXmlSpec: v.tableau.worksheetXmlSpec || '',
     },
-    {
-      id: 'vis3',
-      worksheetName: 'Monthly Loss Emergence Trend',
-      chartType: 'Multi-Line Trend',
-      status: 'SUCCESS',
-      mstr: {
-        type: 'Dual Axis Line Graph',
-        rows: ['[Incurred Loss Ratio]', '[Target Loss Ratio Benchmark]'],
-        columns: ['[Accident Month Year]'],
-        color: '[Accident Month Year]',
-        metrics: ['Incurred Loss Ratio', 'Target Loss Ratio Benchmark'],
-        attributes: ['Accident Month Year'],
-      },
-      target: {
-        markType: 'Line (Dual Axis)',
-        columnsShelf: ['[Accident Month Year]'],
-        rowsShelf: ['[Incurred Loss Ratio]', '[Target Benchmark]'],
-        colorEncoding: 'Measure Names',
-        labelEncoding: null,
-        worksheetXmlSpec: `<worksheet name="Monthly Loss Emergence Trend">
-  <table>
-    <rows>[Incurred Loss Ratio][Target Benchmark]</rows>
-    <cols>[Accident Month Year]</cols>
-    <encodings>
-      <color column="Measure Names" />
-      <dual-axis synchronized="true" />
-    </encodings>
-  </table>
-</worksheet>`,
-      },
-    },
-    {
-      id: 'vis4',
-      worksheetName: 'Territorial Loss Ratio Heatmap',
-      chartType: 'Geographic Map / Density',
-      status: 'MANUAL_REVIEW',
-      failureReason: 'MicroStrategy ESRI custom boundary polygon requires shapefile remap in Tableau',
-      mstr: {
-        type: 'ESRI Custom Geospatial Layer',
-        rows: ['[Latitude Coordinate]'],
-        columns: ['[Longitude Coordinate]'],
-        color: '[Territory Loss Severity]',
-        metrics: ['Territory Loss Severity', 'Direct Incurred Amount'],
-        attributes: ['Territory Boundary Code', 'Postal FIPS'],
-      },
-      target: {
-        markType: 'Polygon (Map Shapefile)',
-        columnsShelf: ['[Longitude]'],
-        rowsShelf: ['[Latitude]'],
-        colorEncoding: '[Territory Loss Severity]',
-        labelEncoding: null,
-        worksheetXmlSpec: `<worksheet name="Territorial Loss Ratio Heatmap">
-  <table>
-    <rows>[Latitude]</rows>
-    <cols>[Longitude]</cols>
-    <encodings>
-      <color column="[Territory Loss Severity]" palette="Red-Green Diverging" />
-      <polygon shapefile="territory_zones_2026.shp" />
-    </encodings>
-  </table>
-</worksheet>`,
-      },
-    },
-    {
-      id: 'vis5',
-      worksheetName: 'Broker Commission Ledger',
-      chartType: 'Grid Matrix with Subtotals',
-      status: 'SUCCESS',
-      mstr: {
-        type: 'CrossTab Grid with Dynamic Thresholds',
-        rows: ['[Broker Agency Name]', '[Producer Code]'],
-        columns: ['[Calendar Year Quarter]', '[Policy Type]'],
-        color: null,
-        metrics: ['Total Paid Commission', 'Written Premium Volume', 'Net Retained Share'],
-        attributes: ['Broker Agency Name', 'Producer Code', 'Calendar Year Quarter', 'Policy Type'],
-      },
-      target: {
-        markType: 'Text Table (Matrix)',
-        columnsShelf: ['[Calendar Year Quarter]', '[Policy Type]'],
-        rowsShelf: ['[Broker Agency Name]', '[Producer Code]'],
-        colorEncoding: null,
-        labelEncoding: 'SUM([Total Paid Commission])',
-        worksheetXmlSpec: `<worksheet name="Broker Commission Ledger">
-  <table>
-    <rows>[Broker Agency Name][Producer Code]</rows>
-    <cols>[Calendar Year Quarter][Policy Type]</cols>
-    <encodings>
-      <text column="SUM([Total Paid Commission])" />
-      <subtotals enabled="true" position="bottom" />
-    </encodings>
-  </table>
-</worksheet>`,
-      },
-    },
-  ];
+  }));
 
   const metricMappings: MstrMetricMapping[] = [
     {

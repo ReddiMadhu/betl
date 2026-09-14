@@ -13,6 +13,9 @@ import RationalizationResults from './components/results/RationalizationResults'
 import MigrationSelection from './components/MigrationSelection';
 import MigrationLoading from './components/MigrationLoading';
 import MigrationResults from './components/results/MigrationResults';
+import TableauPowerBIWorkspace from './components/migration/TableauPowerBIWorkspace';
+import MstrTableauWorkspace from './components/migration/MstrTableauWorkspace';
+import AlteryxPythonWorkspace from './components/migration/AlteryxPythonWorkspace';
 import Sidebar from './components/navigation/Sidebar';
 import TableauDetail from './components/details/TableauDetail';
 import PowerBIDetail from './components/details/PowerBIDetail';
@@ -29,6 +32,8 @@ export default function App() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [selectedMigrationAssetIds, setSelectedMigrationAssetIds] = useState<string[]>([]);
+  const [migrationMode, setMigrationMode] = useState<'bi' | 'etl' | 'all'>('all');
+  const [migrationPath, setMigrationPath] = useState<'tb-pbi' | 'mstr-tb' | 'alt-py' | null>(null);
 
   // Navigation handler tracking visited stages
   const navigateTo = useCallback((nextView: ViewState) => {
@@ -223,17 +228,28 @@ export default function App() {
           {/* Stage 3: Migration */}
           {view === 'migration' && (
             <MigrationSelection
-              onStartMigration={(selectedIds) => {
+              onStartMigration={(selectedIds, mode = 'all', path) => {
                 if (selectedIds) {
                   setSelectedMigrationAssetIds(selectedIds);
                 }
+                setMigrationMode(mode);
+                setMigrationPath(path ?? null);
                 navigateTo('migration-loading');
               }}
             />
           )}
 
           {view === 'migration-loading' && (
-            <MigrationLoading onShowResults={() => navigateTo('migration-results')} />
+            <MigrationLoading
+              mode={migrationMode}
+              onShowResults={() => {
+                // Navigate to the correct workspace based on migrationPath
+                if (migrationPath === 'tb-pbi') navigateTo('migration-tb-pbi');
+                else if (migrationPath === 'mstr-tb') navigateTo('migration-mstr-tb');
+                else if (migrationPath === 'alt-py') navigateTo('migration-alt-py');
+                else navigateTo('migration-results');
+              }}
+            />
           )}
 
           {view === 'migration-results' && (
@@ -242,6 +258,19 @@ export default function App() {
               onComplete={() => navigateTo('home')}
               onBackToSelection={() => navigateTo('migration')}
             />
+          )}
+
+          {/* Migration Workspaces */}
+          {view === 'migration-tb-pbi' && (
+            <TableauPowerBIWorkspace onBack={() => navigateTo('migration')} />
+          )}
+
+          {view === 'migration-mstr-tb' && (
+            <MstrTableauWorkspace onBack={() => navigateTo('migration')} />
+          )}
+
+          {view === 'migration-alt-py' && (
+            <AlteryxPythonWorkspace onBack={() => navigateTo('migration')} />
           )}
         </main>
 

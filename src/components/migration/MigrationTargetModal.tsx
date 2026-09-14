@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, ArrowRight, ShieldCheck } from 'lucide-react';
+import { X, Check, ArrowRight } from 'lucide-react';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 import type { TechnologyName } from '../../data/discoveryData';
 import type { MigrationAsset } from '../../data/migrationData';
@@ -13,73 +13,15 @@ import type { MigrationAsset } from '../../data/migrationData';
 interface TargetOption {
   id: TechnologyName;
   name: string;
-  tagline: string;
-  compatibilityScore: string;
-  recommended?: boolean;
-  features: string[];
 }
 
 const BI_TARGET_OPTIONS: TargetOption[] = [
-  {
-    id: 'Power BI',
-    name: 'Power BI / Microsoft Fabric',
-    tagline: 'Enterprise semantic model with DAX measures and Fabric Direct Lake mode',
-    compatibilityScore: '100% Parity',
-    recommended: true,
-    features: [
-      'Automated DAX measure generation with 0-division protection',
-      'Tableau LOD & MicroStrategy dimensional metrics translation',
-      'Exportable Tabular Model BIM and Power BI report package',
-    ],
-  },
-  {
-    id: 'Tableau',
-    name: 'Tableau Cloud',
-    tagline: 'Modern cloud workbook with published hyper extracts and Level of Detail',
-    compatibilityScore: '98% Parity',
-    features: [
-      'Direct XML schema workbook transpilation',
-      'Preserved calculation syntax and custom parameter actions',
-      'Cloud extract scheduling and multi-tenant security filters',
-    ],
-  },
-  {
-    id: 'ThoughtSpot',
-    name: 'ThoughtSpot Analytics',
-    tagline: 'Search & AI-driven liveboards powered by ThoughtSpot Modeling Language (TML)',
-    compatibilityScore: '95% Parity',
-    features: [
-      'Search-first liveboards with natural language querying',
-      'Automated TML YAML schema generation',
-      'Direct-to-cloud-warehouse pushdown queries',
-    ],
-  },
+  { id: 'Power BI', name: 'Power BI' },
+  { id: 'Tableau', name: 'Tableau' },
 ];
 
 const ETL_TARGET_OPTIONS: TargetOption[] = [
-  {
-    id: 'Python',
-    name: 'Python / PySpark Pipeline',
-    tagline: 'Modern vectorized Python scripts with Pandas, SQLAlchemy, and Airflow orchestration',
-    compatibilityScore: '100% Vectorized',
-    recommended: true,
-    features: [
-      'Transpiles Alteryx tools into vectorized Pandas / NumPy operations (3-5x faster)',
-      'Automated PyTest assertions for 100% regression testing',
-      'Airflow DAG and containerized Docker execution templates',
-    ],
-  },
-  {
-    id: 'Alteryx',
-    name: 'Alteryx Server / Cloud',
-    tagline: 'Cloud-native Alteryx Designer workflows and Server analytic apps',
-    compatibilityScore: '97% Parity',
-    features: [
-      'Standardized Alteryx XML workflow package (.yxzp)',
-      'Macro modularization and credential vault integration',
-      'Automated workflow scheduling and email alerting triggers',
-    ],
-  },
+  { id: 'Python', name: 'Python' },
 ];
 
 interface Props {
@@ -119,7 +61,7 @@ export default function MigrationTargetModal({ asset, onClose, onSelectTarget }:
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 12 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="relative w-full max-w-2xl rounded-2xl border shadow-2xl overflow-hidden z-10 theme-transition my-8"
+          className="relative w-full max-w-lg rounded-2xl border shadow-2xl overflow-hidden z-10 theme-transition my-8"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-engine-border)',
@@ -179,20 +121,19 @@ export default function MigrationTargetModal({ asset, onClose, onSelectTarget }:
           </div>
 
           {/* Options List */}
-          <div className="p-6 space-y-3 max-h-[420px] overflow-y-auto">
+          <div className="p-6 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
-              Available Destination Architectures
+              Select Destination Platform
             </p>
 
             {targetOptions.map((option) => {
               const isSelected = selectedTarget === option.id;
-              const isSourceTech = asset.technology === option.id;
 
               return (
                 <div
                   key={option.id}
                   onClick={() => setSelectedTarget(option.id)}
-                  className="rounded-xl border p-4 cursor-pointer transition-all duration-200 relative"
+                  className="rounded-xl border px-4 py-3.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3"
                   style={{
                     backgroundColor: isSelected
                       ? 'var(--color-accent-subtle)'
@@ -211,78 +152,34 @@ export default function MigrationTargetModal({ asset, onClose, onSelectTarget }:
                     if (!isSelected) e.currentTarget.style.borderColor = 'var(--color-border-primary)';
                   }}
                 >
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5 border shrink-0"
-                        style={{
-                          backgroundColor: 'var(--color-bg-tertiary)',
-                          borderColor: 'var(--color-border-primary)',
-                        }}
-                      >
-                        <img
-                          src={TECHNOLOGY_LOGOS[option.id]}
-                          alt={option.name}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                            {option.name}
-                          </h4>
-                          {option.recommended && (
-                            <span
-                              className="text-[9px] font-bold px-2 py-0.5 rounded-full border text-emerald-500 bg-emerald-500/10 border-emerald-500/20"
-                            >
-                              Recommended
-                            </span>
-                          )}
-                          {isSourceTech && (
-                            <span
-                              className="text-[9px] font-bold px-2 py-0.5 rounded-full border"
-                              style={{
-                                color: 'var(--color-text-tertiary)',
-                                backgroundColor: 'var(--color-bg-tertiary)',
-                                borderColor: 'var(--color-border-primary)',
-                              }}
-                            >
-                              Current Source
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                          {option.tagline}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Radio circle */}
+                  <div className="flex items-center gap-3">
                     <div
-                      className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5"
+                      className="w-9 h-9 rounded-lg flex items-center justify-center p-1.5 border shrink-0"
                       style={{
-                        borderColor: isSelected ? 'var(--color-accent)' : 'var(--color-border-secondary)',
-                        backgroundColor: isSelected ? 'var(--color-accent)' : 'transparent',
+                        backgroundColor: 'var(--color-bg-tertiary)',
+                        borderColor: 'var(--color-border-primary)',
                       }}
                     >
-                      {isSelected && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
+                      <img
+                        src={TECHNOLOGY_LOGOS[option.id]}
+                        alt={option.name}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
+                    <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                      {option.name}
+                    </span>
                   </div>
 
-                  {/* Compatibility Pill & Features */}
-                  <div className="mt-3 pt-3 border-t flex flex-col gap-1.5" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <ShieldCheck size={13} className="text-emerald-500" />
-                      <span className="text-[11px] font-semibold text-emerald-500">
-                        {option.compatibilityScore} Architectural Compatibility
-                      </span>
-                    </div>
-                    {option.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-[11px]" style={{ color: 'var(--color-text-secondary)' }}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] shrink-0" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
+                  {/* Radio circle */}
+                  <div
+                    className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+                    style={{
+                      borderColor: isSelected ? 'var(--color-accent)' : 'var(--color-border-secondary)',
+                      backgroundColor: isSelected ? 'var(--color-accent)' : 'transparent',
+                    }}
+                  >
+                    {isSelected && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
                   </div>
                 </div>
               );
