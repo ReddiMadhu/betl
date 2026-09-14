@@ -2,33 +2,36 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
-  LayoutDashboard,
-  CheckCircle2,
-  AlertTriangle,
-  Layers,
+  Layout,
+  Grid,
+  Database,
+  Code,
+  Search,
   ChevronDown,
-  ChevronRight,
   ChevronUp,
   Copy,
   Check,
-  Search,
-  Code,
   Calendar,
   User,
+  Table,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
+import {
+  mstrObjects,
+  mstrCalculations,
+  mstrVisualConversions,
+  mstrSampleDataRows,
+} from '../../data/mstrTableauData';
 
 /* ─────────────────────────────────────────────────────────
- * MicroStrategyDetail — Dashboard & Dossier Inventory
+ * MicroStrategyDetail — P&C Claims Dossier Deep Inspection
  *
- * Modeled directly on ms-tb DashboardInventory.tsx:
- * - Executive Conversion Summary Cards (Source Dossier, Planned Visuals, Converted, Parity %)
- * - Accordion Conversion Cards with dual-column side-by-side:
- *   Left: MicroStrategy Bindings (Visual Type, Shelves, Metrics, Attributes)
- *   Right: Target Tableau/PBI Worksheet Equivalent (Mark Type, Shelves, Encodings)
- * - Expandable Worksheet XML Spec Inspector with "Copy Schematic" button
- * - Schema & Metric Translation Catalog + Lineage tabs
+ * Modeled directly on the unified Assessment design language
+ * (matching TableauDetail.tsx and PowerBIDetail.tsx):
+ * - Executive Summary Bar (4 KPI Cards)
+ * - 2-Column Grid: Worksheets / Charts & Calculated Metrics
+ * - Full-Width Claims Semantic Cube & Live Data Preview
  * ───────────────────────────────────────────────────────── */
 
 interface Props {
@@ -36,119 +39,15 @@ interface Props {
   onBack: () => void;
 }
 
-export interface MstrVisualDef {
-  type: string;
-  rows: string[];
-  columns: string[];
-  color?: string | null;
-  metrics: string[];
-  attributes: string[];
-}
-
-export interface TargetVisualDef {
-  markType: string;
-  columnsShelf: string[];
-  rowsShelf: string[];
-  colorEncoding?: string | null;
-  labelEncoding?: string | null;
-  worksheetXmlSpec: string;
-}
-
-export interface ConversionCardItem {
-  id: string;
-  worksheetName: string;
-  chartType: string;
-  status: 'SUCCESS' | 'MANUAL_REVIEW';
-  failureReason?: string | null;
-  mstr: MstrVisualDef;
-  target: TargetVisualDef;
-}
-
-interface MstrMetricMapping {
-  id: string;
-  name: string;
-  mstrExpression: string;
-  targetExpression: string;
-  confidence: number;
-  method: string;
-}
-
-import { mstrVisualConversions } from '../../data/mstrTableauData';
-
-function getMicroStrategyData(_assetName: string) {
-  const visuals: ConversionCardItem[] = mstrVisualConversions.map(v => ({
-    id: v.id,
-    worksheetName: v.worksheetName,
-    chartType: v.chartType,
-    status: v.status,
-    failureReason: v.failureReason,
-    mstr: {
-      type: v.mstrVisualType || v.mstr.type || 'Standard Visual',
-      rows: v.mstr.rows,
-      columns: v.mstr.columns,
-      color: v.mstr.color,
-      metrics: v.mstr.metrics || [],
-      attributes: v.mstr.attributes || [],
-    },
-    target: {
-      markType: v.tableau.markType,
-      columnsShelf: v.tableau.columnsShelf,
-      rowsShelf: v.tableau.rowsShelf,
-      colorEncoding: v.tableau.colorEncoding,
-      labelEncoding: v.tableau.labelEncoding,
-      worksheetXmlSpec: v.tableau.worksheetXmlSpec || '',
-    },
-  }));
-
-  const metricMappings: MstrMetricMapping[] = [
-    {
-      id: 'm1',
-      name: 'Total Earned Premium',
-      mstrExpression: 'Sum(fact_premium.earned_premium){~+}',
-      targetExpression: 'SUM([Earned Premium])',
-      confidence: 0.98,
-      method: 'Direct Aggregate Translation',
-    },
-    {
-      id: 'm2',
-      name: 'Incurred Loss Ratio',
-      mstrExpression: 'Sum(fact_claims.incurred_loss){~+} / Sum(fact_premium.earned_premium){~+}',
-      targetExpression: 'SUM([Incurred Loss]) / SUM([Earned Premium])',
-      confidence: 0.95,
-      method: 'Compound Expression Decomposition',
-    },
-    {
-      id: 'm3',
-      name: 'Dynamic Risk Tier Categorization',
-      mstrExpression: 'ApplySimple("CASE WHEN #0 > 100000 THEN \'High Severity\' WHEN #0 > 25000 THEN \'Medium\' ELSE \'Low\' END", fact_claims.claim_amount)',
-      targetExpression: 'IF [Claim Amount] > 100000 THEN "High Severity"\nELSEIF [Claim Amount] > 25000 THEN "Medium"\nELSE "Low"\nEND',
-      confidence: 0.88,
-      method: 'ApplySimple to IF/THEN Statement',
-    },
-    {
-      id: 'm4',
-      name: 'Rolling 12M Earned Premium',
-      mstrExpression: 'Sum(fact_premium.earned_premium){~+}<[Accident Date] between (CurrentDate - 365) and CurrentDate>',
-      targetExpression: 'WINDOW_SUM(SUM([Earned Premium]), -11, 0)',
-      confidence: 0.82,
-      method: 'Level Metric to Window Table Calculation',
-    },
-  ];
-
-  return { visuals, metricMappings };
-}
-
 export default function MicroStrategyDetail({ asset, onBack }: Props) {
-  const data = useMemo(() => getMicroStrategyData(asset.name), [asset.name]);
-
-  const [activeTab, setActiveTab] = useState<'visuals' | 'metrics' | 'lineage'>('visuals');
-  const [visualSearch, setVisualSearch] = useState('');
-  const [expandedCardIds, setExpandedCardIds] = useState<Set<string>>(new Set(['vis1']));
-  const [expandedSpecId, setExpandedSpecId] = useState<string | null>(null);
+  const [worksheetSearch, setWorksheetSearch] = useState('');
+  const [calcFieldSearch, setCalcFieldSearch] = useState('');
+  const [selectedWorksheetId, setSelectedWorksheetId] = useState<string | null>(null);
+  const [expandedFormulas, setExpandedFormulas] = useState<Set<string>>(new Set(['calc-1']));
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const toggleCard = (id: string) => {
-    setExpandedCardIds((prev) => {
+  const toggleFormula = (id: string) => {
+    setExpandedFormulas((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
@@ -156,26 +55,69 @@ export default function MicroStrategyDetail({ asset, onBack }: Props) {
     });
   };
 
-  const copySpec = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
+  const copyFormula = (formula: string, id: string) => {
+    navigator.clipboard.writeText(formula);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const filteredVisuals = useMemo(() => {
-    if (!visualSearch.trim()) return data.visuals;
-    const q = visualSearch.toLowerCase();
-    return data.visuals.filter(
-      (v) =>
-        v.worksheetName.toLowerCase().includes(q) ||
-        v.chartType.toLowerCase().includes(q) ||
-        v.mstr.type.toLowerCase().includes(q)
+  // Filter worksheets
+  const filteredWorksheets = useMemo(() => {
+    if (!worksheetSearch.trim()) return mstrVisualConversions;
+    const q = worksheetSearch.toLowerCase();
+    return mstrVisualConversions.filter(
+      (ws) =>
+        ws.worksheetName.toLowerCase().includes(q) ||
+        ws.chartType.toLowerCase().includes(q) ||
+        ws.mstrVisualType?.toLowerCase().includes(q) ||
+        ws.mstr?.columns?.some((c: string) => c.toLowerCase().includes(q)) ||
+        ws.mstr?.rows?.some((r: string) => r.toLowerCase().includes(q)),
     );
-  }, [data.visuals, visualSearch]);
+  }, [worksheetSearch]);
 
-  const totalVisuals = data.visuals.length;
-  const successCount = data.visuals.filter((v) => v.status === 'SUCCESS').length;
-  const parityRate = Math.round((successCount / totalVisuals) * 100);
+  const selectedWorksheet = useMemo(() => {
+    if (!selectedWorksheetId) return null;
+    return mstrVisualConversions.find((w) => w.id === selectedWorksheetId) ?? null;
+  }, [selectedWorksheetId]);
+
+  // Filter calculations
+  const filteredCalculations = useMemo(() => {
+    let list = mstrCalculations;
+
+    // Filter by selected worksheet if one is selected and has metrics
+    if (selectedWorksheet?.mstr?.metrics && selectedWorksheet.mstr.metrics.length > 0) {
+      const metricsInSheet = selectedWorksheet.mstr.metrics;
+      const filtered = list.filter((c) =>
+        metricsInSheet.some(
+          (m: string) =>
+            m.toLowerCase().includes(c.name.toLowerCase()) ||
+            c.name.toLowerCase().includes(m.toLowerCase()),
+        ),
+      );
+      if (filtered.length > 0) {
+        list = filtered;
+      }
+    }
+
+    if (calcFieldSearch.trim()) {
+      const q = calcFieldSearch.toLowerCase();
+      list = list.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.sourceFormula.toLowerCase().includes(q) ||
+          c.category.toLowerCase().includes(q) ||
+          c.formulaType.toLowerCase().includes(q),
+      );
+    }
+
+    return list;
+  }, [selectedWorksheet, calcFieldSearch]);
+
+  // Attributes from mstrObjects
+  const attributes = useMemo(
+    () => mstrObjects.filter((o) => o.type_name === 'attribute'),
+    [],
+  );
 
   return (
     <motion.div
@@ -223,7 +165,10 @@ export default function MicroStrategyDetail({ asset, onBack }: Props) {
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                  <h1
+                    className="text-2xl font-bold tracking-tight"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
                     {asset.name}
                   </h1>
                   <span
@@ -247,16 +192,20 @@ export default function MicroStrategyDetail({ asset, onBack }: Props) {
                     {asset.businessArea}
                   </span>
                 </div>
-                <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                  Dashboard Inventory — Visual conversion mapping, schema translation, and target parity analysis
-                </p>
-                <div className="flex items-center gap-4 mt-2 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                <div
+                  className="flex items-center gap-4 mt-2 text-xs"
+                  style={{ color: 'var(--color-text-tertiary)' }}
+                >
                   <span className="flex items-center gap-1.5">
-                    <User size={13} /> {asset.owner || 'Steward: Mark Sullivan'}
+                    <User size={13} /> {asset.owner || 'Commercial Ops'}
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1.5">
-                    <Calendar size={13} /> Last Inspected: 194 days ago (Orphan Candidate)
+                    <Calendar size={13} /> Last Updated: {asset.lastUpdated || '2026-08-20'}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5">
+                    <Database size={13} /> Source Cube: Claims
                   </span>
                 </div>
               </div>
@@ -265,422 +214,652 @@ export default function MicroStrategyDetail({ asset, onBack }: Props) {
         </div>
       </div>
 
-      {/* ── Executive Conversion Summary Cards (From DashboardInventory.tsx) ── */}
+      {/* ── Executive Summary Bar (4 KPI Cards matching TableauDetail design) ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Source Dossier Card */}
+        {/* Dossier Pages Card */}
         <div
-          className="rounded-xl border p-4 theme-transition flex flex-col justify-between shadow-sm"
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
           }}
         >
-          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
-            MSTR Source Dossier
-          </span>
-          <span className="text-sm font-bold truncate mt-2" style={{ color: 'var(--color-text-primary)' }} title={asset.name}>
-            {asset.name}
-          </span>
+          <div className="w-12 h-12 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Layout className="w-6 h-6 text-purple-500" />
+          </div>
+          <div>
+            <div
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              5
+            </div>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              Dossier Pages
+            </div>
+          </div>
         </div>
 
-        {/* Planned Worksheets Card */}
+        {/* Worksheets / Charts Card */}
         <div
-          className="rounded-xl border p-4 theme-transition flex flex-col justify-between shadow-sm"
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
           }}
         >
-          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
-            Planned Worksheets
-          </span>
-          <span className="text-2xl font-bold mt-1" style={{ color: 'var(--color-text-primary)' }}>
-            {totalVisuals}
-          </span>
+          <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Grid className="w-6 h-6 text-blue-500" />
+          </div>
+          <div>
+            <div
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              {mstrVisualConversions.length}
+            </div>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              Worksheets / Charts
+            </div>
+          </div>
         </div>
 
-        {/* Converted Worksheets Card */}
+        {/* Semantic Cube Card */}
         <div
-          className="rounded-xl border p-4 theme-transition flex flex-col justify-between shadow-sm"
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
           }}
         >
-          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
-            Target Worksheets Converted
-          </span>
-          <span className="text-2xl font-bold mt-1 text-emerald-500">
-            {successCount}
-          </span>
+          <div className="w-12 h-12 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Database className="w-6 h-6 text-orange-500" />
+          </div>
+          <div>
+            <div
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              1
+            </div>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              Claims Semantic Cube
+            </div>
+          </div>
         </div>
 
-        {/* Visual Conversion Parity Card */}
+        {/* Calculated Metrics Card */}
         <div
-          className="rounded-xl border p-4 theme-transition flex flex-col justify-between shadow-sm"
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
           style={{
             backgroundColor: 'var(--color-bg-elevated)',
             borderColor: 'var(--color-border-primary)',
           }}
         >
-          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
-            Visual Conversion Parity
-          </span>
-          <span className="text-2xl font-bold mt-1 text-emerald-500">
-            {parityRate}%
-          </span>
+          <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Code className="w-6 h-6 text-emerald-500" />
+          </div>
+          <div>
+            <div
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              {mstrCalculations.length}
+            </div>
+            <div
+              className="text-xs font-semibold"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            >
+              Calculated Metrics
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ── Sub Navigation Tabs ── */}
-      <div className="flex items-center gap-2 border-b pb-2" style={{ borderColor: 'var(--color-border-primary)' }}>
-        <button
-          type="button"
-          onClick={() => setActiveTab('visuals')}
-          className="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-2 border"
+      {/* ── 2-Column Grid Layout: Worksheets & Calculated Fields ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Worksheets / Charts Card */}
+        <div
+          className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
           style={{
-            backgroundColor: activeTab === 'visuals' ? 'var(--color-accent)' : 'transparent',
-            color: activeTab === 'visuals' ? '#FFFFFF' : 'var(--color-text-secondary)',
-            borderColor: activeTab === 'visuals' ? 'var(--color-accent)' : 'transparent',
+            height: '470px',
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
           }}
         >
-          <LayoutDashboard size={14} /> Visual Conversion Inventory ({filteredVisuals.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('metrics')}
-          className="px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all flex items-center gap-2 border"
-          style={{
-            backgroundColor: activeTab === 'metrics' ? 'var(--color-accent)' : 'transparent',
-            color: activeTab === 'metrics' ? '#FFFFFF' : 'var(--color-text-secondary)',
-            borderColor: activeTab === 'metrics' ? 'var(--color-accent)' : 'transparent',
-          }}
-        >
-          <Code size={14} /> Schema & Metric Translation ({data.metricMappings.length})
-        </button>
-      </div>
-
-      {/* ── Tab 1: Visual Conversion Inventory (Exact DashboardInventory Pattern) ── */}
-      {activeTab === 'visuals' && (
-        <div className="space-y-4">
-          {/* Search bar */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search worksheets or chart types..."
-              value={visualSearch}
-              onChange={(e) => setVisualSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
-              style={{
-                backgroundColor: 'var(--color-bg-elevated)',
-                borderColor: 'var(--color-border-primary)',
-                color: 'var(--color-text-primary)',
-              }}
-            />
+          {/* Card Header */}
+          <div
+            className="p-4 border-b shrink-0"
+            style={{ borderColor: 'var(--color-border-primary)' }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <h2
+                className="text-base font-bold flex items-center gap-2"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                <Grid className="w-5 h-5 text-blue-500" />
+                Worksheets / Charts ({filteredWorksheets.length})
+              </h2>
+              <span
+                className="text-[11px] font-medium"
+                style={{ color: 'var(--color-text-tertiary)' }}
+              >
+                Click card to inspect shelves
+              </span>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search worksheets or chart types..."
+                value={worksheetSearch}
+                onChange={(e) => setWorksheetSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-primary)',
+                  color: 'var(--color-text-primary)',
+                }}
+              />
+            </div>
           </div>
 
-          {/* Cards List */}
-          <div className="space-y-3">
-            {filteredVisuals.map((card) => {
-              const isCardExpanded = expandedCardIds.has(card.id);
-              const isSpecExpanded = expandedSpecId === card.id;
-
-              const shelfSummary = [
-                card.target.columnsShelf.length > 0 ? `Cols: ${card.target.columnsShelf.join(', ')}` : null,
-                card.target.rowsShelf.length > 0 ? `Rows: ${card.target.rowsShelf.join(', ')}` : null,
-                card.target.colorEncoding ? `Color: ${card.target.colorEncoding}` : null,
-              ].filter(Boolean).join(' | ');
+          {/* Card Body - Scrollable list of Worksheets */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+            {filteredWorksheets.map((ws) => {
+              const isSelected = selectedWorksheetId === ws.id;
+              const columns = ws.mstr?.columns || [];
+              const rows = ws.mstr?.rows || [];
+              const metrics = ws.mstr?.metrics || [];
 
               return (
                 <div
-                  key={card.id}
-                  className="rounded-2xl border overflow-hidden shadow-xs transition-all"
+                  key={ws.id}
+                  className="rounded-xl border transition-all cursor-pointer overflow-hidden"
                   style={{
-                    backgroundColor: 'var(--color-bg-elevated)',
-                    borderColor: 'var(--color-border-primary)',
+                    backgroundColor: isSelected
+                      ? 'color-mix(in srgb, #3B82F6 10%, var(--color-bg-elevated))'
+                      : 'var(--color-surface)',
+                    borderColor: isSelected ? '#3B82F6' : 'var(--color-border-subtle)',
+                    boxShadow: isSelected ? '0 0 0 1px #3B82F6' : 'none',
                   }}
+                  onClick={() => setSelectedWorksheetId(isSelected ? null : ws.id)}
                 >
-                  {/* Clickable Header */}
-                  <div
-                    className="p-4 flex items-center justify-between cursor-pointer transition-colors"
-                    style={{ backgroundColor: 'var(--color-surface)' }}
-                    onClick={() => toggleCard(card.id)}
-                  >
-                    <div className="flex items-center gap-3 min-w-0 pr-4 flex-1">
-                      <span className="text-gray-400 shrink-0">
-                        {isCardExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-bold text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>
-                            {card.worksheetName}
-                          </h3>
-                          <span
-                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0"
-                            style={{
-                              backgroundColor: 'rgba(59, 130, 246, 0.08)',
-                              borderColor: 'rgba(59, 130, 246, 0.25)',
-                              color: '#3B82F6',
-                            }}
-                          >
-                            {card.chartType}
-                          </span>
-                        </div>
-                        {!isCardExpanded && shelfSummary && (
-                          <p className="text-[11px] text-gray-400 font-mono truncate mt-0.5">
-                            {shelfSummary}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="shrink-0">
-                      {card.status === 'SUCCESS' ? (
-                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg border bg-emerald-500/10 text-emerald-500 border-emerald-500/20 flex items-center gap-1.5">
-                          <CheckCircle2 size={13} /> Converted
-                        </span>
-                      ) : (
-                        <span
-                          className="text-[11px] font-bold px-2.5 py-1 rounded-lg border bg-amber-500/10 text-amber-500 border-amber-500/20 flex items-center gap-1.5"
-                          title={card.failureReason || undefined}
+                  <div className="p-3.5 flex items-center justify-between">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="flex items-center gap-2">
+                        <h3
+                          className="font-bold text-xs truncate"
+                          style={{ color: 'var(--color-text-primary)' }}
                         >
-                          <AlertTriangle size={13} /> Review Needed
+                          {ws.worksheetName}
+                        </h3>
+                        <span
+                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0"
+                          style={{
+                            backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                            borderColor: 'rgba(59, 130, 246, 0.25)',
+                            color: '#3B82F6',
+                          }}
+                        >
+                          {ws.chartType}
                         </span>
-                      )}
+                      </div>
+                      <p
+                        className="text-[11px] mt-0.5"
+                        style={{ color: 'var(--color-text-tertiary)' }}
+                      >
+                        {columns.length + rows.length} Attributes • {metrics.length} Metrics
+                        {ws.pageName ? ` • ${ws.pageName}` : ''}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-blue-500">
+                      {isSelected ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                     </div>
                   </div>
 
-                  {/* Expanded Body: Dual-Column Comparison */}
-                  {isCardExpanded && (
-                    <div className="border-t divide-y" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                      <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Left Column: MicroStrategy Bindings */}
-                        <div
-                          className="p-4 rounded-xl border space-y-3"
-                          style={{
-                            backgroundColor: 'var(--color-bg-tertiary)',
-                            borderColor: 'var(--color-border-subtle)',
-                          }}
-                        >
-                          <div className="flex items-center gap-2 pb-2 border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="w-2 h-2 rounded-full bg-red-500" />
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-red-500 flex items-center gap-1.5">
-                              <Layers size={13} /> MicroStrategy Bindings
-                            </h4>
-                          </div>
-
-                          <div className="space-y-2 text-xs">
-                            <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase">MSTR Visual Type:</span>
-                              <p className="font-semibold text-xs mt-0.5" style={{ color: 'var(--color-text-primary)' }}>
-                                {card.mstr.type}
-                              </p>
-                            </div>
-
-                            <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase">Columns Shelf:</span>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {card.mstr.columns.map((c, i) => (
-                                  <span key={i} className="px-2 py-0.5 rounded border text-[11px] font-mono bg-blue-500/10 text-blue-500 border-blue-500/20">
-                                    {c}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase">Rows Shelf:</span>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {card.mstr.rows.map((r, i) => (
-                                  <span key={i} className="px-2 py-0.5 rounded border text-[11px] font-mono bg-blue-500/10 text-blue-500 border-blue-500/20">
-                                    {r}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            {card.mstr.metrics.length > 0 && (
-                              <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase">Source Metrics:</span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {card.mstr.metrics.map((m, i) => (
-                                    <span key={i} className="px-2 py-0.5 rounded border text-[11px] font-mono bg-purple-500/10 text-purple-500 border-purple-500/20">
-                                      {m}
-                                    </span>
-                                  ))}
+                  {/* Expanded Breakdown */}
+                  {isSelected && (
+                    <div
+                      className="px-3.5 pb-3.5 pt-2 border-t text-xs space-y-2.5"
+                      style={{ borderColor: 'rgba(59, 130, 246, 0.2)' }}
+                    >
+                      <div className="grid grid-cols-2 gap-2">
+                        {/* Attributes Shelf */}
+                        <div>
+                          <span
+                            className="text-[10px] font-bold uppercase tracking-wider block mb-1"
+                            style={{ color: 'var(--color-text-tertiary)' }}
+                          >
+                            Attributes / Dimensions
+                          </span>
+                          <div
+                            className="max-h-24 overflow-y-auto rounded-lg p-1.5 space-y-1 border"
+                            style={{
+                              backgroundColor: 'var(--color-bg-tertiary)',
+                              borderColor: 'var(--color-border-subtle)',
+                            }}
+                          >
+                            {[...columns, ...rows].length > 0 ? (
+                              [...columns, ...rows].map((d: string, i: number) => (
+                                <div
+                                  key={i}
+                                  className="truncate pl-1.5 border-l-2 border-purple-400 text-[11px]"
+                                  style={{ color: 'var(--color-text-secondary)' }}
+                                >
+                                  {d}
                                 </div>
+                              ))
+                            ) : (
+                              <div
+                                className="text-[11px] italic"
+                                style={{ color: 'var(--color-text-tertiary)' }}
+                              >
+                                None
                               </div>
                             )}
                           </div>
                         </div>
 
-                        {/* Right Column: Target Equivalent Definition */}
-                        <div
-                          className="p-4 rounded-xl border space-y-3"
-                          style={{
-                            backgroundColor: 'var(--color-bg-tertiary)',
-                            borderColor: 'var(--color-border-subtle)',
-                          }}
-                        >
-                          <div className="flex items-center gap-2 pb-2 border-b" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-500 flex items-center gap-1.5">
-                              <CheckCircle2 size={13} /> Target Equivalent (Tableau / XML)
-                            </h4>
-                          </div>
-
-                          <div className="space-y-2 text-xs">
-                            <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase">Mark Type:</span>
-                              <p className="font-bold text-xs mt-0.5 text-emerald-500">
-                                {card.target.markType}
-                              </p>
-                            </div>
-
-                            <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase">Columns Shelf:</span>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {card.target.columnsShelf.map((c, i) => (
-                                  <span key={i} className="px-2 py-0.5 rounded border text-[11px] font-mono bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
-                                    {c}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            <div>
-                              <span className="text-[10px] font-bold text-gray-400 uppercase">Rows Shelf:</span>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {card.target.rowsShelf.map((r, i) => (
-                                  <span key={i} className="px-2 py-0.5 rounded border text-[11px] font-mono bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
-                                    {r}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            {card.target.labelEncoding && (
-                              <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase">Label Shelf:</span>
-                                <div className="mt-1">
-                                  <span className="px-2 py-0.5 rounded border text-[11px] font-mono bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
-                                    {card.target.labelEncoding}
-                                  </span>
+                        {/* Metrics Shelf */}
+                        <div>
+                          <span
+                            className="text-[10px] font-bold uppercase tracking-wider block mb-1"
+                            style={{ color: 'var(--color-text-tertiary)' }}
+                          >
+                            Metrics
+                          </span>
+                          <div
+                            className="max-h-24 overflow-y-auto rounded-lg p-1.5 space-y-1 border"
+                            style={{
+                              backgroundColor: 'var(--color-bg-tertiary)',
+                              borderColor: 'var(--color-border-subtle)',
+                            }}
+                          >
+                            {metrics.length > 0 ? (
+                              metrics.map((m: string, i: number) => (
+                                <div
+                                  key={i}
+                                  className="truncate pl-1.5 border-l-2 border-emerald-500 font-medium text-[11px]"
+                                  style={{ color: 'var(--color-text-secondary)' }}
+                                >
+                                  {m}
                                 </div>
+                              ))
+                            ) : (
+                              <div
+                                className="text-[11px] italic"
+                                style={{ color: 'var(--color-text-tertiary)' }}
+                              >
+                                None
                               </div>
                             )}
                           </div>
                         </div>
                       </div>
 
-                      {/* Expandable Spec Accordion */}
-                      <div className="p-4" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-                        <div
-                          className="flex items-center justify-between cursor-pointer py-1"
-                          onClick={() => setExpandedSpecId(isSpecExpanded ? null : card.id)}
+                      {/* MicroStrategy Shelves */}
+                      <div
+                        className="pt-2 border-t"
+                        style={{ borderColor: 'var(--color-border-subtle)' }}
+                      >
+                        <span
+                          className="text-[10px] font-bold uppercase tracking-wider block mb-1"
+                          style={{ color: 'var(--color-text-tertiary)' }}
                         >
-                          <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
-                            <Code size={14} className="text-blue-500" />
-                            <span>{isSpecExpanded ? 'Hide Generated Worksheet XML Spec' : 'Inspect Generated Target XML Spec'}</span>
+                          MicroStrategy Shelves
+                        </span>
+                        <div className="grid grid-cols-2 gap-2 text-[11px]">
+                          <div
+                            className="p-1.5 rounded border truncate"
+                            style={{
+                              backgroundColor: 'var(--color-bg-tertiary)',
+                              borderColor: 'var(--color-border-subtle)',
+                            }}
+                            title={rows.join(', ') || 'None'}
+                          >
+                            <span className="font-bold text-[9px] uppercase text-gray-400 block">
+                              Rows Shelf
+                            </span>
+                            <span style={{ color: 'var(--color-text-primary)' }}>
+                              {rows.join(', ') || 'None'}
+                            </span>
                           </div>
-                          <span style={{ color: 'var(--color-text-tertiary)' }}>
-                            {isSpecExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                          </span>
+                          <div
+                            className="p-1.5 rounded border truncate"
+                            style={{
+                              backgroundColor: 'var(--color-bg-tertiary)',
+                              borderColor: 'var(--color-border-subtle)',
+                            }}
+                            title={columns.join(', ') || 'None'}
+                          >
+                            <span className="font-bold text-[9px] uppercase text-gray-400 block">
+                              Columns Shelf
+                            </span>
+                            <span style={{ color: 'var(--color-text-primary)' }}>
+                              {columns.join(', ') || 'None'}
+                            </span>
+                          </div>
                         </div>
-
-                        {isSpecExpanded && (
-                          <div className="mt-3 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[11px] text-gray-400 font-mono">
-                                Worksheet shelf schematic generated from migration translation engine
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => copySpec(card.target.worksheetXmlSpec, card.id)}
-                                className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg border cursor-pointer hover:opacity-80 transition-all"
-                                style={{
-                                  backgroundColor: 'var(--color-bg-elevated)',
-                                  borderColor: 'var(--color-border-primary)',
-                                  color: copiedId === card.id ? '#22C55E' : 'var(--color-text-primary)',
-                                }}
-                              >
-                                {copiedId === card.id ? <Check size={12} /> : <Copy size={12} />}
-                                <span>{copiedId === card.id ? 'Copied' : 'Copy Schematic'}</span>
-                              </button>
-                            </div>
-                            <pre
-                              className="p-4 rounded-xl font-mono text-[11px] leading-relaxed border overflow-x-auto"
-                              style={{
-                                backgroundColor: 'var(--color-bg-tertiary)',
-                                borderColor: 'var(--color-border-primary)',
-                                color: 'var(--color-text-primary)',
-                              }}
-                            >
-                              <code>{card.target.worksheetXmlSpec}</code>
-                            </pre>
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
                 </div>
               );
             })}
+            {filteredWorksheets.length === 0 && (
+              <div
+                className="text-center py-10 text-xs"
+                style={{ color: 'var(--color-text-tertiary)' }}
+              >
+                No worksheets match your query.
+              </div>
+            )}
           </div>
         </div>
-      )}
 
-      {/* ── Tab 2: Schema & Metric Translation Catalog ── */}
-      {activeTab === 'metrics' && (
-        <div className="space-y-4">
+        {/* Right Column: Calculated Metrics Card (MicroStrategy Formulas Only — No Target Migration Formulas) */}
+        <div
+          className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
+          style={{
+            height: '470px',
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
+        >
+          {/* Card Header */}
           <div
-            className="rounded-2xl border p-5 theme-transition shadow-sm"
-            style={{
-              backgroundColor: 'var(--color-bg-elevated)',
-              borderColor: 'var(--color-border-primary)',
-            }}
+            className="p-4 border-b shrink-0"
+            style={{ borderColor: 'var(--color-border-primary)' }}
           >
-            <h3 className="font-bold text-sm mb-4" style={{ color: 'var(--color-text-primary)' }}>
-              MicroStrategy Expression Translation Engine
-            </h3>
-            <div className="space-y-3">
-              {data.metricMappings.map((m) => (
+            <div className="flex items-center justify-between mb-3">
+              <h2
+                className="text-base font-bold flex items-center gap-2"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                <Code className="w-5 h-5 text-emerald-500" />
+                Calculated Metrics ({filteredCalculations.length})
+              </h2>
+              {selectedWorksheet && (
                 <div
-                  key={m.id}
-                  className="rounded-xl border p-4 transition-all"
+                  className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px]"
                   style={{
-                    backgroundColor: 'var(--color-surface)',
-                    borderColor: 'var(--color-border-subtle)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderColor: 'rgba(59, 130, 246, 0.3)',
+                    color: '#3B82F6',
                   }}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-bold text-xs" style={{ color: 'var(--color-text-primary)' }}>
-                      {m.name}
-                    </h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
-                      {Math.round(m.confidence * 100)}% Confidence
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-                    <div className="p-2.5 rounded-lg border font-mono text-[11px] space-y-1" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                      <span className="text-[9px] font-bold uppercase text-red-400 block font-sans">MSTR Source Expression</span>
-                      <code className="text-gray-300 break-all">{m.mstrExpression}</code>
-                    </div>
-                    <div className="p-2.5 rounded-lg border font-mono text-[11px] space-y-1" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                      <span className="text-[9px] font-bold uppercase text-emerald-400 block font-sans">Target Calculation</span>
-                      <code className="text-emerald-400 break-all">{m.targetExpression}</code>
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-gray-400 mt-2">
-                    Method: {m.method}
-                  </p>
+                  <span>Filtered by sheet</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedWorksheetId(null)}
+                    className="font-bold cursor-pointer hover:opacity-75"
+                  >
+                    ✕
+                  </button>
                 </div>
-              ))}
+              )}
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search calculated metrics or formulas..."
+                value={calcFieldSearch}
+                onChange={(e) => setCalcFieldSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-primary)',
+                  color: 'var(--color-text-primary)',
+                }}
+              />
             </div>
           </div>
+
+          {/* Card Body - Scrollable list of Calculated Fields */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+            {filteredCalculations.map((cf) => {
+              const isExpanded = expandedFormulas.has(cf.id);
+              const isCopied = copiedId === cf.id;
+              return (
+                <div
+                  key={cf.id}
+                  className="rounded-xl border overflow-hidden transition-all"
+                  style={{
+                    backgroundColor: 'var(--color-surface)',
+                    borderColor: isExpanded ? 'var(--color-accent)' : 'var(--color-border-subtle)',
+                  }}
+                >
+                  <div
+                    className="p-3.5 flex items-center justify-between cursor-pointer hover:bg-opacity-80"
+                    onClick={() => toggleFormula(cf.id)}
+                  >
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="flex items-center gap-2">
+                        <h3
+                          className="font-bold text-xs truncate"
+                          style={{ color: 'var(--color-text-primary)' }}
+                        >
+                          {cf.name}
+                        </h3>
+                        <span
+                          className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                            cf.category === 'STANDARD'
+                              ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
+                              : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                          }`}
+                        >
+                          {cf.category}
+                        </span>
+                        <span className="text-[10px] text-gray-400 font-mono">
+                          [{cf.formulaType}]
+                        </span>
+                      </div>
+                      <p
+                        className="text-[10px] mt-0.5"
+                        style={{ color: 'var(--color-text-tertiary)' }}
+                      >
+                        MicroStrategy Metric • {cf.datasource}
+                      </p>
+                    </div>
+                    <div className="shrink-0" style={{ color: 'var(--color-text-tertiary)' }}>
+                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </div>
+                  </div>
+
+                  {/* Expanded Formula Box (MicroStrategy Formula Only) */}
+                  {isExpanded && (
+                    <div
+                      className="px-3.5 py-3 border-t text-xs space-y-2"
+                      style={{
+                        backgroundColor: 'var(--color-bg-tertiary)',
+                        borderColor: 'var(--color-border-subtle)',
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span
+                          className="text-[10px] font-bold uppercase tracking-wider"
+                          style={{ color: 'var(--color-text-tertiary)' }}
+                        >
+                          MicroStrategy Formula Definition
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyFormula(cf.sourceFormula, cf.id);
+                          }}
+                          className="flex items-center gap-1 text-[11px] font-semibold cursor-pointer hover:opacity-80 px-2 py-0.5 rounded border"
+                          style={{
+                            borderColor: 'var(--color-border-primary)',
+                            color: isCopied ? '#22C55E' : 'var(--color-text-secondary)',
+                          }}
+                        >
+                          {isCopied ? <Check size={12} /> : <Copy size={12} />}
+                          <span>{isCopied ? 'Copied' : 'Copy Formula'}</span>
+                        </button>
+                      </div>
+                      <pre
+                        className="p-3 rounded-lg font-mono text-[11px] leading-relaxed overflow-x-auto border"
+                        style={{
+                          backgroundColor: 'var(--color-bg-primary)',
+                          borderColor: 'var(--color-border-subtle)',
+                          color: 'var(--color-text-primary)',
+                        }}
+                      >
+                        <code>{cf.sourceFormula}</code>
+                      </pre>
+
+                      {/* Definition Chain */}
+                      {cf.definitionChain && cf.definitionChain.length > 0 && (
+                        <div
+                          className="pt-2 border-t space-y-1.5"
+                          style={{ borderColor: 'var(--color-border-subtle)' }}
+                        >
+                          <span
+                            className="text-[10px] font-bold uppercase tracking-wider block"
+                            style={{ color: 'var(--color-text-tertiary)' }}
+                          >
+                            Underlying Fact Bindings:
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {cf.definitionChain.map((dep, idx) => (
+                              <span
+                                key={idx}
+                                className="px-2 py-0.5 rounded border text-[11px] font-mono bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-secondary)]"
+                                title={dep.formula}
+                              >
+                                {dep.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            {filteredCalculations.length === 0 && (
+              <div
+                className="text-center py-10 text-xs"
+                style={{ color: 'var(--color-text-tertiary)' }}
+              >
+                No calculations match your query.
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* ── Full-Width Card: Claims Semantic Cube & Data Preview ── */}
+      <div
+        className="rounded-2xl border p-6 theme-transition shadow-sm"
+        style={{
+          backgroundColor: 'var(--color-bg-elevated)',
+          borderColor: 'var(--color-border-primary)',
+        }}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center shrink-0">
+              <Table className="w-5 h-5 text-purple-400" />
+            </div>
+            <div>
+              <h2
+                className="text-base font-bold tracking-tight"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                Claims Semantic Cube — Schema &amp; Data Preview
+              </h2>
+              <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                Multidimensional fact and attribute bindings supporting P&amp;C claims reporting
+              </p>
+            </div>
+          </div>
+
+          <span
+            className="text-xs font-semibold px-3 py-1 rounded-full border self-start sm:self-auto"
+            style={{
+              backgroundColor: 'var(--color-bg-tertiary)',
+              borderColor: 'var(--color-border-subtle)',
+              color: 'var(--color-text-tertiary)',
+            }}
+          >
+            1,275 Records • 12 Attributes • 7 Fact Measures
+          </span>
+        </div>
+
+        {/* Live Data Preview Table */}
+        <div className="overflow-x-auto rounded-xl border border-[var(--color-border-subtle)]">
+          <table className="w-full text-left text-xs font-mono">
+            <thead className="bg-[var(--color-bg-tertiary)] text-[11px] uppercase text-gray-400 border-b border-[var(--color-border-subtle)]">
+              <tr>
+                <th className="p-3">Claim ID</th>
+                <th className="p-3">Policy ID</th>
+                <th className="p-3">Line of Business</th>
+                <th className="p-3">Coverage</th>
+                <th className="p-3">Claim Status</th>
+                <th className="p-3 text-right">Paid Amount</th>
+                <th className="p-3 text-right">Reserve Amount</th>
+                <th className="p-3 text-right">Total Incurred</th>
+                <th className="p-3">State</th>
+                <th className="p-3">Adjuster</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--color-border-subtle)] text-[var(--color-text-primary)]">
+              {mstrSampleDataRows.slice(0, 8).map((rawRow, idx) => {
+                const row = rawRow as Record<string, any>;
+                const claimId = row['Claim ID'] || row.claim_id || '-';
+                const policyId = row['Policy ID'] || row.policy_id || '-';
+                const lob = row['Line of Business'] || row.line_of_business || '-';
+                const coverage = row['Coverage'] || row.coverage || '-';
+                const status = row['Claim Status'] || row.claim_status || 'Closed';
+                const paid = row['Paid Amount USD'] || (typeof row.paid_amount === 'number' ? `$${row.paid_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '$0.00');
+                const reserve = row['Reserve Amount USD'] || (typeof row.reserve_amount === 'number' ? `$${row.reserve_amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '$0.00');
+                const total = row['Total Incurred USD'] || (typeof row.total_incurred === 'number' ? `$${row.total_incurred.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : '$0.00');
+                const state = row['State Name'] || row.state_name || '-';
+                const adjuster = row['Adjuster Name'] || row.adjuster_name || '-';
+
+                return (
+                  <tr key={idx} className="hover:bg-[var(--color-surface)] transition-colors">
+                    <td className="p-3 font-bold text-blue-400">{claimId}</td>
+                    <td className="p-3 text-gray-300">{policyId}</td>
+                    <td className="p-3 text-gray-300">{lob}</td>
+                    <td className="p-3 text-gray-300">{coverage}</td>
+                    <td className="p-3">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          status === 'Closed'
+                            ? 'bg-emerald-500/10 text-emerald-400'
+                            : 'bg-amber-500/10 text-amber-400'
+                        }`}
+                      >
+                        {status}
+                      </span>
+                    </td>
+                    <td className="p-3 text-right font-bold text-emerald-400">{paid}</td>
+                    <td className="p-3 text-right font-bold text-amber-400">{reserve}</td>
+                    <td className="p-3 text-right font-bold text-blue-400">{total}</td>
+                    <td className="p-3 text-gray-300">{state}</td>
+                    <td className="p-3 text-gray-300">{adjuster}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </motion.div>
   );
 }
