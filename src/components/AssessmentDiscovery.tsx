@@ -19,32 +19,34 @@ import type { TraceStep } from './ThinkingTrace';
 
 /* ── BI Step Definitions ── */
 const BI_DISCOVERY_STEPS: TraceStep[] = [
-  { label: 'Scanning Power BI workspaces', detail: '10 dashboards' },
-  { label: 'Mapping Tableau data sources', detail: '2 workbooks' },
-  { label: 'Cataloging MicroStrategy objects', detail: '5 reports' },
-  { label: 'Extracting Excel analytical sheets & models', detail: 'Connected' },
+  { label: 'Detecting different file types', detail: '27 BI assets' },
+  { label: 'Profiling usage and ownership' },
+  { label: 'Assessing access frequency' },
 ];
 
 const BI_INTELLIGENCE_STEPS: TraceStep[] = [
-  { label: 'Analyzing dashboard view frequencies & active users' },
-  { label: 'Detecting redundant & overlapping reports across business areas' },
-  { label: 'Evaluating visualization complexity & calculations' },
-  { label: 'Scoring BI modernization readiness' },
+  { label: 'Extracting visual metadata' },
+  { label: 'Understanding data models' },
+  { label: 'Contextualizing visuals and KPIs using built-in KPI Bank' },
+  { label: 'Mapping business functions' },
+  { label: 'Creating unified inventory' },
 ];
 
 /* ── ETL Step Definitions ── */
 const ETL_DISCOVERY_STEPS: TraceStep[] = [
-  { label: 'Analyzing Alteryx workflows', detail: '5 pipelines' },
-  { label: 'Extracting Python transformation scripts', detail: '3 scripts' },
-  { label: 'Cataloging SQL stored procedures & queries', detail: 'Connected' },
-  { label: 'Mapping Apache Spark processing jobs', detail: 'Connected' },
+  { label: 'Detecting different file types', detail: '8 ETL workflows' },
+  { label: 'Profiling usage and ownership' },
+  { label: 'Assessing run frequency' },
 ];
 
 const ETL_INTELLIGENCE_STEPS: TraceStep[] = [
-  { label: 'Tracing data lineage from source systems to target marts' },
-  { label: 'Evaluating transformation business logic & dependencies' },
-  { label: 'Analyzing schema mappings & data flow bottlenecks' },
-  { label: 'Scoring pipeline performance & migration complexity' },
+  { label: 'Assessing source and target metadata' },
+  { label: 'Detecting lineage' },
+  { label: 'Contextualizing KPIs using built-in KPI Bank' },
+  { label: 'Mapping business functions' },
+  { label: 'Detecting business purpose' },
+  { label: 'Evaluating criticality and complexity' },
+  { label: 'Creating unified inventory' },
 ];
 
 export default function AssessmentDiscovery({ onShowResults }: { onShowResults?: () => void }) {

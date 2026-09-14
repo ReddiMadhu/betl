@@ -19,25 +19,23 @@ import type { TraceStep } from './ThinkingTrace';
 
 /* ── BI Rationalization Steps ── */
 const BI_RATIONALIZATION_STEPS: TraceStep[] = [
-  { label: 'Comparing dashboard definitions across BI platforms', detail: '17 BI assets' },
-  { label: 'Detecting overlapping KPIs, charts & calculated fields', detail: '8 overlaps found' },
-  { label: 'Identifying low-utilization reports for merge or decommission', detail: '3 candidates' },
-  { label: 'Generating BI modernization & consolidation scores', detail: 'Complete' },
+  { label: 'Analyzing overlap across reports & dashboards' },
+  { label: 'Assessing dependencies — shared users, KPIs, and sources' },
+  { label: 'Executing rationalization decisioning (retain, consolidate, retire)' },
 ];
 
 /* ── ETL Rationalization Steps ── */
 const ETL_RATIONALIZATION_STEPS: TraceStep[] = [
-  { label: 'Analyzing data transformation pipelines & workflows', detail: '8 ETL assets' },
-  { label: 'Identifying duplicate data prep logic & redundant scripts', detail: '4 duplicates found' },
-  { label: 'Flagging legacy workflows for retirement or refactoring', detail: '2 candidates' },
-  { label: 'Generating pipeline consolidation & migration scores', detail: 'Complete' },
+  { label: 'Analyzing overlap across pipelines & workflows' },
+  { label: 'Assessing dependencies — shared users, logic, and sources' },
+  { label: 'Executing rationalization decisioning (retain, consolidate, retire)' },
 ];
 
 /* ── Interdependence Steps ── */
 const INTERDEPENDENCE_STEPS: TraceStep[] = [
   { label: 'Tracing cross-platform lineage between ETL pipelines and BI reports', detail: '25 dependencies mapped' },
-  { label: 'Assessing impact of ETL decommission recommendations on BI assets', detail: '3 dashboards verified & protected' },
-  { label: 'Assessing impact of BI decommission recommendations on ETL assets', detail: '2 pipelines verified for safe retirement' },
+  { label: 'Assessing impact of ETL decommission recommendations on BI assets', detail: 'Protected' },
+  { label: 'Assessing impact of BI decommission recommendations on ETL assets', detail: 'Verified' },
   { label: 'Validating end-to-end dependency integrity across modernization roadmap', detail: 'Integrity verified' },
 ];
 
