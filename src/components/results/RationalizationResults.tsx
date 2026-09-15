@@ -8,16 +8,12 @@ import {
   ShieldCheck,
   X,
   CheckCircle,
-  Ghost,
-  Link2,
-  AlertTriangle,
   ExternalLink,
 } from 'lucide-react';
 import {
   recommendations,
   getOverlapMetrics,
   isCrossTechRecommendation,
-  getCrossTechCounts,
 } from '../../data/rationalizationData';
 import type { Recommendation, TechnologyName } from '../../data/rationalizationData';
 import { useCountUp } from '../../hooks/useAnimations';
@@ -348,75 +344,6 @@ function RecCard({
   );
 }
 
-/* ── Column header ── */
-function ColumnHeader({
-  icon: Icon,
-  label,
-  count,
-  countLabel,
-  color,
-  crossTechCount,
-  crossTechActive,
-  onToggleCrossTech,
-  onClearCrossTech,
-}: {
-  icon: typeof GitMerge;
-  label: string;
-  count: number;
-  countLabel: string;
-  color: string;
-  crossTechCount?: number;
-  crossTechActive?: boolean;
-  onToggleCrossTech?: () => void;
-  onClearCrossTech?: () => void;
-}) {
-  return (
-    <div className="flex items-center justify-between pb-2 mb-1">
-      <h3 className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-2" style={{ color }}>
-        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-        <Icon size={13} />
-        {label}
-      </h3>
-      <div className="flex items-center gap-1.5">
-        <span
-          className="text-[10px] font-bold px-2 py-0.5 rounded-md border"
-          style={{ color, backgroundColor: color + '10', borderColor: color + '20' }}
-        >
-          {count} {countLabel}
-        </span>
-        {crossTechCount !== undefined && crossTechCount > 0 && (
-          <button
-            type="button"
-            onClick={onToggleCrossTech}
-            title={crossTechActive ? 'Click to show all recommendations' : `Click to filter ${crossTechCount} cross-technology recommendations`}
-            className="text-[10px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 cursor-pointer transition-all hover:scale-105 active:scale-95"
-            style={{
-              color: crossTechActive ? '#FFFFFF' : CROSS_TECH_COLOR,
-              backgroundColor: crossTechActive ? CROSS_TECH_COLOR : CROSS_TECH_COLOR + '15',
-              borderColor: crossTechActive ? CROSS_TECH_COLOR : CROSS_TECH_COLOR + '30',
-              boxShadow: crossTechActive ? `0 2px 8px ${CROSS_TECH_COLOR}40` : 'none',
-            }}
-          >
-            <span>{crossTechCount} Cross-Technology</span>
-            {crossTechActive && (
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClearCrossTech ? onClearCrossTech() : onToggleCrossTech?.();
-                }}
-                className="ml-0.5 hover:opacity-80 p-0.5 inline-flex items-center"
-                title="Clear filter"
-              >
-                <X size={10} />
-              </span>
-            )}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 /* ═══════════════════════════════════════════════════════════
  *  MAIN
  * ═══════════════════════════════════════════════════════════ */
@@ -433,6 +360,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
   const [mergeModalRec, setMergeModalRec] = useState<Recommendation | null>(null);
   const [decommissionModalRec, setDecommissionModalRec] = useState<Recommendation | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [activeTagFilter, setActiveTagFilter] = useState<{ column: 'merge' | 'decommission'; tag: string } | null>(null);
 
   useEffect(() => {
     if (toastMessage) {
@@ -478,134 +406,99 @@ export default function RationalizationResults({ onStartMigration }: Props) {
     [sectionRecs, search, activeSection],
   );
 
-  const totalCount = mergeRecs.length + retireRecs.length + keepRecs.length;
-
-  // Cross-technology counts
-  const crossTechCounts = useMemo(
-    () => getCrossTechCounts(sectionRecs, activeSection),
-    [sectionRecs, activeSection],
-  );
-
-  // Filtered lists accounting for cross-tech filter
-  const displayedMergeRecs = useMemo(
-    () => (crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all')
-      ? mergeRecs.filter(isCrossTechRecommendation)
-      : mergeRecs,
-    [mergeRecs, crossTechFilterColumn],
-  );
-  const displayedRetireRecs = useMemo(
-    () => (crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all')
-      ? retireRecs.filter(isCrossTechRecommendation)
-      : retireRecs,
-    [retireRecs, crossTechFilterColumn],
-  );
-
   // Toggle cross-tech filter per column or globally
   const toggleCrossTechFilter = useCallback((column: 'merge' | 'decommission' | 'all') => {
     setCrossTechFilterColumn((prev) => (prev === column ? null : column));
   }, []);
 
-  // Orphan Cascade: BI assets that reference decommissioned/merged ETL sources
-  const orphanCascadeCount = useMemo(() => {
-    return retireRecs.filter((r) => r.dependentAsset !== undefined).length + 
-      mergeRecs.filter((r) => r.dependentAsset !== undefined).length;
-  }, [retireRecs, mergeRecs]);
+  // ── Explicit tag configurations per mode (always shown even if count is 0) ──
+  const mergeTags = useMemo(() => ['Cross Technology', 'Same Technology'], []);
+  const decommissionTags = useMemo(() => {
+    if (activeSection === 'bi') {
+      return ['Inactive', 'Subset', 'Cross Technology'];
+    }
+    return ['Orphan Cascade', 'Zombie ETLs', 'Subset', 'Cross Technology', 'Inactive'];
+  }, [activeSection]);
 
-  // Zombie ETLs: ETL workflows with no downstream BI consumers
-  const zombieEtlCount = useMemo(() => {
-    return activeSection === 'etl' ? retireRecs.filter((r) => !r.dependentAsset).length : 
-      Math.max(1, Math.floor(retireRecs.length * 0.4));
-  }, [retireRecs, activeSection]);
+  const classifyDecommissionRec = useCallback((rec: Recommendation, section: 'bi' | 'etl'): string[] => {
+    const tags: string[] = [];
+    if (section === 'bi') {
+      // BI decommission tags: Inactive, Subset, Cross Technology
+      const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
+        (rec.lastViewed && parseInt(rec.lastViewed) > 180);
+      const hasSubset = rec.tags?.some((t) => /redundant|legacy|superseded|subset/i.test(t));
+      const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
+      if (hasInactive) tags.push('Inactive');
+      if (hasSubset) tags.push('Subset');
+      if (isCross) tags.push('Cross Technology');
+      if (tags.length === 0) tags.push('Subset'); // fallback
+    } else {
+      // ETL decommission tags: Orphan Cascade, Zombie ETLs, Subset, Cross Technology, Inactive
+      const hasOrphan = rec.tags?.some((t) => /orphan/i.test(t)) || (rec.dependentAsset !== undefined && !isCrossTechRecommendation(rec));
+      const isZombie = rec.tags?.some((t) => /zombie|no consumers|ad-hoc/i.test(t)) || (!rec.dependentAsset && rec.category === 'etl-retire' && !rec.tags?.some((t) => /redundant|subset/i.test(t)));
+      const hasSubset = rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t));
+      const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
+      const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
+        (rec.lastViewed && parseInt(rec.lastViewed) > 180);
+      if (hasOrphan) tags.push('Orphan Cascade');
+      if (isZombie) tags.push('Zombie ETLs');
+      if (hasSubset) tags.push('Subset');
+      if (isCross) tags.push('Cross Technology');
+      if (hasInactive) tags.push('Inactive');
+    }
+    return tags;
+  }, []);
 
-  const [selectedCategoryCard, setSelectedCategoryCard] = useState<string | null>(null);
+  // ── Compute tag counts for summary cards (defaults to 0 for all configured tags) ──
+  const mergeTagCounts = useMemo(() => {
+    const crossTech = mergeRecs.filter(isCrossTechRecommendation).length;
+    const sameTech = mergeRecs.length - crossTech;
+    return { 'Cross Technology': crossTech, 'Same Technology': sameTech };
+  }, [mergeRecs]);
 
-  // Category cards data for Key Recommendations (Consolidate & Merge combined, subtext removed)
-  const categoryCards = [
-    {
-      cardKey: 'consolidate-merge',
-      label: 'Consolidate & Merge',
-      count: mergeRecs.length,
-      color: '#F59E0B',
-      icon: GitMerge,
-    },
-    {
-      cardKey: 'decommission',
-      label: 'Decommission',
-      count: retireRecs.length,
-      color: '#EF4444',
-      icon: Trash2,
-    },
-    {
-      cardKey: 'keep',
-      label: 'Keep',
-      count: keepRecs.length,
-      color: '#22C55E',
-      icon: ShieldCheck,
-    },
-    {
-      cardKey: 'cross-tech',
-      label: 'Cross Technology',
-      count: crossTechCounts.total,
-      color: CROSS_TECH_COLOR,
-      icon: Link2,
-    },
-    {
-      cardKey: 'orphan-cascade',
-      label: 'Orphan Cascade',
-      count: orphanCascadeCount,
-      color: '#EC4899',
-      icon: AlertTriangle,
-    },
-    {
-      cardKey: 'zombie-etls',
-      label: 'Zombie ETLs',
-      count: zombieEtlCount,
-      color: '#3B82F6',
-      icon: Ghost,
-    },
-  ];
+  const decommissionTagCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    decommissionTags.forEach((t) => { counts[t] = 0; });
+    retireRecs.forEach((r) => {
+      const tags = classifyDecommissionRec(r, activeSection);
+      tags.forEach((t) => {
+        counts[t] = (counts[t] || 0) + 1;
+      });
+    });
+    return counts;
+  }, [retireRecs, activeSection, classifyDecommissionRec, decommissionTags]);
 
-  const handleCardClick = (cardKey: string) => {
-    if (selectedCategoryCard === cardKey) {
-      setSelectedCategoryCard(null);
-      setActiveTab('all');
+  // ── Tag filter toggle ──
+  const toggleTagFilter = useCallback((column: 'merge' | 'decommission', tag: string) => {
+    setActiveTagFilter((prev) => {
+      if (prev && prev.column === column && prev.tag === tag) return null;
+      return { column, tag };
+    });
+    // Also sync crossTechFilterColumn for cross-tech tag clicks
+    if (tag === 'Cross Technology') {
+      setCrossTechFilterColumn((prev) => prev === column ? null : column);
+    } else {
       setCrossTechFilterColumn(null);
-      return;
     }
+  }, []);
 
-    setSelectedCategoryCard(cardKey);
-
-    switch (cardKey) {
-      case 'consolidate-merge':
-        setActiveTab('merge');
-        setCrossTechFilterColumn(null);
-        break;
-      case 'decommission':
-        setActiveTab('decommission');
-        setCrossTechFilterColumn(null);
-        break;
-      case 'keep':
-        setActiveTab('keep');
-        setCrossTechFilterColumn(null);
-        break;
-      case 'cross-tech':
-        setActiveTab('all');
-        setCrossTechFilterColumn('all');
-        break;
-      case 'orphan-cascade':
-        setActiveTab('all');
-        setCrossTechFilterColumn('all');
-        break;
-      case 'zombie-etls':
-        setActiveSection('etl');
-        setActiveTab('decommission');
-        setCrossTechFilterColumn(null);
-        break;
-      default:
-        setActiveTab('all');
-        setCrossTechFilterColumn(null);
+  // ── Filtered lists accounting for tag filter ──
+  const displayedMergeRecs = useMemo(() => {
+    if (activeTagFilter && activeTagFilter.column === 'merge') {
+      if (activeTagFilter.tag === 'Cross Technology') return mergeRecs.filter(isCrossTechRecommendation);
+      if (activeTagFilter.tag === 'Same Technology') return mergeRecs.filter((r) => !isCrossTechRecommendation(r));
     }
-  };
+    if (crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all') return mergeRecs.filter(isCrossTechRecommendation);
+    return mergeRecs;
+  }, [mergeRecs, activeTagFilter, crossTechFilterColumn]);
+
+  const displayedRetireRecs = useMemo(() => {
+    if (activeTagFilter && activeTagFilter.column === 'decommission') {
+      return retireRecs.filter((r) => classifyDecommissionRec(r, activeSection).includes(activeTagFilter.tag));
+    }
+    if (crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all') return retireRecs.filter(isCrossTechRecommendation);
+    return retireRecs;
+  }, [retireRecs, activeTagFilter, crossTechFilterColumn, activeSection, classifyDecommissionRec]);
 
   return (
     <motion.div
@@ -724,7 +617,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                     setActiveTab('all');
                     setSearch('');
                     setCrossTechFilterColumn(null);
-                    setSelectedCategoryCard(null);
+                    setActiveTagFilter(null);
                   }}
                   className="px-3.5 py-1.5 rounded-md text-[12px] font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200"
                   style={{
@@ -758,20 +651,10 @@ export default function RationalizationResults({ onStartMigration }: Props) {
       </motion.div>
 
       {/* ════════════════════════════════════════════════════
-       *  CARD 2: KEY RECOMMENDATIONS
+       *  KEY RECOMMENDATIONS — Direct column-aligned cards (no outer box)
        * ════════════════════════════════════════════════════ */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="rounded-2xl border p-6 theme-transition"
-        style={{
-          backgroundColor: 'var(--color-bg-elevated)',
-          borderColor: 'var(--color-engine-border)',
-          boxShadow: '0 2px 12px var(--color-card-shadow)',
-        }}
-      >
-        <div className="flex items-center justify-between gap-4 mb-4">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
               Key Recommendations
@@ -780,12 +663,11 @@ export default function RationalizationResults({ onStartMigration }: Props) {
               Actionable consolidation, merge, decommission, and retention recommendations
             </p>
           </div>
-          {selectedCategoryCard && (
+          {activeTagFilter && (
             <button
               type="button"
               onClick={() => {
-                setSelectedCategoryCard(null);
-                setActiveTab('all');
+                setActiveTagFilter(null);
                 setCrossTechFilterColumn(null);
               }}
               className="text-[11px] font-semibold px-2.5 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-all flex items-center gap-1.5"
@@ -801,91 +683,153 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           )}
         </div>
 
-        {/* Category Cards Grid — 6 Clickable Cards matching MetricPill design */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {categoryCards.map((card, idx) => {
-            const IconComp = card.icon;
-            const isSelected = selectedCategoryCard === card.cardKey;
-            return (
-              <motion.button
-                key={`${card.label}-${idx}`}
-                type="button"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.05 + idx * 0.04, duration: 0.3 }}
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleCardClick(card.cardKey)}
-                className="rounded-xl border p-4 theme-transition flex flex-col justify-between h-full min-h-[92px] text-left cursor-pointer transition-all duration-200 relative group"
-                style={{
-                  backgroundColor: isSelected ? 'var(--color-bg-tertiary)' : 'var(--color-surface)',
-                  borderColor: isSelected ? card.color : 'var(--color-border-primary)',
-                  boxShadow: isSelected
-                    ? `0 0 0 1px ${card.color}, 0 2px 10px ${card.color}25`
-                    : '0 1px 3px var(--color-card-shadow)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.borderColor = card.color + '70';
-                    e.currentTarget.style.boxShadow = `0 2px 10px ${card.color}15`;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-                    e.currentTarget.style.boxShadow = '0 1px 3px var(--color-card-shadow)';
-                  }
-                }}
-              >
-                {/* Top row: Big Count Number + Accent Icon Badge */}
-                <div className="flex items-start justify-between mb-2">
-                  <span
-                    className="text-2xl font-bold tabular-nums tracking-tight"
-                    style={{ color: isSelected ? card.color : 'var(--color-text-primary)' }}
-                  >
-                    {card.count}
-                  </span>
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105"
+        {/* 3 Summary Cards — directly aligned above the 3 columns (gap-6 matches column grid) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ── Consolidate & Merge Card ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.05, duration: 0.3 }}
+            className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <GitMerge size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
+                <h3 className="text-[13px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Consolidate & Merge</h3>
+              </div>
+              <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#F59E0B' }}>
+                {mergeRecs.length}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {mergeTags.map((tag) => {
+                const count = mergeTagCounts[tag] ?? 0;
+                const isActive = activeTagFilter?.column === 'merge' && activeTagFilter?.tag === tag;
+                const tagColor = tag === 'Cross Technology' ? CROSS_TECH_COLOR : '#F59E0B';
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleTagFilter('merge', tag)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
                     style={{
-                      backgroundColor: card.color + '18',
+                      backgroundColor: isActive ? tagColor : tagColor + '12',
+                      color: isActive ? '#FFFFFF' : tagColor,
+                      borderColor: isActive ? tagColor : tagColor + '30',
+                      boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
                     }}
                   >
-                    <IconComp size={14} style={{ color: card.color }} />
-                  </div>
-                </div>
+                    <span>{tag}</span>
+                    <span
+                      className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
+                      style={{
+                        backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
+                        color: isActive ? '#FFFFFF' : tagColor,
+                      }}
+                    >
+                      {count}
+                    </span>
+                    {isActive && <X size={10} />}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
 
-                {/* Bottom: Dot + Label */}
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{ backgroundColor: card.color }}
-                  />
-                  <span
-                    className="text-[12px] font-bold leading-tight truncate"
-                    style={{ color: isSelected ? card.color : 'var(--color-text-primary)' }}
-                  >
-                    {card.label}
-                  </span>
-                </div>
-
-                {isSelected && (
-                  <span
-                    className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border mt-2 self-start"
+          {/* ── Decommission Card ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.09, duration: 0.3 }}
+            className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trash2 size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
+                <h3 className="text-[13px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Decommission</h3>
+              </div>
+              <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#EF4444' }}>
+                {retireRecs.length}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {decommissionTags.map((tag) => {
+                const count = decommissionTagCounts[tag] ?? 0;
+                const isActive = activeTagFilter?.column === 'decommission' && activeTagFilter?.tag === tag;
+                const tagColorMap: Record<string, string> = {
+                  'Inactive': '#6B7280',
+                  'Subset': '#F97316',
+                  'Cross Technology': CROSS_TECH_COLOR,
+                  'Orphan Cascade': '#EC4899',
+                  'Zombie ETLs': '#3B82F6',
+                };
+                const tagColor = tagColorMap[tag] || '#EF4444';
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => toggleTagFilter('decommission', tag)}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
                     style={{
-                      borderColor: card.color,
-                      color: card.color,
-                      backgroundColor: card.color + '15',
+                      backgroundColor: isActive ? tagColor : tagColor + '12',
+                      color: isActive ? '#FFFFFF' : tagColor,
+                      borderColor: isActive ? tagColor : tagColor + '30',
+                      boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
                     }}
                   >
-                    Active
-                  </span>
-                )}
-              </motion.button>
-            );
-          })}
+                    <span>{tag}</span>
+                    <span
+                      className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
+                      style={{
+                        backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
+                        color: isActive ? '#FFFFFF' : tagColor,
+                      }}
+                    >
+                      {count}
+                    </span>
+                    {isActive && <X size={10} />}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* ── Keep Card ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.13, duration: 0.3 }}
+            className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
+                <h3 className="text-[13px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Keep & Certify</h3>
+              </div>
+              <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#22C55E' }}>
+                {keepRecs.length}
+              </span>
+            </div>
+            {/* No tags or subtext for Keep */}
+            <div />
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Active Cross-Technology Filter Banner */}
       <AnimatePresence>
@@ -945,17 +889,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           {/* CONSOLIDATE & MERGE COLUMN */}
           {(activeTab === 'all' || activeTab === 'merge') && (
             <div className="space-y-4 flex flex-col">
-              <ColumnHeader
-                icon={GitMerge}
-                label="Consolidate & Merge"
-                count={mergeRecs.length}
-                countLabel="Recommendations"
-                color="#F59E0B"
-                crossTechCount={crossTechCounts.mergeCount}
-                crossTechActive={crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all'}
-                onToggleCrossTech={() => toggleCrossTechFilter('merge')}
-                onClearCrossTech={() => setCrossTechFilterColumn(null)}
-              />
               {displayedMergeRecs.map((r) => (
                 <RecCard
                   key={r.id}
@@ -969,7 +902,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
               ))}
               {displayedMergeRecs.length === 0 && (
                 <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-                  {crossTechFilterColumn === 'merge' ? 'No cross-technology merge recommendations.' : 'No merge recommendations.'}
+                  {activeTagFilter?.column === 'merge' ? `No ${activeTagFilter.tag.toLowerCase()} merge recommendations.` : 'No merge recommendations.'}
                 </div>
               )}
             </div>
@@ -978,17 +911,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           {/* DECOMMISSION COLUMN */}
           {(activeTab === 'all' || activeTab === 'decommission') && (
             <div className="space-y-4 flex flex-col">
-              <ColumnHeader
-                icon={Trash2}
-                label="Decommission"
-                count={retireRecs.length}
-                countLabel="Recommendations"
-                color="#EF4444"
-                crossTechCount={crossTechCounts.retireCount}
-                crossTechActive={crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all'}
-                onToggleCrossTech={() => toggleCrossTechFilter('decommission')}
-                onClearCrossTech={() => setCrossTechFilterColumn(null)}
-              />
               {displayedRetireRecs.map((r) => (
                 <RecCard
                   key={r.id}
@@ -1002,7 +924,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
               ))}
               {displayedRetireRecs.length === 0 && (
                 <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-                  {crossTechFilterColumn === 'decommission' ? 'No cross-technology decommission recommendations.' : 'No decommission recommendations.'}
+                  {activeTagFilter?.column === 'decommission' ? `No ${activeTagFilter.tag.toLowerCase()} decommission recommendations.` : 'No decommission recommendations.'}
                 </div>
               )}
             </div>
@@ -1011,7 +933,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           {/* KEEP & CERTIFY COLUMN */}
           {(activeTab === 'all' || activeTab === 'keep') && (
             <div className="space-y-4 flex flex-col">
-              <ColumnHeader icon={ShieldCheck} label="Keep & Certify" count={keepRecs.length} countLabel="Recommendations" color="#22C55E" />
               {keepRecs.map((r) => (
                 <RecCard key={r.id} rec={r} accentColor="#22C55E" bulletIcon="✓" />
               ))}
