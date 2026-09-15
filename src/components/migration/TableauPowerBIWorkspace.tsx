@@ -913,7 +913,7 @@ export default function TableauPowerBIWorkspace({ onBack, onFinish }: Props) {
                   className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold cursor-pointer"
                   style={{ backgroundColor: '#10b981', color: '#ffffff' }}
                 >
-                  <CheckCircle size={15} /> Complete &amp; Take a Glance
+                  <CheckCircle size={15} /> Complete &amp; Impact a glance
                 </button>
               </div>
             </div>
