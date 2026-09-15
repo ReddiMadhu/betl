@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Database, ArrowLeft, Download, CheckCircle,
-  Table2, GitBranch, Code2, FileDown, ChevronDown, ChevronRight, Search,
-  FileSpreadsheet, Layers, BarChart3, Eye, Copy, Check,
-  FileCode, CheckCheck, PieChart, LineChart, Sliders
+  Table2, Code2, FileDown, ChevronDown, ChevronRight, Search,
+  FileSpreadsheet, Layers, Eye, Copy, Check,
+  FileCode, CheckCheck
 } from 'lucide-react';
 import {
   tbPbiSummary, tbPbiWorksheets,
@@ -201,14 +201,6 @@ export default function TableauPowerBIWorkspace({ onBack, onFinish }: Props) {
     setTimeout(() => setDownloadToast(null), 3000);
   };
 
-  const getVisualIcon = (vis: string) => {
-    const v = vis.toLowerCase();
-    if (v.includes('pie') || v.includes('donut')) return <PieChart size={15} style={{ color: '#ec4899' }} />;
-    if (v.includes('line')) return <LineChart size={15} style={{ color: '#3b82f6' }} />;
-    if (v.includes('gauge')) return <Sliders size={15} style={{ color: '#8b5cf6' }} />;
-    if (v.includes('card')) return <CheckCircle size={15} style={{ color: '#10b981' }} />;
-    return <BarChart3 size={15} style={{ color: 'var(--color-accent)' }} />;
-  };
 
   return (
     <motion.div

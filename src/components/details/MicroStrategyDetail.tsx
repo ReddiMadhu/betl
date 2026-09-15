@@ -18,7 +18,6 @@ import {
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 import {
-  mstrObjects,
   mstrCalculations,
   mstrVisualConversions,
   mstrSampleDataRows,
@@ -113,11 +112,6 @@ export default function MicroStrategyDetail({ asset, onBack }: Props) {
     return list;
   }, [selectedWorksheet, calcFieldSearch]);
 
-  // Attributes from mstrObjects
-  const attributes = useMemo(
-    () => mstrObjects.filter((o) => o.type_name === 'attribute'),
-    [],
-  );
 
   return (
     <motion.div
@@ -419,7 +413,7 @@ export default function MicroStrategyDetail({ asset, onBack }: Props) {
                         style={{ color: 'var(--color-text-tertiary)' }}
                       >
                         {columns.length + rows.length} Attributes • {metrics.length} Metrics
-                        {ws.pageName ? ` • ${ws.pageName}` : ''}
+                        {(ws as any).pageName ? ` • ${(ws as any).pageName}` : ''}
                       </p>
                     </div>
                     <div className="shrink-0 text-blue-500">

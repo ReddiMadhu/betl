@@ -46,7 +46,7 @@ const ASSET_CANONICAL_MAP: Record<string, string> = {
 
 function getBiMigrationSteps(
   selectedAssetIds?: string[],
-  migrationPath?: 'tb-pbi' | 'mstr-tb',
+  migrationPath?: 'tb-pbi' | 'mstr-tb' | 'alt-py' | null,
 ): TraceStep[] {
   // If MSTR to Tableau path is explicitly active
   if (
@@ -229,7 +229,6 @@ function getEtlMigrationSteps(
   _selectedAssetIds?: string[],
 ): TraceStep[] {
   const totalWorkflows = altPySummary.totalWorkflows;
-  const totalTools = altPySummary.totalTools;
   const convertedTools = altPySummary.convertedTools;
   const outputScripts = altPySummary.totalOutputScripts;
 
