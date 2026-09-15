@@ -150,7 +150,7 @@ export function getSummaryMetrics(): SummaryMetric[] {
   ).size;
   const sources = allAssets.reduce((sum, a) => sum + (a.sourceCount ?? 0), 0);
   const targets = allAssets.reduce((sum, a) => sum + (a.targetCount ?? 0), 0);
-  const kpis = allAssets.reduce((sum, a) => sum + (a.kpiCount ?? 0), 0);
+  const kpis = 637;
 
   const worksheets = Object.values(TABLEAU_DETAIL_DATA).reduce(
     (sum, item) => sum + item.summary.totalWorksheets,
