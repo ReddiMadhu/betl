@@ -1,35 +1,59 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import type { Asset, BusinessArea } from '../../data/discoveryData';
-import { isEtlAsset } from '../../data/discoveryData';
-import AssetRow from './AssetRow';
+import { ChevronRight } from 'lucide-react';
+import type { Asset, BusinessArea, CategoryFilter, TechnologyName } from '../../data/discoveryData';
+import { isEtlAsset, TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 
 /* ─────────────────────────────────────────────────────────
  * BusinessAreaCard — card per insurance business area
  *
  * Header: name, description, asset count, tech summary
- * Body: list of AssetRows with line separating BI and ETL
+ * Body: assets grouped by technology — one icon per tech
+ *       with file names listed below using arrow indicators
  * ───────────────────────────────────────────────────────── */
+
+interface TechGroup {
+  technology: TechnologyName;
+  logo: string;
+  assets: Asset[];
+}
 
 interface Props {
   area: BusinessArea;
   index: number;
+  categoryFilter: CategoryFilter;
   onAssetClick: (asset: Asset) => void;
 }
 
-export default function BusinessAreaCard({ area, index, onAssetClick }: Props) {
-  const { biAssets, etlAssets } = useMemo(() => {
-    const bi: Asset[] = [];
-    const etl: Asset[] = [];
+export default function BusinessAreaCard({ area, index, categoryFilter, onAssetClick }: Props) {
+  const { biGroups, etlGroups } = useMemo(() => {
+    const biMap = new Map<TechnologyName, Asset[]>();
+    const etlMap = new Map<TechnologyName, Asset[]>();
+
     for (const asset of area.assets) {
       if (isEtlAsset(asset)) {
-        etl.push(asset);
+        const list = etlMap.get(asset.technology) ?? [];
+        list.push(asset);
+        etlMap.set(asset.technology, list);
       } else {
-        bi.push(asset);
+        const list = biMap.get(asset.technology) ?? [];
+        list.push(asset);
+        biMap.set(asset.technology, list);
       }
     }
-    return { biAssets: bi, etlAssets: etl };
+
+    const toGroups = (map: Map<TechnologyName, Asset[]>): TechGroup[] =>
+      Array.from(map.entries()).map(([tech, assets]) => ({
+        technology: tech,
+        logo: TECHNOLOGY_LOGOS[tech],
+        assets,
+      }));
+
+    return { biGroups: toGroups(biMap), etlGroups: toGroups(etlMap) };
   }, [area.assets]);
+
+  const showBI = categoryFilter === 'ALL' || categoryFilter === 'BI';
+  const showETL = categoryFilter === 'ALL' || categoryFilter === 'ETL';
 
   return (
     <motion.article
@@ -85,66 +109,143 @@ export default function BusinessAreaCard({ area, index, onAssetClick }: Props) {
         )}
       </div>
 
-      {/* ── Asset list with line between BI & ETL ── */}
-      <div className="p-2 flex flex-col" role="list">
-        {/* Line for BI assets at top */}
-        {biAssets.length > 0 && (
-          <div className="mb-2 px-2 flex items-center gap-2.5" role="separator" aria-label="BI Assets">
-            <div
-              className="h-px flex-1"
-              style={{ backgroundColor: 'var(--color-border-primary)' }}
-            />
-            <span
-              className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border"
-              style={{
-                backgroundColor: 'rgba(30, 41, 59, 0.85)',
-                borderColor: 'var(--color-border-secondary)',
-                color: '#FFFFFF',
-              }}
-            >
-              BI
-            </span>
-            <div
-              className="h-px flex-1"
-              style={{ backgroundColor: 'var(--color-border-primary)' }}
-            />
-          </div>
+      {/* ── Asset list grouped by technology ── */}
+      <div className="px-3 pb-4 flex flex-col gap-1" role="list">
+        {/* BI Section */}
+        {showBI && biGroups.length > 0 && (
+          <>
+            <SectionDivider label="BI" />
+            {biGroups.map((group) => (
+              <TechGroupBlock
+                key={group.technology}
+                group={group}
+                onAssetClick={onAssetClick}
+              />
+            ))}
+          </>
         )}
 
-        {/* BI Assets */}
-        {biAssets.map((asset) => (
-          <AssetRow key={asset.id} asset={asset} onClick={onAssetClick} />
-        ))}
-
-        {/* Line separating BI and ETL assets */}
-        {etlAssets.length > 0 && (
-          <div className="my-2 px-2 flex items-center gap-2.5" role="separator" aria-label="ETL Assets">
-            <div
-              className="h-px flex-1"
-              style={{ backgroundColor: 'var(--color-border-primary)' }}
-            />
-            <span
-              className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border"
-              style={{
-                backgroundColor: 'rgba(30, 41, 59, 0.85)',
-                borderColor: 'var(--color-border-secondary)',
-                color: '#FFFFFF',
-              }}
-            >
-              ETL
-            </span>
-            <div
-              className="h-px flex-1"
-              style={{ backgroundColor: 'var(--color-border-primary)' }}
-            />
-          </div>
+        {/* ETL Section */}
+        {showETL && etlGroups.length > 0 && (
+          <>
+            <SectionDivider label="ETL" />
+            {etlGroups.map((group) => (
+              <TechGroupBlock
+                key={group.technology}
+                group={group}
+                onAssetClick={onAssetClick}
+              />
+            ))}
+          </>
         )}
-
-        {/* ETL Assets */}
-        {etlAssets.map((asset) => (
-          <AssetRow key={asset.id} asset={asset} onClick={onAssetClick} />
-        ))}
       </div>
     </motion.article>
+  );
+}
+
+/* ── Section divider (BI / ETL) ── */
+function SectionDivider({ label }: { label: string }) {
+  return (
+    <div className="mb-1 px-1 flex items-center gap-2.5" role="separator" aria-label={`${label} Assets`}>
+      <div
+        className="h-px flex-1"
+        style={{ backgroundColor: 'var(--color-border-primary)' }}
+      />
+      <span
+        className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded border"
+        style={{
+          backgroundColor: 'rgba(30, 41, 59, 0.85)',
+          borderColor: 'var(--color-border-secondary)',
+          color: '#FFFFFF',
+        }}
+      >
+        {label}
+      </span>
+      <div
+        className="h-px flex-1"
+        style={{ backgroundColor: 'var(--color-border-primary)' }}
+      />
+    </div>
+  );
+}
+
+/* ── Technology group: logo + name header, then file list ── */
+function TechGroupBlock({
+  group,
+  onAssetClick,
+}: {
+  group: TechGroup;
+  onAssetClick: (asset: Asset) => void;
+}) {
+  return (
+    <div className="mb-2 last:mb-0">
+      {/* Technology header — icon + name shown once */}
+      <div className="flex items-center gap-2.5 px-2 py-1.5">
+        <div
+          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 p-1"
+          style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
+        >
+          <img
+            src={group.logo}
+            alt={`${group.technology} logo`}
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
+        </div>
+        <span
+          className="text-[13px] font-semibold tracking-tight"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
+          {group.technology}
+        </span>
+        <span
+          className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+          style={{
+            backgroundColor: 'var(--color-bg-tertiary)',
+            color: 'var(--color-text-tertiary)',
+          }}
+        >
+          {group.assets.length}
+        </span>
+      </div>
+
+      {/* File name list with arrow indicators */}
+      <div className="ml-4 pl-5 border-l" style={{ borderColor: 'var(--color-border-primary)' }}>
+        {group.assets.map((asset) => (
+          <button
+            key={asset.id}
+            type="button"
+            onClick={() => onAssetClick(asset)}
+            className="group/row flex items-center gap-2 w-full rounded-md px-2.5 py-1.5 text-left transition-colors duration-150"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--color-surface-hover)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+            aria-label={`View details for ${asset.name}`}
+          >
+            {/* File name */}
+            <span
+              className="text-[13px] font-medium truncate flex-1"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              {asset.name}
+            </span>
+            {/* Chevron — always visible */}
+            <ChevronRight
+              size={13}
+              className="shrink-0 transition-transform duration-200 group-hover/row:translate-x-0.5"
+              style={{ color: 'var(--color-text-tertiary)' }}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

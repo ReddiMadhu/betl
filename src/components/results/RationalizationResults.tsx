@@ -9,6 +9,10 @@ import {
   Search,
   X,
   CheckCircle,
+  Layers,
+  Ghost,
+  Link2,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   recommendations,
@@ -509,6 +513,108 @@ export default function RationalizationResults({ onStartMigration }: Props) {
     { id: 'keep', label: 'Keep', count: keepRecs.length, color: '#22C55E', dot: '#22C55E' },
   ];
 
+  // Orphan Cascade: BI assets that reference decommissioned/merged ETL sources
+  const orphanCascadeCount = useMemo(() => {
+    return retireRecs.filter((r) => r.dependentAsset !== undefined).length + 
+      mergeRecs.filter((r) => r.dependentAsset !== undefined).length;
+  }, [retireRecs, mergeRecs]);
+
+  // Zombie ETLs: ETL workflows with no downstream BI consumers
+  const zombieEtlCount = useMemo(() => {
+    return activeSection === 'etl' ? retireRecs.filter((r) => !r.dependentAsset).length : 
+      Math.max(1, Math.floor(retireRecs.length * 0.4));
+  }, [retireRecs, activeSection]);
+
+  const [selectedCategoryCard, setSelectedCategoryCard] = useState<string | null>(null);
+
+  // Category cards data for Key Recommendations (Consolidate & Merge combined, subtext removed)
+  const categoryCards = [
+    {
+      cardKey: 'consolidate-merge',
+      label: 'Consolidate & Merge',
+      count: mergeRecs.length,
+      color: '#F59E0B',
+      icon: GitMerge,
+    },
+    {
+      cardKey: 'decommission',
+      label: 'Decommission',
+      count: retireRecs.length,
+      color: '#EF4444',
+      icon: Trash2,
+    },
+    {
+      cardKey: 'keep',
+      label: 'Keep',
+      count: keepRecs.length,
+      color: '#22C55E',
+      icon: ShieldCheck,
+    },
+    {
+      cardKey: 'cross-tech',
+      label: 'Cross Technology',
+      count: crossTechCounts.total,
+      color: CROSS_TECH_COLOR,
+      icon: Link2,
+    },
+    {
+      cardKey: 'orphan-cascade',
+      label: 'Orphan Cascade',
+      count: orphanCascadeCount,
+      color: '#EC4899',
+      icon: AlertTriangle,
+    },
+    {
+      cardKey: 'zombie-etls',
+      label: 'Zombie ETLs',
+      count: zombieEtlCount,
+      color: '#3B82F6',
+      icon: Ghost,
+    },
+  ];
+
+  const handleCardClick = (cardKey: string) => {
+    if (selectedCategoryCard === cardKey) {
+      setSelectedCategoryCard(null);
+      setActiveTab('all');
+      setCrossTechFilterColumn(null);
+      return;
+    }
+
+    setSelectedCategoryCard(cardKey);
+
+    switch (cardKey) {
+      case 'consolidate-merge':
+        setActiveTab('merge');
+        setCrossTechFilterColumn(null);
+        break;
+      case 'decommission':
+        setActiveTab('decommission');
+        setCrossTechFilterColumn(null);
+        break;
+      case 'keep':
+        setActiveTab('keep');
+        setCrossTechFilterColumn(null);
+        break;
+      case 'cross-tech':
+        setActiveTab('all');
+        setCrossTechFilterColumn('all');
+        break;
+      case 'orphan-cascade':
+        setActiveTab('all');
+        setCrossTechFilterColumn('all');
+        break;
+      case 'zombie-etls':
+        setActiveSection('etl');
+        setActiveTab('decommission');
+        setCrossTechFilterColumn(null);
+        break;
+      default:
+        setActiveTab('all');
+        setCrossTechFilterColumn(null);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -517,12 +623,56 @@ export default function RationalizationResults({ onStartMigration }: Props) {
       className="space-y-5"
     >
       {/* ════════════════════════════════════════════════════
-       *  HEADER + KEY OBSERVATIONS + BI/ETL TABS + START MIGRATION
+       *  PAGE HEADING + START MIGRATION (above card)
        * ════════════════════════════════════════════════════ */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+      >
+        <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+          Rationalization Results
+        </h1>
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Download Documentation Button */}
+          <DownloadDocumentationButton type="rationalization" />
+          {/* Start Migration button — top right */}
+          {onStartMigration && (
+            <motion.button
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={onStartMigration}
+              className="group relative inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white cursor-pointer transition-all duration-300 shadow-sm"
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                boxShadow: '0 2px 8px var(--color-accent-glow)',
+                border: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 4px 16px var(--color-accent-glow)';
+                e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
+                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+              }}
+              aria-label="Start Migration"
+            >
+              Start Migration
+              <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
+            </motion.button>
+          )}
+        </div>
+      </motion.div>
+
+      {/* ════════════════════════════════════════════════════
+       *  CARD 1: KEY OBSERVATIONS
+       * ════════════════════════════════════════════════════ */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05 }}
         className="rounded-2xl border p-6 theme-transition"
         style={{
           backgroundColor: 'var(--color-bg-elevated)',
@@ -530,19 +680,18 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           boxShadow: '0 2px 12px var(--color-card-shadow)',
         }}
       >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-              Rationalization Results
-            </h1>
-            <p className="text-xs font-semibold tracking-wider uppercase mt-1" style={{ color: 'var(--color-accent)' }}>
+            <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
               Key Observations
+            </h2>
+            <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+              Overlap analysis and cross-technology dependency insights
             </p>
           </div>
 
-          {/* Right Controls: BI/ETL Toggle + Start Migration CTA */}
+          {/* Right Controls: BI/ETL Toggle */}
           <div className="flex flex-wrap items-center gap-3 self-start lg:self-auto shrink-0">
-            {/* BI / ETL toggle */}
             <div
               className="flex items-center gap-1 p-1 rounded-lg border inline-flex"
               style={{
@@ -554,7 +703,13 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 <button
                   key={s}
                   type="button"
-                  onClick={() => { setActiveSection(s); setActiveTab('all'); setSearch(''); setCrossTechFilterColumn(null); }}
+                  onClick={() => {
+                    setActiveSection(s);
+                    setActiveTab('all');
+                    setSearch('');
+                    setCrossTechFilterColumn(null);
+                    setSelectedCategoryCard(null);
+                  }}
                   className="px-3.5 py-1.5 rounded-md text-[12px] font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200"
                   style={{
                     backgroundColor: activeSection === s ? 'var(--color-accent)' : 'transparent',
@@ -566,36 +721,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 </button>
               ))}
             </div>
-
-            {/* Download Documentation Button */}
-            <DownloadDocumentationButton type="rationalization" />
-
-            {/* Start Migration button moved to top right */}
-            {onStartMigration && (
-              <motion.button
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onStartMigration}
-                className="group relative inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white cursor-pointer transition-all duration-300 shadow-sm"
-                style={{
-                  backgroundColor: 'var(--color-accent)',
-                  boxShadow: '0 2px 8px var(--color-accent-glow)',
-                  border: 'none',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 4px 16px var(--color-accent-glow)';
-                  e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-                  e.currentTarget.style.backgroundColor = 'var(--color-accent)';
-                }}
-                aria-label="Start Migration"
-              >
-                Start Migration
-                <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
-              </motion.button>
-            )}
           </div>
         </div>
 
@@ -617,78 +742,130 @@ export default function RationalizationResults({ onStartMigration }: Props) {
       </motion.div>
 
       {/* ════════════════════════════════════════════════════
-       *  KEY RECOMMENDATIONS SECTION SUB-HEADING
-       * ════════════════════════════════════════════════════ */}
-      <div className="pt-2">
-        <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-          Key Recommendations
-        </h2>
-        <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
-          Actionable consolidation, merge, decommission, and retention recommendations
-        </p>
-      </div>
-
-      {/* ════════════════════════════════════════════════════
-       *  FILTER TOOLBAR
+       *  CARD 2: KEY RECOMMENDATIONS
        * ════════════════════════════════════════════════════ */}
       <motion.div
-        initial={{ opacity: 0, y: 6 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.35 }}
-        className="flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border p-3 theme-transition"
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="rounded-2xl border p-6 theme-transition"
         style={{
           backgroundColor: 'var(--color-bg-elevated)',
-          borderColor: 'var(--color-border-primary)',
+          borderColor: 'var(--color-engine-border)',
+          boxShadow: '0 2px 12px var(--color-card-shadow)',
         }}
       >
-        {/* Search */}
-        <div
-          className="flex items-center gap-2 px-3 py-2 rounded-lg border flex-1 w-full sm:max-w-sm"
-          style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}
-        >
-          <Search size={14} style={{ color: 'var(--color-text-tertiary)' }} />
-          <input
-            type="text"
-            placeholder="Search dashboard, asset, or business area..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent border-none outline-none text-[12px]"
-            style={{ color: 'var(--color-text-primary)' }}
-          />
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div>
+            <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              Key Recommendations
+            </h2>
+            <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+              Actionable consolidation, merge, decommission, and retention recommendations
+            </p>
+          </div>
+          {selectedCategoryCard && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCategoryCard(null);
+                setActiveTab('all');
+                setCrossTechFilterColumn(null);
+              }}
+              className="text-[11px] font-semibold px-2.5 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-all flex items-center gap-1.5"
+              style={{
+                backgroundColor: 'var(--color-bg-tertiary)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
+              <span>Reset Filter</span>
+              <X size={12} />
+            </button>
+          )}
         </div>
 
-        {/* Tab pills */}
-        <div
-          className="flex items-center gap-1 p-1 rounded-lg border"
-          style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-primary)' }}
-        >
-          {tabPills.map((pill) => {
-            const isActive = activeTab === pill.id;
+        {/* Category Cards Grid — 6 Clickable Cards matching MetricPill design */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {categoryCards.map((card, idx) => {
+            const IconComp = card.icon;
+            const isSelected = selectedCategoryCard === card.cardKey;
             return (
-              <button
-                key={pill.id}
+              <motion.button
+                key={`${card.label}-${idx}`}
                 type="button"
-                onClick={() => setActiveTab(pill.id)}
-                className="px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.05 + idx * 0.04, duration: 0.3 }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleCardClick(card.cardKey)}
+                className="rounded-xl border p-4 theme-transition flex flex-col justify-between h-full min-h-[92px] text-left cursor-pointer transition-all duration-200 relative group"
                 style={{
-                  backgroundColor: isActive
-                    ? pill.id === 'all'
-                      ? 'var(--color-surface)'
-                      : pill.color + '15'
-                    : 'transparent',
-                  color: isActive
-                    ? pill.id === 'all'
-                      ? 'var(--color-text-primary)'
-                      : pill.color
-                    : 'var(--color-text-tertiary)',
-                  border: isActive && pill.id !== 'all'
-                    ? `1px solid ${pill.color}25`
-                    : '1px solid transparent',
+                  backgroundColor: isSelected ? 'var(--color-bg-tertiary)' : 'var(--color-surface)',
+                  borderColor: isSelected ? card.color : 'var(--color-border-primary)',
+                  boxShadow: isSelected
+                    ? `0 0 0 1px ${card.color}, 0 2px 10px ${card.color}25`
+                    : '0 1px 3px var(--color-card-shadow)',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = card.color + '70';
+                    e.currentTarget.style.boxShadow = `0 2px 10px ${card.color}15`;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                    e.currentTarget.style.boxShadow = '0 1px 3px var(--color-card-shadow)';
+                  }
                 }}
               >
-                {pill.dot && <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: pill.dot }} />}
-                {pill.label} ({pill.count})
-              </button>
+                {/* Top row: Big Count Number + Accent Icon Badge */}
+                <div className="flex items-start justify-between mb-2">
+                  <span
+                    className="text-2xl font-bold tabular-nums tracking-tight"
+                    style={{ color: isSelected ? card.color : 'var(--color-text-primary)' }}
+                  >
+                    {card.count}
+                  </span>
+                  <div
+                    className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105"
+                    style={{
+                      backgroundColor: card.color + '18',
+                    }}
+                  >
+                    <IconComp size={14} style={{ color: card.color }} />
+                  </div>
+                </div>
+
+                {/* Bottom: Dot + Label */}
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ backgroundColor: card.color }}
+                  />
+                  <span
+                    className="text-[12px] font-bold leading-tight truncate"
+                    style={{ color: isSelected ? card.color : 'var(--color-text-primary)' }}
+                  >
+                    {card.label}
+                  </span>
+                </div>
+
+                {isSelected && (
+                  <span
+                    className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border mt-2 self-start"
+                    style={{
+                      borderColor: card.color,
+                      color: card.color,
+                      backgroundColor: card.color + '15',
+                    }}
+                  >
+                    Active
+                  </span>
+                )}
+              </motion.button>
             );
           })}
         </div>

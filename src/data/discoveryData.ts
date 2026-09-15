@@ -197,3 +197,33 @@ export function isEtlAsset(asset: Asset): boolean {
   );
 }
 
+/* ── Category filter type ── */
+export type CategoryFilter = 'ALL' | 'BI' | 'ETL';
+
+/* ── Filtered summary metrics based on category ── */
+export function getFilteredSummaryMetrics(filter: CategoryFilter): SummaryMetric[] {
+  const all = getSummaryMetrics();
+  if (filter === 'ALL') return all;
+
+  const biIcons = new Set(['dashboard', 'kpi', 'worksheet', 'calculated']);
+  const etlIcons = new Set(['etl', 'source', 'target']);
+
+  const allowedIcons = filter === 'BI' ? biIcons : etlIcons;
+  return all.filter((m) => allowedIcons.has(m.icon));
+}
+
+/* ── Filtered business areas based on category ── */
+export function getFilteredBusinessAreas(filter: CategoryFilter): BusinessArea[] {
+  const areas = getBusinessAreas();
+  if (filter === 'ALL') return areas;
+
+  return areas
+    .map((area) => ({
+      ...area,
+      assets: area.assets.filter((a) =>
+        filter === 'BI' ? !isEtlAsset(a) : isEtlAsset(a),
+      ),
+    }))
+    .filter((area) => area.assets.length > 0);
+}
+

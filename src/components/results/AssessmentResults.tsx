@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Search } from 'lucide-react';
-import { getBusinessAreas, getSummaryMetrics } from '../../data/discoveryData';
-import type { Asset } from '../../data/discoveryData';
+import { ArrowRight, ChevronDown } from 'lucide-react';
+import { getFilteredBusinessAreas, getFilteredSummaryMetrics } from '../../data/discoveryData';
+import type { Asset, CategoryFilter } from '../../data/discoveryData';
 import SummaryMetrics from './SummaryMetrics';
 import BusinessAreaCard from './BusinessAreaCard';
 import DownloadDocumentationButton from './DownloadDocumentationButton';
@@ -20,26 +20,10 @@ interface Props {
 }
 
 export default function AssessmentResults({ onStartRationalization, onAssetDetail }: Props) {
-  const allAreas = useMemo(() => getBusinessAreas(), []);
-  const metrics = useMemo(() => getSummaryMetrics(), []);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('ALL');
 
-  const filteredAreas = useMemo(() => {
-    if (!searchQuery.trim()) return allAreas;
-    const q = searchQuery.toLowerCase();
-    return allAreas
-      .map((area) => ({
-        ...area,
-        assets: area.assets.filter(
-          (a) =>
-            a.name.toLowerCase().includes(q) ||
-            a.technology.toLowerCase().includes(q) ||
-            a.businessArea.toLowerCase().includes(q) ||
-            (a.assetType?.toLowerCase().includes(q) ?? false),
-        ),
-      }))
-      .filter((area) => area.assets.length > 0 || area.name.toLowerCase().includes(q));
-  }, [allAreas, searchQuery]);
+  const metrics = useMemo(() => getFilteredSummaryMetrics(categoryFilter), [categoryFilter]);
+  const filteredAreas = useMemo(() => getFilteredBusinessAreas(categoryFilter), [categoryFilter]);
 
   const handleAssetClick = (asset: Asset) => {
     if (onAssetDetail) {
@@ -78,25 +62,42 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
             </p>
           </div>
 
-          {/* Right Controls: Search + Download Documentation Button */}
+          {/* Right Controls: Category Dropdown + Download Documentation Button */}
           <div className="flex flex-wrap items-center gap-3 shrink-0">
-            {/* Search */}
+            {/* Category Dropdown */}
             <div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border w-full sm:w-60"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                borderColor: 'var(--color-border-primary)',
-              }}
+              className="relative inline-flex items-center"
+              style={{ minWidth: '140px' }}
             >
-              <Search size={14} style={{ color: 'var(--color-text-tertiary)' }} />
-              <input
-                type="text"
-                placeholder="Search assets..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-[13px]"
-                style={{ color: 'var(--color-text-primary)' }}
-                aria-label="Search assets"
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value as CategoryFilter)}
+                className="appearance-none w-full pl-3.5 pr-9 py-2 rounded-lg border text-[13px] font-semibold cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  color: 'var(--color-text-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-accent)';
+                  e.currentTarget.style.boxShadow = '0 0 0 2px var(--color-accent-glow)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+                  e.currentTarget.style.boxShadow = '0 1px 3px var(--color-card-shadow)';
+                }}
+                aria-label="Filter by category"
+              >
+                <option value="ALL">ALL</option>
+                <option value="BI">BI</option>
+                <option value="ETL">ETL</option>
+              </select>
+              {/* Custom chevron icon */}
+              <ChevronDown
+                size={14}
+                className="absolute right-2.5 pointer-events-none"
+                style={{ color: 'var(--color-text-tertiary)' }}
               />
             </div>
 
@@ -116,13 +117,14 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
             key={area.id}
             area={area}
             index={i}
+            categoryFilter={categoryFilter}
             onAssetClick={handleAssetClick}
           />
         ))}
       </div>
 
       {/* Empty state */}
-      {filteredAreas.length === 0 && searchQuery.trim() && (
+      {filteredAreas.length === 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -132,7 +134,7 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
             className="text-[14px] font-medium"
             style={{ color: 'var(--color-text-tertiary)' }}
           >
-            No assets matching "{searchQuery}"
+            No assets found for the selected category.
           </p>
         </motion.div>
       )}
