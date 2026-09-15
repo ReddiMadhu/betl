@@ -243,6 +243,8 @@ export default function App() {
           {view === 'migration-loading' && (
             <MigrationLoading
               mode={migrationMode}
+              selectedAssetIds={selectedMigrationAssetIds}
+              migrationPath={migrationPath}
               onShowResults={() => {
                 // Navigate to the correct workspace based on migrationPath
                 if (migrationPath === 'tb-pbi') navigateTo('migration-tb-pbi');
