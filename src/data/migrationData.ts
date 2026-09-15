@@ -39,13 +39,13 @@ export interface MigrationAsset {
 
 /* ── Keep assets that need migration ── */
 export const migrationAssets: MigrationAsset[] = [
-  /* ── BI Keep — Tableau → Power BI (5 retained dashboards) ── */
+  /* ── BI Keep — Tableau → Power BI (7 assets) ── */
   {
     id: 'ma1',
     name: 'Claims - Agent Performance',
     technology: 'Tableau',
     targetTechnology: 'Power BI',
-    businessArea: 'Claims',
+    businessArea: 'Distribution',
     type: 'bi',
     complexity: 'Medium',
     estimatedHours: 24,
@@ -61,7 +61,7 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'bi',
     complexity: 'High',
     estimatedHours: 36,
-    kpiCount: 6,
+    kpiCount: 8,
     description: 'Executive claims overview with paid loss severity and reserve adequacy projections.',
   },
   {
@@ -73,8 +73,32 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 16,
-    kpiCount: 5,
+    kpiCount: 6,
     description: 'Geographic distribution and regional claims settlement metrics.',
+  },
+  {
+    id: 'ma6',
+    name: 'Motor Insurance Dashboard',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Underwriting',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 24,
+    kpiCount: 7,
+    description: 'Commercial fleet and motor underwriting scorecard with loss frequency calculations.',
+  },
+  {
+    id: 'ma11',
+    name: 'INSURANCE ANALYTICS DASHBOARD',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Distribution',
+    type: 'bi',
+    complexity: 'High',
+    estimatedHours: 32,
+    kpiCount: 9,
+    description: 'Distribution sales performance analytics tracking account executive meetings, open opportunities, and renewal pipelines. Serves as consolidated distribution analytics hub.',
   },
   {
     id: 'ma9',
@@ -97,11 +121,11 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 16,
-    kpiCount: 5,
+    kpiCount: 6,
     description: 'Aging analysis of unresolved beneficiary inquiries and open claim files.',
   },
 
-  /* ── BI Keep — MicroStrategy → Power BI (1 retained dossier) ── */
+  /* ── BI Keep — MicroStrategy → Power BI (1 asset) ── */
   {
     id: 'ma_mstr1',
     name: 'P&C Claims Dashboard v3',
@@ -111,11 +135,11 @@ export const migrationAssets: MigrationAsset[] = [
     type: 'bi',
     complexity: 'High',
     estimatedHours: 48,
-    kpiCount: 11,
+    kpiCount: 18,
     description: 'Multi-chapter property and casualty dossier with loss reserve projections and dimensional metrics.',
   },
 
-  /* ── BI Keep — already on Power BI (6 retained golden dashboards) ── */
+  /* ── BI Keep — already on Power BI (8 assets, no migration required) ── */
   {
     id: 'ma_pbi1',
     name: 'Loss Ratio',
@@ -126,14 +150,14 @@ export const migrationAssets: MigrationAsset[] = [
     complexity: 'Low',
     estimatedHours: 0,
     kpiCount: 8,
-    description: 'Loss ratio tracking against earned premiums. Already on Power BI — certified canonical model.',
+    description: 'Golden claims & underwriting loss ratio dashboard consolidating lower quartile agent production and survival rate trends. Already on Power BI.',
   },
   {
     id: 'ma_pbi2',
     name: 'Store Sales',
     technology: 'Power BI',
     targetTechnology: null,
-    businessArea: 'Distribution',
+    businessArea: 'Finance',
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 0,
@@ -145,11 +169,11 @@ export const migrationAssets: MigrationAsset[] = [
     name: 'Revenue Opportunities',
     technology: 'Power BI',
     targetTechnology: null,
-    businessArea: 'Finance',
+    businessArea: 'Distribution',
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 0,
-    kpiCount: 7,
+    kpiCount: 6,
     description: 'Pipeline revenue forecasts and premium growth analysis. Already on Power BI.',
   },
   {
@@ -169,7 +193,7 @@ export const migrationAssets: MigrationAsset[] = [
     name: 'Jornaya Dashboard PBI',
     technology: 'Power BI',
     targetTechnology: null,
-    businessArea: 'Customer',
+    businessArea: 'Distribution',
     type: 'bi',
     complexity: 'Low',
     estimatedHours: 0,
@@ -188,8 +212,32 @@ export const migrationAssets: MigrationAsset[] = [
     kpiCount: 6,
     description: 'Agent production review identifying lower quartile broker support needs. Already on Power BI.',
   },
+  {
+    id: 'ma_pbi10',
+    name: 'Cross Sell Dashboard PBIP',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Distribution',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 6,
+    description: 'Power BI project format cross-sell tracker. Target consolidation asset on Power BI.',
+  },
+  {
+    id: 'ma_pbi11',
+    name: 'Insurance Analytics Dashboard (Power BI)',
+    technology: 'Power BI',
+    targetTechnology: null,
+    businessArea: 'Finance',
+    type: 'bi',
+    complexity: 'Low',
+    estimatedHours: 0,
+    kpiCount: 9,
+    description: 'Power BI financial reporting with expense breakdown. Target consolidation asset on Power BI.',
+  },
 
-  /* ── ETL Keep — Alteryx → Python (4 retained workflows) ── */
+  /* ── ETL Keep — Alteryx → Python (5 assets) ── */
   {
     id: 'ma_etl1',
     name: 'Claims_Extract_Volume',
@@ -206,7 +254,7 @@ export const migrationAssets: MigrationAsset[] = [
     name: 'Burritos_Distribution',
     technology: 'Alteryx',
     targetTechnology: 'Python',
-    businessArea: 'Customer',
+    businessArea: 'Distribution',
     type: 'etl',
     complexity: 'Low',
     estimatedHours: 32,
@@ -217,7 +265,7 @@ export const migrationAssets: MigrationAsset[] = [
     name: 'Workflow_02',
     technology: 'Alteryx',
     targetTechnology: 'Python',
-    businessArea: 'Finance',
+    businessArea: 'Claims',
     type: 'etl',
     complexity: 'Medium',
     estimatedHours: 28,
@@ -228,14 +276,14 @@ export const migrationAssets: MigrationAsset[] = [
     name: 'Workflow_03',
     technology: 'Alteryx',
     targetTechnology: 'Python',
-    businessArea: 'Underwriting',
+    businessArea: 'Claims',
     type: 'etl',
     complexity: 'High',
     estimatedHours: 44,
-    description: 'Consolidates policy, claims and payment data from multiple sources.',
+    description: 'Consolidates policy, claims and payment data from multiple sources. Serves as consolidated claims ETL pipeline.',
   },
 
-  /* ── ETL Keep — Python Retained Pipelines (1 pipeline) ── */
+  /* ── ETL Keep — Python Retained Pipelines (1 asset) ── */
   {
     id: 'ma_etl8',
     name: 'claims_processing',
@@ -302,15 +350,15 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc4',
-    assetName: 'Healthcare Claim Analysis Dashboard',
+    assetName: 'INSURANCE ANALYTICS DASHBOARD',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
-    fieldName: 'IBNR Reserve Severity',
+    fieldName: 'Cross Sell Conversion Rate',
     fieldCategory: 'Measure',
-    sourceFormula: 'AVG([Outstanding Reserve]) * [Inflation Factor]',
-    targetFormula: 'AVERAGE(Claims[Outstanding_Reserve]) * SELECTEDVALUE(Parameters[Inflation_Factor], 1.04)',
+    sourceFormula: 'COUNTD([Closed Opportunities]) / COUNTD([Total Leads])',
+    targetFormula: 'DIVIDE(DISTINCTCOUNT(Opportunities[Opportunity_ID]), DISTINCTCOUNT(Leads[Lead_ID]), 0)',
     parityStatus: 'Validated',
-    validationNotes: 'Parameter slider integrated with Power BI What-If parameter table.',
+    validationNotes: 'Cross sell conversion rate formula translated to Power BI DAX DIVIDE measure.',
   },
   {
     id: 'calc5',
@@ -423,24 +471,24 @@ Measure: IBNR Severity = AVERAGE(Claims[Outstanding_Reserve]) * SELECTEDVALUE(Pa
   },
   {
     id: 'mr3',
-    assetName: 'Healthcare Claim Analysis Dashboard',
+    assetName: 'INSURANCE ANALYTICS DASHBOARD',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
-    businessArea: 'Claims',
+    businessArea: 'Distribution',
     type: 'bi',
     status: 'Validated',
     complexity: 'High',
-    estimatedHours: 40,
+    estimatedHours: 32,
     calculationsCount: 9,
-    downloadFileName: 'healthcare_claims_semantic_model.pbix.json',
+    downloadFileName: 'insurance_analytics_distribution_model.pbix.json',
     downloadFileType: 'Power BI Schema Definition',
-    packageSnippet: `// Healthcare Claims Semantic Model
+    packageSnippet: `// Insurance Analytics Semantic Model
 Relationships:
-  Provider[Provider_ID] 1:* Claims[Provider_ID]
-  Diagnosis[ICD_Code] 1:* Claims[ICD_Code]
+  AccountExecutive[AE_ID] 1:* Opportunities[AE_ID]
+  Product[Product_ID] 1:* Opportunities[Product_ID]
 Measures:
-  [Average Cost per Claim] = CALCULATE(AVERAGE(Claims[Paid_Amount]), ALLSELECTED(Claims))`,
-    migrationNotes: '9 KPIs migrated. Clinical diagnostic hierarchies and medical billing fields preserved.',
+  [Cross Sell Performance] = CALCULATE(SUM(Opportunities[Revenue]), Opportunities[Stage] = "Closed Won")`,
+    migrationNotes: '9 KPIs migrated. Account executive hierarchies, opportunity pipelines, and multi-line insurance analytics preserved.',
   },
   {
     id: 'mr4',
@@ -679,36 +727,36 @@ export const visualConversions: VisualConversionItem[] = [
   },
   {
     id: 'viz3',
-    worksheetName: 'Healthcare Clinical Diagnostic Breakdown',
-    assetName: 'Healthcare Claim Analysis Dashboard',
+    worksheetName: 'Distribution Revenue & Opportunity Breakdown',
+    assetName: 'INSURANCE ANALYTICS DASHBOARD',
     sourceTechnology: 'Tableau',
     targetTechnology: 'Power BI',
-    chartType: 'Scatter & Density Plot',
+    chartType: 'Clustered Bar & Line Combo',
     status: '100% Parity',
     sourceVisual: {
-      type: 'Bubble Plot',
-      rows: ['[Provider Specialty]'],
-      columns: ['[Total Incurred Cost]'],
-      color: '[Diagnostic Group]',
-      size: '[Patient Volume]',
-      filters: ['[Claim Status] = "Adjudicated"'],
-      metrics: ['[Average Treatment Cost]', '[Readmission Rate]'],
-      tooltips: ['[Primary Facility]', '[Service Date]'],
+      type: 'Combo Chart',
+      rows: ['[Account Executive]'],
+      columns: ['[Open Pipeline Revenue]'],
+      color: '[Stage Name]',
+      size: '[Opportunity Count]',
+      filters: ['[Sales Stage] != "Closed Lost"'],
+      metrics: ['[Pipeline Revenue]', '[Win Rate %]'],
+      tooltips: ['[Account Executive]', '[Primary Product]'],
     },
     targetVisual: {
-      markType: 'pbi-scatter-chart',
-      rowsShelf: ['Provider[Specialty]'],
-      columnsShelf: ['Claims[Total_Incurred_Cost]'],
-      colorEncoding: 'CategoricalPalette(Diagnosis[Diagnostic_Group])',
-      sizeEncoding: 'Claims[Patient_Volume]',
-      slicers: ['Claims[Adjudication_Status]', 'Provider[State]'],
-      tooltipsShelf: ['Provider[Facility_Name]', 'Claims[Service_Date]'],
-      xmlSpec: `<scatterChart visualId="healthcare_scatter">
-  <xAxis field="Claims.Total_Incurred_Cost" displayUnits="Thousands" />
-  <yAxis field="Provider.Specialty" />
-  <sizeField field="Claims.Patient_Volume" bubbleSizeRange="5-25px" />
-  <legend field="Diagnosis.Diagnostic_Group" />
-</scatterChart>`,
+      markType: 'pbi-combo-chart',
+      rowsShelf: ['AccountExecutive[AE_Name]'],
+      columnsShelf: ['Measures[Open_Pipeline_Revenue]'],
+      colorEncoding: 'Rules(Stage = "Closed Won": #10B981, Stage = "Negotiation": #3B82F6, Else: #6B7280)',
+      slicers: ['Product[Line_Of_Business]', 'Date[Fiscal_Year]'],
+      tooltipsShelf: ['[AccountExecutive_Name]', '[Product_Line]'],
+      xmlSpec: `<visualContainer>
+  <type>lineAndClusteredColumnChart</type>
+  <dataRoles>
+    <category role="Category" queryRef="AccountExecutive.AE_Name" />
+    <series role="Y" queryRef="Measures.Open_Pipeline_Revenue" />
+  </dataRoles>
+</visualContainer>`,
     },
   },
   {
