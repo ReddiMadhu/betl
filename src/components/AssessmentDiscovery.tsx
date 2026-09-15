@@ -27,12 +27,6 @@ import { POWERBI_DETAIL_DATA } from '../data/powerbiDetailData';
 function getBiAssessmentData() {
   const biAssets = allAssets.filter((a) => !isEtlAsset(a));
   const platforms = new Set(biAssets.map((a) => a.technology));
-  const formats = new Set(
-    biAssets.map((a) => {
-      const extMatch = a.name.match(/\.([0-9a-z]+)$/i);
-      return extMatch ? `.${extMatch[1]}` : a.technology;
-    })
-  );
   const owners = new Set(biAssets.map((a) => a.owner).filter(Boolean));
   const businessAreas = new Set(biAssets.map((a) => a.businessArea));
 
@@ -145,12 +139,6 @@ function getEtlAssessmentData() {
   const canonicalIds = Array.from(canonicalMap.keys());
 
   const technologies = new Set(canonicalAssets.map((a) => a.technology));
-  const formats = new Set(
-    canonicalAssets.map((a) => {
-      const extMatch = a.name.match(/\.([0-9a-z]+)$/i);
-      return extMatch ? `.${extMatch[1]}` : a.technology;
-    })
-  );
   const owners = new Set(canonicalAssets.map((a) => a.owner).filter(Boolean));
   const businessAreas = new Set(canonicalAssets.map((a) => a.businessArea));
 
@@ -175,10 +163,6 @@ function getEtlAssessmentData() {
       }
     }
   }
-
-  // BI-ETL Lineage connections (32 verified upstream lineage connections across 8 DAGs)
-  const biEtlConnections = 32;
-  const totalEndpoints = allSources.size + allTargets.size;
 
   const discoverySteps: TraceStep[] = [
     {

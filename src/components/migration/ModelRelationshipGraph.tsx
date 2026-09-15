@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   GitBranch, Hash, Calendar, FileText, Table2, ZoomIn, ZoomOut,
-  RotateCcw, Sparkles, ChevronRight, Layers, LayoutGrid, Maximize2
+  RotateCcw, Sparkles, Layers, LayoutGrid
 } from 'lucide-react';
 import { tbPbiDataTables, tbPbiRelationships } from '../../data/tableauPowerBIData';
 import type { TbPbiRelationship } from '../../data/tableauPowerBIData';
@@ -20,11 +20,6 @@ import type { TbPbiRelationship } from '../../data/tableauPowerBIData';
 
 interface Props {
   className?: string;
-}
-
-interface PortPosition {
-  x: number;
-  y: number;
 }
 
 export default function ModelRelationshipGraph({ className = '' }: Props) {
