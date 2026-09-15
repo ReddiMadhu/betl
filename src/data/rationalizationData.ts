@@ -208,18 +208,24 @@ export function computeEtlOverlapMetrics(): OverlapMetric[] {
   const biEtlLineage: Record<string, string[]> = {
     c1: ['c10', 'c15'], // Claims - Executive Summary -> Claims_Extract_Volume, claims_processing
     c2: ['c10'],        // Claims - State Performance -> Claims_Extract_Volume
+    c3: ['c10'],        // Healthcare Claim Analysis Dashboard -> Claims_Extract_Volume
     d1: ['c10'],        // Claims - Agent Performance -> Claims_Extract_Volume
     d2: ['c11'],        // Cross Sell Dashboard -> Workflow_03
+    d7: ['c11'],        // INSURANCE ANALYTICS DASHBOARD -> Workflow_03
     u1: ['c10'],        // Car Insurance Dashboard -> Claims_Extract_Volume
     u2: ['u4'],         // Motor Insurance Dashboard -> Workflow_04
+    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
+    u6: ['u4'],         // FFQ_Test -> Workflow_04
     cu1: ['c11'],       // Benefeciery services_v1 -> Workflow_03
     cu2: ['c10'],       // Benefeciery_services_Aging_Dashboard -> Claims_Extract_Volume
     d3: ['d6'],         // Jornaya Dashboard PBI -> Burritos_Distribution
     d4: ['c11'],        // Revenue Opportunities -> Workflow_03
     d5: ['d6'],         // Bottom 25% Agents -> Burritos_Distribution
-    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
-    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
+    d8: ['c11'],        // Cross_Sell_dashboardpbip -> Workflow_03
+    d9: ['d6'],         // New Business (Bottom 25% agents) -> Burritos_Distribution
+    d10: ['c11'],       // Insurance_Analytics_Dashboard -> Workflow_03
     p1: ['c11'],        // Survival Rate -> Workflow_03
+    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
     f2: ['d6'],         // Store Sales -> Burritos_Distribution
     f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
   };
