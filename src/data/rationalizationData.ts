@@ -208,33 +208,34 @@ export function computeEtlOverlapMetrics(): OverlapMetric[] {
   const biEtlLineage: Record<string, string[]> = {
     c1: ['c10', 'c15'], // Claims - Executive Summary -> Claims_Extract_Volume, claims_processing
     c2: ['c10'],        // Claims - State Performance -> Claims_Extract_Volume
+    c3: ['c10'],        // Healthcare Claim Analysis Dashboard -> Claims_Extract_Volume
     d1: ['c10'],        // Claims - Agent Performance -> Claims_Extract_Volume
     d2: ['c11'],        // Cross Sell Dashboard -> Workflow_03
+    d7: ['c11'],        // INSURANCE ANALYTICS DASHBOARD -> Workflow_03
     u1: ['c10'],        // Car Insurance Dashboard -> Claims_Extract_Volume
     u2: ['u4'],         // Motor Insurance Dashboard -> Workflow_04
+    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
+    u6: ['u4'],         // FFQ_Test -> Workflow_04
     cu1: ['c11'],       // Benefeciery services_v1 -> Workflow_03
     cu2: ['c10'],       // Benefeciery_services_Aging_Dashboard -> Claims_Extract_Volume
     d3: ['d6'],         // Jornaya Dashboard PBI -> Burritos_Distribution
     d4: ['c11'],        // Revenue Opportunities -> Workflow_03
     d5: ['d6'],         // Bottom 25% Agents -> Burritos_Distribution
-    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
-    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
+    d8: ['c11'],        // Cross_Sell_dashboardpbip -> Workflow_03
+    d9: ['d6'],         // New Business (Bottom 25% agents) -> Burritos_Distribution
+    d10: ['c11'],       // Insurance_Analytics_Dashboard -> Workflow_03
     p1: ['c11'],        // Survival Rate -> Workflow_03
+    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
     f2: ['d6'],         // Store Sales -> Burritos_Distribution
     f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
   };
   const biEtlConnections = Object.values(biEtlLineage).reduce((sum: number, deps: string[]) => sum + deps.length, 0);
 
-  // 6. Cross-Technology Overlaps: Alteryx workflows that have verified functional/source/target overlap with Python (c15)
-  const alteryxIds = uniqueCanonicalIds.filter((id) => id !== 'c15');
-  let crossTechCount = 0;
-  for (const altId of alteryxIds) {
-    const hasSrcOverlap = (workflowSources['c15'] ?? []).some((s: string) => (workflowSources[altId] ?? []).includes(s));
-    const hasTgtOverlap = (workflowTargets['c15'] ?? []).some((t: string) => (workflowTargets[altId] ?? []).includes(t));
-    if (hasSrcOverlap || hasTgtOverlap) {
-      crossTechCount += 1;
-    }
-  }
+  // 6. Cross-Technology Overlaps: ETL recommendations that involve multiple technology platforms
+  const etlCrossTechRecommendations = recommendations.filter(
+    (r) => r.category === 'etl-merge' || r.category === 'etl-retire',
+  );
+  const crossTechCount = etlCrossTechRecommendations.filter(isCrossTechRecommendation).length;
 
   return [
     { id: 'etl-source-overlap', label: 'Source Overlaps', value: sourceOverlapCount, highlight: sourceOverlapCount > 10 },
@@ -245,8 +246,6 @@ export function computeEtlOverlapMetrics(): OverlapMetric[] {
     { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: crossTechCount, highlight: crossTechCount > 3 },
   ];
 }
-
-export const etlOverlapMetrics: OverlapMetric[] = computeEtlOverlapMetrics();
 
 /* ── Recommendation types ── */
 export type RecommendationCategory =
@@ -325,7 +324,7 @@ export const recommendations: Recommendation[] = [
     tags: ['High Overlap', 'Same Datasource', 'Distribution Hub'],
     kpis: ['Number of Invoices by Account Executive', 'Number of Meetings by Account Executive', 'Top 4 Open Opportunities by Revenue', 'Revenue Distribution by Top 4 Opportunities', 'Revenue Distribution by Product', 'Revenue by Sales Stage', 'Cross Sell Performance', 'Renewal Performance', 'Budget Allocation by Employee'],
     tables: ['brokerage_202001231040', 'fees_202001231041', 'invoice_202001231041', 'meeting_list_202001231041', 'gcrm_opportunity_202001231041', 'nn_en_ee_indi_bdgt'],
-    owner: 'Amanda Foster',
+    owner: 'EXL',
     lastViewed: '3 days ago',
     userGroups: ['Distribution Leadership', 'Sales Ops', 'Account Management'],
     summary: 'Consolidation of broker cross-sell opportunities and comprehensive insurance distribution revenue analytics.',
@@ -345,7 +344,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Power BI Consolidation', 'Shared Metrics', 'Extract Reduction'],
     kpis: ['R12 Loss Ratio Score', 'Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by AOR and Agent', 'R12 Loss Ratio Score Variance to Bottom Quartile by Agent', 'Incurred Losses vs Earned Premium', 'Quartile Performance Index'],
     tables: ['Agent Retention Data', 'New Business Metrics', 'Loss Ratio Metrics', 'Agent Performance Metrics', 'Quartile Rankings', 'Claims and Premiums Data'],
-    owner: 'Michael Zhang',
+    owner: 'EXL',
     lastViewed: '8 days ago',
     userGroups: ['Claims Team', 'Underwriting Team'],
     summary: 'Unification of lower quartile agent production trends with core earned premium loss ratio analytics.',
@@ -365,7 +364,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Power BI Consolidation', 'Shared Metrics', 'Extract Reduction'],
     kpis: ['Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by Agent', 'Bottom Quartile Agents by Survival Rate', 'Survival Rate Variance to Bottom Quartile by Agent', 'R12 Loss Ratio Score by Agent', 'R12 Loss Ratio Score Variance to Bottom Quartile by Agent', 'New Business Counts by AOR and Agent'],
     tables: ['New Business Operations', 'Agent Quartile Rankings', 'Agent Performance Metrics', 'Survival Rate Analysis', 'Agent Retention Data', 'New Business Metrics', 'Loss Ratio Metrics'],
-    owner: 'Amanda Foster',
+    owner: 'EXL',
     lastViewed: '12 days ago',
     userGroups: ['Claims Team', 'Underwriting Team'],
     summary: 'Consolidation of policy cohort survival modeling into agent lower quartile production scorecard.',
@@ -385,7 +384,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Cross-Platform', 'Direct Parity'],
     kpis: ['Cross-Sell Ratio', 'Multi-Line Penetration', 'Average Premium per Account', 'Quote Conversion'],
     tables: ['policy_master', 'customer_dim', 'line_of_business_dim'],
-    owner: 'Amanda Foster',
+    owner: 'EXL',
     lastViewed: '6 days ago',
     userGroups: ['Distribution', 'Sales Leadership'],
     summary: 'Unification of commercial, property, and casualty cross-selling dashboards.',
@@ -405,7 +404,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Cross-Platform', 'Golden Dataset'],
     kpis: ['Gross Written Premium', 'Net Earned Premium', 'Combined Ratio', 'Expense Ratio', 'Investment Yield'],
     tables: ['finance_ledger', 'premium_fact', 'expense_dim'],
-    owner: 'Jennifer Adams',
+    owner: 'EXL',
     lastViewed: '3 days ago',
     userGroups: ['Corporate Finance', 'Executive'],
     summary: 'Consolidation of enterprise insurance financial statements and quarterly performance.',
@@ -426,7 +425,7 @@ export const recommendations: Recommendation[] = [
     action: 'Merge regulatory reporting into the Alteryx finance consolidation as a downstream branch.',
     kpis: ['Claim_Date', 'Claim_Status', 'Customer_ID', 'Policy_ID', 'Service_Location', 'Payment_Amount', 'Payment_ID', 'Diagnosis_Type', 'ICD_Code'],
     tables: ['Claims_Data', 'Policy_Data', 'Diagnosis_Data'],
-    owner: 'Mass Mutual',
+    owner: 'EXL',
     lastViewed: '5 days ago',
     userGroups: ['Data Engineering', 'Claims Ops'],
     summary: 'Monthly claims consolidation aggregating data from policy, claims, and investment systems.',
@@ -489,7 +488,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Superseded', '200d inactive', '100% Unique'],
     kpis: ['Quotation Latency', 'Rating Multiplier', 'Submission Volume by State', 'Reinsurance Rate Variance'],
     tables: ['rating_staging', 'quote_parameters_dim', 'state_reinsurance_mart'],
-    owner: 'Michael Zhang',
+    owner: 'EXL',
     lastViewed: '200 days ago',
     userGroups: ['Sales Team - Branch Manager'],
     summary: 'Full form quotation (FFQ) experimental rating prototype tracking rates, trends over time, and state-level reinsurance analysis.',
@@ -505,7 +504,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Inactive', '210d unused', 'OpEx'],
     kpis: ['IT Spend Actual vs Budget', 'Variance by Business Area', 'Vendor Allocation %', 'Capitalized IT Assets', 'Regional IT Infrastructure Cost'],
     tables: ['it_spend_ledger', 'vendor_dim', 'budget_plan_fact', 'cost_center_dim'],
-    owner: 'Mark Sullivan',
+    owner: 'EXL',
     lastViewed: '210 days ago',
     userGroups: ['Financial Analysts', 'IT Budget Managers'],
     summary: 'Departmental IT spending analysis comparing actual vs planned budgets, variance by IT and business areas, and regional sales allocations.',
@@ -521,7 +520,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Superseded', 'Underwriting'],
     kpis: ['Average Claim Amount', 'Claim Frequency', 'Average Household Income', 'Vehicle Age Risk', 'Driver Education Level', 'Total Policies'],
     tables: ['insurance_policies', 'customer_demographics', 'vehicle_dim'],
-    owner: 'Rachel Torres',
+    owner: 'EXL',
     lastViewed: '94 days ago',
     userGroups: ['Personal Auto Underwriting'],
     summary: 'Legacy personal auto underwriting workbook replaced by modern risk portfolio rating models.',
@@ -537,7 +536,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Redundant Mart', 'Clinical Claims'],
     kpis: ['Claims Cost', 'Benefit Nature Distribution', 'Regional Claimant Count', 'Diagnosis Category Cost', 'Genderwise Claim Cost', 'Total Benefit Records'],
     tables: ['database_claims_data', 'sheet1_navigation'],
-    owner: 'Sarah Mitchell',
+    owner: 'EXL',
     lastViewed: '76 days ago',
     userGroups: ['Clinical Review', 'Medical Claims'],
     summary: 'Static medical diagnostic and clinical benefit review workbook superseded by enterprise claims reporting.',
@@ -553,7 +552,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Legacy Cube', 'MicroStrategy'],
     kpis: ['Aggregated Claim Count', 'Paid Total', 'Incurred Total'],
     tables: ['mstr_claims_cube_source'],
-    owner: 'Tom Harrison',
+    owner: 'EXL',
     lastViewed: '120 days ago',
     userGroups: [],
     summary: 'Legacy MicroStrategy aggregation cube superseded by modern semantic models.',
@@ -571,7 +570,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Redundant', 'Shared Logic'],
     kpis: ['Extract Row Count', 'Load Latency (s)', 'Error Rate', 'Transformation Steps'],
     tables: ['claims_diary_notes', 'claims_policy', 'claims_volume_extract', 'policy_master'],
-    owner: 'Mass Mutual',
+    owner: 'EXL',
     lastViewed: '98 days ago',
     userGroups: [],
     summary: 'Daily ETL pipeline transforming raw claims data from multiple source systems into the claims data mart. Redundant with Claims_Extract_Volume.',
@@ -587,7 +586,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Unknown Macro', 'Ad-Hoc'],
     kpis: ['Age', 'BMI', 'Policy_Status', 'Health_Status', 'Policy_ID', 'Policy_Type', 'Submit_ID'],
     tables: ['Health_Data', 'Policy_Data'],
-    owner: 'Mass Mutual',
+    owner: 'EXL',
     lastViewed: '42 days ago',
     userGroups: [],
     summary: 'Zero downstream consumers.',
@@ -665,7 +664,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Active (<90d)', '43% Unique', 'Certified'],
     kpis: ['Bottom Quartile Production', 'Broker Commission %', 'Agency Bind Rate', 'Coaching Action Status'],
     tables: ['agent_fact', 'production_summary', 'coaching_action_dim'],
-    owner: 'Amanda Foster',
+    owner: 'EXL',
     lastViewed: '15 days ago',
     userGroups: ['Claims Team', 'Sales Team - Branch Manager'],
     summary: 'Lower quartile agency coaching and broker enablement production dashboard.',
@@ -681,7 +680,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Active (<90d)', '85% Unique', 'Compliance'],
     kpis: ['Lead Verification Rate', 'TCPA Compliance %', 'Consumer Intent Score', 'Lead Age (Days)', 'Conversion by Origin Channel'],
     tables: ['jornaya_lead_events', 'compliance_log_fact', 'channel_dim'],
-    owner: 'Amanda Foster',
+    owner: 'EXL',
     lastViewed: '18 days ago',
     userGroups: ['Distribution', 'Marketing Compliance'],
     summary: 'Consumer shopping intent and lead compliance verification dashboard.',
@@ -697,7 +696,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Active (<90d)', '58% Unique', 'Golden Dataset'],
     kpis: ['Incurred Losses', 'Earned Premium', 'R12 Loss Ratio Score', 'Combined Loss Ratio %', 'Quarterly Loss Trend', 'Catastrophe Loss %'],
     tables: ['claims_and_premiums_data', 'quartile_rankings', 'agent_retention_data', 'agent_performance_metrics', 'policy_loss_fact'],
-    owner: 'Michael Zhang',
+    owner: 'EXL',
     lastViewed: '8 days ago',
     userGroups: ['Claims Team', 'Underwriting Team'],
     summary: 'Enterprise loss ratio and quarterly underwriting performance tracking.',
@@ -713,7 +712,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Active (<90d)', '94% Unique', '5 Tables', 'Certified'],
     kpis: ['Premium Growth Forecast', 'Rate Change Impact', 'Pipeline Revenue by Tier', 'Cross-Sell Potential', 'Target Market Capture'],
     tables: ['opportunity_pipeline', 'rate_change_factors', 'agency_tier_dim', 'revenue_forecast_fact', 'market_benchmark'],
-    owner: 'Amanda Foster',
+    owner: 'EXL',
     lastViewed: '10 days ago',
     userGroups: ['Claims Team', 'Leadership'],
     summary: 'Distribution revenue growth modeling and pricing change forecast analytics.',
@@ -729,7 +728,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Active (<90d)', '91% Unique', 'Reconciliation'],
     kpis: ['Net Premium Written', 'Returned Endorsements', 'Billing Discrepancy %', 'Gross Sales Volume', 'Reconciled Revenue'],
     tables: ['premium_billing_ledger', 'endorsement_returns_fact', 'account_reconciliation_dim'],
-    owner: 'Jennifer Adams',
+    owner: 'EXL',
     lastViewed: '12 days ago',
     userGroups: ['Corporate Finance', 'Premium Accounting'],
     summary: 'Financial premium reconciliation and endorsement return analytics.',
@@ -745,7 +744,7 @@ export const recommendations: Recommendation[] = [
     tags: ['Active (<90d)', '76% Unique', 'Retail Ops'],
     kpis: ['Store Production Volume', 'Same-Store Sales Growth', 'Agent Footfall Conversion', 'Regional Sales Target %'],
     tables: ['store_sales_fact', 'branch_dim', 'agent_assignment_dim', 'regional_target_fact'],
-    owner: 'Jennifer Adams',
+    owner: 'EXL',
     lastViewed: '14 days ago',
     userGroups: ['Retail Channel Ops', 'Field Leadership'],
     summary: 'Physical store and retail branch agency sales performance dashboard.',
@@ -771,6 +770,8 @@ export function isCrossTechRecommendation(rec: Recommendation): boolean {
   if (rec.dependentAsset) techs.add(rec.dependentAsset.technology);
   return techs.size >= 2;
 }
+
+export const etlOverlapMetrics: OverlapMetric[] = computeEtlOverlapMetrics();
 
 /** Count cross-technology recommendations for a given section */
 export function getCrossTechCounts(

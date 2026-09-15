@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 export interface TraceStep {
   label: string;
   detail?: string;
+  evidence?: string;
 }
 
 interface Props {
@@ -197,58 +198,69 @@ export default function ThinkingTrace({
                 return (
                   <div
                     key={step.label}
-                    className="flex items-center gap-2.5 rounded-md px-2 py-1"
+                    className="flex items-start gap-2.5 rounded-md px-2 py-1.5"
                     style={{
                       minHeight: '28px',
                       animation: `fade-up 320ms cubic-bezier(0.23,1,0.32,1) ${i * 120}ms both`,
                     }}
                   >
                     {/* Check or spinner */}
-                    {isActive ? (
-                      <span
-                        style={{
-                          width: '12px',
-                          height: '12px',
-                          borderRadius: '50%',
-                          border: '1.5px solid var(--color-border-secondary)',
-                          borderTopColor: 'var(--color-accent)',
-                          animation: 'spin 700ms linear infinite',
-                          flexShrink: 0,
-                        }}
-                      />
-                    ) : (
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="var(--color-text-tertiary)"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        style={{ flexShrink: 0 }}
-                      >
-                        <path d="M20 6L9 17l-5-5" />
-                      </svg>
-                    )}
+                    <div className="pt-0.5 shrink-0">
+                      {isActive ? (
+                        <span
+                          style={{
+                            width: '12px',
+                            height: '12px',
+                            borderRadius: '50%',
+                            border: '1.5px solid var(--color-border-secondary)',
+                            borderTopColor: 'var(--color-accent)',
+                            animation: 'spin 700ms linear infinite',
+                            display: 'block',
+                          }}
+                        />
+                      ) : (
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="var(--color-text-tertiary)"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      )}
+                    </div>
 
-                    {/* Step label */}
-                    <span
-                      className="text-[12.5px] font-medium"
-                      style={{ color: 'var(--color-text-primary)' }}
-                    >
-                      {step.label}
-                    </span>
-
-                    {/* Step detail */}
-                    {step.detail && (
-                      <span
-                        className="text-[11px]"
-                        style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}
-                      >
-                        {step.detail}
-                      </span>
-                    )}
+                    {/* Step label & evidence */}
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className="text-[12.5px] font-medium"
+                          style={{ color: 'var(--color-text-primary)' }}
+                        >
+                          {step.label}
+                        </span>
+                        {step.detail && (
+                          <span
+                            className="text-[11px]"
+                            style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}
+                          >
+                            {step.detail}
+                          </span>
+                        )}
+                      </div>
+                      {step.evidence && (
+                        <span
+                          className="text-[11px] leading-snug mt-0.5"
+                          style={{ color: 'var(--color-text-tertiary)', opacity: 0.85 }}
+                        >
+                          {step.evidence}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
