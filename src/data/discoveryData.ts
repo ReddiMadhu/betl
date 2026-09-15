@@ -68,7 +68,7 @@ export const allAssets: Asset[] = [
   { id: 'c12', name: 'Workflow_01', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'EXLService', sourceCount: 3, targetCount: 1, lastUpdated: '2026-09-01', description: 'Consolidates claims and payments data through various transformations.' },
   { id: 'c13', name: 'Workflow_02', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'EXLService', sourceCount: 3, targetCount: 1, lastUpdated: '2026-09-01', description: 'Calculates key dates and aggregates claim volumes by industry type.' },
   { id: 'c14', name: 'Claims_Extract_Volume_v2', technology: 'Alteryx', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'EXLService', sourceCount: 4, targetCount: 5, lastUpdated: '2026-09-01', description: 'Secondary extract workflow for aging-litigation risk categorization.' },
-  { id: 'c15', name: 'claims_processing', technology: 'Python', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'EXLService', sourceCount: 4, targetCount: 5, lastUpdated: '2026-09-01', description: 'Vectorized Python ETL pipeline for automated claims ingestion and validation.' },
+  { id: 'c15', name: 'claims_processing', technology: 'Python', businessArea: 'Claims', assetType: 'ETL Workflow', owner: 'EXLService', sourceCount: 4, targetCount: 5, kpiCount: 8, dependencies: ['Claims_Extract_Volume'], lastUpdated: '2026-09-01', description: 'Vectorized Python ETL pipeline transpiled from Alteryx workflow. Ingests claims, policy, payment, and diary data to produce historical extracts, product type summaries, state summaries, and aging risk marts.' },
 
   // ─── Underwriting ───
   { id: 'u1', name: 'Car Insurance Dashboard', technology: 'Tableau', businessArea: 'Underwriting', assetType: 'Dashboard', owner: 'EXL', sourceCount: 1, targetCount: 1, kpiCount: 6, lastUpdated: '2026-08-25', description: 'Auto physical damage and bodily injury claims summary and repair cost analytics.' },
@@ -139,7 +139,11 @@ export interface SummaryMetric {
   icon: 'dashboard' | 'etl' | 'source' | 'target' | 'kpi' | 'worksheet' | 'calculated';
 }
 
-export function getSummaryMetrics(): SummaryMetric[] {
+export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric[] {
+  const biKpis = 636;
+  const etlKpis = 15;
+  const kpis = filter === 'BI' ? biKpis : filter === 'ETL' ? etlKpis : biKpis + etlKpis;
+
   const dashboards = allAssets.filter(
     (a) => a.assetType === 'Dashboard' || a.assetType === 'Report' || !isEtlAsset(a),
   ).length;
@@ -150,7 +154,6 @@ export function getSummaryMetrics(): SummaryMetric[] {
   ).size;
   const sources = allAssets.reduce((sum, a) => sum + (a.sourceCount ?? 0), 0);
   const targets = allAssets.reduce((sum, a) => sum + (a.targetCount ?? 0), 0);
-  const kpis = 637;
 
   const worksheets = Object.values(TABLEAU_DETAIL_DATA).reduce(
     (sum, item) => sum + item.summary.totalWorksheets,
@@ -202,7 +205,7 @@ export type CategoryFilter = 'ALL' | 'BI' | 'ETL';
 
 /* ── Filtered summary metrics based on category ── */
 export function getFilteredSummaryMetrics(filter: CategoryFilter): SummaryMetric[] {
-  const all = getSummaryMetrics();
+  const all = getSummaryMetrics(filter);
   if (filter === 'ALL') return all;
 
   const biIcons = new Set(['dashboard', 'kpi', 'worksheet', 'calculated']);

@@ -59,8 +59,105 @@ interface DataConnection {
   direction: 'input' | 'output';
 }
 
-/* ── Mock data ── */
-function getMockData() {
+/* ── Accurate Python ETL Data ── */
+function getPythonData(assetId: string) {
+  if (assetId === 'c15' || assetId === 'claims_processing') {
+    const modules: PythonModule[] = [
+      {
+        id: 'fn1',
+        name: 'ingest_claims_extract',
+        type: 'function',
+        description: 'Ingests raw claims volume extract from Excel (Claims_Volume_Extract_Demo.xlsx) into pandas DataFrame (Tool #1)',
+        lineCount: 16,
+        complexity: 'low',
+        signature: 'df_1 = pd.read_excel("./Data/Claims_Volume_Extract_Demo.xlsx", sheet_name="Sheet1")',
+      },
+      {
+        id: 'fn2',
+        name: 'aggregate_quarter_status_crosstab',
+        type: 'function',
+        description: 'Groups claims by Quarter End Date and Claim Status, aggregates distinct claim count, and pivots into status matrix (Tools #3-#6)',
+        lineCount: 42,
+        complexity: 'medium',
+        signature: 'df_4 = pd.pivot_table(df_3, index=["Quarter End Date"], columns="Claim Status", values="CountDistinct_Claim Number", aggfunc="sum")',
+      },
+      {
+        id: 'fn3',
+        name: 'examiner_manager_rollup',
+        type: 'function',
+        description: 'Performs multi-level examiner and manager aggregation joined with latest quarter filter (Tools #8-#13)',
+        lineCount: 48,
+        complexity: 'medium',
+        signature: 'df_10_joined = pd.merge(df_8, df_9, left_on=["Quarter End Date"], right_on=["Last Quarter"], how="inner")',
+      },
+      {
+        id: 'fn4',
+        name: 'enrich_policy_master_join',
+        type: 'function',
+        description: 'Enriches claims data with policy master metadata via inner and left join on Policy Number (Tools #101, #111)',
+        lineCount: 35,
+        complexity: 'medium',
+        signature: 'df_111_joined = pd.merge(df_1, df_101, on=["Policy Number"], how="inner")',
+      },
+      {
+        id: 'fn5',
+        name: 'aggregate_and_join_payments',
+        type: 'function',
+        description: 'Aggregates payment transactions (sum Total Paid, count Payment Count) and joins to claims stream with null imputation (Tools #102, #104, #112-#114)',
+        lineCount: 38,
+        complexity: 'medium',
+        signature: 'df_104 = df_102.groupby(["Claim Number"]).agg(Total_Paid=("Payment Amount", "sum"), Payment_Count=("Payment Amount", "count"))',
+      },
+      {
+        id: 'fn6',
+        name: 'process_diary_notes_aging',
+        type: 'function',
+        description: 'Joins adjuster diary notes, calculates days since last activity, applies litigation/reopened defaults, and assigns 30/90+ day aging buckets (Tools #103, #115-#118)',
+        lineCount: 45,
+        complexity: 'high',
+        signature: 'df_118["Aging Bucket"] = np.where(df_118["Days Since Last Activity"].isna(), "No Diary Activity", np.where(df_118["Days ..."] > 90, "90+ Days", ...))',
+      },
+      {
+        id: 'fn7',
+        name: 'export_dimensional_summaries',
+        type: 'function',
+        description: 'Generates dimensional aggregations by Product Type, State geography, and Aging/Litigation Risk matrix (Tools #130-#151)',
+        lineCount: 67,
+        complexity: 'medium',
+        signature: 'df_130 = df_118.groupby(["Quarter End Date", "Product Type"]).agg(Claim_Count=("Claim Number", "nunique"), Total_Paid_Amount=("Total Paid", "sum"))',
+      },
+      {
+        id: 'fn8',
+        name: 'write_excel_marts',
+        type: 'function',
+        description: 'Writes 5 distinct summary sheets across 4 Excel deliverable workbooks using openpyxl writer engine (Tools #17, #18, #132, #142, #152)',
+        lineCount: 40,
+        complexity: 'low',
+        signature: 'with pd.ExcelWriter("Claims_Historical_Extract_Demo_Output.xlsx", engine="openpyxl", mode="a") as writer: ...',
+      },
+    ];
+
+    const dependencies: PythonDependency[] = [
+      { id: 'd1', name: 'pandas', version: '2.2.0', purpose: 'DataFrame vectorization, groupby aggregations, pivot tables, merges, and joins', isStdLib: false },
+      { id: 'd2', name: 'numpy', version: '1.26.4', purpose: 'Vectorized conditional evaluations (np.where) for null imputation and aging bucketing', isStdLib: false },
+      { id: 'd3', name: 'openpyxl', version: '3.1.2', purpose: 'Excel workbook parsing and multi-sheet openpyxl ExcelWriter engine', isStdLib: false },
+      { id: 'd4', name: 'datetime', version: 'stdlib', purpose: 'Timestamp delta calculations for adjuster diary activity and date normalization', isStdLib: true },
+    ];
+
+    const connections: DataConnection[] = [
+      { id: 'c1', name: 'Claims_Volume_Extract_Demo.xlsx', type: 'Excel Spreadsheet', details: './Data/Claims_Volume_Extract_Demo.xlsx · Sheet1 (Tool #1)', direction: 'input' },
+      { id: 'c2', name: 'Policy_Master_Demo.xlsx', type: 'Excel Spreadsheet', details: './Data/Policy_Master_Demo.xlsx · Sheet1 (Tool #101)', direction: 'input' },
+      { id: 'c3', name: 'Claim_Payments_Demo.xlsx', type: 'Excel Spreadsheet', details: './Data/Claim_Payments_Demo.xlsx · Sheet1 (Tool #102)', direction: 'input' },
+      { id: 'c4', name: 'Claim_Diary_Notes_Demo.xlsx', type: 'Excel Spreadsheet', details: './Data/Claim_Diary_Notes_Demo.xlsx · Sheet1 (Tool #103)', direction: 'input' },
+      { id: 'c5', name: 'Claims_Historical_Extract_Demo_Output.xlsx', type: 'Excel Data Mart', details: 'Sheets: Detail (Tool #17), QuarterSummary (Tool #18)', direction: 'output' },
+      { id: 'c6', name: 'Claims_By_Product_Type_Demo_Output.xlsx', type: 'Excel Data Mart', details: 'Sheet: ProductTypeSummary (Tool #132)', direction: 'output' },
+      { id: 'c7', name: 'Claims_By_State_Demo_Output.xlsx', type: 'Excel Data Mart', details: 'Sheet: StateSummary (Tool #142)', direction: 'output' },
+      { id: 'c8', name: 'Claims_Aging_Risk_Demo_Output.xlsx', type: 'Excel Data Mart', details: 'Sheet: AgingRiskSummary (Tool #152)', direction: 'output' },
+    ];
+
+    return { modules, dependencies, connections, totalLines: 331 };
+  }
+
   const modules: PythonModule[] = [
     { id: 'fn1', name: 'extract_policy_data', type: 'function', description: 'Connect to source database and extract policy records with incremental loading', lineCount: 45, complexity: 'medium', signature: 'def extract_policy_data(conn_str: str, last_run: datetime) -> pd.DataFrame' },
     { id: 'fn2', name: 'transform_claims', type: 'function', description: 'Apply business rules, calculate derived fields, handle null values and data type conversions', lineCount: 78, complexity: 'high', signature: 'def transform_claims(df: pd.DataFrame, config: dict) -> pd.DataFrame' },
@@ -90,7 +187,7 @@ function getMockData() {
     { id: 'c5', name: 'Execution Log', type: 'File System', details: '/logs/etl_{date}.json', direction: 'output' },
   ];
 
-  return { modules, dependencies, connections };
+  return { modules, dependencies, connections, totalLines: 370 };
 }
 
 /* ── Stat Card ── */
@@ -157,12 +254,12 @@ function TypeBadge({ type }: { type: 'function' | 'class' | 'module' }) {
 }
 
 export default function PythonDetail({ asset, onBack }: Props) {
-  const { modules, dependencies, connections } = getMockData();
+  const { modules, dependencies, connections, totalLines: loc } = getPythonData(asset.id);
   const [expandedMod, setExpandedMod] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'structure' | 'deps' | 'pipeline'>('structure');
 
   const logo = TECHNOLOGY_LOGOS[asset.technology];
-  const totalLines = modules.reduce((s, m) => s + m.lineCount, 0);
+  const totalLines = loc ?? modules.reduce((s, m) => s + m.lineCount, 0);
   const inputConns = connections.filter((c) => c.direction === 'input');
   const outputConns = connections.filter((c) => c.direction === 'output');
 

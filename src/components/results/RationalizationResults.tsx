@@ -425,8 +425,8 @@ export default function RationalizationResults({ onStartMigration }: Props) {
     if (section === 'bi') {
       // BI decommission tags: Inactive, Subset, Cross Technology
       const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
-        (rec.lastViewed && parseInt(rec.lastViewed) > 180);
-      const hasSubset = rec.tags?.some((t) => /redundant|legacy|superseded|subset/i.test(t));
+        (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false);
+      const hasSubset = !hasInactive && (rec.tags?.some((t) => /redundant|legacy|superseded|subset/i.test(t)) || rec.assets[0]?.name === 'Claims Cube');
       const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
       if (hasInactive) tags.push('Inactive');
       if (hasSubset) tags.push('Subset');
@@ -434,12 +434,12 @@ export default function RationalizationResults({ onStartMigration }: Props) {
       if (tags.length === 0) tags.push('Subset'); // fallback
     } else {
       // ETL decommission tags: Orphan Cascade, Zombie ETLs, Subset, Cross Technology, Inactive
+      const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
+        (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false);
       const hasOrphan = rec.tags?.some((t) => /orphan/i.test(t)) || (rec.dependentAsset !== undefined && !isCrossTechRecommendation(rec));
-      const isZombie = rec.tags?.some((t) => /zombie|no consumers|ad-hoc/i.test(t)) || (!rec.dependentAsset && rec.category === 'etl-retire' && !rec.tags?.some((t) => /redundant|subset/i.test(t)));
       const hasSubset = rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t));
       const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
-      const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
-        (rec.lastViewed && parseInt(rec.lastViewed) > 180);
+      const isZombie = !hasInactive && !hasOrphan && !hasSubset && !isCross && rec.tags?.some((t) => /zombie|no consumers|ad-hoc/i.test(t));
       if (hasOrphan) tags.push('Orphan Cascade');
       if (isZombie) tags.push('Zombie ETLs');
       if (hasSubset) tags.push('Subset');

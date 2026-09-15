@@ -28,11 +28,16 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
 
   const source = rec.assets[0];
   const target = rec.assets[1];
-  const kpis = rec.kpis || [];
-  const tables = rec.tables || [];
-  const commonKpis = new Set(rec.commonKpis || []);
-  const commonTables = new Set(rec.commonTables || []);
-  const userGroups = rec.userGroups || [];
+  const sourceKpis = rec.kpis || [];
+  const targetKpis = rec.targetKpis || rec.commonKpis || [];
+  const sourceTables = rec.tables || [];
+  const targetTables = rec.targetTables || rec.commonTables || [];
+  const commonKpis = new Set(rec.commonKpis || sourceKpis.filter((k) => targetKpis.includes(k)));
+  const commonTables = new Set(rec.commonTables || sourceTables.filter((t) => targetTables.includes(t)));
+  const sourceUserGroups = rec.userGroups || [];
+  const targetUserGroups = rec.targetUserGroups || rec.userGroups || [];
+  const sourceOwner = rec.owner;
+  const targetOwner = rec.targetOwner || rec.owner;
 
   return (
     <>
@@ -134,10 +139,10 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                 </div>
 
                 {/* Owner */}
-                {rec.owner && (
+                {sourceOwner && (
                   <div className="space-y-1.5">
                     <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>Owner</h5>
-                    <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{rec.owner}</p>
+                    <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{sourceOwner}</p>
                   </div>
                 )}
 
@@ -145,7 +150,7 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                 <div className="space-y-1.5">
                   <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>Audience Groups</h5>
                   <div className="flex flex-wrap gap-1.5">
-                    {userGroups.length > 0 ? userGroups.map((g) => (
+                    {sourceUserGroups.length > 0 ? sourceUserGroups.map((g) => (
                       <span
                         key={g}
                         className="text-xs px-2.5 py-1 rounded-lg border"
@@ -165,7 +170,7 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                     <Database size={10} className="inline mr-1" />Referenced Tables
                   </h5>
                   <div className="flex flex-wrap gap-1.5">
-                    {tables.map((t) => {
+                    {sourceTables.map((t) => {
                       const isCommon = commonTables.has(t);
                       return (
                         <span
@@ -181,7 +186,7 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                         </span>
                       );
                     })}
-                    {tables.length === 0 && <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No tables resolved</span>}
+                    {sourceTables.length === 0 && <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No tables resolved</span>}
                   </div>
                 </div>
 
@@ -189,7 +194,7 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                 <div className="space-y-1.5">
                   <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>Extracted KPIs</h5>
                   <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
-                    {[...kpis].sort((a, b) => (commonKpis.has(a) ? 1 : 0) - (commonKpis.has(b) ? 1 : 0)).map((k) => {
+                    {[...sourceKpis].sort((a, b) => (commonKpis.has(b) ? 1 : 0) - (commonKpis.has(a) ? 1 : 0)).map((k) => {
                       const isCommon = commonKpis.has(k);
                       return (
                         <div
@@ -214,7 +219,7 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                         </div>
                       );
                     })}
-                    {kpis.length === 0 && <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No KPIs resolved</span>}
+                    {sourceKpis.length === 0 && <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No KPIs resolved</span>}
                   </div>
                 </div>
               </div>
@@ -258,84 +263,90 @@ export default function MergeReviewModal({ rec, onClose, onToast }: Props) {
                   </span>
                 </div>
 
-                {/* Summary box for the rationale */}
-                <div
-                  className="rounded-xl p-4 border"
-                  style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-subtle)' }}
-                >
-                  <p className="text-[9px] font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-tertiary)' }}>Why Consolidate Here</p>
-                  <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                    This is the recommended consolidation target. All shared KPIs and tables (highlighted in amber) will be unified under this view.
-                  </p>
-                </div>
-
-                {/* Overlap badge */}
-                {rec.overlapPct !== undefined && (
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="flex-1 h-2 rounded-full overflow-hidden"
-                      style={{ backgroundColor: 'var(--color-border-subtle)' }}
-                    >
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${rec.overlapPct}%`, backgroundColor: '#F59E0B' }}
-                      />
-                    </div>
-                    <span className="text-xs font-bold" style={{ color: '#F59E0B' }}>
-                      {rec.overlapPct}% overlap
-                    </span>
+                {/* Owner */}
+                {targetOwner && (
+                  <div className="space-y-1.5">
+                    <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>Owner</h5>
+                    <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{targetOwner}</p>
                   </div>
                 )}
 
-                {/* Shared KPIs summary */}
+                {/* Audience */}
                 <div className="space-y-1.5">
-                  <h5 className="text-[9px] font-bold uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--color-text-tertiary)' }}>
-                    <TrendingUp size={10} /> Common Connections
-                  </h5>
-                  {(rec.commonKpis?.length || rec.commonTables?.length) ? (
-                    <div
-                      className="rounded-xl p-3 space-y-1.5 border"
-                      style={{ backgroundColor: '#F59E0B08', borderColor: '#F59E0B15' }}
-                    >
-                      {rec.commonKpis && rec.commonKpis.length > 0 && (
-                        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                          <strong style={{ color: '#F59E0B' }}>Common KPIs:</strong> {rec.commonKpis.join(', ')}
-                        </p>
-                      )}
-                      {rec.commonTables && rec.commonTables.length > 0 && (
-                        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                          <strong style={{ color: '#F59E0B' }}>Common Datasources:</strong> {rec.commonTables.join(', ')}
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No common connections detected</span>
-                  )}
-                </div>
-
-                {/* Action summary */}
-                <div
-                  className="rounded-xl p-4 border"
-                  style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-subtle)' }}
-                >
-                  <p className="text-[9px] font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-tertiary)' }}>Recommended Action</p>
-                  <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{rec.action}</p>
-                </div>
-
-                {/* Tags */}
-                {rec.tags && rec.tags.length > 0 && (
+                  <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>Audience Groups</h5>
                   <div className="flex flex-wrap gap-1.5">
-                    {rec.tags.map((t) => (
+                    {targetUserGroups.length > 0 ? targetUserGroups.map((g) => (
                       <span
-                        key={t}
-                        className="text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded"
-                        style={{ backgroundColor: 'var(--color-bg-elevated)', color: 'var(--color-text-tertiary)' }}
+                        key={g}
+                        className="text-xs px-2.5 py-1 rounded-lg border"
+                        style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-secondary)' }}
                       >
-                        {t}
+                        {g}
                       </span>
-                    ))}
+                    )) : (
+                      <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No audience assigned</span>
+                    )}
                   </div>
-                )}
+                </div>
+
+                {/* Tables */}
+                <div className="space-y-1.5">
+                  <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
+                    <Database size={10} className="inline mr-1" />Referenced Tables
+                  </h5>
+                  <div className="flex flex-wrap gap-1.5">
+                    {targetTables.map((t) => {
+                      const isCommon = commonTables.has(t);
+                      return (
+                        <span
+                          key={t}
+                          className="text-xs px-2.5 py-1 rounded-lg border transition-all font-medium"
+                          style={{
+                            backgroundColor: isCommon ? '#F59E0B15' : 'var(--color-surface)',
+                            color: isCommon ? '#F59E0B' : 'var(--color-text-tertiary)',
+                            borderColor: isCommon ? '#F59E0B30' : 'var(--color-border-subtle)',
+                          }}
+                        >
+                          {t}
+                        </span>
+                      );
+                    })}
+                    {targetTables.length === 0 && <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No tables resolved</span>}
+                  </div>
+                </div>
+
+                {/* Extracted KPIs */}
+                <div className="space-y-1.5">
+                  <h5 className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>Extracted KPIs</h5>
+                  <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
+                    {[...targetKpis].sort((a, b) => (commonKpis.has(b) ? 1 : 0) - (commonKpis.has(a) ? 1 : 0)).map((k) => {
+                      const isCommon = commonKpis.has(k);
+                      return (
+                        <div
+                          key={k}
+                          className="p-2.5 rounded-lg flex items-center justify-between text-xs transition-all border"
+                          style={{
+                            backgroundColor: isCommon ? '#F59E0B10' : 'var(--color-surface)',
+                            color: isCommon ? '#F59E0B' : 'var(--color-text-secondary)',
+                            borderColor: isCommon ? '#F59E0B30' : 'var(--color-border-subtle)',
+                            fontWeight: isCommon ? 500 : 400,
+                          }}
+                        >
+                          <span>{k}</span>
+                          {isCommon && (
+                            <span
+                              className="text-[9px] font-bold px-2 py-0.5 rounded shrink-0 border"
+                              style={{ color: '#F59E0B', backgroundColor: '#F59E0B10', borderColor: '#F59E0B20' }}
+                            >
+                              SHARED
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {targetKpis.length === 0 && <span className="text-xs italic" style={{ color: 'var(--color-text-tertiary)' }}>No KPIs resolved</span>}
+                  </div>
+                </div>
               </div>
             </div>
 
