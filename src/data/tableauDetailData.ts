@@ -2,6 +2,13 @@
  * Tableau Detail Data — per-asset extracted workbook metadata
  * ───────────────────────────────────────────────────────── */
 
+import {
+  tbPbiSummary,
+  tbPbiWorksheets,
+  tbPbiCalculatedFields,
+  tbPbiDataTables,
+} from './tableauPowerBIData';
+
 export interface WorksheetDetail {
   id: string;
   name: string;
@@ -43,6 +50,52 @@ export interface TableauDetailData {
   calculatedFields: CalculatedFieldDetail[];
   tables: TableDetail[];
 }
+
+/* ── Sales Insurance.twbx — detail derived from the real Tableau → Power BI
+ * migration dataset (tableauPowerBIData.ts) so the workbook's worksheets,
+ * calculated fields, and data tables drive the detail page. ── */
+const SALES_INSURANCE_DETAIL: TableauDetailData = {
+  summary: {
+    totalDashboards: tbPbiSummary.totalDashboards,
+    totalWorksheets: tbPbiSummary.totalWorksheets,
+    totalTables: tbPbiSummary.totalTables,
+    totalCalculatedFields: tbPbiSummary.totalCalculatedFields,
+  },
+  worksheets: tbPbiWorksheets.map((w) => ({
+    id: w.name,
+    name: w.title || w.name,
+    chartType: w.chartType,
+    dimensions: w.dimensions,
+    measures: w.measures.map((m) => ({
+      name: m,
+      type: (tbPbiCalculatedFields.some((cf) => cf.caption === m || cf.name === m)
+        ? 'calculated'
+        : 'base_measure') as 'base_measure' | 'calculated',
+    })),
+    axes: {
+      rows: w.rows.join(', ') || '—',
+      columns: w.cols.join(', ') || '—',
+    },
+  })),
+  calculatedFields: tbPbiCalculatedFields.map((cf) => ({
+    id: cf.name,
+    name: cf.caption,
+    formula: cf.formula,
+    role: cf.role,
+    datatype: cf.datatype as CalculatedFieldDetail['datatype'],
+    usedInSheets: tbPbiWorksheets
+      .filter((w) => w.measures.includes(cf.caption) || w.dimensions.includes(cf.caption))
+      .map((w) => w.title || w.name),
+  })),
+  tables: tbPbiDataTables.map((t) => ({
+    tableName: t.rawName,
+    displayName: t.displayName,
+    rowCount: t.rowCount,
+    dataSource: 'Insurance_Model',
+    columns: t.columnDetails.map((c) => ({ name: c.name, type: c.dataType })),
+    sampleRows: t.sampleRows,
+  })),
+};
 
 export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
   "c1": {
@@ -18138,5 +18191,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       }
     ]
-  }
+  },
+  "d11": SALES_INSURANCE_DETAIL,
 };

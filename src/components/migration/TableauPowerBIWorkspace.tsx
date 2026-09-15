@@ -175,7 +175,7 @@ export default function TableauPowerBIWorkspace({ onBack, onFinish }: Props) {
     } else if (art.id === 'art-cert') {
       content = JSON.stringify({
         project: 'Tableau to Power BI Migration',
-        sourceWorkbook: 'Tableau Insurance.twbx',
+        sourceWorkbook: 'Sales Insurance.twbx',
         targetPBIP: 'template.pbip',
         validatedAt: new Date().toISOString(),
         summary: tbPbiSummary,

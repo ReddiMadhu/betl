@@ -42,6 +42,7 @@ const ASSET_CANONICAL_MAP: Record<string, string> = {
   'd8': 'd8',
   'd9': 'd9',
   'd10': 'd10',
+  'd11': 'd11',
 };
 
 function getBiMigrationSteps(

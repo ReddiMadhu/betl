@@ -39,7 +39,19 @@ export interface MigrationAsset {
 
 /* ── Keep assets that need migration ── */
 export const migrationAssets: MigrationAsset[] = [
-  /* ── BI Keep — Tableau → Power BI (7 assets) ── */
+  /* ── BI Keep — Tableau → Power BI (8 assets) ── */
+  {
+    id: 'ma_tab_ins',
+    name: 'Sales Insurance.twbx',
+    technology: 'Tableau',
+    targetTechnology: 'Power BI',
+    businessArea: 'Distribution',
+    type: 'bi',
+    complexity: 'Medium',
+    estimatedHours: 24,
+    kpiCount: 9,
+    description: 'Insurance distribution sales performance workbook (Sales Insurance.twbx) tracking new sales placed, account executive achievement, and renewal pipelines. Migrates to Power BI against the Insurance_Model semantic layer.',
+  },
   {
     id: 'ma1',
     name: 'Claims - Agent Performance',
@@ -115,7 +127,7 @@ export const migrationAssets: MigrationAsset[] = [
     description: 'Multi-chapter property and casualty dossier with loss reserve projections and dimensional metrics.',
   },
 
-  /* ── BI Keep — already on Power BI (8 assets, no migration required) ── */
+  /* ── BI Keep — already on Power BI (5 assets, no migration required) ── */
   {
     id: 'ma_pbi1',
     name: 'Loss Ratio',
@@ -127,18 +139,6 @@ export const migrationAssets: MigrationAsset[] = [
     estimatedHours: 0,
     kpiCount: 8,
     description: 'Golden claims & underwriting loss ratio dashboard consolidating lower quartile agent production and survival rate trends. Already on Power BI.',
-  },
-  {
-    id: 'ma_pbi2',
-    name: 'Store Sales',
-    technology: 'Power BI',
-    targetTechnology: null,
-    businessArea: 'Finance',
-    type: 'bi',
-    complexity: 'Low',
-    estimatedHours: 0,
-    kpiCount: 7,
-    description: 'Retail branch agency production review. Already on Power BI — certified.',
   },
   {
     id: 'ma_pbi3',

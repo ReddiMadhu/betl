@@ -77,9 +77,9 @@ export function computeBiOverlapMetrics(): OverlapMetric[] {
     d8: ['c11'],        // Cross_Sell_dashboardpbip -> Workflow_03
     d9: ['d6'],         // New Business (Bottom 25% agents) -> Burritos_Distribution
     d10: ['c11'],       // Insurance_Analytics_Dashboard -> Workflow_03
+    d11: ['c11'],       // Sales Insurance.twbx -> Workflow_03
     p1: ['c11'],        // Survival Rate -> Workflow_03
     f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
-    f2: ['d6'],         // Store Sales -> Burritos_Distribution
     f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
   };
   const biEtlConnections = Object.values(biEtlLineage).reduce((sum, deps) => sum + deps.length, 0);
@@ -224,9 +224,9 @@ export function computeEtlOverlapMetrics(): OverlapMetric[] {
     d8: ['c11'],        // Cross_Sell_dashboardpbip -> Workflow_03
     d9: ['d6'],         // New Business (Bottom 25% agents) -> Burritos_Distribution
     d10: ['c11'],       // Insurance_Analytics_Dashboard -> Workflow_03
+    d11: ['c11'],       // Sales Insurance.twbx -> Workflow_03
     p1: ['c11'],        // Survival Rate -> Workflow_03
     f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
-    f2: ['d6'],         // Store Sales -> Burritos_Distribution
     f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
   };
   const biEtlConnections = Object.values(biEtlLineage).reduce((sum: number, deps: string[]) => sum + deps.length, 0);
@@ -783,22 +783,6 @@ export const recommendations: Recommendation[] = [
     lastViewed: '12 days ago',
     userGroups: ['Corporate Finance', 'Premium Accounting'],
     summary: 'Financial premium reconciliation and endorsement return analytics.',
-  },
-  {
-    id: 'pbi_keep_6',
-    category: 'bi-keep',
-    title: 'Keep Store Sales',
-    businessArea: 'Finance',
-    assets: [asset('Store Sales', 'Power BI')],
-    rationale: 'Active dashboard: last accessed 14 days ago (<90 days). Target audience is active: Retail Channel Ops, Field Leadership. High KPI/Table uniqueness of 76% tracking physical branch location production.',
-    action: 'Retain on Power BI for branch location production and regional retail agency monitoring.',
-    tags: ['Active (<90d)', '76% Unique', 'Retail Ops'],
-    kpis: ['Store Production Volume', 'Same-Store Sales Growth', 'Agent Footfall Conversion', 'Regional Sales Target %'],
-    tables: ['store_sales_fact', 'branch_dim', 'agent_assignment_dim', 'regional_target_fact'],
-    owner: 'EXL',
-    lastViewed: '14 days ago',
-    userGroups: ['Retail Channel Ops', 'Field Leadership'],
-    summary: 'Physical store and retail branch agency sales performance dashboard.',
   },
 ];
 

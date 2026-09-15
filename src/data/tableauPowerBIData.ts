@@ -1678,7 +1678,7 @@ export const tbPbiCalculatedFields: TbPbiCalculatedField[] = tbPbiDaxConversions
   formula: d.sourceFormula,
   role: 'measure',
   datatype: 'real',
-  workbook: 'Tableau Insurance.twbx',
+  workbook: 'Sales Insurance.twbx',
 }));
 
 export const tbPbiValidationResults: TbPbiValidationResult[] = [

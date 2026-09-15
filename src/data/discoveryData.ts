@@ -87,6 +87,7 @@ export const allAssets: Asset[] = [
   { id: 'd8', name: 'Cross_Sell_dashboardpbip', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'EXLDistribution', sourceCount: 0, targetCount: 1, kpiCount: 0, lastUpdated: '2026-08-28', description: 'Power BI Project (PBIP) descriptor linking to Cross_Sell_dashboardpbip report artifacts.' },
   { id: 'd9', name: 'New Business (Bottom 25% agents)', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'EXL_S', sourceCount: 6, targetCount: 1, kpiCount: 4, lastUpdated: '2026-08-27', description: 'New policy acquisition and production performance analysis for lower quartile broker support.' },
   { id: 'd10', name: 'Insurance_Analytics_Dashboard', technology: 'Power BI', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'EXL_S', sourceCount: 0, targetCount: 1, kpiCount: 0, lastUpdated: '2026-08-29', description: 'Power BI Project (PBIP) descriptor linking to Insurance_Analytics_Dashboard report artifacts.' },
+  { id: 'd11', name: 'Sales Insurance.twbx', technology: 'Tableau', businessArea: 'Distribution', assetType: 'Dashboard', owner: 'EXLDistribution', sourceCount: 1, targetCount: 1, kpiCount: 9, dependencies: ['Workflow_03'], relatedAssets: ['INSURANCE ANALYTICS DASHBOARD'], lastUpdated: '2026-09-04', description: 'Insurance distribution sales performance workbook tracking new sales placed, account executive achievement, renewal pipelines, and brokerage revenue across the Insurance_Model semantic layer.' },
   { id: 'd6', name: 'Burritos_Distribution', technology: 'Alteryx', businessArea: 'Distribution', assetType: 'ETL Workflow', owner: 'EXL_S', sourceCount: 5, targetCount: 3, lastUpdated: '2026-09-03', description: 'Processes operational distribution data with date filtering and volume aggregations.' },
 
   // ─── Policy Administration ───
@@ -97,7 +98,6 @@ export const allAssets: Asset[] = [
 
   // ─── Finance ───
   { id: 'f1', name: 'IT Spend Analysis Sample PBIX', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'EXL_IT', sourceCount: 8, targetCount: 1, kpiCount: 7, lastUpdated: '2026-08-25', description: 'Departmental IT operational expenditure, vendor allocation, and budget variance tracking.' },
-  { id: 'f2', name: 'Store Sales', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'EXL_Store', sourceCount: 5, targetCount: 1, kpiCount: 7, lastUpdated: '2026-08-24', description: 'Retail agency and physical branch location production analysis.' },
   { id: 'f3', name: 'Sales & Returns Sample v3', technology: 'Power BI', businessArea: 'Finance', assetType: 'Dashboard', owner: 'EXL_Services', sourceCount: 13, targetCount: 1, kpiCount: 10, lastUpdated: '2026-09-06', description: 'Financial reconciliation of premium billing, returned endorsements, and net revenue.' },
 
   // ─── Customer ───
