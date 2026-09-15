@@ -6,10 +6,8 @@ import {
   GitMerge,
   Trash2,
   ShieldCheck,
-  Search,
   X,
   CheckCircle,
-  Layers,
   Ghost,
   Link2,
   AlertTriangle,
@@ -506,13 +504,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
   const toggleCrossTechFilter = useCallback((column: 'merge' | 'decommission' | 'all') => {
     setCrossTechFilterColumn((prev) => (prev === column ? null : column));
   }, []);
-
-  const tabPills: { id: typeof activeTab; label: string; count: number; color: string; dot: string }[] = [
-    { id: 'all', label: 'All Recommendations', count: totalCount, color: 'var(--color-text-primary)', dot: '' },
-    { id: 'merge', label: 'Consolidate', count: mergeRecs.length, color: '#F59E0B', dot: '#F59E0B' },
-    { id: 'decommission', label: 'Decommission', count: retireRecs.length, color: '#EF4444', dot: '#EF4444' },
-    { id: 'keep', label: 'Keep', count: keepRecs.length, color: '#22C55E', dot: '#22C55E' },
-  ];
 
   // Orphan Cascade: BI assets that reference decommissioned/merged ETL sources
   const orphanCascadeCount = useMemo(() => {
