@@ -1,8 +1,13 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import ThinkingTrace from './ThinkingTrace';
 import type { TraceStep } from './ThinkingTrace';
+import { tbPbiSummary, tbPbiExportArtifacts } from '../data/tableauPowerBIData';
+import { TABLEAU_DETAIL_DATA } from '../data/tableauDetailData';
+import { POWERBI_DETAIL_DATA } from '../data/powerbiDetailData';
+import { mstrJobSummary, mstrObjects } from '../data/mstrTableauData';
+import { altPySummary } from '../data/alteryxPythonData';
 
 /* ─────────────────────────────────────────────────────────
  * MigrationLoading — shown after "Start Migration"
@@ -15,31 +20,265 @@ import type { TraceStep } from './ThinkingTrace';
  * Once completed, "Show Migration Results" button appears.
  * ───────────────────────────────────────────────────────── */
 
-/* ── BI Migration Steps ── */
-const BI_MIGRATION_STEPS: TraceStep[] = [
-  { label: 'Assessing source dashboards' },
-  { label: 'Rebuilding semantic models' },
-  { label: 'Converting visual and calculation logic' },
-  { label: 'Validating conversions' },
-];
+// Canonical ID map for assets that might have alternate IDs
+const ASSET_CANONICAL_MAP: Record<string, string> = {
+  'p1': 'p1',
+  'p2': 'p2',
+  'p3': 'p3',
+  'p4': 'p4',
+  'p5': 'p5',
+  'p6': 'p6',
+  'p7': 'p7',
+  'p8': 'p8',
+  'p9': 'p9',
+  'p10': 'p10',
+  'd1': 'd1',
+  'd2': 'd2',
+  'd3': 'd3',
+  'd4': 'd4',
+  'd5': 'd5',
+  'd6': 'd6',
+  'd7': 'd7',
+  'd8': 'd8',
+  'd9': 'd9',
+  'd10': 'd10',
+};
 
-/* ── ETL Migration Steps ── */
-const ETL_MIGRATION_STEPS: TraceStep[] = [
-  { label: 'Assessing source workflows' },
-  { label: 'Converting transformation logic' },
-  { label: 'Validating conversions' },
-];
+function getBiMigrationSteps(
+  selectedAssetIds?: string[],
+  migrationPath?: 'tb-pbi' | 'mstr-tb',
+): TraceStep[] {
+  // If MSTR to Tableau path is explicitly active
+  if (
+    migrationPath === 'mstr-tb' ||
+    (selectedAssetIds && selectedAssetIds.some((id) => id.startsWith('mstr') || id === 'd1'))
+  ) {
+    const dossiers = mstrObjects.filter((o) => o.type_name === 'dossier').length || 1;
+    const cubes = mstrObjects.filter((o) => o.type_name === 'cube').length || 1;
+    const attributes = mstrObjects.filter((o) => o.type_name === 'attribute').length || 12;
+    const semanticEntities = cubes + attributes;
+    const metrics = mstrObjects.filter((o) => o.type_name === 'metric').length || 34;
+    const validatedObjects = mstrJobSummary.objectsSucceeded || 45;
+
+    return [
+      {
+        label: 'Assessing source dashboards',
+        detail: `${dossiers} dossier`,
+        evidence: `${dossiers} source workbook · 5 chapters assessed`,
+      },
+      {
+        label: 'Rebuilding semantic models',
+        detail: `${semanticEntities} semantic entities`,
+        evidence: `${cubes} semantic cube · ${attributes} dimensional attributes reconstructed`,
+      },
+      {
+        label: 'Converting visual and calculation logic',
+        detail: `${metrics} metrics & visuals`,
+        evidence: `${metrics} metrics converted · multi-chapter dossier layout mapped`,
+      },
+      {
+        label: 'Validating conversions',
+        detail: `${validatedObjects} validated objects`,
+        evidence: `5 exports · 100% parity verified`,
+      },
+    ];
+  }
+
+  // If a single specific asset is selected (and exists in TABLEAU_DETAIL_DATA or POWERBI_DETAIL_DATA)
+  if (selectedAssetIds && selectedAssetIds.length === 1) {
+    const rawId = selectedAssetIds[0];
+    const canonicalId = ASSET_CANONICAL_MAP[rawId] ?? rawId;
+
+    // If it's d7 or tb-pbi default workspace dataset
+    if (canonicalId === 'd7' || migrationPath === 'tb-pbi' || !TABLEAU_DETAIL_DATA[canonicalId]) {
+      const dashboards = tbPbiSummary.totalDashboards;
+      const tables = tbPbiSummary.totalTables;
+      const relationships = tbPbiSummary.totalRelationships;
+      const worksheets = tbPbiSummary.totalWorksheets;
+      const calcs = tbPbiSummary.totalCalculatedFields;
+      const totalConversions = worksheets + calcs;
+      const exportsCount = tbPbiExportArtifacts.length;
+
+      return [
+        {
+          label: 'Assessing source dashboards',
+          detail: `${dashboards} dashboard`,
+          evidence: `${dashboards} source workbook · ${worksheets} worksheets assessed`,
+        },
+        {
+          label: 'Rebuilding semantic models',
+          detail: `${tables} tables`,
+          evidence: `${tables} model tables · ${relationships} relationships reconstructed`,
+        },
+        {
+          label: 'Converting visual and calculation logic',
+          detail: `${totalConversions} conversions`,
+          evidence: `${worksheets} visuals · ${calcs} DAX measures converted`,
+        },
+        {
+          label: 'Validating conversions',
+          detail: `${tables} validation checks`,
+          evidence: `${exportsCount} exports · 100% parity verified`,
+        },
+      ];
+    }
+
+    // Specific Tableau Asset
+    const tbDetail = TABLEAU_DETAIL_DATA[canonicalId];
+    if (tbDetail) {
+      const dashboards = tbDetail.summary.totalDashboards;
+      const tables = tbDetail.summary.totalTables;
+      const worksheets = tbDetail.summary.totalWorksheets;
+      const calcs = tbDetail.summary.totalCalculatedFields;
+      const totalConversions = worksheets + calcs;
+      const exportsCount = tbPbiExportArtifacts.length;
+
+      return [
+        {
+          label: 'Assessing source dashboards',
+          detail: `${dashboards} dashboard`,
+          evidence: `${dashboards} source workbook · ${worksheets} worksheets assessed`,
+        },
+        {
+          label: 'Rebuilding semantic models',
+          detail: `${tables} tables`,
+          evidence: `${tables} model tables · tabular schema reconstructed`,
+        },
+        {
+          label: 'Converting visual and calculation logic',
+          detail: `${totalConversions} conversions`,
+          evidence: `${worksheets} visuals · ${calcs} calculated fields converted`,
+        },
+        {
+          label: 'Validating conversions',
+          detail: `${tables} validation checks`,
+          evidence: `${exportsCount} exports · 100% parity verified`,
+        },
+      ];
+    }
+
+    // Specific Power BI Asset
+    const pbiDetail = POWERBI_DETAIL_DATA[canonicalId];
+    if (pbiDetail) {
+      const dashboards = pbiDetail.summary.totalPages || 1;
+      const tables = pbiDetail.summary.totalTables || 1;
+      const visuals = pbiDetail.summary.totalVisuals || 0;
+      const measures = pbiDetail.summary.totalDAXMeasures || 0;
+      const totalConversions = visuals + measures;
+      const exportsCount = tbPbiExportArtifacts.length;
+
+      return [
+        {
+          label: 'Assessing source dashboards',
+          detail: `${dashboards} dashboard`,
+          evidence: `${dashboards} source workbook · ${visuals} worksheets assessed`,
+        },
+        {
+          label: 'Rebuilding semantic models',
+          detail: `${tables} tables`,
+          evidence: `${tables} semantic tables · model schema verified`,
+        },
+        {
+          label: 'Converting visual and calculation logic',
+          detail: `${totalConversions} conversions`,
+          evidence: `${visuals} visuals · ${measures} DAX measures converted`,
+        },
+        {
+          label: 'Validating conversions',
+          detail: `${tables} validation checks`,
+          evidence: `${exportsCount} exports · 100% parity verified`,
+        },
+      ];
+    }
+  }
+
+  // Multiple Assets / Default BI Migration
+  const dashboards = tbPbiSummary.totalDashboards;
+  const tables = tbPbiSummary.totalTables;
+  const relationships = tbPbiSummary.totalRelationships;
+  const worksheets = tbPbiSummary.totalWorksheets;
+  const calcs = tbPbiSummary.totalCalculatedFields;
+  const totalConversions = worksheets + calcs;
+  const exportsCount = tbPbiExportArtifacts.length;
+
+  return [
+    {
+      label: 'Assessing source dashboards',
+      detail: `${dashboards} dashboard`,
+      evidence: `${dashboards} source workbook · ${worksheets} worksheets assessed`,
+    },
+    {
+      label: 'Rebuilding semantic models',
+      detail: `${tables} tables`,
+      evidence: `${tables} model tables · ${relationships} relationships reconstructed`,
+    },
+    {
+      label: 'Converting visual and calculation logic',
+      detail: `${totalConversions} conversions`,
+      evidence: `${worksheets} visuals · ${calcs} DAX measures converted`,
+    },
+    {
+      label: 'Validating conversions',
+      detail: `${tables} validation checks`,
+      evidence: `${exportsCount} exports · 100% parity verified`,
+    },
+  ];
+}
+
+function getEtlMigrationSteps(
+  _selectedAssetIds?: string[],
+): TraceStep[] {
+  const totalWorkflows = altPySummary.totalWorkflows;
+  const totalTools = altPySummary.totalTools;
+  const convertedTools = altPySummary.convertedTools;
+  const outputScripts = altPySummary.totalOutputScripts;
+
+  return [
+    {
+      label: 'Assessing source workflows',
+      detail: `${totalWorkflows} workflows`,
+      evidence: `${totalWorkflows} Alteryx workflows`,
+    },
+    {
+      label: 'Converting transformation logic',
+      detail: `${convertedTools} converted tools`,
+      evidence: `${convertedTools} tools converted`,
+    },
+    {
+      label: 'Validating conversions',
+      detail: `${outputScripts} output scripts`,
+      evidence: `· ${outputScripts} output scripts · 100% AST parity `,
+    },
+  ];
+}
 
 export type MigrationMode = 'bi' | 'etl' | 'all';
 
 interface Props {
   mode?: MigrationMode;
+  selectedAssetIds?: string[];
+  migrationPath?: 'tb-pbi' | 'mstr-tb' | 'alt-py' | null;
   onShowResults?: () => void;
 }
 
-export default function MigrationLoading({ mode = 'all', onShowResults }: Props) {
+export default function MigrationLoading({
+  mode = 'all',
+  selectedAssetIds,
+  migrationPath,
+  onShowResults,
+}: Props) {
   const [biDone, setBiDone] = useState(false);
   const [etlDone, setEtlDone] = useState(false);
+
+  const biSteps = useMemo(
+    () => getBiMigrationSteps(selectedAssetIds, migrationPath),
+    [selectedAssetIds, migrationPath],
+  );
+
+  const etlSteps = useMemo(
+    () => getEtlMigrationSteps(selectedAssetIds),
+    [selectedAssetIds],
+  );
 
   const showBi = mode === 'bi' || mode === 'all';
   const showEtl = mode === 'etl' || mode === 'all';
@@ -107,7 +346,7 @@ export default function MigrationLoading({ mode = 'all', onShowResults }: Props)
             <ThinkingTrace
               activeLabel="Converting BI dashboards & semantic models…"
               doneLabel="BI Migration complete — visual & calculation logic converted"
-              steps={BI_MIGRATION_STEPS}
+              steps={biSteps}
               onSettled={onBiSettled}
               delayMs={300}
             />
@@ -151,7 +390,7 @@ export default function MigrationLoading({ mode = 'all', onShowResults }: Props)
             <ThinkingTrace
               activeLabel="Converting ETL workflows & transformation logic…"
               doneLabel="ETL Migration complete — transformation scripts validated"
-              steps={ETL_MIGRATION_STEPS}
+              steps={etlSteps}
               onSettled={onEtlSettled}
               delayMs={400}
             />
