@@ -297,9 +297,13 @@ export interface Recommendation {
   /* ── Enriched fields for review modals ── */
   kpis?: string[];
   tables?: string[];
+  targetKpis?: string[];
+  targetTables?: string[];
   owner?: string;
+  targetOwner?: string;
   lastViewed?: string;
   userGroups?: string[];
+  targetUserGroups?: string[];
   summary?: string;
   commonKpis?: string[];
   commonTables?: string[];
@@ -324,9 +328,13 @@ export const recommendations: Recommendation[] = [
     tags: ['High Overlap', 'Same Datasource', 'Distribution Hub'],
     kpis: ['Number of Invoices by Account Executive', 'Number of Meetings by Account Executive', 'Top 4 Open Opportunities by Revenue', 'Revenue Distribution by Top 4 Opportunities', 'Revenue Distribution by Product', 'Revenue by Sales Stage', 'Cross Sell Performance', 'Renewal Performance', 'Budget Allocation by Employee'],
     tables: ['brokerage_202001231040', 'fees_202001231041', 'invoice_202001231041', 'meeting_list_202001231041', 'gcrm_opportunity_202001231041', 'nn_en_ee_indi_bdgt'],
+    targetKpis: ['Number of Invoices by Account Executive', 'Number of Meetings by Account Executive', 'Top 4 Open Opportunities by Revenue', 'Revenue Distribution by Top 4 Opportunities', 'Revenue Distribution by Product', 'Revenue by Sales Stage', 'Achieved Cross Sell Target', 'Budget Attainment Rate', 'Executive Pipeline Volume'],
+    targetTables: ['brokerage_202001231040', 'fees_202001231041', 'invoice_202001231041', 'meeting_list_202001231041', 'gcrm_opportunity_202001231041', 'sales_quota_master'],
     owner: 'EXL',
+    targetOwner: 'EXLDistribution',
     lastViewed: '3 days ago',
     userGroups: ['Distribution Leadership', 'Sales Ops', 'Account Management'],
+    targetUserGroups: ['Distribution Leadership', 'Field Sales Ops', 'Underwriting Executive'],
     summary: 'Consolidation of broker cross-sell opportunities and comprehensive insurance distribution revenue analytics.',
     commonKpis: ['Number of Invoices by Account Executive', 'Number of Meetings by Account Executive', 'Top 4 Open Opportunities by Revenue', 'Revenue Distribution by Top 4 Opportunities', 'Revenue Distribution by Product', 'Revenue by Sales Stage'],
     commonTables: ['brokerage_202001231040', 'fees_202001231041', 'invoice_202001231041', 'meeting_list_202001231041', 'gcrm_opportunity_202001231041'],
@@ -344,9 +352,13 @@ export const recommendations: Recommendation[] = [
     tags: ['Power BI Consolidation', 'Shared Metrics', 'Extract Reduction'],
     kpis: ['R12 Loss Ratio Score', 'Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by AOR and Agent', 'R12 Loss Ratio Score Variance to Bottom Quartile by Agent', 'Incurred Losses vs Earned Premium', 'Quartile Performance Index'],
     tables: ['Agent Retention Data', 'New Business Metrics', 'Loss Ratio Metrics', 'Agent Performance Metrics', 'Quartile Rankings', 'Claims and Premiums Data'],
+    targetKpis: ['R12 Loss Ratio Score', 'Conversion Rate by Agent', 'Survival Rate by Agent', 'Earned Premium Exposure', 'Direct Incurred Losses', 'Loss Ratio Performance Index'],
+    targetTables: ['Agent Retention Data', 'Agent Performance Metrics', 'Loss Ratio Metrics', 'Claims and Premiums Data'],
     owner: 'EXL',
+    targetOwner: 'EXL',
     lastViewed: '8 days ago',
     userGroups: ['Claims Team', 'Underwriting Team'],
+    targetUserGroups: ['Claims Leadership', 'Actuarial Analytics', 'Underwriting Risk'],
     summary: 'Unification of lower quartile agent production trends with core earned premium loss ratio analytics.',
     commonKpis: ['R12 Loss Ratio Score', 'Conversion Rate by Agent', 'Survival Rate by Agent'],
     commonTables: ['Agent Retention Data', 'Agent Performance Metrics'],
@@ -364,9 +376,13 @@ export const recommendations: Recommendation[] = [
     tags: ['Power BI Consolidation', 'Shared Metrics', 'Extract Reduction'],
     kpis: ['Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by Agent', 'Bottom Quartile Agents by Survival Rate', 'Survival Rate Variance to Bottom Quartile by Agent', 'R12 Loss Ratio Score by Agent', 'R12 Loss Ratio Score Variance to Bottom Quartile by Agent', 'New Business Counts by AOR and Agent'],
     tables: ['New Business Operations', 'Agent Quartile Rankings', 'Agent Performance Metrics', 'Survival Rate Analysis', 'Agent Retention Data', 'New Business Metrics', 'Loss Ratio Metrics'],
+    targetKpis: ['Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by Agent', 'R12 Loss Ratio Score', 'New Business Counts by AOR and Agent', 'R12 Loss Ratio Score Variance to Bottom Quartile by Agent', 'Incurred Losses vs Earned Premium', 'Quartile Performance Index'],
+    targetTables: ['Agent Performance Metrics', 'Agent Retention Data', 'New Business Metrics', 'Quartile Rankings'],
     owner: 'EXL',
+    targetOwner: 'EXL_S',
     lastViewed: '12 days ago',
     userGroups: ['Claims Team', 'Underwriting Team'],
+    targetUserGroups: ['Agency Enablement', 'Distribution Sales', 'Regional Directors'],
     summary: 'Consolidation of policy cohort survival modeling into agent lower quartile production scorecard.',
     commonKpis: ['Conversion Rate by Agent', 'Survival Rate by Agent', 'New Business Counts by Agent'],
     commonTables: ['Agent Performance Metrics'],
@@ -384,9 +400,13 @@ export const recommendations: Recommendation[] = [
     tags: ['Cross-Platform', 'Direct Parity'],
     kpis: ['Cross-Sell Ratio', 'Multi-Line Penetration', 'Average Premium per Account', 'Quote Conversion'],
     tables: ['policy_master', 'customer_dim', 'line_of_business_dim'],
+    targetKpis: ['Cross-Sell Ratio', 'Multi-Line Penetration', 'Policy Bundle Velocity', 'Target Market Penetration Rate', 'Cross-Sell Commission Margin'],
+    targetTables: ['policy_master', 'customer_dim', 'line_of_business_dim', 'sales_rep_dim'],
     owner: 'EXL',
+    targetOwner: 'EXLDistribution',
     lastViewed: '6 days ago',
     userGroups: ['Distribution', 'Sales Leadership'],
+    targetUserGroups: ['Distribution Analytics', 'Commercial Sales', 'Digital Agency'],
     summary: 'Unification of commercial, property, and casualty cross-selling dashboards.',
     commonKpis: ['Cross-Sell Ratio', 'Multi-Line Penetration'],
     commonTables: ['policy_master', 'customer_dim'],
@@ -404,9 +424,13 @@ export const recommendations: Recommendation[] = [
     tags: ['Cross-Platform', 'Golden Dataset'],
     kpis: ['Gross Written Premium', 'Net Earned Premium', 'Combined Ratio', 'Expense Ratio', 'Investment Yield'],
     tables: ['finance_ledger', 'premium_fact', 'expense_dim'],
+    targetKpis: ['Gross Written Premium', 'Net Earned Premium', 'Combined Ratio', 'Underwriting Profitability Index', 'Policyholder Surplus Ratio', 'Claims Expense Frequency'],
+    targetTables: ['finance_ledger', 'premium_fact', 'expense_dim', 'reinsurance_treaty_fact'],
     owner: 'EXL',
+    targetOwner: 'EXL_S',
     lastViewed: '3 days ago',
     userGroups: ['Corporate Finance', 'Executive'],
+    targetUserGroups: ['Corporate Finance', 'FP&A Team', 'Executive Board'],
     summary: 'Consolidation of enterprise insurance financial statements and quarterly performance.',
     commonKpis: ['Gross Written Premium', 'Net Earned Premium', 'Combined Ratio'],
     commonTables: ['finance_ledger', 'premium_fact'],
@@ -425,9 +449,13 @@ export const recommendations: Recommendation[] = [
     action: 'Merge regulatory reporting into the Alteryx finance consolidation as a downstream branch.',
     kpis: ['Claim_Date', 'Claim_Status', 'Customer_ID', 'Policy_ID', 'Service_Location', 'Payment_Amount', 'Payment_ID', 'Diagnosis_Type', 'ICD_Code'],
     tables: ['Claims_Data', 'Policy_Data', 'Diagnosis_Data'],
+    targetKpis: ['Claim_Date', 'Claim_Status', 'Customer_ID', 'Policy_ID', 'Service_Location', 'Payment_Amount', 'Payment_ID', 'Diagnosis_Type', 'ICD_Code', 'Premium_Group', 'Monthly_Premium_Account', 'Month_End_Date'],
+    targetTables: ['Claims_Data', 'Policy_Data', 'Diagnosis_Data', 'Payment_Data', 'Validation_Rules'],
     owner: 'EXL',
+    targetOwner: 'EXLService',
     lastViewed: '5 days ago',
     userGroups: ['Data Engineering', 'Claims Ops'],
+    targetUserGroups: ['Claims Engineering', 'Core IT Operations', 'Enterprise Reporting'],
     summary: 'Monthly claims consolidation aggregating data from policy, claims, and investment systems.',
     commonKpis: ['Claim_Date', 'Claim_Status', 'Customer_ID', 'Policy_ID', 'Service_Location', 'Payment_Amount', 'Payment_ID', 'Diagnosis_Type', 'ICD_Code'],
     commonTables: ['Claims_Data', 'Policy_Data', 'Diagnosis_Data'],
