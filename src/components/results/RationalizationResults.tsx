@@ -450,7 +450,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
   }, []);
 
   // ── Compute tag counts for summary cards (defaults to 0 for all configured tags) ──
-  const mergeTagCounts = useMemo(() => {
+  const mergeTagCounts: Record<string, number> = useMemo(() => {
     const crossTech = mergeRecs.filter(isCrossTechRecommendation).length;
     const sameTech = mergeRecs.length - crossTech;
     return { 'Cross Technology': crossTech, 'Same Technology': sameTech };
@@ -516,9 +516,88 @@ export default function RationalizationResults({ onStartMigration }: Props) {
         transition={{ duration: 0.4 }}
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
       >
-        <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-          Rationalization Results
-        </h1>
+        <div className="flex items-center gap-3.5 flex-wrap">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+            Rationalization Results
+          </h1>
+
+          {/* BI / ETL switch toggle beside Rationalization Results */}
+          <div
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border select-none transition-colors"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
+            }}
+          >
+            <span
+              onClick={() => {
+                if (activeSection !== 'bi') {
+                  setActiveSection('bi');
+                  setActiveTab('all');
+                  setSearch('');
+                  setCrossTechFilterColumn(null);
+                  setActiveTagFilter(null);
+                }
+              }}
+              className="text-xs font-bold cursor-pointer transition-colors"
+              style={{
+                color: activeSection === 'bi' ? 'var(--color-accent)' : 'var(--color-text-tertiary)',
+              }}
+            >
+              BI
+            </span>
+
+            {/* Switch button between BI and ETL */}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={activeSection === 'etl'}
+              title={`Switch to ${activeSection === 'bi' ? 'ETL' : 'BI'} Rationalization`}
+              onClick={() => {
+                const next = activeSection === 'bi' ? 'etl' : 'bi';
+                setActiveSection(next);
+                setActiveTab('all');
+                setSearch('');
+                setCrossTechFilterColumn(null);
+                setActiveTagFilter(null);
+              }}
+              className="w-10 h-5 rounded-full p-0.5 cursor-pointer transition-colors duration-200 relative flex items-center shrink-0 border"
+              style={{
+                backgroundColor: 'var(--color-bg-tertiary)',
+                borderColor: 'var(--color-border-primary)',
+              }}
+            >
+              <motion.div
+                animate={{ x: activeSection === 'etl' ? 20 : 0 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="w-3.5 h-3.5 rounded-full shadow-sm"
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                }}
+              />
+            </button>
+
+            <span
+              onClick={() => {
+                if (activeSection !== 'etl') {
+                  setActiveSection('etl');
+                  setActiveTab('all');
+                  setSearch('');
+                  setCrossTechFilterColumn(null);
+                  setActiveTagFilter(null);
+                }
+              }}
+              className="text-xs font-bold cursor-pointer transition-colors"
+              style={{
+                color: activeSection === 'etl' ? 'var(--color-accent)' : 'var(--color-text-tertiary)',
+              }}
+            >
+              ETL
+            </span>
+          </div>
+        </div>
+
         <div className="flex items-center gap-3 shrink-0">
           {/* biagents link */}
           <a
@@ -597,39 +676,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
             <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
               Overlap analysis and cross-technology dependency insights
             </p>
-          </div>
-
-          {/* Right Controls: BI/ETL Toggle */}
-          <div className="flex flex-wrap items-center gap-3 self-start lg:self-auto shrink-0">
-            <div
-              className="flex items-center gap-1 p-1 rounded-lg border inline-flex"
-              style={{
-                borderColor: 'var(--color-border-primary)',
-                backgroundColor: 'var(--color-bg-tertiary)',
-              }}
-            >
-              {(['bi', 'etl'] as const).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => {
-                    setActiveSection(s);
-                    setActiveTab('all');
-                    setSearch('');
-                    setCrossTechFilterColumn(null);
-                    setActiveTagFilter(null);
-                  }}
-                  className="px-3.5 py-1.5 rounded-md text-[12px] font-semibold uppercase tracking-wider cursor-pointer transition-all duration-200"
-                  style={{
-                    backgroundColor: activeSection === s ? 'var(--color-accent)' : 'transparent',
-                    color: activeSection === s ? '#FFFFFF' : 'var(--color-text-secondary)',
-                    border: 'none',
-                  }}
-                >
-                  {s === 'bi' ? 'BI Rationalization' : 'ETL Rationalization'}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -767,7 +813,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 const count = decommissionTagCounts[tag] ?? 0;
                 const isActive = activeTagFilter?.column === 'decommission' && activeTagFilter?.tag === tag;
                 const tagColorMap: Record<string, string> = {
-                  'Inactive': '#6B7280',
+                  'Inactive': '#0D9488',
                   'Subset': '#F97316',
                   'Cross Technology': CROSS_TECH_COLOR,
                   'Orphan Cascade': '#EC4899',
