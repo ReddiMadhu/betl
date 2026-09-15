@@ -745,7 +745,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <GitMerge size={16} className="shrink-0" style={{ color: '#F59E0B' }} />
+                <GitMerge size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
                 <h3 className="text-[13px] font-bold" style={{ color: '#F59E0B' }}>Consolidate & Merge</h3>
               </div>
               <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#F59E0B' }}>
@@ -801,7 +801,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Trash2 size={16} className="shrink-0" style={{ color: '#EF4444' }} />
+                <Trash2 size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
                 <h3 className="text-[13px] font-bold" style={{ color: '#EF4444' }}>Decommission</h3>
               </div>
               <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#EF4444' }}>
@@ -864,7 +864,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="shrink-0" style={{ color: '#22C55E' }} />
+                <ShieldCheck size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
                 <h3 className="text-[13px] font-bold" style={{ color: '#22C55E' }}>Keep & Certify</h3>
               </div>
               <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#22C55E' }}>
