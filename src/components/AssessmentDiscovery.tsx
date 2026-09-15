@@ -19,7 +19,7 @@ import type { TraceStep } from './ThinkingTrace';
 
 /* ── BI Step Definitions ── */
 const BI_DISCOVERY_STEPS: TraceStep[] = [
-  { label: 'Detecting different file types', detail: '27 BI assets' },
+  { label: 'Detecting different file types', detail: '24 BI assets' },
   { label: 'Profiling usage and ownership' },
   { label: 'Assessing access frequency' },
 ];
@@ -118,7 +118,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
             </div>
             <ThinkingTrace
               activeLabel="Discovering BI assets…"
-              doneLabel="BI Discovery complete — 17 assets cataloged"
+              doneLabel="BI Discovery complete — 24 assets cataloged"
               steps={BI_DISCOVERY_STEPS}
               onSettled={onBiDiscoverySettled}
               delayMs={300}
