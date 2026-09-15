@@ -259,19 +259,34 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Weekday": "Monday",
+            "Territory": "Northeast",
+            "Agency_Division": "Commercial",
+            "AB_TEST_GROUP": "Test A",
+            "SHOPPING_ALERT_DATE": "2023-08-14",
+            "PLCY_NUM": "POL-44012",
+            "AGENT_STATE": "NY",
+            "Total Alert": 14
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Weekday": "Wednesday",
+            "Territory": "Midwest",
+            "Agency_Division": "Personal",
+            "AB_TEST_GROUP": "Control",
+            "SHOPPING_ALERT_DATE": "2023-08-16",
+            "PLCY_NUM": "POL-44089",
+            "AGENT_STATE": "IL",
+            "Total Alert": 8
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Weekday": "Friday",
+            "Territory": "Southeast",
+            "Agency_Division": "Commercial",
+            "AB_TEST_GROUP": "Test B",
+            "SHOPPING_ALERT_DATE": "2023-08-18",
+            "PLCY_NUM": "POL-44155",
+            "AGENT_STATE": "FL",
+            "Total Alert": 22
           }
         ]
       }
@@ -441,19 +456,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Month": "January"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Month": "February"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Month": "March"
           }
         ]
       },
@@ -473,19 +482,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Product Code": "PROD-AUTO"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Product Code": "PROD-HOME"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Product Code": "PROD-COMM"
           }
         ]
       },
@@ -513,19 +516,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Region": "East",
+            "State": "NY",
+            "Segment": "Enterprise"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Region": "West",
+            "State": "CA",
+            "Segment": "Mid-Market"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Region": "Central",
+            "State": "TX",
+            "Segment": "Small Business"
           }
         ]
       },
@@ -545,19 +548,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Sales Stage": "Lead Qualification"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Sales Stage": "Proposal Under Review"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Sales Stage": "Closed Won"
           }
         ]
       },
@@ -577,19 +574,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Opportunity Size": "High ($100k+)"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Opportunity Size": "Medium ($25k-$100k)"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Opportunity Size": "Low (<$25k)"
           }
         ]
       },
@@ -609,19 +600,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Partner": "Direct Broker Network"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Partner": "Independent Agency Alliance"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Partner": "Strategic Affinity Group"
           }
         ]
       }
@@ -724,19 +709,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "AOR + Agent": "AOR-101 John Doe",
+            "District": "District 4",
+            "Reporting Period": "2023-Q3",
+            "Line of Business": "Commercial Lines",
+            "Agency State": "OH"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "AOR + Agent": "AOR-104 Jane Smith",
+            "District": "District 2",
+            "Reporting Period": "2023-Q3",
+            "Line of Business": "Personal Auto",
+            "Agency State": "PA"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "AOR + Agent": "AOR-109 Bob Taylor",
+            "District": "District 7",
+            "Reporting Period": "2023-Q3",
+            "Line of Business": "Homeowners",
+            "Agency State": "MI"
           }
         ]
       },
@@ -768,19 +759,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": "Commercial Lines",
+            "Agency state": "OH",
+            "AOR + Agent": "AOR-101 John Doe",
+            "Reporting Period": "2023-Q3"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": "Personal Auto",
+            "Agency state": "PA",
+            "AOR + Agent": "AOR-104 Jane Smith",
+            "Reporting Period": "2023-Q3"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": "Homeowners",
+            "Agency state": "MI",
+            "AOR + Agent": "AOR-109 Bob Taylor",
+            "Reporting Period": "2023-Q3"
           }
         ]
       },
@@ -812,19 +806,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": "Commercial Lines",
+            "Agency state": "OH",
+            "AOR + Agent": "AOR-101 John Doe",
+            "Reporting Period": "2023-Q3"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": "Personal Auto",
+            "Agency state": "PA",
+            "AOR + Agent": "AOR-104 Jane Smith",
+            "Reporting Period": "2023-Q3"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": "Homeowners",
+            "Agency state": "MI",
+            "AOR + Agent": "AOR-109 Bob Taylor",
+            "Reporting Period": "2023-Q3"
           }
         ]
       }
@@ -922,19 +919,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": "Commercial Auto",
+            "Agency state": "TX",
+            "AOR + Agent": "AOR-201 Robert Miller",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": "Property",
+            "Agency state": "FL",
+            "AOR + Agent": "AOR-205 Lisa Anderson",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": "General Liability",
+            "Agency state": "CA",
+            "AOR + Agent": "AOR-212 Kevin Patel",
+            "Reporting Period": "2023-Q4"
           }
         ]
       },
@@ -966,19 +966,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": "Commercial Auto",
+            "Agency state": "TX",
+            "AOR + Agent": "AOR-201 Robert Miller",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": "Property",
+            "Agency state": "FL",
+            "AOR + Agent": "AOR-205 Lisa Anderson",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": "General Liability",
+            "Agency state": "CA",
+            "AOR + Agent": "AOR-212 Kevin Patel",
+            "Reporting Period": "2023-Q4"
           }
         ]
       },
@@ -998,19 +1001,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "District": "District 1 - North"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "District": "District 2 - South"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "District": "District 3 - West"
           }
         ]
       }
@@ -1295,19 +1292,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Country/Region": "United States",
+            "Sales Region": "North America"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Country/Region": "United Kingdom",
+            "Sales Region": "EMEA"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Country/Region": "Germany",
+            "Sales Region": "EMEA"
           }
         ]
       },
@@ -1335,19 +1329,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 1001,
+            "Name": "Hardware Infrastructure",
+            "Metric_Value": 245000
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 1002,
+            "Name": "Software Licensing",
+            "Metric_Value": 189000
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 1003,
+            "Name": "Cloud Services",
+            "Metric_Value": 312000
           }
         ]
       },
@@ -1371,19 +1365,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Period": "2023-01",
+            "Month": "Jan"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Period": "2023-02",
+            "Month": "Feb"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Period": "2023-03",
+            "Month": "Mar"
           }
         ]
       },
@@ -1407,19 +1398,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "IT Sub Area": "Compute & Storage",
+            "IT Area": "Infrastructure"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "IT Sub Area": "Network Security",
+            "IT Area": "Security"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "IT Sub Area": "CRM Applications",
+            "IT Area": "Business Apps"
           }
         ]
       },
@@ -1439,19 +1427,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Business Area": "Corporate IT"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Business Area": "Claims Operations"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Business Area": "Underwriting Systems"
           }
         ]
       },
@@ -1471,19 +1453,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Scenario": "Actual"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Scenario": "Budget"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Scenario": "Forecast"
           }
         ]
       },
@@ -1507,19 +1483,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Cost Element Group": "Operating Expenses",
+            "Cost element name": "SaaS Subscription"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Cost Element Group": "Capital Expenses",
+            "Cost element name": "Server Hardware"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Cost Element Group": "Personnel",
+            "Cost element name": "External Contractor"
           }
         ]
       },
@@ -1543,19 +1516,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "VP": "Sarah Connor",
+            "Department": "Enterprise Architecture"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "VP": "Mark Davis",
+            "Department": "Data & Analytics"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "VP": "Elena Rostova",
+            "Department": "Cloud Infrastructure"
           }
         ]
       }
@@ -1648,19 +1618,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "AOR + Agent": "AOR-301 Karen White",
+            "District": "District 5",
+            "Reporting Period": "2023-Q2",
+            "Line of Business": "Life & Annuity",
+            "Agency State": "IL"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "AOR + Agent": "AOR-308 Brian Vance",
+            "District": "District 1",
+            "Reporting Period": "2023-Q2",
+            "Line of Business": "Commercial Lines",
+            "Agency State": "OH"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "AOR + Agent": "AOR-315 Rachel Green",
+            "District": "District 8",
+            "Reporting Period": "2023-Q2",
+            "Line of Business": "Personal Lines",
+            "Agency State": "IN"
           }
         ]
       },
@@ -1692,19 +1668,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": "Life & Annuity",
+            "Agency state": "IL",
+            "AOR + Agent": "AOR-301 Karen White",
+            "Reporting Period": "2023-Q2"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": "Commercial Lines",
+            "Agency state": "OH",
+            "AOR + Agent": "AOR-308 Brian Vance",
+            "Reporting Period": "2023-Q2"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": "Personal Lines",
+            "Agency state": "IN",
+            "AOR + Agent": "AOR-315 Rachel Green",
+            "Reporting Period": "2023-Q2"
           }
         ]
       }
@@ -2009,19 +1988,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "FiscalMonth": "FM01"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "FiscalMonth": "FM02"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "FiscalMonth": "FM03"
           }
         ]
       },
@@ -2049,19 +2022,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 501,
+            "Name": "Gross Sales",
+            "Metric_Value": 124500.5
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 502,
+            "Name": "Discounts & Allowances",
+            "Metric_Value": 14200.0
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 503,
+            "Name": "Net Sales",
+            "Metric_Value": 110300.5
           }
         ]
       },
@@ -2081,19 +2054,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "District": "FD-01 Downtown"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "District": "FD-02 Suburban North"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "District": "FD-03 Metro West"
           }
         ]
       },
@@ -2129,19 +2096,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Name": "Store 101 - Main St",
+            "Chain": "SuperStore",
+            "PostalCode": 10001,
+            "StoreNumber": 101,
+            "Store Type": "Flagship"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Name": "Store 102 - West End",
+            "Chain": "SuperStore",
+            "PostalCode": 10025,
+            "StoreNumber": 102,
+            "Store Type": "Standard"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Name": "Store 103 - Airport Plaza",
+            "Chain": "Express",
+            "PostalCode": 11430,
+            "StoreNumber": 103,
+            "Store Type": "Express"
           }
         ]
       },
@@ -2165,19 +2138,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Category": "Electronics",
+            "Buyer": "Alex Mercer"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Category": "Apparel",
+            "Buyer": "Jessica Alba"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Category": "Home Goods",
+            "Buyer": "Sam Wilson"
           }
         ]
       }
@@ -2770,19 +2740,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Design Factor": 1.25,
+            "Topic": "Retail Efficiency"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Design Factor": 0.95,
+            "Topic": "Return Logistics"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Design Factor": 1.1,
+            "Topic": "Omnichannel"
           }
         ]
       },
@@ -2818,19 +2785,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Category Image": "https://assets.store.com/cat1.png",
+            "Product": "Ultra HD Monitor",
+            "Segment": "High End",
+            "Category": "Monitors",
+            "Product Image": "https://assets.store.com/prod1.png"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Category Image": "https://assets.store.com/cat2.png",
+            "Product": "Wireless Keyboard",
+            "Segment": "Accessories",
+            "Category": "Peripherals",
+            "Product Image": "https://assets.store.com/prod2.png"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Category Image": "https://assets.store.com/cat3.png",
+            "Product": "Ergonomic Desk Chair",
+            "Segment": "Furniture",
+            "Category": "Office",
+            "Product Image": "https://assets.store.com/prod3.png"
           }
         ]
       },
@@ -2858,19 +2831,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
-          },
-          {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
-          },
-          {
-            "ID": 103,
             "Status": "Completed",
-            "Amount": 8900.0
+            "Dates": 20230501,
+            "Date": "2023-05-01"
+          },
+          {
+            "Status": "Completed",
+            "Dates": 20230502,
+            "Date": "2023-05-02"
+          },
+          {
+            "Status": "Returned",
+            "Dates": 20230503,
+            "Date": "2023-05-03"
           }
         ]
       },
@@ -2898,19 +2871,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 301,
+            "Name": "Total Sales Amount",
+            "Metric_Value": 892400.0
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 302,
+            "Name": "Total Return Amount",
+            "Metric_Value": 42100.0
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 303,
+            "Name": "Return Rate %",
+            "Metric_Value": 4.72
           }
         ]
       },
@@ -2938,19 +2911,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Latitude": 40.7128,
+            "Store": "NY Flagship",
+            "Longitude": -74.006
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Latitude": 34.0522,
+            "Store": "LA Downtown",
+            "Longitude": -118.2437
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Latitude": 41.8781,
+            "Store": "Chicago Loop",
+            "Longitude": -87.6298
           }
         ]
       },
@@ -2998,19 +2971,34 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Type": "Loyalty Member",
+            "Segment": "Tier 1",
+            "Promotion": "Spring Promo 10%",
+            "Unit": 2,
+            "Product": "Ultra HD Monitor",
+            "Age": 34,
+            "Price Range": "$300-$500",
+            "Category": "Monitors"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Type": "New Customer",
+            "Segment": "Tier 3",
+            "Promotion": "Welcome 15%",
+            "Unit": 1,
+            "Product": "Wireless Keyboard",
+            "Age": 28,
+            "Price Range": "<$100",
+            "Category": "Peripherals"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Type": "Repeat Customer",
+            "Segment": "Tier 2",
+            "Promotion": "None",
+            "Unit": 1,
+            "Product": "Ergonomic Desk Chair",
+            "Age": 45,
+            "Price Range": "$200-$300",
+            "Category": "Office"
           }
         ]
       },
@@ -3030,19 +3018,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Date": "2023-01-01"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Date": "2023-01-02"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Date": "2023-01-03"
           }
         ]
       },
@@ -3062,19 +3044,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "% Return Rate": "4.72%"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "% Return Rate": "5.10%"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "% Return Rate": "3.85%"
           }
         ]
       },
@@ -3094,19 +3070,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "RuleID": "RULE-101"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "RuleID": "RULE-102"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "RuleID": "RULE-103"
           }
         ]
       },
@@ -3134,19 +3104,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Product Image": "https://assets.store.com/prod1.png",
+            "Segmented by": "Category",
+            "Product": "Ultra HD Monitor"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Product Image": "https://assets.store.com/prod2.png",
+            "Segmented by": "Price Band",
+            "Product": "Wireless Keyboard"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Product Image": "https://assets.store.com/prod3.png",
+            "Segmented by": "Frequency",
+            "Product": "Ergonomic Desk Chair"
           }
         ]
       },
@@ -3174,19 +3144,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 401,
+            "Name": "Visual Color Scale",
+            "Metric_Value": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 402,
+            "Name": "Dynamic Card Title",
+            "Metric_Value": 1
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 403,
+            "Name": "Conditional Format Indicator",
+            "Metric_Value": 1
           }
         ]
       },
@@ -3206,19 +3176,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "URL": "https://help.powerbi.com/analytics/sales"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "URL": "https://help.powerbi.com/analytics/returns"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "URL": "https://help.powerbi.com/analytics/performance"
           }
         ]
       },
@@ -3238,548 +3202,541 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "URL": "https://docs.microsoft.com/power-bi/guidance"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "URL": "https://docs.microsoft.com/dax/best-practices"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "URL": "https://docs.microsoft.com/power-bi/visuals"
+          }
+        ]
+      }
+    ]
+  },
+  "d8": {
+    "summary": {
+      "totalPages": 0,
+      "totalVisuals": 0,
+      "totalTables": 0,
+      "totalDAXMeasures": 0
+    },
+    "pages": [],
+    "daxMeasures": [],
+    "tables": []
+  },
+  "d9": {
+    "summary": {
+      "totalPages": 1,
+      "totalVisuals": 22,
+      "totalTables": 6,
+      "totalDAXMeasures": 4
+    },
+    "pages": [
+      {
+        "id": "pg_1",
+        "name": "Page 1",
+        "visualType": "textbox",
+        "dimensions": [
+          "Agent)"
+        ],
+        "measures": [
+          {
+            "name": "Agency State",
+            "type": "explicit"
+          },
+          {
+            "name": "Line of Business",
+            "type": "explicit"
+          },
+          {
+            "name": "Reporting Period",
+            "type": "explicit"
+          },
+          {
+            "name": "Agency state",
+            "type": "explicit"
+          },
+          {
+            "name": "Line of Business",
+            "type": "explicit"
+          },
+          {
+            "name": "Reporting Period",
+            "type": "explicit"
+          }
+        ],
+        "visualSlots": {
+          "values": "Page 1 Primary Metric Grid",
+          "axes": "Page 1 Categorical Breakdown"
+        }
+      }
+    ],
+    "daxMeasures": [
+      {
+        "id": "dax_1",
+        "name": "Total New Business Premium",
+        "expression": "SUM(Production[New_Business_Amount])",
+        "homeTable": "Production",
+        "formatString": "0,##0",
+        "usedInPages": [
+          "Page 1"
+        ]
+      },
+      {
+        "id": "dax_2",
+        "name": "Bottom Quartile Agent Count",
+        "expression": "CALCULATE(COUNTROWS(Agent), Agent[Production_Quartile] = 4)",
+        "homeTable": "Agent",
+        "formatString": "#,##0",
+        "usedInPages": [
+          "Page 1"
+        ]
+      },
+      {
+        "id": "dax_3",
+        "name": "Average Bind Velocity (Days)",
+        "expression": "AVERAGE(Production[Days_To_Bind])",
+        "homeTable": "Production",
+        "formatString": "0.0",
+        "usedInPages": [
+          "Page 1"
+        ]
+      },
+      {
+        "id": "dax_4",
+        "name": "Conversion Rate",
+        "expression": "DIVIDE([Policies Bound], [Quotes Submitted], 0)",
+        "homeTable": "Production",
+        "formatString": "0.0%",
+        "usedInPages": [
+          "Page 1"
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "tableName": "PBI Data",
+        "displayName": "PBI Data",
+        "rowCount": 3500,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "AOR + Agent",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Agency State",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "District",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Line of Business",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Reporting Period",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "AOR + Agent": 150,
+            "Agency State": 150,
+            "District": 150,
+            "Line of Business": 150,
+            "Reporting Period": 150
+          },
+          {
+            "AOR + Agent": 300,
+            "Agency State": 300,
+            "District": 300,
+            "Line of Business": 300,
+            "Reporting Period": 300
+          },
+          {
+            "AOR + Agent": 450,
+            "Agency State": 450,
+            "District": 450,
+            "Line of Business": 450,
+            "Reporting Period": 450
+          }
+        ]
+      },
+      {
+        "tableName": "PBI Data (2)",
+        "displayName": "PBI Data (2)",
+        "rowCount": 3500,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "AOR + Agent",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Agency state",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Line of Business",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Reporting Period",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "AOR + Agent": 150,
+            "Agency state": 150,
+            "Line of Business": 150,
+            "Reporting Period": 150
+          },
+          {
+            "AOR + Agent": 300,
+            "Agency state": 300,
+            "Line of Business": 300,
+            "Reporting Period": 300
+          },
+          {
+            "AOR + Agent": 450,
+            "Agency state": 450,
+            "Line of Business": 450,
+            "Reporting Period": 450
+          }
+        ]
+      },
+      {
+        "tableName": "Sum(PBI Data",
+        "displayName": "Sum(PBI Data",
+        "rowCount": 3500,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "NB Counts",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "NB Counts Agents in Bottom Quartile",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "NB Counts": 150,
+            "NB Counts Agents in Bottom Quartile": 150
+          },
+          {
+            "NB Counts": 300,
+            "NB Counts Agents in Bottom Quartile": 300
+          },
+          {
+            "NB Counts": 450,
+            "NB Counts Agents in Bottom Quartile": 450
+          }
+        ]
+      },
+      {
+        "tableName": "Sum(PBI Data (2)",
+        "displayName": "Sum(PBI Data (2)",
+        "rowCount": 3500,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "R12 Loss Score Ratio Var to Bottom Quartile",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "R12_OVERALL_SCORE",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "R12 Loss Score Ratio Var to Bottom Quartile": 150,
+            "R12_OVERALL_SCORE": 150
+          },
+          {
+            "R12 Loss Score Ratio Var to Bottom Quartile": 300,
+            "R12_OVERALL_SCORE": 300
+          },
+          {
+            "R12 Loss Score Ratio Var to Bottom Quartile": 450,
+            "R12_OVERALL_SCORE": 450
+          }
+        ]
+      },
+      {
+        "tableName": "Min(PBI Data (2)",
+        "displayName": "Min(PBI Data (2)",
+        "rowCount": 3500,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "Agent",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "Agent": 150
+          },
+          {
+            "Agent": 300
+          },
+          {
+            "Agent": 450
+          }
+        ]
+      },
+      {
+        "tableName": "Min(PBI Data",
+        "displayName": "Min(PBI Data",
+        "rowCount": 3500,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "Agent",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "Agent": 150
+          },
+          {
+            "Agent": 300
+          },
+          {
+            "Agent": 450
+          }
+        ]
+      }
+    ]
+  },
+  "d10": {
+    "summary": {
+      "totalPages": 0,
+      "totalVisuals": 0,
+      "totalTables": 0,
+      "totalDAXMeasures": 0
+    },
+    "pages": [],
+    "daxMeasures": [],
+    "tables": []
+  },
+  "u6": {
+    "summary": {
+      "totalPages": 2,
+      "totalVisuals": 8,
+      "totalTables": 2,
+      "totalDAXMeasures": 3
+    },
+    "pages": [
+      {
+        "id": "pg_1",
+        "name": "Page 1",
+        "visualType": "slicer",
+        "dimensions": [
+          "Daily Assigned Import Rate by CY",
+          "Import Assigned-Rate",
+          "Imported datetime adjusted",
+          "State"
+        ],
+        "measures": [
+          {
+            "name": "Imported datetime adjusted",
+            "type": "explicit"
+          },
+          {
+            "name": "State",
+            "type": "explicit"
+          },
+          {
+            "name": "LOB",
+            "type": "explicit"
+          },
+          {
+            "name": "Daily Assigned Import Rate by CY",
+            "type": "explicit"
+          },
+          {
+            "name": "Import Assigned-Rate",
+            "type": "explicit"
+          }
+        ],
+        "visualSlots": {
+          "values": "Page 1 Primary Metric Grid",
+          "axes": "Page 1 Categorical Breakdown"
+        }
+      },
+      {
+        "id": "pg_2",
+        "name": "Page 2",
+        "visualType": "areaChart",
+        "dimensions": [
+          "Allocated_IND)",
+          "bind"
+        ],
+        "measures": [
+          {
+            "name": "Total Premium",
+            "type": "explicit"
+          },
+          {
+            "name": "Policies Bound",
+            "type": "explicit"
+          }
+        ],
+        "visualSlots": {
+          "values": "Page 2 Primary Metric Grid",
+          "axes": "Page 2 Categorical Breakdown"
+        }
+      }
+    ],
+    "daxMeasures": [
+      {
+        "id": "dax_1",
+        "name": "Quotation Latency (s)",
+        "expression": "AVERAGE(Rating[Engine_Response_Ms]) / 1000",
+        "homeTable": "Rating",
+        "formatString": "0.00s",
+        "usedInPages": [
+          "Page 1"
+        ]
+      },
+      {
+        "id": "dax_2",
+        "name": "Rating Factor Multiplier",
+        "expression": "PRODUCT(RatingFactors[Factor_Weight])",
+        "homeTable": "RatingFactors",
+        "formatString": "0.000",
+        "usedInPages": [
+          "Page 1",
+          "Page 2"
+        ]
+      },
+      {
+        "id": "dax_3",
+        "name": "Active Submissions",
+        "expression": "COUNTROWS(FILTER(Submissions, Submissions[Status] = \"In Review\"))",
+        "homeTable": "Submissions",
+        "formatString": "#,##0",
+        "usedInPages": [
+          "Page 1"
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "tableName": "Sheet1",
+        "displayName": "Sheet1",
+        "rowCount": 1250,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "Daily Assigned Import Rate by CY",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Import Assigned-Rate",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "Imported datetime adjusted",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "LOB",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "State",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "bind",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "Daily Assigned Import Rate by CY": 150,
+            "Import Assigned-Rate": 150,
+            "Imported datetime adjusted": 150,
+            "LOB": 150,
+            "State": 150,
+            "bind": 150
+          },
+          {
+            "Daily Assigned Import Rate by CY": 300,
+            "Import Assigned-Rate": 300,
+            "Imported datetime adjusted": 300,
+            "LOB": 300,
+            "State": 300,
+            "bind": 300
+          },
+          {
+            "Daily Assigned Import Rate by CY": 450,
+            "Import Assigned-Rate": 450,
+            "Imported datetime adjusted": 450,
+            "LOB": 450,
+            "State": 450,
+            "bind": 450
+          }
+        ]
+      },
+      {
+        "tableName": "Sum(Sheet1",
+        "displayName": "Sum(Sheet1",
+        "rowCount": 1250,
+        "source": "Import (Direct Lake)",
+        "relationships": [
+          "1:* to Fact_Production"
+        ],
+        "columns": [
+          {
+            "name": "Allocated_IND",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "Allocated_IND": 150
+          },
+          {
+            "Allocated_IND": 300
+          },
+          {
+            "Allocated_IND": 450
           }
         ]
       }
     ]
   }
-,
-  "d8": {
-  "summary": {
-    "totalPages": 0,
-    "totalVisuals": 0,
-    "totalTables": 0,
-    "totalDAXMeasures": 0
-  },
-  "pages": [],
-  "daxMeasures": [],
-  "tables": []
-},
-  "d9": {
-  "summary": {
-    "totalPages": 1,
-    "totalVisuals": 22,
-    "totalTables": 6,
-    "totalDAXMeasures": 4
-  },
-  "pages": [
-    {
-      "id": "pg_1",
-      "name": "Page 1",
-      "visualType": "textbox",
-      "dimensions": [
-        "Agent)"
-      ],
-      "measures": [
-        {
-          "name": "Agency State",
-          "type": "explicit"
-        },
-        {
-          "name": "Line of Business",
-          "type": "explicit"
-        },
-        {
-          "name": "Reporting Period",
-          "type": "explicit"
-        },
-        {
-          "name": "Agency state",
-          "type": "explicit"
-        },
-        {
-          "name": "Line of Business",
-          "type": "explicit"
-        },
-        {
-          "name": "Reporting Period",
-          "type": "explicit"
-        }
-      ],
-      "visualSlots": {
-        "values": "Page 1 Primary Metric Grid",
-        "axes": "Page 1 Categorical Breakdown"
-      }
-    }
-  ],
-  "daxMeasures": [
-    {
-      "id": "dax_1",
-      "name": "Total New Business Premium",
-      "expression": "SUM(Production[New_Business_Amount])",
-      "homeTable": "Production",
-      "formatString": "0,##0",
-      "usedInPages": [
-        "Page 1"
-      ]
-    },
-    {
-      "id": "dax_2",
-      "name": "Bottom Quartile Agent Count",
-      "expression": "CALCULATE(COUNTROWS(Agent), Agent[Production_Quartile] = 4)",
-      "homeTable": "Agent",
-      "formatString": "#,##0",
-      "usedInPages": [
-        "Page 1"
-      ]
-    },
-    {
-      "id": "dax_3",
-      "name": "Average Bind Velocity (Days)",
-      "expression": "AVERAGE(Production[Days_To_Bind])",
-      "homeTable": "Production",
-      "formatString": "0.0",
-      "usedInPages": [
-        "Page 1"
-      ]
-    },
-    {
-      "id": "dax_4",
-      "name": "Conversion Rate",
-      "expression": "DIVIDE([Policies Bound], [Quotes Submitted], 0)",
-      "homeTable": "Production",
-      "formatString": "0.0%",
-      "usedInPages": [
-        "Page 1"
-      ]
-    }
-  ],
-  "tables": [
-    {
-      "tableName": "PBI Data",
-      "displayName": "PBI Data",
-      "rowCount": 3500,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "AOR + Agent",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Agency State",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "District",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Line of Business",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Reporting Period",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "AOR + Agent": 150,
-          "Agency State": 150,
-          "District": 150,
-          "Line of Business": 150,
-          "Reporting Period": 150
-        },
-        {
-          "AOR + Agent": 300,
-          "Agency State": 300,
-          "District": 300,
-          "Line of Business": 300,
-          "Reporting Period": 300
-        },
-        {
-          "AOR + Agent": 450,
-          "Agency State": 450,
-          "District": 450,
-          "Line of Business": 450,
-          "Reporting Period": 450
-        }
-      ]
-    },
-    {
-      "tableName": "PBI Data (2)",
-      "displayName": "PBI Data (2)",
-      "rowCount": 3500,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "AOR + Agent",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Agency state",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Line of Business",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Reporting Period",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "AOR + Agent": 150,
-          "Agency state": 150,
-          "Line of Business": 150,
-          "Reporting Period": 150
-        },
-        {
-          "AOR + Agent": 300,
-          "Agency state": 300,
-          "Line of Business": 300,
-          "Reporting Period": 300
-        },
-        {
-          "AOR + Agent": 450,
-          "Agency state": 450,
-          "Line of Business": 450,
-          "Reporting Period": 450
-        }
-      ]
-    },
-    {
-      "tableName": "Sum(PBI Data",
-      "displayName": "Sum(PBI Data",
-      "rowCount": 3500,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "NB Counts",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "NB Counts Agents in Bottom Quartile",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "NB Counts": 150,
-          "NB Counts Agents in Bottom Quartile": 150
-        },
-        {
-          "NB Counts": 300,
-          "NB Counts Agents in Bottom Quartile": 300
-        },
-        {
-          "NB Counts": 450,
-          "NB Counts Agents in Bottom Quartile": 450
-        }
-      ]
-    },
-    {
-      "tableName": "Sum(PBI Data (2)",
-      "displayName": "Sum(PBI Data (2)",
-      "rowCount": 3500,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "R12 Loss Score Ratio Var to Bottom Quartile",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "R12_OVERALL_SCORE",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "R12 Loss Score Ratio Var to Bottom Quartile": 150,
-          "R12_OVERALL_SCORE": 150
-        },
-        {
-          "R12 Loss Score Ratio Var to Bottom Quartile": 300,
-          "R12_OVERALL_SCORE": 300
-        },
-        {
-          "R12 Loss Score Ratio Var to Bottom Quartile": 450,
-          "R12_OVERALL_SCORE": 450
-        }
-      ]
-    },
-    {
-      "tableName": "Min(PBI Data (2)",
-      "displayName": "Min(PBI Data (2)",
-      "rowCount": 3500,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "Agent",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "Agent": 150
-        },
-        {
-          "Agent": 300
-        },
-        {
-          "Agent": 450
-        }
-      ]
-    },
-    {
-      "tableName": "Min(PBI Data",
-      "displayName": "Min(PBI Data",
-      "rowCount": 3500,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "Agent",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "Agent": 150
-        },
-        {
-          "Agent": 300
-        },
-        {
-          "Agent": 450
-        }
-      ]
-    }
-  ]
-},
-  "d10": {
-  "summary": {
-    "totalPages": 0,
-    "totalVisuals": 0,
-    "totalTables": 0,
-    "totalDAXMeasures": 0
-  },
-  "pages": [],
-  "daxMeasures": [],
-  "tables": []
-},
-  "u6": {
-  "summary": {
-    "totalPages": 2,
-    "totalVisuals": 8,
-    "totalTables": 2,
-    "totalDAXMeasures": 3
-  },
-  "pages": [
-    {
-      "id": "pg_1",
-      "name": "Page 1",
-      "visualType": "slicer",
-      "dimensions": [
-        "Daily Assigned Import Rate by CY",
-        "Import Assigned-Rate",
-        "Imported datetime adjusted",
-        "State"
-      ],
-      "measures": [
-        {
-          "name": "Imported datetime adjusted",
-          "type": "explicit"
-        },
-        {
-          "name": "State",
-          "type": "explicit"
-        },
-        {
-          "name": "LOB",
-          "type": "explicit"
-        },
-        {
-          "name": "Daily Assigned Import Rate by CY",
-          "type": "explicit"
-        },
-        {
-          "name": "Import Assigned-Rate",
-          "type": "explicit"
-        }
-      ],
-      "visualSlots": {
-        "values": "Page 1 Primary Metric Grid",
-        "axes": "Page 1 Categorical Breakdown"
-      }
-    },
-    {
-      "id": "pg_2",
-      "name": "Page 2",
-      "visualType": "areaChart",
-      "dimensions": [
-        "Allocated_IND)",
-        "bind"
-      ],
-      "measures": [
-        {
-          "name": "Total Premium",
-          "type": "explicit"
-        },
-        {
-          "name": "Policies Bound",
-          "type": "explicit"
-        }
-      ],
-      "visualSlots": {
-        "values": "Page 2 Primary Metric Grid",
-        "axes": "Page 2 Categorical Breakdown"
-      }
-    }
-  ],
-  "daxMeasures": [
-    {
-      "id": "dax_1",
-      "name": "Quotation Latency (s)",
-      "expression": "AVERAGE(Rating[Engine_Response_Ms]) / 1000",
-      "homeTable": "Rating",
-      "formatString": "0.00s",
-      "usedInPages": [
-        "Page 1"
-      ]
-    },
-    {
-      "id": "dax_2",
-      "name": "Rating Factor Multiplier",
-      "expression": "PRODUCT(RatingFactors[Factor_Weight])",
-      "homeTable": "RatingFactors",
-      "formatString": "0.000",
-      "usedInPages": [
-        "Page 1",
-        "Page 2"
-      ]
-    },
-    {
-      "id": "dax_3",
-      "name": "Active Submissions",
-      "expression": "COUNTROWS(FILTER(Submissions, Submissions[Status] = \"In Review\"))",
-      "homeTable": "Submissions",
-      "formatString": "#,##0",
-      "usedInPages": [
-        "Page 1"
-      ]
-    }
-  ],
-  "tables": [
-    {
-      "tableName": "Sheet1",
-      "displayName": "Sheet1",
-      "rowCount": 1250,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "Daily Assigned Import Rate by CY",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Import Assigned-Rate",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "Imported datetime adjusted",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "LOB",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "State",
-          "type": "NUMERIC(14,2)"
-        },
-        {
-          "name": "bind",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "Daily Assigned Import Rate by CY": 150,
-          "Import Assigned-Rate": 150,
-          "Imported datetime adjusted": 150,
-          "LOB": 150,
-          "State": 150,
-          "bind": 150
-        },
-        {
-          "Daily Assigned Import Rate by CY": 300,
-          "Import Assigned-Rate": 300,
-          "Imported datetime adjusted": 300,
-          "LOB": 300,
-          "State": 300,
-          "bind": 300
-        },
-        {
-          "Daily Assigned Import Rate by CY": 450,
-          "Import Assigned-Rate": 450,
-          "Imported datetime adjusted": 450,
-          "LOB": 450,
-          "State": 450,
-          "bind": 450
-        }
-      ]
-    },
-    {
-      "tableName": "Sum(Sheet1",
-      "displayName": "Sum(Sheet1",
-      "rowCount": 1250,
-      "source": "Import (Direct Lake)",
-      "relationships": [
-        "1:* to Fact_Production"
-      ],
-      "columns": [
-        {
-          "name": "Allocated_IND",
-          "type": "NUMERIC(14,2)"
-        }
-      ],
-      "sampleRows": [
-        {
-          "Allocated_IND": 150
-        },
-        {
-          "Allocated_IND": 300
-        },
-        {
-          "Allocated_IND": 450
-        }
-      ]
-    }
-  ]
-}
 };
