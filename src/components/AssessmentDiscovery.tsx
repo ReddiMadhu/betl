@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Clock } from 'lucide-react';
+import { ArrowRight, Clock, ExternalLink } from 'lucide-react';
 import ThinkingTrace from './ThinkingTrace';
 import type { TraceStep } from './ThinkingTrace';
 import { allAssets, isEtlAsset } from '../data/discoveryData';
@@ -258,6 +258,39 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
+      {/* ─── Page header with Ontology Bank link ─── */}
+      <div className="flex items-center justify-end mb-4">
+        <a
+          href="https://ontologybank.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            borderColor: 'var(--color-border-primary)',
+            color: 'var(--color-text-primary)',
+            boxShadow: '0 1px 3px var(--color-card-shadow)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-accent)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+          }}
+          title="Ontology Bank"
+        >
+          <span
+            className="w-2 h-2 rounded-full"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, #F5D060, #D4A017)',
+              boxShadow: '0 0 6px rgba(212, 160, 23, 0.5)',
+            }}
+          />
+          <span>Ontology Bank</span>
+          <ExternalLink size={13} style={{ color: 'var(--color-text-tertiary)' }} />
+        </a>
+      </div>
+
       {/* ─── Two side-by-side boxes: BI Box & ETL Box ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 

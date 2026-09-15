@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronDown, ExternalLink } from 'lucide-react';
 import { getFilteredBusinessAreas, getFilteredSummaryMetrics } from '../../data/discoveryData';
@@ -24,6 +24,40 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
 
   const metrics = useMemo(() => getFilteredSummaryMetrics(categoryFilter), [categoryFilter]);
   const filteredAreas = useMemo(() => getFilteredBusinessAreas(categoryFilter), [categoryFilter]);
+
+  // Dynamic column detection for grid layout (matches Tailwind xl: 3, md: 2, default: 1)
+  const [columns, setColumns] = useState<number>(3);
+  const [naturalBiHeights, setNaturalBiHeights] = useState<Record<number, number>>({});
+
+  useEffect(() => {
+    const updateColumns = () => {
+      const w = window.innerWidth;
+      if (w >= 1280) setColumns(3);
+      else if (w >= 768) setColumns(2);
+      else setColumns(1);
+    };
+    updateColumns();
+    window.addEventListener('resize', updateColumns);
+    return () => window.removeEventListener('resize', updateColumns);
+  }, []);
+
+  const handleBiHeightMeasured = useCallback((cardIndex: number, height: number) => {
+    setNaturalBiHeights((prev) => {
+      if (prev[cardIndex] === height) return prev;
+      return { ...prev, [cardIndex]: height };
+    });
+  }, []);
+
+  // Compute maximum BI height per row so ETL lines start at the exact same horizontal level
+  const rowMaxBiHeights = useMemo(() => {
+    const rowMaxes: Record<number, number> = {};
+    filteredAreas.forEach((_, idx) => {
+      const row = Math.floor(idx / columns);
+      const h = naturalBiHeights[idx] || 0;
+      rowMaxes[row] = Math.max(rowMaxes[row] || 0, h);
+    });
+    return rowMaxes;
+  }, [filteredAreas, columns, naturalBiHeights]);
 
   const handleAssetClick = (asset: Asset) => {
     if (onAssetDetail) {
@@ -137,15 +171,21 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
 
       {/* ── Business area grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-10">
-        {filteredAreas.map((area, i) => (
-          <BusinessAreaCard
-            key={area.id}
-            area={area}
-            index={i}
-            categoryFilter={categoryFilter}
-            onAssetClick={handleAssetClick}
-          />
-        ))}
+        {filteredAreas.map((area, i) => {
+          const row = Math.floor(i / columns);
+          const biMinHeight = rowMaxBiHeights[row] || 0;
+          return (
+            <BusinessAreaCard
+              key={area.id}
+              area={area}
+              index={i}
+              categoryFilter={categoryFilter}
+              onAssetClick={handleAssetClick}
+              biMinHeight={biMinHeight}
+              onBiHeightMeasured={handleBiHeightMeasured}
+            />
+          );
+        })}
       </div>
 
       {/* Empty state */}

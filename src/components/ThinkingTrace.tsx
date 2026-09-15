@@ -78,6 +78,47 @@ export default function ThinkingTrace({
     onSettled?.();
   }, [working, onSettled]);
 
+  // Highlight "built-in KPI Bank" with dual-layer gold gradient glow (Approach 2)
+  const highlightKpiBank = (text: string) => {
+    const keyword = 'built-in KPI Bank';
+    const idx = text.indexOf(keyword);
+    if (idx === -1) return text;
+    return (
+      <>
+        {text.slice(0, idx)}
+        <span className="relative inline-block font-bold">
+          {/* Layer 1: Ambient Blurred Gold Glow behind */}
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 select-none blur-[5px] opacity-80 pointer-events-none"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, #FFE072 0%, #F5D060 30%, #D4A017 70%, #E6B800 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            {keyword}
+          </span>
+          {/* Layer 2: Crisp Foreground Metallic Gold Gradient */}
+          <span
+            className="relative"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, #FFF4BD 0%, #F5D060 25%, #D4A017 65%, #FFE072 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              color: 'transparent',
+              filter: 'drop-shadow(0 0 1px rgba(255, 244, 189, 0.6))',
+            }}
+          >
+            {keyword}
+          </span>
+        </span>
+        {text.slice(idx + keyword.length)}
+      </>
+    );
+  };
+
   if (!started) return null;
 
   return (
@@ -241,7 +282,7 @@ export default function ThinkingTrace({
                           className="text-[12.5px] font-medium"
                           style={{ color: 'var(--color-text-primary)' }}
                         >
-                          {step.label}
+                          {highlightKpiBank(step.label)}
                         </span>
                         {step.detail && (
                           <span

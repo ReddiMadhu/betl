@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import type { Asset, BusinessArea, CategoryFilter, TechnologyName } from '../../data/discoveryData';
@@ -12,6 +12,10 @@ import { isEtlAsset, TECHNOLOGY_LOGOS } from '../../data/discoveryData';
  *       with file names listed below using arrow indicators
  * ───────────────────────────────────────────────────────── */
 
+// Strict ordering of technologies in BI and ETL sections
+const BI_TECH_ORDER: TechnologyName[] = ['Tableau', 'Power BI', 'MicroStrategy', 'ThoughtSpot'];
+const ETL_TECH_ORDER: TechnologyName[] = ['Alteryx', 'Python'];
+
 interface TechGroup {
   technology: TechnologyName;
   logo: string;
@@ -23,9 +27,20 @@ interface Props {
   index: number;
   categoryFilter: CategoryFilter;
   onAssetClick: (asset: Asset) => void;
+  biMinHeight?: number;
+  onBiHeightMeasured?: (index: number, height: number) => void;
 }
 
-export default function BusinessAreaCard({ area, index, categoryFilter, onAssetClick }: Props) {
+export default function BusinessAreaCard({
+  area,
+  index,
+  categoryFilter,
+  onAssetClick,
+  biMinHeight,
+  onBiHeightMeasured,
+}: Props) {
+  const biContentRef = useRef<HTMLDivElement>(null);
+
   const { biGroups, etlGroups } = useMemo(() => {
     const biMap = new Map<TechnologyName, Asset[]>();
     const etlMap = new Map<TechnologyName, Asset[]>();
@@ -49,8 +64,37 @@ export default function BusinessAreaCard({ area, index, categoryFilter, onAssetC
         assets,
       }));
 
-    return { biGroups: toGroups(biMap), etlGroups: toGroups(etlMap) };
+    // Sort BI technologies: Tableau -> Power BI -> MicroStrategy -> ThoughtSpot
+    const sortedBi = toGroups(biMap).sort((a, b) => {
+      const idxA = BI_TECH_ORDER.indexOf(a.technology);
+      const idxB = BI_TECH_ORDER.indexOf(b.technology);
+      return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+    });
+
+    // Sort ETL technologies: Alteryx -> Python
+    const sortedEtl = toGroups(etlMap).sort((a, b) => {
+      const idxA = ETL_TECH_ORDER.indexOf(a.technology);
+      const idxB = ETL_TECH_ORDER.indexOf(b.technology);
+      return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB);
+    });
+
+    return { biGroups: sortedBi, etlGroups: sortedEtl };
   }, [area.assets]);
+
+  // Measure natural unconstrained height of BI section and report to parent
+  useEffect(() => {
+    if (!biContentRef.current || !onBiHeightMeasured) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height;
+        if (height > 0) {
+          onBiHeightMeasured(index, Math.round(height));
+        }
+      }
+    });
+    observer.observe(biContentRef.current);
+    return () => observer.disconnect();
+  }, [index, onBiHeightMeasured, biGroups]);
 
   const showBI = categoryFilter === 'ALL' || categoryFilter === 'BI';
   const showETL = categoryFilter === 'ALL' || categoryFilter === 'ETL';
@@ -77,8 +121,8 @@ export default function BusinessAreaCard({ area, index, categoryFilter, onAssetC
       }}
       aria-label={`${area.name} — ${area.assets.length} assets`}
     >
-      {/* ── Card header ── */}
-      <div className="p-5 pb-3">
+      {/* ── Card header with uniform minimum height ── */}
+      <div className="p-5 pb-3 min-h-[82px] flex flex-col justify-start">
         {/* Title + asset count */}
         <div className="flex items-start justify-between mb-1">
           <h3
@@ -101,7 +145,7 @@ export default function BusinessAreaCard({ area, index, categoryFilter, onAssetC
         {/* Description */}
         {area.description && (
           <p
-            className="text-[12px] leading-relaxed mb-3"
+            className="text-[12px] leading-relaxed line-clamp-2"
             style={{ color: 'var(--color-text-tertiary)' }}
           >
             {area.description}
@@ -110,24 +154,32 @@ export default function BusinessAreaCard({ area, index, categoryFilter, onAssetC
       </div>
 
       {/* ── Asset list grouped by technology ── */}
-      <div className="px-3 pb-4 flex flex-col gap-1" role="list">
-        {/* BI Section */}
+      <div className="px-3 pb-4 flex flex-col gap-1 flex-1" role="list">
+        {/* BI Section — Outer wrapper has equalized minHeight so ETL lines align */}
         {showBI && biGroups.length > 0 && (
-          <>
-            <SectionDivider label="BI" />
-            {biGroups.map((group) => (
-              <TechGroupBlock
-                key={group.technology}
-                group={group}
-                onAssetClick={onAssetClick}
-              />
-            ))}
-          </>
+          <div
+            className="flex flex-col"
+            style={{
+              minHeight: biMinHeight && biMinHeight > 0 ? `${biMinHeight}px` : undefined,
+            }}
+          >
+            {/* Inner div with natural unconstrained height for accurate measurement */}
+            <div ref={biContentRef} className="flex flex-col">
+              <SectionDivider label="BI" />
+              {biGroups.map((group) => (
+                <TechGroupBlock
+                  key={group.technology}
+                  group={group}
+                  onAssetClick={onAssetClick}
+                />
+              ))}
+            </div>
+          </div>
         )}
 
         {/* ETL Section */}
         {showETL && etlGroups.length > 0 && (
-          <>
+          <div className="flex flex-col">
             <SectionDivider label="ETL" />
             {etlGroups.map((group) => (
               <TechGroupBlock
@@ -136,7 +188,7 @@ export default function BusinessAreaCard({ area, index, categoryFilter, onAssetC
                 onAssetClick={onAssetClick}
               />
             ))}
-          </>
+          </div>
         )}
       </div>
     </motion.article>

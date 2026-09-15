@@ -21,32 +21,7 @@ function IngestionStatsBar() {
   const tabCount = useCountUp(10, 900, 400);
   const pyCount = useCountUp(1, 900, 450);
 
-  /* Reusable pill for individual platform counts */
-  const PlatformPill = ({
-    label,
-    count,
-  }: {
-    label: string;
-    count: number;
-  }) => (
-    <div
-      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border theme-transition text-xs font-medium shrink-0 whitespace-nowrap"
-      style={{
-        backgroundColor: 'var(--color-bg-elevated)',
-        borderColor: 'var(--color-border-primary)',
-        boxShadow: '0 1px 3px var(--color-card-shadow)',
-        color: 'var(--color-text-secondary)',
-      }}
-    >
-      <span>{label}:</span>
-      <span
-        className="font-bold tabular-nums text-xs"
-        style={{ color: 'var(--color-text-primary)' }}
-      >
-        {count}
-      </span>
-    </div>
-  );
+
 
   return (
     <div
@@ -54,7 +29,7 @@ function IngestionStatsBar() {
       style={{ borderColor: 'var(--color-border-primary)' }}
       aria-label="Ingestion and platform counts"
     >
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-3">
         {/* ── Row 1: Total Assets ── */}
         <div className="flex items-center justify-center">
           <div
@@ -69,91 +44,118 @@ function IngestionStatsBar() {
             <span>Total Assets:</span>
             <span
               className="font-bold tabular-nums text-sm"
-              style={{ color: 'var(--color-text-primary)' }}
+              style={{ color: 'var(--color-accent)' }}
             >
               {totalCount}
             </span>
           </div>
         </div>
 
-        {/* ── Row 2: Total BI & Total ETL strictly on the same line with vertical divider ── */}
-        <div className="w-full flex items-center justify-center gap-2 sm:gap-2.5 flex-nowrap overflow-x-auto py-0.5">
-          {/* Total BI + breakdown */}
-          <div className="flex items-center gap-1.5 shrink-0 flex-nowrap">
-            {/* Total BI badge */}
-            <div
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border theme-transition text-xs font-semibold shrink-0 whitespace-nowrap"
-              style={{
-                backgroundColor: 'var(--color-bg-elevated)',
-                borderColor: 'var(--color-border-primary)',
-                boxShadow: '0 1px 3px var(--color-card-shadow)',
-                color: 'var(--color-text-secondary)',
-              }}
-            >
-              <span>Total BI:</span>
+        {/* ── Row 2: Total BI (left box) & Total ETL (right box) ── */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* ── Left Box: Total BI ── */}
+          <div
+            className="rounded-lg border p-3 theme-transition"
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
+            }}
+          >
+            {/* Total BI header — centered */}
+            <div className="flex items-center justify-center gap-1.5 mb-2">
               <span
-                className="font-bold tabular-nums text-xs"
+                className="text-xs font-bold tracking-tight"
+                style={{ color: 'var(--color-accent)' }}
+              >
+                Total BI:
+              </span>
+              <span
+                className="text-sm font-extrabold tabular-nums"
                 style={{ color: 'var(--color-text-primary)' }}
               >
                 {biCount}
               </span>
             </div>
 
-            {/* Arrow */}
-            <span
-              className="text-xs font-medium shrink-0 px-0.5"
-              style={{ color: 'var(--color-text-tertiary)' }}
-            >
-              →
-            </span>
-
-            {/* BI Platform pills */}
-            <PlatformPill label="Power BI" count={pbiCount} />
-            <PlatformPill label="Tableau" count={tabCount} />
-            <PlatformPill label="MicroStrategy" count={mstrCount} />
+            {/* BI tech breakdown — horizontal */}
+            <div className="flex items-center justify-evenly flex-wrap gap-2">
+              {[
+                { label: 'Power BI', count: pbiCount },
+                { label: 'Tableau', count: tabCount },
+                { label: 'MicroStrategy', count: mstrCount },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border theme-transition text-[11px] font-medium shrink-0"
+                  style={{
+                    backgroundColor: 'var(--color-bg-tertiary)',
+                    borderColor: 'var(--color-border-primary)',
+                    color: 'var(--color-accent)',
+                  }}
+                >
+                  <span>{item.label}:</span>
+                  <span
+                    className="font-bold tabular-nums"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
+                    {item.count}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Vertical Divider between BI and ETL */}
+          {/* ── Right Box: Total ETL ── */}
           <div
-            className="w-[1.5px] h-4.5 shrink-0 mx-1.5 rounded-full"
+            className="rounded-lg border p-3 theme-transition"
             style={{
-              backgroundColor: 'var(--color-accent)',
-              boxShadow: '0 0 8px var(--color-accent-glow)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              borderColor: 'var(--color-border-primary)',
+              boxShadow: '0 1px 3px var(--color-card-shadow)',
             }}
-          />
-
-          {/* Total ETL + breakdown */}
-          <div className="flex items-center gap-1.5 shrink-0 flex-nowrap">
-            {/* Total ETL badge */}
-            <div
-              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border theme-transition text-xs font-semibold shrink-0 whitespace-nowrap"
-              style={{
-                backgroundColor: 'var(--color-bg-elevated)',
-                borderColor: 'var(--color-border-primary)',
-                boxShadow: '0 1px 3px var(--color-card-shadow)',
-                color: 'var(--color-text-secondary)',
-              }}
-            >
-              <span>Total ETL:</span>
+          >
+            {/* Total ETL header — centered */}
+            <div className="flex items-center justify-center gap-1.5 mb-2">
               <span
-                className="font-bold tabular-nums text-xs"
+                className="text-xs font-bold tracking-tight"
+                style={{ color: 'var(--color-accent)' }}
+              >
+                Total ETL:
+              </span>
+              <span
+                className="text-sm font-extrabold tabular-nums"
                 style={{ color: 'var(--color-text-primary)' }}
               >
                 {etlCount}
               </span>
             </div>
 
-            {/* Arrow */}
-            <span
-              className="text-xs font-medium shrink-0 px-0.5"
-              style={{ color: 'var(--color-text-tertiary)' }}
-            >
-              →
-            </span>
-
-            {/* ETL Platform pills */}
-            <PlatformPill label="Alteryx" count={altCount} />
-            <PlatformPill label="Python" count={pyCount} />
+            {/* ETL tech breakdown — horizontal */}
+            <div className="flex items-center justify-evenly flex-wrap gap-2">
+              {[
+                { label: 'Alteryx', count: altCount },
+                { label: 'Python', count: pyCount },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border theme-transition text-[11px] font-medium shrink-0"
+                  style={{
+                    backgroundColor: 'var(--color-bg-tertiary)',
+                    borderColor: 'var(--color-border-primary)',
+                    color: 'var(--color-accent)',
+                  }}
+                >
+                  <span>{item.label}:</span>
+                  <span
+                    className="font-bold tabular-nums"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
+                    {item.count}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -206,7 +206,7 @@ export function getFilteredSummaryMetrics(filter: CategoryFilter): SummaryMetric
   if (filter === 'ALL') return all;
 
   const biIcons = new Set(['dashboard', 'kpi', 'worksheet', 'calculated']);
-  const etlIcons = new Set(['etl', 'source', 'target']);
+  const etlIcons = new Set(['etl', 'source', 'target', 'kpi']);
 
   const allowedIcons = filter === 'BI' ? biIcons : etlIcons;
   return all.filter((m) => allowedIcons.has(m.icon));
