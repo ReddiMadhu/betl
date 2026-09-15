@@ -1173,7 +1173,7 @@ export default function MstrTableauWorkspace({ onBack, onFinish }: Props) {
                 <button onClick={onFinish ?? onBack}
                   className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer"
                   style={{ backgroundColor: '#8b5cf6', color: '#fff' }}>
-                  <CheckCircle size={14} /> Complete &amp; Take a Glance
+                  <CheckCircle size={14} /> Complete &amp; Impact a glance
                 </button>
               </div>
             </div>
