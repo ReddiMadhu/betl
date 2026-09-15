@@ -562,18 +562,18 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 setCrossTechFilterColumn(null);
                 setActiveTagFilter(null);
               }}
-              className="w-10 h-5 rounded-full p-0.5 cursor-pointer transition-colors duration-200 relative flex items-center shrink-0 border"
+              className="w-10 h-5 rounded-full p-0.5 cursor-pointer transition-all duration-200 relative flex items-center shrink-0 border-0"
               style={{
-                backgroundColor: 'var(--color-bg-tertiary)',
-                borderColor: 'var(--color-border-primary)',
+                background: 'linear-gradient(135deg, var(--color-accent) 0%, #FF6B35 50%, #EA580C 100%)',
+                boxShadow: '0 2px 6px rgba(251, 78, 11, 0.35)',
               }}
             >
               <motion.div
                 animate={{ x: activeSection === 'etl' ? 20 : 0 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className="w-3.5 h-3.5 rounded-full shadow-sm"
+                className="w-3.5 h-3.5 rounded-full shadow-md"
                 style={{
-                  backgroundColor: 'var(--color-accent)',
+                  backgroundColor: '#FFFFFF',
                 }}
               />
             </button>
@@ -745,8 +745,8 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <GitMerge size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
-                <h3 className="text-[13px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Consolidate & Merge</h3>
+                <GitMerge size={16} className="shrink-0" style={{ color: '#F59E0B' }} />
+                <h3 className="text-[13px] font-bold" style={{ color: '#F59E0B' }}>Consolidate & Merge</h3>
               </div>
               <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#F59E0B' }}>
                 {mergeRecs.length}
@@ -801,8 +801,8 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Trash2 size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
-                <h3 className="text-[13px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Decommission</h3>
+                <Trash2 size={16} className="shrink-0" style={{ color: '#EF4444' }} />
+                <h3 className="text-[13px] font-bold" style={{ color: '#EF4444' }}>Decommission</h3>
               </div>
               <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#EF4444' }}>
                 {retireRecs.length}
@@ -813,7 +813,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                 const count = decommissionTagCounts[tag] ?? 0;
                 const isActive = activeTagFilter?.column === 'decommission' && activeTagFilter?.tag === tag;
                 const tagColorMap: Record<string, string> = {
-                  'Inactive': '#0D9488',
+                  'Inactive': '#F43F5E',
                   'Subset': '#F97316',
                   'Cross Technology': CROSS_TECH_COLOR,
                   'Orphan Cascade': '#EC4899',
@@ -864,8 +864,8 @@ export default function RationalizationResults({ onStartMigration }: Props) {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
-                <h3 className="text-[13px] font-bold" style={{ color: 'var(--color-text-primary)' }}>Keep & Certify</h3>
+                <ShieldCheck size={16} className="shrink-0" style={{ color: '#22C55E' }} />
+                <h3 className="text-[13px] font-bold" style={{ color: '#22C55E' }}>Keep & Certify</h3>
               </div>
               <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#22C55E' }}>
                 {keepRecs.length}
