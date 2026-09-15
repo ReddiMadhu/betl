@@ -139,7 +139,11 @@ export interface SummaryMetric {
   icon: 'dashboard' | 'etl' | 'source' | 'target' | 'kpi' | 'worksheet' | 'calculated';
 }
 
-export function getSummaryMetrics(): SummaryMetric[] {
+export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric[] {
+  const biKpis = 636;
+  const etlKpis = 15;
+  const kpis = filter === 'BI' ? biKpis : filter === 'ETL' ? etlKpis : biKpis + etlKpis;
+
   const dashboards = allAssets.filter(
     (a) => a.assetType === 'Dashboard' || a.assetType === 'Report' || !isEtlAsset(a),
   ).length;
@@ -150,7 +154,6 @@ export function getSummaryMetrics(): SummaryMetric[] {
   ).size;
   const sources = allAssets.reduce((sum, a) => sum + (a.sourceCount ?? 0), 0);
   const targets = allAssets.reduce((sum, a) => sum + (a.targetCount ?? 0), 0);
-  const kpis = 637;
 
   const worksheets = Object.values(TABLEAU_DETAIL_DATA).reduce(
     (sum, item) => sum + item.summary.totalWorksheets,
@@ -202,7 +205,7 @@ export type CategoryFilter = 'ALL' | 'BI' | 'ETL';
 
 /* ── Filtered summary metrics based on category ── */
 export function getFilteredSummaryMetrics(filter: CategoryFilter): SummaryMetric[] {
-  const all = getSummaryMetrics();
+  const all = getSummaryMetrics(filter);
   if (filter === 'ALL') return all;
 
   const biIcons = new Set(['dashboard', 'kpi', 'worksheet', 'calculated']);
