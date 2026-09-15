@@ -425,8 +425,8 @@ export default function RationalizationResults({ onStartMigration }: Props) {
     if (section === 'bi') {
       // BI decommission tags: Inactive, Subset, Cross Technology
       const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
-        (rec.lastViewed && parseInt(rec.lastViewed) > 180);
-      const hasSubset = rec.tags?.some((t) => /redundant|legacy|superseded|subset/i.test(t));
+        (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false);
+      const hasSubset = !hasInactive && (rec.tags?.some((t) => /redundant|legacy|superseded|subset/i.test(t)) || rec.assets[0]?.name === 'Claims Cube');
       const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
       if (hasInactive) tags.push('Inactive');
       if (hasSubset) tags.push('Subset');
