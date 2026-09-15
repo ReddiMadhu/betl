@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown, ExternalLink } from 'lucide-react';
 import { getFilteredBusinessAreas, getFilteredSummaryMetrics } from '../../data/discoveryData';
 import type { Asset, CategoryFilter } from '../../data/discoveryData';
 import SummaryMetrics from './SummaryMetrics';
@@ -103,6 +103,31 @@ export default function AssessmentResults({ onStartRationalization, onAssetDetai
 
             {/* Download Documentation Button */}
             <DownloadDocumentationButton type="assessment" />
+
+            {/* biagents link */}
+            <a
+              href="https://bt.etl.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-[13px] font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-text-primary)',
+                boxShadow: '0 1px 3px var(--color-card-shadow)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-accent)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+              }}
+              title="biagents (bt.etl.com)"
+            >
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
+              <span>biagents</span>
+              <ExternalLink size={13} style={{ color: 'var(--color-text-tertiary)' }} />
+            </a>
           </div>
         </div>
       </motion.div>

@@ -185,7 +185,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
           className="text-xl md:text-2xl font-bold tracking-tight"
           style={{ color: 'var(--color-text-primary)' }}
         >
-          Take a Glance
+          Impact a glance
         </h1>
       </motion.div>
 
