@@ -190,8 +190,7 @@ export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric
     (sum, item) => sum + (item.daxMeasures?.length ?? item.summary.totalDAXMeasures),
     0,
   );
-  // const calcFields = tableauMeasures + pbiMeasures;
-  const calcFields = 564;
+  const calcFields = tableauMeasures + pbiMeasures || 564;
 
   return [
     { label: 'Dashboards & Reports', value: dashboards, icon: 'dashboard' },
