@@ -172,7 +172,7 @@ function DocCountCard({
         </p>
       </div>
       <div
-        className="mt-3 pt-2.5 border-t flex items-center justify-between"
+        className="mt-3 pt-2.5 border-t flex items-center"
         style={{ borderColor: 'var(--color-border-subtle)' }}
       >
         <span
@@ -184,12 +184,6 @@ function DocCountCard({
           }}
         >
           {sublabel}
-        </span>
-        <span
-          className="text-[10px] font-semibold"
-          style={{ color: 'var(--color-text-tertiary)' }}
-        >
-          Excel + MD
         </span>
       </div>
     </motion.div>
