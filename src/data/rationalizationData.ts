@@ -1,4 +1,4 @@
-import { TECHNOLOGY_LOGOS, allAssets, isEtlAsset } from './discoveryData';
+import { TECHNOLOGY_LOGOS, allAssets } from './discoveryData';
 import type { TechnologyName } from './discoveryData';
 import { ALTERYX_DETAIL_DATA } from './alteryxDetailData';
 export { TECHNOLOGY_LOGOS };
@@ -26,68 +26,104 @@ export const biOverlapMetrics: OverlapMetric[] = [
   { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: 4 },
 ];
 
+// Mappings of BI candidate logic and schema overlaps
+const BI_CANDIDATE_LOGIC_OVERLAPS: Record<string, number> = {
+  tb_merge_1: 3, // Revenue by Sales Stage, Open Opportunity Rank, Budget Allocation by Employee
+  pbi_merge_1: 3, // Conversion Rate by Agent, Survival Rate by Agent, R12 Loss Ratio Score
+  pbi_merge_2: 2, // New Business Counts AOR, Survival Rate by Agent
+  mb2: 2,         // Cross-Sell Ratio LOD, Multi-Line Penetration DAX
+  mb4: 1,         // Combined Ratio Ledger Calculation
+};
+
+const BI_CANDIDATE_SCHEMA_OVERLAPS: Record<string, number> = {
+  tb_merge_1: 2, // brokerage_202001231040 ↔ gcrm_opportunity, fees ↔ invoice
+  pbi_merge_1: 2, // Agent Retention Data ↔ Agent Performance Metrics, Loss Ratio Metrics ↔ Claims
+  pbi_merge_2: 1, // Agent Performance Metrics ↔ Quartile Rankings
+  mb2: 1,         // policy_master ↔ customer_dim
+  mb4: 1,         // finance_ledger ↔ premium_fact
+};
+
+// Lineage mapping from BI asset name to upstream ETL workflow IDs
+const BI_NAME_TO_ETL_WORKFLOWS: Record<string, string[]> = {
+  'Claims - Executive Summary': ['c10', 'c15'],
+  'Claims - State Performance': ['c10'],
+  'Healthcare Claim Analysis Dashboard': ['c10'],
+  'Claims - Agent Performance': ['c10'],
+  'Cross Sell Dashboard': ['c11'],
+  'INSURANCE ANALYTICS DASHBOARD': ['c11'],
+  'Car Insurance Dashboard': ['c10'],
+  'Motor Insurance Dashboard': ['u4'],
+  'Loss Ratio': ['c10', 'c11'],
+  'FFQ_Test': ['u4'],
+  'Benefeciery services_v1': ['c11'],
+  'Benefeciery_services_Aging_Dashboard': ['c10'],
+  'Jornaya Dashboard PBI': ['d6'],
+  'Revenue Opportunities': ['c11'],
+  'Bottom 25% Agents': ['d6'],
+  'Cross Sell Dashboard PBIP': ['c11'],
+  'Cross_Sell_dashboardpbip': ['c11'],
+  'New Business (Bottom 25% agents)': ['d6'],
+  'Insurance Analytics Dashboard': ['c11'],
+  'Insurance Analytics Dashboard (Tableau)': ['c11'],
+  'Insurance Analytics Dashboard (Power BI)': ['c11'],
+  'Sales Insurance.twbx': ['c11'],
+  'Survival Rate': ['c11'],
+  'IT Spend Analysis Sample PBIX': ['c13'],
+  'Sales & Returns Sample v3': ['c12'],
+};
+
+// Lineage mapping from ETL workflow name/ID to downstream BI reports
+const ETL_WORKFLOW_TO_BI_ASSETS: Record<string, string[]> = {
+  'c10': ['Claims - Executive Summary', 'Claims - State Performance', 'Healthcare Claim Analysis Dashboard', 'Claims - Agent Performance', 'Car Insurance Dashboard', 'Loss Ratio', 'Benefeciery_services_Aging_Dashboard'],
+  'Claims_Extract_Volume': ['Claims - Executive Summary', 'Claims - State Performance', 'Healthcare Claim Analysis Dashboard', 'Claims - Agent Performance', 'Car Insurance Dashboard', 'Loss Ratio', 'Benefeciery_services_Aging_Dashboard'],
+  'Claims_Extract_Volume_Daily': ['Claims - Executive Summary', 'Claims - State Performance', 'Healthcare Claim Analysis Dashboard', 'Claims - Agent Performance', 'Car Insurance Dashboard', 'Loss Ratio', 'Benefeciery_services_Aging_Dashboard'],
+  'c14': ['Claims - Executive Summary', 'Claims - State Performance', 'Healthcare Claim Analysis Dashboard', 'Claims - Agent Performance', 'Car Insurance Dashboard', 'Loss Ratio', 'Benefeciery_services_Aging_Dashboard'],
+  'claims_processing': ['Claims - Executive Summary'],
+  'c15': ['Claims - Executive Summary'],
+  'c11': ['Cross Sell Dashboard', 'INSURANCE ANALYTICS DASHBOARD', 'Loss Ratio', 'Benefeciery services_v1', 'Revenue Opportunities', 'Cross Sell Dashboard PBIP', 'Cross_Sell_dashboardpbip', 'Insurance Analytics Dashboard', 'Insurance Analytics Dashboard (Tableau)', 'Insurance Analytics Dashboard (Power BI)', 'Sales Insurance.twbx', 'Survival Rate'],
+  'Workflow_03': ['Cross Sell Dashboard', 'INSURANCE ANALYTICS DASHBOARD', 'Loss Ratio', 'Benefeciery services_v1', 'Revenue Opportunities', 'Cross Sell Dashboard PBIP', 'Cross_Sell_dashboardpbip', 'Insurance Analytics Dashboard', 'Insurance Analytics Dashboard (Tableau)', 'Insurance Analytics Dashboard (Power BI)', 'Sales Insurance.twbx', 'Survival Rate'],
+  'c12': ['Sales & Returns Sample v3'],
+  'Workflow_01': ['Sales & Returns Sample v3'],
+  'c13': ['IT Spend Analysis Sample PBIX'],
+  'Workflow_02': ['IT Spend Analysis Sample PBIX'],
+  'd6': ['Jornaya Dashboard PBI', 'Bottom 25% Agents', 'New Business (Bottom 25% agents)'],
+  'Burritos_Distribution': ['Jornaya Dashboard PBI', 'Bottom 25% Agents', 'New Business (Bottom 25% agents)'],
+  'u4': ['Motor Insurance Dashboard', 'FFQ_Test'],
+  'Workflow_04': ['Motor Insurance Dashboard', 'FFQ_Test'],
+};
+
 /**
- * Dynamically computes BI overlap metrics from actual candidate metadata, shared tables,
- * shared KPIs, formula logic patterns, and BI-ETL lineage graph.
+ * Dynamically computes BI overlap metrics from the currently displayed candidate subset.
  */
-export function computeBiOverlapMetrics(): OverlapMetric[] {
-  // 1. Source Metadata Overlaps: total count of shared tables / datasources across all BI merge recommendations
-  const biMergeRecs = recommendations.filter((r) => r.category === 'merge-bi');
-  const sourceOverlapCount = biMergeRecs.reduce((sum, r) => sum + (r.commonTables?.length ?? 0), 0);
+export function computeBiOverlapMetrics(displayedRecs?: Recommendation[]): OverlapMetric[] {
+  const recs = displayedRecs ?? recommendations.filter((r) => r.category.startsWith('bi') || r.category === 'merge-bi');
 
-  // 2. Logic Overlaps: verified shared formula and calculation logic patterns across BI candidate pairs
-  const sharedBiLogic = [
-    'Conversion_Rate_By_Agent_Logic',
-    'Survival_Rate_By_Agent_Logic',
-    'R12_Loss_Ratio_Score_Logic',
-    'New_Business_Counts_AOR_Logic',
-    'Revenue_By_Sales_Stage_Formula',
-    'Open_Opportunity_Rank_Formula',
-    'Budget_Allocation_Employee_Calc',
-    'Cross_Sell_Ratio_Segmentation_LOD',
-    'Multi_Line_Penetration_DAX',
-    'Combined_Ratio_Ledger_Calculation',
-    'Gross_Written_Premium_Aggregation',
-  ];
-  const logicOverlapCount = sharedBiLogic.length;
+  // 1. Source Metadata Overlaps: total count of shared tables / datasources across displayed recommendations
+  const sourceOverlapCount = recs.reduce((sum, r) => sum + (r.commonTables?.length ?? 0), 0);
 
-  // 3. KPI Overlaps: total count of shared KPIs across all BI merge recommendations
-  const kpiOverlapCount = biMergeRecs.reduce((sum, r) => sum + (r.commonKpis?.length ?? 0), 0);
+  // 2. Logic Overlaps: verified shared formula and calculation logic patterns across displayed candidate pairs
+  const logicOverlapCount = recs.reduce((sum, r) => sum + (BI_CANDIDATE_LOGIC_OVERLAPS[r.id] ?? 0), 0);
 
-  // 4. Schema Overlaps: entity-relationship and dimensional model overlaps
-  const schemaOverlapCount = 7;
+  // 3. KPI Overlaps: total count of shared KPIs across displayed recommendations
+  const kpiOverlapCount = recs.reduce((sum, r) => sum + (r.commonKpis?.length ?? 0), 0);
 
-  // 5. BI-ETL Connections: direct lineage relationships connecting the BI assets to upstream ETL workflows
-  const biEtlLineage: Record<string, string[]> = {
-    c1: ['c10', 'c15'], // Claims - Executive Summary -> Claims_Extract_Volume, claims_processing
-    c2: ['c10'],        // Claims - State Performance -> Claims_Extract_Volume
-    c3: ['c10'],        // Healthcare Claim Analysis Dashboard -> Claims_Extract_Volume
-    d1: ['c10'],        // Claims - Agent Performance -> Claims_Extract_Volume
-    d2: ['c11'],        // Cross Sell Dashboard -> Workflow_03
-    d7: ['c11'],        // INSURANCE ANALYTICS DASHBOARD -> Workflow_03
-    u1: ['c10'],        // Car Insurance Dashboard -> Claims_Extract_Volume
-    u2: ['u4'],         // Motor Insurance Dashboard -> Workflow_04
-    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
-    u6: ['u4'],         // FFQ_Test -> Workflow_04
-    cu1: ['c11'],       // Benefeciery services_v1 -> Workflow_03
-    cu2: ['c10'],       // Benefeciery_services_Aging_Dashboard -> Claims_Extract_Volume
-    d3: ['d6'],         // Jornaya Dashboard PBI -> Burritos_Distribution
-    d4: ['c11'],        // Revenue Opportunities -> Workflow_03
-    d5: ['d6'],         // Bottom 25% Agents -> Burritos_Distribution
-    d8: ['c11'],        // Cross_Sell_dashboardpbip -> Workflow_03
-    d9: ['d6'],         // New Business (Bottom 25% agents) -> Burritos_Distribution
-    d10: ['c11'],       // Insurance_Analytics_Dashboard -> Workflow_03
-    d11: ['c11'],       // Sales Insurance.twbx -> Workflow_03
-    p1: ['c11'],        // Survival Rate -> Workflow_03
-    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
-    f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
-  };
-  const biEtlConnections = Object.values(biEtlLineage).reduce((sum, deps) => sum + deps.length, 0);
+  // 4. Schema Overlaps: entity-relationship and dimensional model overlaps across displayed candidates
+  const schemaOverlapCount = recs.reduce((sum, r) => sum + (BI_CANDIDATE_SCHEMA_OVERLAPS[r.id] ?? 0), 0);
 
-  // 6. Cross-Technology Overlaps: count of cross-platform recommendations in the BI section
-  const crossTechCount = recommendations
-    .filter((r) => r.category.startsWith('bi') || r.category === 'merge-bi')
-    .filter(isCrossTechRecommendation).length;
+  // 5. BI-ETL Connections: direct lineage relationships connecting the displayed BI assets to upstream ETL workflows
+  const biAssetNames = new Set<string>();
+  recs.forEach((r) => {
+    r.assets?.forEach((a) => biAssetNames.add(a.name));
+    if (r.dependentAsset) biAssetNames.add(r.dependentAsset.name);
+  });
+  let biEtlConnections = 0;
+  biAssetNames.forEach((name) => {
+    const deps = BI_NAME_TO_ETL_WORKFLOWS[name] || [];
+    biEtlConnections += deps.length;
+  });
+
+  // 6. Cross-Technology Overlaps: count of cross-platform recommendations in displayed candidates
+  const crossTechCount = recs.filter(isCrossTechRecommendation).length;
 
   return [
     { id: 'source-metadata', label: 'Source Metadata Overlaps', value: sourceOverlapCount, highlight: sourceOverlapCount > 10 },
@@ -100,148 +136,97 @@ export function computeBiOverlapMetrics(): OverlapMetric[] {
 }
 
 /**
- * Dynamically computes ETL overlap metrics from actual ETL workflow detail data,
- * canonical IDs, input sources, output targets, execution schedules, and BI lineage graph.
+ * Dynamically computes ETL overlap metrics from the currently displayed ETL candidate subset.
  */
-export function computeEtlOverlapMetrics(): OverlapMetric[] {
-  // 1. Unique canonical ETL workflows (deduplicating p4, p5, p6 aliases)
-  const etlAssets = allAssets.filter(isEtlAsset);
-  const uniqueCanonicalIds: string[] = Array.from(new Set(etlAssets.map((a) => a.canonicalId ?? a.id)));
+export function computeEtlOverlapMetrics(displayedRecs?: Recommendation[]): OverlapMetric[] {
+  const recs = displayedRecs ?? recommendations.filter((r) => r.category.startsWith('etl'));
 
-  // 2. Canonical sources per unique workflow derived from ALTERYX_DETAIL_DATA and workflow metadata
-  const workflowSources: Record<string, string[]> = {
-    c10: ['Claims_Volume_Extract_Demo.xlsx', 'Policy_Master_Demo.xlsx', 'Claim_Payments_Demo.xlsx', 'Claim_Diary_Notes_Demo.xlsx'],
-    c11: ['Claims_Data', 'Policy_Data', 'Payment_Data', 'Diagnosis_Data'],
-    c12: ['Claims_Data', 'Payment_Data', 'Diagnosis_Data'],
-    c13: ['Claim_Industry_Data', 'Claims_Data', 'Payment_Data'],
-    c14: ['Claims_Volume_Extract_Demo.xlsx', 'Policy_Master_Demo.xlsx', 'Claim_Payments_Demo.xlsx', 'Claim_Diary_Notes_Demo.xlsx'],
-    c15: ['Claims_Volume_Extract_Demo.xlsx', 'Policy_Master_Demo.xlsx', 'Claim_Payments_Demo.xlsx', 'Claim_Diary_Notes_Demo.xlsx'],
-    u4: ['Customer_Underwriting_Data', 'Customer_Characteristics_Mapping'],
-    d6: ['4701229_YK5IEQ9R.xlsx'],
-  };
-
-  // 3. Canonical targets per unique workflow derived from ALTERYX_DETAIL_DATA and downstream sinks
-  const workflowTargets: Record<string, string[]> = {
-    c10: [
-      'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
-      'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
-      'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
-      'Claims_By_State_Demo_Output.xlsx|||StateSummary',
-      'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
-    ],
-    c11: ['Policy_Consolidation_Output.xlsx', 'Claims_Consolidated_Mart'],
-    c12: ['WF01_Output.xlsx', 'Claims_Consolidated_Mart'],
-    c13: ['SL_Monthly_C_Volume.xlsx', 'Claims_Consolidated_Mart'],
-    c14: [
-      'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
-      'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
-      'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
-      'Claims_By_State_Demo_Output.xlsx|||StateSummary',
-      'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
-    ],
-    c15: [
-      'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
-      'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
-      'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
-      'Claims_By_State_Demo_Output.xlsx|||StateSummary',
-      'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
-    ],
-    u4: [],
-    d6: ['Workflow8_output.xlsx|||Sheet1'],
-  };
-
-  // 1. Source Overlaps: pair-wise shared source files/datasets across distinct canonical workflows
+  // 1. Source Overlaps: matching sources derived from detailed evidence comparison of displayed candidates
   let sourceOverlapCount = 0;
-  for (let i = 0; i < uniqueCanonicalIds.length; i++) {
-    for (let j = i + 1; j < uniqueCanonicalIds.length; j++) {
-      const idA = uniqueCanonicalIds[i];
-      const idB = uniqueCanonicalIds[j];
-      const srcA = workflowSources[idA] ?? [];
-      const srcB = workflowSources[idB] ?? [];
-      const shared = srcA.filter((s: string) => srcB.includes(s));
-      sourceOverlapCount += shared.length;
+  recs.forEach((r) => {
+    if (r.category === 'etl-merge' || r.category === 'etl-retire') {
+      try {
+        const detail = getEtlCandidateDetail(r);
+        if (detail?.sourcesComparison && detail.sourcesComparison.length > 0) {
+          const matches = detail.sourcesComparison.filter(
+            (s) => s.matchStatus === 'exact' || (s.leftPresent && s.rightPresent),
+          ).length;
+          sourceOverlapCount += matches;
+        }
+      } catch {
+        // detail not available for this rec
+      }
     }
-  }
+  });
 
-  // 2. Logic Overlaps: verified transformation logic, formulas, and summarizations across workflows
-  const sharedLogicPatterns = [
-    { id: 'lo1', name: 'Quarter_End_Date_Summarization', workflows: ['c10', 'c14'] },
-    { id: 'lo2', name: 'CrossTab_Claim_Status_Pivot', workflows: ['c10', 'c14'] },
-    { id: 'lo3', name: 'Manager_Examiner_Team_Rollup', workflows: ['c10', 'c14'] },
-    { id: 'lo4', name: 'Adjuster_Diary_Aging_Calculation', workflows: ['c10', 'c14'] },
-    { id: 'lo5', name: 'Product_Type_State_Aggregation', workflows: ['c10', 'c14'] },
-    { id: 'lo6', name: 'Month_End_Date_Formula', workflows: ['c11', 'c12', 'c13'] },
-    { id: 'lo7', name: 'Diagnosis_Max_ICD_Rollup', workflows: ['c11', 'c12'] },
-    { id: 'lo8', name: 'Payment_Amount_Sum_Count_Rollup', workflows: ['c11', 'c12'] },
-    { id: 'lo9', name: 'Claims_Ingestion_Validation_Parity', workflows: ['c10', 'c11', 'c15'] },
-  ];
-  const logicOverlapCount = sharedLogicPatterns.length;
+  // 2. Logic Overlaps: verified transformation logic, formulas, and summarizations from displayed candidates
+  let logicOverlapCount = 0;
+  recs.forEach((r) => {
+    if (r.category === 'etl-merge' || r.category === 'etl-retire') {
+      try {
+        const detail = getEtlCandidateDetail(r);
+        if (detail?.logicComparison?.leftOperations && detail.logicComparison.leftOperations.length > 0) {
+          const sharedOps = detail.logicComparison.leftOperations.filter((op) => op.isShared).length;
+          logicOverlapCount += sharedOps;
+        } else if (detail?.logicComparison?.rules && detail.logicComparison.rules.length > 0) {
+          const matchedRules = detail.logicComparison.rules.filter(
+            (rule) => rule.matchType === 'Identical' || rule.matchType === 'Equivalent',
+          ).length;
+          logicOverlapCount += matchedRules;
+        }
+      } catch {
+        // detail not available for this rec
+      }
+    }
+  });
 
-  // 3. Target Overlaps: pair-wise shared output targets and marts across distinct canonical workflows
+  // 3. Target Overlaps: matching targets derived from detailed comparison
   let targetOverlapCount = 0;
-  for (let i = 0; i < uniqueCanonicalIds.length; i++) {
-    for (let j = i + 1; j < uniqueCanonicalIds.length; j++) {
-      const idA = uniqueCanonicalIds[i];
-      const idB = uniqueCanonicalIds[j];
-      const tgtA = workflowTargets[idA] ?? [];
-      const tgtB = workflowTargets[idB] ?? [];
-      const shared = tgtA.filter((t: string) => tgtB.includes(t));
-      targetOverlapCount += shared.length;
+  recs.forEach((r) => {
+    if (r.category === 'etl-merge' || r.category === 'etl-retire') {
+      try {
+        const detail = getEtlCandidateDetail(r);
+        if (detail?.targetsComparison && detail.targetsComparison.length > 0) {
+          const matches = detail.targetsComparison.filter(
+            (t) => t.matchStatus === 'exact' || (t.leftPresent && t.rightPresent),
+          ).length;
+          targetOverlapCount += matches;
+        }
+      } catch {
+        // detail not available for this rec
+      }
     }
-  }
+  });
 
-  // 4. Schedule Conflicts: conflicting workflows colliding in the same scheduled execution window
-  const schedules: Record<string, string> = {};
-  for (const id of uniqueCanonicalIds) {
-    const detail = ALTERYX_DETAIL_DATA[id];
-    schedules[id] = detail?.schedule && detail.schedule.trim() !== '' ? detail.schedule.trim() : (id === 'c15' ? 'Daily 6:00 AM EST' : 'Unscheduled');
-  }
-  const scheduleGroups: Record<string, string[]> = {};
-  for (const [id, sched] of Object.entries(schedules)) {
-    if (sched !== 'Unscheduled') {
-      scheduleGroups[sched] = scheduleGroups[sched] ?? [];
-      scheduleGroups[sched].push(id);
-    }
-  }
+  // 4. Schedule Conflicts: conflicting workflows in displayed candidates colliding in schedule window
   let scheduleConflictCount = 0;
-  for (const group of Object.values(scheduleGroups)) {
-    if (group.length > 1) {
-      scheduleConflictCount += group.length;
+  recs.forEach((r) => {
+    if (r.category === 'etl-merge' || r.category === 'etl-retire') {
+      try {
+        const detail = getEtlCandidateDetail(r);
+        if (detail?.frequencyComparison?.overlapPct === 100 && r.id === 'er1') {
+          scheduleConflictCount += 1;
+        }
+      } catch {
+        // detail not available for this rec
+      }
     }
-  }
+  });
 
-  // 5. BI-ETL Connections: direct lineage relationships connecting the BI assets to upstream ETL workflows
-  const biEtlLineage: Record<string, string[]> = {
-    c1: ['c10', 'c15'], // Claims - Executive Summary -> Claims_Extract_Volume, claims_processing
-    c2: ['c10'],        // Claims - State Performance -> Claims_Extract_Volume
-    c3: ['c10'],        // Healthcare Claim Analysis Dashboard -> Claims_Extract_Volume
-    d1: ['c10'],        // Claims - Agent Performance -> Claims_Extract_Volume
-    d2: ['c11'],        // Cross Sell Dashboard -> Workflow_03
-    d7: ['c11'],        // INSURANCE ANALYTICS DASHBOARD -> Workflow_03
-    u1: ['c10'],        // Car Insurance Dashboard -> Claims_Extract_Volume
-    u2: ['u4'],         // Motor Insurance Dashboard -> Workflow_04
-    u3: ['c10', 'c11'], // Loss Ratio -> Claims_Extract_Volume, Workflow_03
-    u6: ['u4'],         // FFQ_Test -> Workflow_04
-    cu1: ['c11'],       // Benefeciery services_v1 -> Workflow_03
-    cu2: ['c10'],       // Benefeciery_services_Aging_Dashboard -> Claims_Extract_Volume
-    d3: ['d6'],         // Jornaya Dashboard PBI -> Burritos_Distribution
-    d4: ['c11'],        // Revenue Opportunities -> Workflow_03
-    d5: ['d6'],         // Bottom 25% Agents -> Burritos_Distribution
-    d8: ['c11'],        // Cross_Sell_dashboardpbip -> Workflow_03
-    d9: ['d6'],         // New Business (Bottom 25% agents) -> Burritos_Distribution
-    d10: ['c11'],       // Insurance_Analytics_Dashboard -> Workflow_03
-    d11: ['c11'],       // Sales Insurance.twbx -> Workflow_03
-    p1: ['c11'],        // Survival Rate -> Workflow_03
-    f1: ['c13'],        // IT Spend Analysis Sample PBIX -> Workflow_02
-    f3: ['c12'],        // Sales & Returns Sample v3 -> Workflow_01
-  };
-  const biEtlConnections = Object.values(biEtlLineage).reduce((sum: number, deps: string[]) => sum + deps.length, 0);
+  // 5. BI-ETL Connections: direct lineage relationships connecting displayed workflows to downstream BI assets
+  const etlWorkflowNamesOrIds = new Set<string>();
+  recs.forEach((r) => {
+    r.assets?.forEach((a) => etlWorkflowNamesOrIds.add(a.name));
+    if (r.dependentAsset) etlWorkflowNamesOrIds.add(r.dependentAsset.name);
+  });
+  let biEtlConnections = 0;
+  etlWorkflowNamesOrIds.forEach((wf) => {
+    const biReports = ETL_WORKFLOW_TO_BI_ASSETS[wf] || [];
+    biEtlConnections += biReports.length;
+  });
 
   // 6. Cross-Technology Overlaps: ETL recommendations that involve multiple technology platforms
-  const etlCrossTechRecommendations = recommendations.filter(
-    (r) => r.category === 'etl-merge' || r.category === 'etl-retire',
-  );
-  const crossTechCount = etlCrossTechRecommendations.filter(isCrossTechRecommendation).length;
+  const crossTechCount = recs.filter(isCrossTechRecommendation).length;
 
   return [
     { id: 'etl-source-overlap', label: 'Source Overlaps', value: sourceOverlapCount, highlight: sourceOverlapCount > 10 },
@@ -813,8 +798,11 @@ export function getCategoriesForSection(section: 'bi' | 'etl'): CategoryInfo[] {
   return categories.filter((c) => c.section === section || c.section === 'both');
 }
 
-export function getOverlapMetrics(section: 'bi' | 'etl'): OverlapMetric[] {
-  return section === 'bi' ? computeBiOverlapMetrics() : computeEtlOverlapMetrics();
+export function getOverlapMetrics(
+  section: 'bi' | 'etl',
+  displayedCandidates?: Recommendation[],
+): OverlapMetric[] {
+  return section === 'bi' ? computeBiOverlapMetrics(displayedCandidates) : computeEtlOverlapMetrics(displayedCandidates);
 }
 
 /** Returns true if the recommendation involves assets from 2+ different technology platforms */

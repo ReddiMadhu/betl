@@ -711,8 +711,6 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
     }
   }, [toastMessage]);
 
-  const metrics = useMemo(() => getOverlapMetrics(activeSection), [activeSection]);
-
   // Filter recs by section, tab, and search
   const sectionRecs = useMemo(() => {
     const biCats = ['merge-bi', 'bi-retire', 'bi-keep', 'bi-etl-connections'];
@@ -841,6 +839,19 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
     if (crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all') return retireRecs.filter(isCrossTechRecommendation);
     return retireRecs;
   }, [retireRecs, activeTagFilter, crossTechFilterColumn, activeSection, classifyDecommissionRec]);
+
+  // ── Currently displayed candidates subset driving the Key Observations cards ──
+  const currentlyDisplayedCandidates = useMemo(() => {
+    if (activeTab === 'merge') return displayedMergeRecs;
+    if (activeTab === 'decommission') return displayedRetireRecs;
+    if (activeTab === 'keep') return keepRecs;
+    return [...displayedMergeRecs, ...displayedRetireRecs, ...keepRecs];
+  }, [activeTab, displayedMergeRecs, displayedRetireRecs, keepRecs]);
+
+  const metrics = useMemo(
+    () => getOverlapMetrics(activeSection, currentlyDisplayedCandidates),
+    [activeSection, currentlyDisplayedCandidates],
+  );
 
   return (
     <motion.div
