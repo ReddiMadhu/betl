@@ -229,7 +229,8 @@ function getBiMigrationSteps(
 function getEtlMigrationSteps(
   _selectedAssetIds?: string[],
 ): TraceStep[] {
-  const totalWorkflows = altPySummary.totalWorkflows;
+  // const totalWorkflows = altPySummary.totalWorkflows;
+  const totalWorkflows = 4;
   const convertedTools = altPySummary.convertedTools;
   const outputScripts = altPySummary.totalOutputScripts;
 
