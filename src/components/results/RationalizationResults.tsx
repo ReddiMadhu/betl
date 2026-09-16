@@ -6,6 +6,7 @@ import {
   GitMerge,
   Trash2,
   ShieldCheck,
+  ExternalLink,
   X,
   CheckCircle,
 } from 'lucide-react';
@@ -13,6 +14,7 @@ import {
   recommendations,
   getOverlapMetrics,
   isCrossTechRecommendation,
+  getEtlCandidateDetail,
 } from '../../data/rationalizationData';
 import type { Recommendation, TechnologyName } from '../../data/rationalizationData';
 import { useCountUp } from '../../hooks/useAnimations';
@@ -21,6 +23,7 @@ import MergeReviewModal from './MergeReviewModal';
 import DecommissionReviewModal from './DecommissionReviewModal';
 import EtlRationalisationReviewModal from './EtlRationalisationReviewModal';
 import DownloadDocumentationButton from './DownloadDocumentationButton';
+import { allAssets } from '../../data/discoveryData';
 import type { Asset } from '../../data/discoveryData';
 
 /* ─────────────────────────────────────────────────────────
@@ -345,6 +348,319 @@ function RecCard({
   );
 }
 
+/* ── Individual ETL Candidate Card (Compact Opportunity Card) ── */
+function EtlCandidateCard({
+  cand,
+  onReview,
+  onInspect,
+}: {
+  cand: Recommendation;
+  onReview: () => void;
+  onInspect: (idOrName: string) => void;
+}) {
+  const isConsolidate = cand.category === 'etl-merge';
+  const detail = getEtlCandidateDetail(cand);
+
+  const wf1 = detail.inScopeWorkflows[0];
+  const wf2 = detail.inScopeWorkflows[1];
+
+  return (
+    <div
+      className="rounded-2xl border p-5 sm:p-6 space-y-4 transition-all duration-200"
+      style={{
+        backgroundColor: 'var(--color-surface)',
+        borderColor: 'var(--color-border-primary)',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+      }}
+    >
+      {/* Workflow Identification Strip: Header -> Workflow Name -> Complexity + Criticality -> Inspect */}
+      <div
+        className="rounded-xl border p-3.5 space-y-2.5"
+        style={{
+          backgroundColor: 'var(--color-bg-tertiary)',
+          borderColor: 'var(--color-border-subtle)',
+        }}
+      >
+        <span className="text-[10.5px] font-bold uppercase tracking-wider block" style={{ color: 'var(--color-text-tertiary)' }}>
+          {isConsolidate ? 'WORKFLOW TO BE CONSOLIDATED' : 'WORKFLOW TO BE RETIRED'}
+        </span>
+
+        <div className="text-base font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
+          {wf1?.name || cand.assets[0]?.name}
+        </div>
+
+        {wf1 && (
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded border"
+              style={{
+                backgroundColor: wf1.complexity === 'High' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                borderColor: wf1.complexity === 'High' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)',
+                color: wf1.complexity === 'High' ? '#EF4444' : '#F59E0B',
+              }}
+            >
+              Complexity: {wf1.complexity}
+            </span>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded border"
+              style={{
+                backgroundColor: wf1.criticality === 'High' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                borderColor: wf1.criticality === 'High' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)',
+                color: wf1.criticality === 'High' ? '#EF4444' : '#F59E0B',
+              }}
+            >
+              Criticality: {wf1.criticality}
+            </span>
+          </div>
+        )}
+
+        <div>
+          <button
+            type="button"
+            onClick={() => onInspect(wf1?.id || wf1?.name || cand.assets[0]?.name)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold cursor-pointer transition-all hover:opacity-90"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border-primary)',
+              color: 'var(--color-accent)',
+            }}
+          >
+            <span>Inspect</span>
+            <ExternalLink size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* Directional Data-Superset Merge Callout Banner (for consolidate) */}
+      {isConsolidate && wf2 && (
+        <div
+          className="rounded-xl border p-4 space-y-2.5"
+          style={{
+            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+            borderColor: 'rgba(16, 185, 129, 0.35)',
+          }}
+        >
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <GitMerge size={16} className="text-emerald-400" />
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                DIRECTIONAL DATA-SUPERSET MERGE
+              </span>
+            </div>
+            <span className="text-[11px] font-bold" style={{ color: 'var(--color-text-tertiary)' }}>
+              Subsumption Rule Matched
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap text-xs font-bold">
+            <span className="px-2.5 py-1 rounded border bg-amber-500/15 text-amber-300 border-amber-500/35">
+              {wf1?.name} (Absorbed)
+            </span>
+            <span className="text-emerald-400 font-extrabold">↓ can be consolidated into ↓</span>
+            <span className="px-2.5 py-1 rounded border bg-emerald-500/15 text-emerald-300 border-emerald-500/35">
+              {wf2?.name} (Retained Superset)
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Retained Replacement Banner for Retire Candidate (if pairwise) */}
+      {!isConsolidate && (cand.id === 'er1' || cand.id === 'er3') && (
+        <div
+          className="rounded-xl border p-3.5 flex items-center justify-between flex-wrap gap-3"
+          style={{
+            backgroundColor: 'rgba(239, 68, 68, 0.06)',
+            borderColor: 'rgba(239, 68, 68, 0.25)',
+          }}
+        >
+          <div className="flex items-center gap-2 text-xs">
+            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 600 }}>
+              {cand.id === 'er3' ? 'Modernization Cutover Replacement:' : 'Replaced / Covered By:'}
+            </span>
+            <span className="px-2.5 py-0.5 rounded border text-xs font-bold bg-emerald-500/15 text-emerald-300 border-emerald-500/35">
+              {cand.id === 'er3' ? 'claims_processing (Python)' : 'Claims_Extract_Volume'}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onInspect(cand.id === 'er3' ? 'claims_processing' : 'Claims_Extract_Volume')}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold cursor-pointer transition-all hover:opacity-90"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border-primary)',
+              color: 'var(--color-accent)',
+            }}
+          >
+            <span>Inspect Replacement</span>
+            <ExternalLink size={11} />
+          </button>
+        </div>
+      )}
+
+      {/* Five Overlap Evidence Metrics — Vertically Stacked in exact required order */}
+      <div className="space-y-2.5 pt-1">
+        {[
+          { label: 'Source Metadata Overlap', value: detail.overlapMetrics.sourceMetadataPct },
+          { label: 'Target Metadata Overlap', value: detail.overlapMetrics.targetMetadataPct },
+          { label: 'Frequency Overlap', value: detail.overlapMetrics.frequencyPct },
+          { label: 'Logic Overlap', value: detail.overlapMetrics.logicPct },
+          { label: 'DAG Overlap', value: detail.overlapMetrics.dagPct },
+        ].map((m, mI) => {
+          const fillColor = m.value >= 70 ? '#34d399' : m.value >= 40 ? '#fbbf24' : '#38bdf8';
+          return (
+            <div key={mI} className="space-y-1">
+              <div className="flex items-center justify-between text-xs font-semibold">
+                <span style={{ color: 'var(--color-text-secondary)' }}>
+                  {m.label}
+                </span>
+                <span className="font-extrabold tabular-nums" style={{ color: fillColor }}>
+                  {m.value}%
+                </span>
+              </div>
+              <div
+                className="w-full h-1.5 rounded-full overflow-hidden"
+                style={{ backgroundColor: 'var(--color-border-subtle)' }}
+              >
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${m.value}%`, backgroundColor: fillColor }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Card Footer: View Detailed Analysis CTA Button */}
+      <div
+        className="flex items-center justify-end pt-3 border-t"
+        style={{ borderColor: 'var(--color-border-subtle)' }}
+      >
+        <button
+          type="button"
+          onClick={onReview}
+          className="inline-flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold text-white cursor-pointer transition-all shadow-md hover:brightness-110 active:scale-98"
+          style={{
+            backgroundColor: 'var(--color-accent)',
+            boxShadow: '0 2px 8px var(--color-accent-glow)',
+          }}
+        >
+          <span>View Detailed Analysis</span>
+          <ArrowRight size={13} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Individual ETL Keep Card ── */
+function EtlKeepCard({
+  cand,
+  onInspect,
+}: {
+  cand: Recommendation;
+  onInspect: (idOrName: string) => void;
+}) {
+  const assetName = cand.assets[0]?.name || cand.title;
+  const isPrimary = assetName === 'Claims_Extract_Volume' || assetName === 'Workflow_03';
+
+  return (
+    <div
+      className="rounded-2xl border p-5 sm:p-6 space-y-4"
+      style={{
+        backgroundColor: 'var(--color-surface)',
+        borderColor: 'var(--color-border-primary)',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.15)',
+      }}
+    >
+      {/* Workflow Identification Strip: Header -> Workflow Name -> Complexity + Criticality -> Inspect */}
+      <div
+        className="rounded-xl border p-3.5 space-y-2.5"
+        style={{
+          backgroundColor: 'var(--color-bg-tertiary)',
+          borderColor: 'var(--color-border-subtle)',
+        }}
+      >
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <span className="text-[10.5px] font-bold uppercase tracking-wider block" style={{ color: 'var(--color-text-tertiary)' }}>
+            RETAINED WORKFLOW
+          </span>
+          <span
+            className="text-[10.5px] font-bold px-2 py-0.5 rounded border"
+            style={{
+              backgroundColor: isPrimary ? 'rgba(56, 189, 248, 0.1)' : 'var(--color-bg-tertiary)',
+              borderColor: isPrimary ? 'rgba(56, 189, 248, 0.25)' : 'var(--color-border-subtle)',
+              color: isPrimary ? '#38bdf8' : 'var(--color-text-tertiary)',
+            }}
+          >
+            {isPrimary ? 'Primary Retained' : 'Retain As-Is'}
+          </span>
+        </div>
+
+        <div className="text-base font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
+          {assetName}
+        </div>
+
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+            Complexity: {assetName.includes('03') || assetName.includes('Extract') ? 'High' : 'Medium'}
+          </span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+            Criticality: {assetName.includes('03') || assetName.includes('Extract') ? 'High' : 'Medium'}
+          </span>
+        </div>
+
+        <div>
+          <button
+            type="button"
+            onClick={() => onInspect(assetName)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold cursor-pointer transition-all hover:opacity-90"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'var(--color-border-primary)',
+              color: 'var(--color-accent)',
+            }}
+          >
+            <span>Inspect Workflow</span>
+            <ExternalLink size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* Rationale Callout Banner */}
+      <div
+        className="rounded-xl border p-3.5 space-y-1"
+        style={{
+          backgroundColor: 'var(--color-bg-tertiary)',
+          borderColor: 'var(--color-border-subtle)',
+        }}
+      >
+        <span className="text-[10.5px] font-bold uppercase tracking-wider block" style={{ color: 'var(--color-text-tertiary)' }}>
+          DECISION RATIONALE
+        </span>
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+          {isPrimary
+            ? 'Primary workflow retained after rationalisation analysis. Meets enterprise grain and data quality requirements.'
+            : cand.rationale || 'The workflow is not identified as a rationalisation candidate and is retained for continued operation.'}
+        </p>
+      </div>
+
+      {/* Footer Metrics */}
+      <div
+        className="flex items-center justify-between flex-wrap gap-3 pt-3 border-t"
+        style={{ borderColor: 'var(--color-border-subtle)' }}
+      >
+        <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+          <span>Tools: <strong style={{ color: 'var(--color-text-primary)' }}>{assetName.includes('03') ? 29 : assetName.includes('Extract') ? 24 : 16}</strong></span>
+          <span>Inputs: <strong style={{ color: 'var(--color-text-primary)' }}>{assetName.includes('Distribution') ? 2 : 4}</strong></span>
+          <span>Outputs: <strong style={{ color: 'var(--color-text-primary)' }}>{assetName.includes('03') ? 2 : assetName.includes('Extract') ? 5 : 1}</strong></span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════
  *  MAIN
  * ═══════════════════════════════════════════════════════════ */
@@ -378,14 +694,22 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
     }
   }, []);
 
+  const handleInspectWorkflow = useCallback((workflowIdOrName: string) => {
+    if (!onAssetDetail) return;
+    const found =
+      allAssets.find((a) => a.id === workflowIdOrName || a.canonicalId === workflowIdOrName) ||
+      allAssets.find((a) => a.name.toLowerCase() === workflowIdOrName.toLowerCase());
+    if (found) {
+      onAssetDetail(found);
+    }
+  }, [onAssetDetail]);
+
   useEffect(() => {
     if (toastMessage) {
       const timer = setTimeout(() => setToastMessage(null), 4000);
       return () => clearTimeout(timer);
     }
   }, [toastMessage]);
-
-  const metrics = useMemo(() => getOverlapMetrics(activeSection), [activeSection]);
 
   // Filter recs by section, tab, and search
   const sectionRecs = useMemo(() => {
@@ -515,6 +839,19 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
     if (crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all') return retireRecs.filter(isCrossTechRecommendation);
     return retireRecs;
   }, [retireRecs, activeTagFilter, crossTechFilterColumn, activeSection, classifyDecommissionRec]);
+
+  // ── Currently displayed candidates subset driving the Key Observations cards ──
+  const currentlyDisplayedCandidates = useMemo(() => {
+    if (activeTab === 'merge') return displayedMergeRecs;
+    if (activeTab === 'decommission') return displayedRetireRecs;
+    if (activeTab === 'keep') return keepRecs;
+    return [...displayedMergeRecs, ...displayedRetireRecs, ...keepRecs];
+  }, [activeTab, displayedMergeRecs, displayedRetireRecs, keepRecs]);
+
+  const metrics = useMemo(
+    () => getOverlapMetrics(activeSection, currentlyDisplayedCandidates),
+    [activeSection, currentlyDisplayedCandidates],
+  );
 
   return (
     <motion.div
@@ -646,343 +983,677 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
         </div>
       </motion.div>
 
-      {/* ════════════════════════════════════════════════════
-       *  CARD 1: KEY OBSERVATIONS
-       * ════════════════════════════════════════════════════ */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.05 }}
-        className="rounded-2xl border p-6 theme-transition"
-        style={{
-          backgroundColor: 'var(--color-bg-elevated)',
-          borderColor: 'var(--color-engine-border)',
-          boxShadow: '0 2px 12px var(--color-card-shadow)',
-        }}
-      >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
-          <div>
-            <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-              Key Observations
-            </h2>
-            <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
-              Overlap analysis and cross-technology dependency insights
-            </p>
-          </div>
-        </div>
-
-        {/* Overlap metrics row — uniform grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {metrics.map((m, i) => {
-            const isCrossTech = m.id === 'cross-tech';
-            return (
-              <MetricPill
-                key={`${activeSection}-${m.id}`}
-                metric={m}
-                index={i}
-                onClick={isCrossTech ? () => toggleCrossTechFilter('all') : undefined}
-                isActive={isCrossTech && crossTechFilterColumn === 'all'}
-              />
-            );
-          })}
-        </div>
-      </motion.div>
-
-      {/* ════════════════════════════════════════════════════
-       *  KEY RECOMMENDATIONS — Direct column-aligned cards (no outer box)
-       * ════════════════════════════════════════════════════ */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-              Key Recommendations
-            </h2>
-            <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
-              Actionable consolidation, merge, decommission, and retention recommendations
-            </p>
-          </div>
-          {activeTagFilter && (
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTagFilter(null);
-                setCrossTechFilterColumn(null);
-              }}
-              className="text-[11px] font-semibold px-2.5 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-all flex items-center gap-1.5"
-              style={{
-                backgroundColor: 'var(--color-bg-tertiary)',
-                borderColor: 'var(--color-border-primary)',
-                color: 'var(--color-text-secondary)',
-              }}
-            >
-              <span>Reset Filter</span>
-              <X size={12} />
-            </button>
-          )}
-        </div>
-
-        {/* 3 Summary Cards — directly aligned above the 3 columns (gap-6 matches column grid) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ── Consolidate & Merge Card ── */}
+      {activeSection === 'etl' ? (
+        /* ════════════════════════════════════════════════════
+         *  ETL RATIONALISATION COMPACT VIEW (MATCHING BI STRUCTURE)
+         * ════════════════════════════════════════════════════ */
+        <>
+          {/* CARD 1: KEY OBSERVATIONS */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.05, duration: 0.3 }}
-            className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="rounded-2xl border p-6 theme-transition"
             style={{
-              backgroundColor: 'var(--color-surface)',
-              borderColor: 'var(--color-border-primary)',
-              boxShadow: '0 1px 3px var(--color-card-shadow)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              borderColor: 'var(--color-engine-border)',
+              boxShadow: '0 2px 12px var(--color-card-shadow)',
             }}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <GitMerge size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
-                <h3 className="text-[13px] font-bold" style={{ color: '#F59E0B' }}>Consolidate & Merge</h3>
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                  Key Observations
+                </h2>
+                <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+                  ETL overlap analysis and cross-technology workflow insights
+                </p>
               </div>
-              <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#F59E0B' }}>
-                {mergeRecs.length}
-              </span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {mergeTags.map((tag) => {
-                const count = mergeTagCounts[tag] ?? 0;
-                const isActive = activeTagFilter?.column === 'merge' && activeTagFilter?.tag === tag;
-                const tagColor = tag === 'Cross Technology' ? CROSS_TECH_COLOR : '#F59E0B';
+
+            {/* 6 Overlap metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {metrics.map((m, i) => {
+                const isCrossTech = m.id === 'cross-tech';
                 return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTagFilter('merge', tag)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
-                    style={{
-                      backgroundColor: isActive ? tagColor : tagColor + '12',
-                      color: isActive ? '#FFFFFF' : tagColor,
-                      borderColor: isActive ? tagColor : tagColor + '30',
-                      boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
-                    }}
-                  >
-                    <span>{tag}</span>
-                    <span
-                      className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
-                      style={{
-                        backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
-                        color: isActive ? '#FFFFFF' : tagColor,
-                      }}
-                    >
-                      {count}
-                    </span>
-                    {isActive && <X size={10} />}
-                  </button>
+                  <MetricPill
+                    key={`etl-${m.id}`}
+                    metric={m}
+                    index={i}
+                    onClick={isCrossTech ? () => toggleCrossTechFilter('all') : undefined}
+                    isActive={isCrossTech && crossTechFilterColumn === 'all'}
+                  />
                 );
               })}
             </div>
           </motion.div>
 
-          {/* ── Decommission Card ── */}
+          {/* KEY RECOMMENDATIONS */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                  Key Recommendations
+                </h2>
+                <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+                  Actionable consolidation, decommission, and retention candidates
+                </p>
+              </div>
+              {activeTagFilter && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTagFilter(null);
+                    setCrossTechFilterColumn(null);
+                  }}
+                  className="text-[11px] font-semibold px-2.5 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-all flex items-center gap-1.5"
+                  style={{
+                    backgroundColor: 'var(--color-bg-tertiary)',
+                    borderColor: 'var(--color-border-primary)',
+                    color: 'var(--color-text-secondary)',
+                  }}
+                >
+                  <span>Reset Filter</span>
+                  <X size={12} />
+                </button>
+              )}
+            </div>
+
+            {/* 3 Summary Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Consolidate & Merge Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.05, duration: 0.3 }}
+                className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <GitMerge size={16} className="shrink-0" style={{ color: '#FBBF24' }} />
+                    <h3 className="text-[13px] font-bold" style={{ color: '#FBBF24' }}>Consolidate & Merge</h3>
+                  </div>
+                  <span className="text-2xl font-bold tabular-nums tracking-tight text-amber-400">
+                    {mergeRecs.length}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {mergeTags.map((tag) => {
+                    const count = mergeTagCounts[tag] ?? 0;
+                    const isActive = activeTagFilter?.column === 'merge' && activeTagFilter?.tag === tag;
+                    const tagColor = tag === 'Cross Technology' ? CROSS_TECH_COLOR : '#FBBF24';
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => toggleTagFilter('merge', tag)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
+                        style={{
+                          backgroundColor: isActive ? tagColor : tagColor + '12',
+                          color: isActive ? '#FFFFFF' : tagColor,
+                          borderColor: isActive ? tagColor : tagColor + '30',
+                          boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
+                        }}
+                      >
+                        <span>{tag}</span>
+                        <span
+                          className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
+                          style={{
+                            backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
+                            color: isActive ? '#FFFFFF' : tagColor,
+                          }}
+                        >
+                          {count}
+                        </span>
+                        {isActive && <X size={10} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+
+              {/* Decommission Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.09, duration: 0.3 }}
+                className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Trash2 size={16} className="shrink-0" style={{ color: '#EF4444' }} />
+                    <h3 className="text-[13px] font-bold" style={{ color: '#EF4444' }}>Decommission</h3>
+                  </div>
+                  <span className="text-2xl font-bold tabular-nums tracking-tight text-red-400">
+                    {retireRecs.length}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {decommissionTags.map((tag) => {
+                    const count = decommissionTagCounts[tag] ?? 0;
+                    const isActive = activeTagFilter?.column === 'decommission' && activeTagFilter?.tag === tag;
+                    const tagColorMap: Record<string, string> = {
+                      'Inactive': '#F43F5E',
+                      'Subset': '#F97316',
+                      'Cross Technology': CROSS_TECH_COLOR,
+                      'Orphan Cascade': '#EC4899',
+                      'Zombie ETLs': '#3B82F6',
+                    };
+                    const tagColor = tagColorMap[tag] || '#EF4444';
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => toggleTagFilter('decommission', tag)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
+                        style={{
+                          backgroundColor: isActive ? tagColor : tagColor + '12',
+                          color: isActive ? '#FFFFFF' : tagColor,
+                          borderColor: isActive ? tagColor : tagColor + '30',
+                          boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
+                        }}
+                      >
+                        <span>{tag}</span>
+                        <span
+                          className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
+                          style={{
+                            backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
+                            color: isActive ? '#FFFFFF' : tagColor,
+                          }}
+                        >
+                          {count}
+                        </span>
+                        {isActive && <X size={10} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+
+              {/* Keep Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.13, duration: 0.3 }}
+                className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={16} className="shrink-0" style={{ color: '#22C55E' }} />
+                    <h3 className="text-[13px] font-bold" style={{ color: '#22C55E' }}>Keep & Certify</h3>
+                  </div>
+                  <span className="text-2xl font-bold tabular-nums tracking-tight text-emerald-400">
+                    {keepRecs.length}
+                  </span>
+                </div>
+                <div />
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Active Cross-Technology Filter Banner */}
+          <AnimatePresence>
+            {crossTechFilterColumn && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-center justify-between px-4 py-2.5 rounded-xl border text-xs font-semibold overflow-hidden"
+                style={{
+                  backgroundColor: CROSS_TECH_COLOR + '12',
+                  borderColor: CROSS_TECH_COLOR + '35',
+                  color: CROSS_TECH_COLOR,
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CROSS_TECH_COLOR }} />
+                  <span>
+                    Filtering by Cross-Technology:{' '}
+                    <strong>
+                      {crossTechFilterColumn === 'merge'
+                        ? 'Consolidate & Merge only'
+                        : crossTechFilterColumn === 'decommission'
+                        ? 'Decommission only'
+                        : 'All Columns'}
+                    </strong>
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCrossTechFilterColumn(null)}
+                  className="px-2 py-1 rounded-md text-[11px] font-bold cursor-pointer hover:opacity-80 transition-colors border"
+                  style={{
+                    backgroundColor: CROSS_TECH_COLOR,
+                    borderColor: CROSS_TECH_COLOR,
+                    color: '#FFFFFF',
+                  }}
+                >
+                  Show All Recommendations ✕
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Three-Column Grid with ETL Candidate Cards */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`etl-${activeTab}-${search}-${activeTagFilter?.tag || ''}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className={`grid gap-6 ${activeTab === 'all' ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}
+            >
+              {/* CONSOLIDATE & MERGE COLUMN */}
+              {(activeTab === 'all' || activeTab === 'merge') && (
+                <div className="space-y-4 flex flex-col">
+                  {displayedMergeRecs.map((cand) => (
+                    <EtlCandidateCard
+                      key={cand.id}
+                      cand={cand}
+                      onReview={() => setEtlModalRec(cand)}
+                      onInspect={(idOrName) => handleInspectWorkflow(idOrName)}
+                    />
+                  ))}
+                  {displayedMergeRecs.length === 0 && (
+                    <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
+                      {activeTagFilter?.column === 'merge' ? `No ${activeTagFilter.tag.toLowerCase()} merge recommendations.` : 'No merge recommendations.'}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* DECOMMISSION COLUMN */}
+              {(activeTab === 'all' || activeTab === 'decommission') && (
+                <div className="space-y-4 flex flex-col">
+                  {displayedRetireRecs.map((cand) => (
+                    <EtlCandidateCard
+                      key={cand.id}
+                      cand={cand}
+                      onReview={() => setEtlModalRec(cand)}
+                      onInspect={(idOrName) => handleInspectWorkflow(idOrName)}
+                    />
+                  ))}
+                  {displayedRetireRecs.length === 0 && (
+                    <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
+                      {activeTagFilter?.column === 'decommission' ? `No ${activeTagFilter.tag.toLowerCase()} decommission recommendations.` : 'No decommission recommendations.'}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* KEEP & CERTIFY COLUMN */}
+              {(activeTab === 'all' || activeTab === 'keep') && (
+                <div className="space-y-4 flex flex-col">
+                  {keepRecs.map((k) => (
+                    <EtlKeepCard
+                      key={k.id}
+                      cand={k}
+                      onInspect={(idOrName) => handleInspectWorkflow(idOrName)}
+                    />
+                  ))}
+                  {keepRecs.length === 0 && (
+                    <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
+                      No keep recommendations.
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </>
+      ) : (
+        /* ════════════════════════════════════════════════════
+         *  BI RATIONALISATION VIEW (UNCHANGED)
+         * ════════════════════════════════════════════════════ */
+        <>
+          {/* CARD 1: KEY OBSERVATIONS */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.09, duration: 0.3 }}
-            className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="rounded-2xl border p-6 theme-transition"
             style={{
-              backgroundColor: 'var(--color-surface)',
-              borderColor: 'var(--color-border-primary)',
-              boxShadow: '0 1px 3px var(--color-card-shadow)',
+              backgroundColor: 'var(--color-bg-elevated)',
+              borderColor: 'var(--color-engine-border)',
+              boxShadow: '0 2px 12px var(--color-card-shadow)',
             }}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Trash2 size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
-                <h3 className="text-[13px] font-bold" style={{ color: '#EF4444' }}>Decommission</h3>
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                  Key Observations
+                </h2>
+                <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+                  Overlap analysis and cross-technology dependency insights
+                </p>
               </div>
-              <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#EF4444' }}>
-                {retireRecs.length}
-              </span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {decommissionTags.map((tag) => {
-                const count = decommissionTagCounts[tag] ?? 0;
-                const isActive = activeTagFilter?.column === 'decommission' && activeTagFilter?.tag === tag;
-                const tagColorMap: Record<string, string> = {
-                  'Inactive': '#F43F5E',
-                  'Subset': '#F97316',
-                  'Cross Technology': CROSS_TECH_COLOR,
-                  'Orphan Cascade': '#EC4899',
-                  'Zombie ETLs': '#3B82F6',
-                };
-                const tagColor = tagColorMap[tag] || '#EF4444';
+
+            {/* Overlap metrics row — uniform grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+              {metrics.map((m, i) => {
+                const isCrossTech = m.id === 'cross-tech';
                 return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTagFilter('decommission', tag)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
-                    style={{
-                      backgroundColor: isActive ? tagColor : tagColor + '12',
-                      color: isActive ? '#FFFFFF' : tagColor,
-                      borderColor: isActive ? tagColor : tagColor + '30',
-                      boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
-                    }}
-                  >
-                    <span>{tag}</span>
-                    <span
-                      className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
-                      style={{
-                        backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
-                        color: isActive ? '#FFFFFF' : tagColor,
-                      }}
-                    >
-                      {count}
-                    </span>
-                    {isActive && <X size={10} />}
-                  </button>
+                  <MetricPill
+                    key={`${activeSection}-${m.id}`}
+                    metric={m}
+                    index={i}
+                    onClick={isCrossTech ? () => toggleCrossTechFilter('all') : undefined}
+                    isActive={isCrossTech && crossTechFilterColumn === 'all'}
+                  />
                 );
               })}
             </div>
           </motion.div>
 
-          {/* ── Keep Card ── */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.13, duration: 0.3 }}
-            className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              borderColor: 'var(--color-border-primary)',
-              boxShadow: '0 1px 3px var(--color-card-shadow)',
-            }}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
-                <h3 className="text-[13px] font-bold" style={{ color: '#22C55E' }}>Keep & Certify</h3>
+          {/* KEY RECOMMENDATIONS */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg md:text-xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                  Key Recommendations
+                </h2>
+                <p className="text-xs font-medium mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
+                  Actionable consolidation, merge, decommission, and retention recommendations
+                </p>
               </div>
-              <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#22C55E' }}>
-                {keepRecs.length}
-              </span>
+              {activeTagFilter && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTagFilter(null);
+                    setCrossTechFilterColumn(null);
+                  }}
+                  className="text-[11px] font-semibold px-2.5 py-1 rounded-md border cursor-pointer hover:opacity-80 transition-all flex items-center gap-1.5"
+                  style={{
+                    backgroundColor: 'var(--color-bg-tertiary)',
+                    borderColor: 'var(--color-border-primary)',
+                    color: 'var(--color-text-secondary)',
+                  }}
+                >
+                  <span>Reset Filter</span>
+                  <X size={12} />
+                </button>
+              )}
             </div>
-            {/* No tags or subtext for Keep */}
-            <div />
-          </motion.div>
-        </div>
-      </div>
 
-      {/* Active Cross-Technology Filter Banner */}
-      <AnimatePresence>
-        {crossTechFilterColumn && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="flex items-center justify-between px-4 py-2.5 rounded-xl border text-xs font-semibold overflow-hidden"
-            style={{
-              backgroundColor: CROSS_TECH_COLOR + '12',
-              borderColor: CROSS_TECH_COLOR + '35',
-              color: CROSS_TECH_COLOR,
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CROSS_TECH_COLOR }} />
-              <span>
-                Filtering by Cross-Technology:{' '}
-                <strong>
-                  {crossTechFilterColumn === 'merge'
-                    ? 'Consolidate & Merge only'
-                    : crossTechFilterColumn === 'decommission'
-                    ? 'Decommission only'
-                    : 'All Columns'}
-                </strong>
-              </span>
+            {/* 3 Summary Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Consolidate & Merge Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.05, duration: 0.3 }}
+                className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <GitMerge size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
+                    <h3 className="text-[13px] font-bold" style={{ color: '#F59E0B' }}>Consolidate & Merge</h3>
+                  </div>
+                  <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#F59E0B' }}>
+                    {mergeRecs.length}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {mergeTags.map((tag) => {
+                    const count = mergeTagCounts[tag] ?? 0;
+                    const isActive = activeTagFilter?.column === 'merge' && activeTagFilter?.tag === tag;
+                    const tagColor = tag === 'Cross Technology' ? CROSS_TECH_COLOR : '#F59E0B';
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => toggleTagFilter('merge', tag)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
+                        style={{
+                          backgroundColor: isActive ? tagColor : tagColor + '12',
+                          color: isActive ? '#FFFFFF' : tagColor,
+                          borderColor: isActive ? tagColor : tagColor + '30',
+                          boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
+                        }}
+                      >
+                        <span>{tag}</span>
+                        <span
+                          className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
+                          style={{
+                            backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
+                            color: isActive ? '#FFFFFF' : tagColor,
+                          }}
+                        >
+                          {count}
+                        </span>
+                        {isActive && <X size={10} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+
+              {/* Decommission Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.09, duration: 0.3 }}
+                className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Trash2 size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
+                    <h3 className="text-[13px] font-bold" style={{ color: '#EF4444' }}>Decommission</h3>
+                  </div>
+                  <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#EF4444' }}>
+                    {retireRecs.length}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {decommissionTags.map((tag) => {
+                    const count = decommissionTagCounts[tag] ?? 0;
+                    const isActive = activeTagFilter?.column === 'decommission' && activeTagFilter?.tag === tag;
+                    const tagColorMap: Record<string, string> = {
+                      'Inactive': '#F43F5E',
+                      'Subset': '#F97316',
+                      'Cross Technology': CROSS_TECH_COLOR,
+                      'Orphan Cascade': '#EC4899',
+                      'Zombie ETLs': '#3B82F6',
+                    };
+                    const tagColor = tagColorMap[tag] || '#EF4444';
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => toggleTagFilter('decommission', tag)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold cursor-pointer transition-all duration-200 border hover:scale-[1.03] active:scale-[0.97]"
+                        style={{
+                          backgroundColor: isActive ? tagColor : tagColor + '12',
+                          color: isActive ? '#FFFFFF' : tagColor,
+                          borderColor: isActive ? tagColor : tagColor + '30',
+                          boxShadow: isActive ? `0 2px 8px ${tagColor}30` : 'none',
+                        }}
+                      >
+                        <span>{tag}</span>
+                        <span
+                          className="px-1.5 py-0.5 rounded text-[9px] font-bold tabular-nums"
+                          style={{
+                            backgroundColor: isActive ? 'rgba(255,255,255,0.25)' : tagColor + '18',
+                            color: isActive ? '#FFFFFF' : tagColor,
+                          }}
+                        >
+                          {count}
+                        </span>
+                        {isActive && <X size={10} />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+
+              {/* Keep Card */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.13, duration: 0.3 }}
+                className="rounded-xl border p-4 theme-transition flex flex-col justify-between min-h-[96px] gap-2.5"
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  borderColor: 'var(--color-border-primary)',
+                  boxShadow: '0 1px 3px var(--color-card-shadow)',
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={16} className="shrink-0" style={{ color: 'var(--color-text-secondary)' }} />
+                    <h3 className="text-[13px] font-bold" style={{ color: '#22C55E' }}>Keep & Certify</h3>
+                  </div>
+                  <span className="text-2xl font-bold tabular-nums tracking-tight" style={{ color: '#22C55E' }}>
+                    {keepRecs.length}
+                  </span>
+                </div>
+                <div />
+              </motion.div>
             </div>
-            <button
-              type="button"
-              onClick={() => setCrossTechFilterColumn(null)}
-              className="px-2 py-1 rounded-md text-[11px] font-bold cursor-pointer hover:opacity-80 transition-colors border"
-              style={{
-                backgroundColor: CROSS_TECH_COLOR,
-                borderColor: CROSS_TECH_COLOR,
-                color: '#FFFFFF',
-              }}
+          </div>
+
+          {/* Active Cross-Technology Filter Banner */}
+          <AnimatePresence>
+            {crossTechFilterColumn && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-center justify-between px-4 py-2.5 rounded-xl border text-xs font-semibold overflow-hidden"
+                style={{
+                  backgroundColor: CROSS_TECH_COLOR + '12',
+                  borderColor: CROSS_TECH_COLOR + '35',
+                  color: CROSS_TECH_COLOR,
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: CROSS_TECH_COLOR }} />
+                  <span>
+                    Filtering by Cross-Technology:{' '}
+                    <strong>
+                      {crossTechFilterColumn === 'merge'
+                        ? 'Consolidate & Merge only'
+                        : crossTechFilterColumn === 'decommission'
+                        ? 'Decommission only'
+                        : 'All Columns'}
+                    </strong>
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCrossTechFilterColumn(null)}
+                  className="px-2 py-1 rounded-md text-[11px] font-bold cursor-pointer hover:opacity-80 transition-colors border"
+                  style={{
+                    backgroundColor: CROSS_TECH_COLOR,
+                    borderColor: CROSS_TECH_COLOR,
+                    color: '#FFFFFF',
+                  }}
+                >
+                  Show All Recommendations ✕
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Three-Column Grid */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${activeSection}-${activeTab}-${search}`}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className={`grid gap-6 ${activeTab === 'all' ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}
             >
-              Show All Recommendations ✕
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ════════════════════════════════════════════════════
-       *  THREE-COLUMN GRID (or single column when filtered)
-       * ════════════════════════════════════════════════════ */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`${activeSection}-${activeTab}-${search}`}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25 }}
-          className={`grid gap-6 ${activeTab === 'all' ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-1'}`}
-        >
-          {/* CONSOLIDATE & MERGE COLUMN */}
-          {(activeTab === 'all' || activeTab === 'merge') && (
-            <div className="space-y-4 flex flex-col">
-              {displayedMergeRecs.map((r) => (
-                <RecCard
-                  key={r.id}
-                  rec={r}
-                  accentColor="#F59E0B"
-                  bulletIcon="!"
-                  onCrossTechClick={() => toggleCrossTechFilter('merge')}
-                  crossTechActive={crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all'}
-                  onReview={() => handleReviewRec(r, 'merge')}
-                />
-              ))}
-              {displayedMergeRecs.length === 0 && (
-                <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-                  {activeTagFilter?.column === 'merge' ? `No ${activeTagFilter.tag.toLowerCase()} merge recommendations.` : 'No merge recommendations.'}
+              {/* CONSOLIDATE & MERGE COLUMN */}
+              {(activeTab === 'all' || activeTab === 'merge') && (
+                <div className="space-y-4 flex flex-col">
+                  {displayedMergeRecs.map((r) => (
+                    <RecCard
+                      key={r.id}
+                      rec={r}
+                      accentColor="#F59E0B"
+                      bulletIcon="!"
+                      onCrossTechClick={() => toggleCrossTechFilter('merge')}
+                      crossTechActive={crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all'}
+                      onReview={() => handleReviewRec(r, 'merge')}
+                    />
+                  ))}
+                  {displayedMergeRecs.length === 0 && (
+                    <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
+                      {activeTagFilter?.column === 'merge' ? `No ${activeTagFilter.tag.toLowerCase()} merge recommendations.` : 'No merge recommendations.'}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* DECOMMISSION COLUMN */}
-          {(activeTab === 'all' || activeTab === 'decommission') && (
-            <div className="space-y-4 flex flex-col">
-              {displayedRetireRecs.map((r) => (
-                <RecCard
-                  key={r.id}
-                  rec={r}
-                  accentColor="#EF4444"
-                  bulletIcon="▲"
-                  onCrossTechClick={() => toggleCrossTechFilter('decommission')}
-                  crossTechActive={crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all'}
-                  onReview={() => handleReviewRec(r, 'decommission')}
-                />
-              ))}
-              {displayedRetireRecs.length === 0 && (
-                <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-                  {activeTagFilter?.column === 'decommission' ? `No ${activeTagFilter.tag.toLowerCase()} decommission recommendations.` : 'No decommission recommendations.'}
+              {/* DECOMMISSION COLUMN */}
+              {(activeTab === 'all' || activeTab === 'decommission') && (
+                <div className="space-y-4 flex flex-col">
+                  {displayedRetireRecs.map((r) => (
+                    <RecCard
+                      key={r.id}
+                      rec={r}
+                      accentColor="#EF4444"
+                      bulletIcon="▲"
+                      onCrossTechClick={() => toggleCrossTechFilter('decommission')}
+                      crossTechActive={crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all'}
+                      onReview={() => handleReviewRec(r, 'decommission')}
+                    />
+                  ))}
+                  {displayedRetireRecs.length === 0 && (
+                    <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
+                      {activeTagFilter?.column === 'decommission' ? `No ${activeTagFilter.tag.toLowerCase()} decommission recommendations.` : 'No decommission recommendations.'}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* KEEP & CERTIFY COLUMN */}
-          {(activeTab === 'all' || activeTab === 'keep') && (
-            <div className="space-y-4 flex flex-col">
-              {keepRecs.map((r) => (
-                <RecCard key={r.id} rec={r} accentColor="#22C55E" bulletIcon="✓" />
-              ))}
-              {keepRecs.length === 0 && (
-                <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-                  No keep recommendations.
+              {/* KEEP & CERTIFY COLUMN */}
+              {(activeTab === 'all' || activeTab === 'keep') && (
+                <div className="space-y-4 flex flex-col">
+                  {keepRecs.map((r) => (
+                    <RecCard key={r.id} rec={r} accentColor="#22C55E" bulletIcon="✓" />
+                  ))}
+                  {keepRecs.length === 0 && (
+                    <div className="text-center py-10 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
+                      No keep recommendations.
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
+        </>
+      )}
 
       {/* ═══ Review Modals ═══ */}
       <AnimatePresence>
