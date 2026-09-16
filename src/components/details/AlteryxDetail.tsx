@@ -266,7 +266,7 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
           style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
         >
           {([
-            { key: 'pipeline', label: 'Pipeline Flow', icon: Workflow },
+            { key: 'pipeline', label: 'Workflow Overview', icon: Workflow },
             { key: 'tools', label: 'Tool Inventory', icon: Settings },
             { key: 'connections', label: 'Connections', icon: Database },
           ] as const).map(({ key, label, icon: TabIcon }) => (
