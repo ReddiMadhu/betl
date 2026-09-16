@@ -182,15 +182,15 @@ export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric
     (sum, item) => sum + item.summary.totalWorksheets,
     0,
   );
-  const calcFields =
-    Object.values(TABLEAU_DETAIL_DATA).reduce(
-      (sum, item) => sum + item.summary.totalCalculatedFields,
-      0,
-    ) +
-    Object.values(POWERBI_DETAIL_DATA).reduce(
-      (sum, item) => sum + item.summary.totalDAXMeasures,
-      0,
-    );
+  const tableauMeasures = Object.values(TABLEAU_DETAIL_DATA).reduce(
+    (sum, item) => sum + (item.calculatedFields?.filter((cf) => cf.role === 'measure').length ?? item.summary.totalCalculatedFields),
+    0,
+  );
+  const pbiMeasures = Object.values(POWERBI_DETAIL_DATA).reduce(
+    (sum, item) => sum + (item.daxMeasures?.length ?? item.summary.totalDAXMeasures),
+    0,
+  );
+  const calcFields = tableauMeasures + pbiMeasures;
 
   return [
     { label: 'Dashboards & Reports', value: dashboards, icon: 'dashboard' },

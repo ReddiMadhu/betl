@@ -54,7 +54,7 @@ function getBiAssessmentData() {
 
   for (const item of Object.values(TABLEAU_DETAIL_DATA)) {
     tableauWorksheets += item.summary?.totalWorksheets ?? item.worksheets?.length ?? 0;
-    tableauCalculations += item.summary?.totalCalculatedFields ?? item.calculatedFields?.length ?? 0;
+    tableauCalculations += item.calculatedFields?.filter((cf) => cf.role === 'measure').length ?? item.summary?.totalCalculatedFields ?? 0;
     tableauTables += item.summary?.totalTables ?? item.tables?.length ?? 0;
   }
 
@@ -66,11 +66,10 @@ function getBiAssessmentData() {
   for (const item of Object.values(POWERBI_DETAIL_DATA)) {
     pbiPages += item.summary?.totalPages ?? item.pages?.length ?? 0;
     pbiVisuals += item.summary?.totalVisuals ?? 0;
-    pbiDax += item.summary?.totalDAXMeasures ?? item.daxMeasures?.length ?? 0;
+    pbiDax += item.daxMeasures?.length ?? item.summary?.totalDAXMeasures ?? 0;
     pbiTables += item.summary?.totalTables ?? item.tables?.length ?? 0;
   }
 
-  const totalSheetsAndPages = tableauWorksheets + pbiPages;
   const totalVisualComponents = tableauWorksheets + pbiVisuals;
   const totalTables = tableauTables + pbiTables;
   const totalCalculations = tableauCalculations + pbiDax;

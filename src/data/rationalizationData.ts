@@ -837,3 +837,1292 @@ export function getCrossTechCounts(
   const retireCount = recs.filter((r) => r.category === retireCat && isCrossTechRecommendation(r)).length;
   return { mergeCount, retireCount, total: mergeCount + retireCount };
 }
+
+/* ─────────────────────────────────────────────────────────
+ * ETL Rationalisation Detail Analysis DTOs & Helper
+ * ───────────────────────────────────────────────────────── */
+
+export interface EtlWorkflowMeta {
+  id: string;
+  name: string;
+  technology: TechnologyName;
+  complexity: 'Low' | 'Medium' | 'High';
+  criticality: 'Low' | 'Medium' | 'High';
+  toolCount: number;
+  sourcesCount: number;
+  targetsCount: number;
+  schedule: string;
+  runtime: string;
+  lastRunStatus: 'Success' | 'Warning' | 'Error' | 'Inactive';
+  owner: string;
+  businessArea: string;
+}
+
+export interface SchemaField {
+  name: string;
+  type: string;
+  sampleValue?: string;
+  isMatching?: boolean;
+}
+
+export interface EtlDatasetComparison {
+  name: string;
+  sourceType: string;
+  matchStatus: 'exact' | 'partial' | 'unique_left' | 'unique_right';
+  leftPresent: boolean;
+  rightPresent: boolean;
+  matchingColumnsCount: number;
+  totalColumnsCount: number;
+  columns: SchemaField[];
+}
+
+export interface EtlTargetComparison {
+  name: string;
+  targetType: string;
+  matchStatus: 'exact' | 'partial' | 'unique_left' | 'unique_right';
+  leftPresent: boolean;
+  rightPresent: boolean;
+  downstreamConsumers: string[];
+  columnsCount: number;
+  columns: SchemaField[];
+}
+
+export interface EtlFrequencyComparison {
+  leftSchedule: string;
+  rightSchedule: string;
+  leftTrigger: string;
+  rightTrigger: string;
+  leftRuntime: string;
+  rightRuntime: string;
+  leftStatus: string;
+  rightStatus: string;
+  alignmentSummary: string;
+  overlapPct: number;
+}
+
+export interface EtlLogicRule {
+  name: string;
+  category: 'Formula' | 'Join' | 'Filter' | 'Summarize' | 'Sort/Select';
+  leftExpression?: string;
+  rightExpression?: string;
+  matchType: 'Identical' | 'Equivalent' | 'Superset' | 'Unique';
+  description: string;
+}
+
+export interface EtlLogicComparison {
+  rules: EtlLogicRule[];
+  similarityScore: number;
+  summary: string;
+}
+
+export interface EtlDagStage {
+  stageName: string;
+  leftToolCount: number;
+  rightToolCount: number;
+  description: string;
+}
+
+export interface EtlDagComparison {
+  stages: EtlDagStage[];
+  leftTotalNodes: number;
+  rightTotalNodes: number;
+  similarityScore: number;
+  topologyAlignment: string;
+}
+
+export interface EtlSubsumptionItem {
+  attributeOrTransformation: string;
+  candidateStatus: string;
+  targetStatus: string;
+  subsumptionType: 'Fully Subsumed' | 'Superset Match' | 'Direct Migration';
+  details: string;
+}
+
+export interface EtlRetirementSafetyCheck {
+  checkItem: string;
+  status: 'passed' | 'warning' | 'info';
+  details: string;
+}
+
+export interface EtlCandidateDetailDTO {
+  recId: string;
+  title: string;
+  recType: 'CONSOLIDATE' | 'RETIRE';
+  recommendationBadge: string;
+  direction: {
+    absorbed: { name: string; tech: TechnologyName; role: string };
+    retained: { name: string; tech: TechnologyName; role: string };
+    bannerText: string;
+  };
+  inScopeWorkflows: EtlWorkflowMeta[];
+  overlapMetrics: {
+    sourceMetadataPct: number;
+    targetMetadataPct: number;
+    frequencyPct: number;
+    logicPct: number;
+    dagPct: number;
+  };
+  sourcesComparison: EtlDatasetComparison[];
+  targetsComparison: EtlTargetComparison[];
+  frequencyComparison: EtlFrequencyComparison;
+  logicComparison: EtlLogicComparison;
+  dagComparison: EtlDagComparison;
+  subsumptionItems?: EtlSubsumptionItem[];
+  retirementSafetyChecks?: EtlRetirementSafetyCheck[];
+  rationalePoints: string[];
+  validationRequirements: string[];
+}
+
+export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDTO {
+  // 1. Workflow Consolidation: Workflow_01 into Workflow_03 (em2)
+  if (rec.id === 'em2') {
+    return {
+      recId: 'em2',
+      title: 'Claims Workflow Consolidation Analysis',
+      recType: 'CONSOLIDATE',
+      recommendationBadge: 'Consolidate',
+      direction: {
+        absorbed: { name: 'Workflow_01', tech: 'Alteryx', role: 'Absorbed Candidate' },
+        retained: { name: 'Workflow_03', tech: 'Alteryx', role: 'Retained Superset' },
+        bannerText: 'ABSORBED CANDIDATE: Workflow_01 (Alteryx) → RETAINED SUPERSET: Workflow_03 (Alteryx)',
+      },
+      inScopeWorkflows: [
+        {
+          id: 'c12',
+          name: 'Workflow_01',
+          technology: 'Alteryx',
+          complexity: 'Medium',
+          criticality: 'Medium',
+          toolCount: 12,
+          sourcesCount: 3,
+          targetsCount: 2,
+          schedule: 'Monthly (End of Month, 02:00 AM)',
+          runtime: '14s',
+          lastRunStatus: 'Success',
+          owner: 'EXL',
+          businessArea: 'Claims',
+        },
+        {
+          id: 'c11',
+          name: 'Workflow_03',
+          technology: 'Alteryx',
+          complexity: 'High',
+          criticality: 'High',
+          toolCount: 29,
+          sourcesCount: 4,
+          targetsCount: 2,
+          schedule: 'Monthly (End of Month, 02:30 AM)',
+          runtime: '26s',
+          lastRunStatus: 'Success',
+          owner: 'EXLService',
+          businessArea: 'Claims',
+        },
+      ],
+      overlapMetrics: {
+        sourceMetadataPct: 75,
+        targetMetadataPct: 50,
+        frequencyPct: 100,
+        logicPct: 90,
+        dagPct: 82,
+      },
+      sourcesComparison: [
+        {
+          name: 'Claims_Data',
+          sourceType: 'Alteryx Text Input / Database Table',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 6,
+          totalColumnsCount: 6,
+          columns: [
+            { name: 'Claim_ID', type: 'Int64', sampleValue: 'CLM-10029', isMatching: true },
+            { name: 'Policy_ID', type: 'Int64', sampleValue: 'POL-8831', isMatching: true },
+            { name: 'Customer_ID', type: 'Int64', sampleValue: 'CUST-4410', isMatching: true },
+            { name: 'Claim_Date', type: 'Date', sampleValue: '2024-03-15', isMatching: true },
+            { name: 'Claim_Status', type: 'V_WString', sampleValue: 'Approved', isMatching: true },
+            { name: 'Service_Location', type: 'V_WString', sampleValue: 'NY-Metro Clinic', isMatching: true },
+          ],
+        },
+        {
+          name: 'Policy_Data',
+          sourceType: 'Alteryx Text Input / Core System',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 4,
+          totalColumnsCount: 4,
+          columns: [
+            { name: 'Policy_ID', type: 'Int64', sampleValue: 'POL-8831', isMatching: true },
+            { name: 'Policy Type', type: 'V_WString', sampleValue: 'Commercial Property', isMatching: true },
+            { name: 'Plan', type: 'V_WString', sampleValue: 'Comprehensive Plus', isMatching: true },
+            { name: 'Policy_Start_Date', type: 'Date', sampleValue: '2023-01-01', isMatching: true },
+          ],
+        },
+        {
+          name: 'Diagnosis_Data',
+          sourceType: 'Alteryx Text Input / Medical Registry',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 3,
+          totalColumnsCount: 3,
+          columns: [
+            { name: 'Claim_ID', type: 'Int64', sampleValue: 'CLM-10029', isMatching: true },
+            { name: 'Diagnosis_Type', type: 'V_WString', sampleValue: 'Orthopedic', isMatching: true },
+            { name: 'ICD_Code', type: 'V_WString', sampleValue: 'M54.5', isMatching: true },
+          ],
+        },
+        {
+          name: 'Policy_Premium_Data',
+          sourceType: 'Alteryx Text Input / Premium Ledger',
+          matchStatus: 'unique_right',
+          leftPresent: false,
+          rightPresent: true,
+          matchingColumnsCount: 0,
+          totalColumnsCount: 3,
+          columns: [
+            { name: 'Policy_ID', type: 'Int64', sampleValue: 'POL-8831', isMatching: false },
+            { name: 'Snapshot_Month', type: 'Date', sampleValue: '2024-03-01', isMatching: false },
+            { name: 'Monthly_Premium', type: 'Double', sampleValue: '4,250.00', isMatching: false },
+          ],
+        },
+      ],
+      targetsComparison: [
+        {
+          name: 'Claims_Consolidated_Mart',
+          targetType: 'Data Mart / Lakehouse Table',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Loss Ratio', 'Cross Sell Dashboard PBIP', 'INSURANCE ANALYTICS DASHBOARD'],
+          columnsCount: 14,
+          columns: [
+            { name: 'Policy_ID', type: 'Int64', isMatching: true },
+            { name: 'Claim_ID', type: 'Int64', isMatching: true },
+            { name: 'Paid Amount', type: 'Double', isMatching: true },
+            { name: 'Payments Made', type: 'Int32', isMatching: true },
+            { name: 'Max_Claim_Date', type: 'Date', isMatching: true },
+            { name: 'Max_ICD_Code', type: 'V_WString', isMatching: true },
+            { name: 'Premium_Group', type: 'V_WString', isMatching: true },
+          ],
+        },
+        {
+          name: 'WF01_Output.xlsx',
+          targetType: 'Excel Workstation Extract',
+          matchStatus: 'unique_left',
+          leftPresent: true,
+          rightPresent: false,
+          downstreamConsumers: ['Sales & Returns Sample v3 (Legacy)'],
+          columnsCount: 8,
+          columns: [
+            { name: 'Policy_ID', type: 'Int64', isMatching: false },
+            { name: 'Claim_Count', type: 'Int32', isMatching: false },
+            { name: 'Total_Paid', type: 'Double', isMatching: false },
+          ],
+        },
+        {
+          name: 'Policy_Consolidation_Output.xlsx',
+          targetType: 'Excel Master Extract',
+          matchStatus: 'unique_right',
+          leftPresent: false,
+          rightPresent: true,
+          downstreamConsumers: ['Revenue Opportunities', 'Survival Rate', 'Cross Sell Dashboard'],
+          columnsCount: 16,
+          columns: [
+            { name: 'Policy_ID', type: 'Int64', isMatching: false },
+            { name: 'Premium_Group', type: 'V_WString', isMatching: false },
+            { name: 'Monthly_Premium', type: 'Double', isMatching: false },
+            { name: 'Claims_Exposure_Score', type: 'Double', isMatching: false },
+          ],
+        },
+      ],
+      frequencyComparison: {
+        leftSchedule: 'Monthly (End of Month at 02:00 AM)',
+        rightSchedule: 'Monthly (End of Month at 02:30 AM)',
+        leftTrigger: 'Scheduled Windows Task / Alteryx Server Cron',
+        rightTrigger: 'Scheduled Alteryx Server Master Schedule',
+        leftRuntime: '14 seconds',
+        rightRuntime: '26 seconds',
+        leftStatus: 'Active / Success',
+        rightStatus: 'Active / Success',
+        alignmentSummary: 'Identical monthly end-of-period cadence. Consolidating into Workflow_03 eliminates 1 redundant execution cycle per month.',
+        overlapPct: 100,
+      },
+      logicComparison: {
+        rules: [
+          {
+            name: 'Policy & Claims Entity Join',
+            category: 'Join',
+            leftExpression: 'Join on Left.Policy_ID = Right.Policy_ID',
+            rightExpression: 'Join on Left.Policy_ID = Right.Policy_ID',
+            matchType: 'Identical',
+            description: 'Both workflows perform an exact inner join between normalized claims records and policy master dimensions.',
+          },
+          {
+            name: 'Payment Aggregation Rollup',
+            category: 'Summarize',
+            leftExpression: 'GroupBy(Claim_ID), Sum(Payment_Amount) as Paid Amount, CountDistinct(Payment_ID) as Payments Made',
+            rightExpression: 'GroupBy(Claim_ID, Month_End_Date), Sum(Payment_Amount) as Paid Amount, CountDistinct(Payment_ID) as Payments Made',
+            matchType: 'Equivalent',
+            description: 'Workflow_03 groups at the same claim grain with the addition of month-end date tagging.',
+          },
+          {
+            name: 'Diagnosis Classification & ICD Rollup',
+            category: 'Summarize',
+            leftExpression: 'GroupBy(Diagnosis_Type), Max(ICD_Code) as Max_ICD_Code',
+            rightExpression: 'GroupBy(Diagnosis_Type), Max(ICD_Code) as Max_ICD_Code',
+            matchType: 'Identical',
+            description: 'Identical medical diagnosis code extraction and max ICD rollup.',
+          },
+          {
+            name: 'Premium Group Segmentation',
+            category: 'Formula',
+            leftExpression: 'Not Present (Handled downstream in BI)',
+            rightExpression: "if [Monthly_Premium] > 5000 then 'High' else 'Medium' endif",
+            matchType: 'Superset',
+            description: 'Workflow_03 introduces automated premium band categorization directly into the ETL layer.',
+          },
+        ],
+        similarityScore: 90,
+        summary: '90% logic similarity across core join chains, diagnosis summaries, and payment aggregations. Workflow_03 fully subsumes Workflow_01 transformation steps.',
+      },
+      dagComparison: {
+        stages: [
+          { stageName: 'Source Ingestion (TextInput / Parse)', leftToolCount: 3, rightToolCount: 4, description: 'Ingestion of Claims, Policy, and Diagnosis tables' },
+          { stageName: 'Data Preparation & Renaming', leftToolCount: 4, rightToolCount: 9, description: 'Delimited text splitting, column pruning, and dynamic field naming' },
+          { stageName: 'Relational Joins & Transformations', leftToolCount: 3, rightToolCount: 8, description: 'Policy enrichment, payment rollup, and formula flags' },
+          { stageName: 'Summarization & Aggregation', leftToolCount: 1, rightToolCount: 4, description: 'Rollup by Policy_ID and Diagnosis_Type' },
+          { stageName: 'Output & Control Containers', leftToolCount: 1, rightToolCount: 4, description: 'Containerized execution blocks and output targets' },
+        ],
+        leftTotalNodes: 12,
+        rightTotalNodes: 29,
+        similarityScore: 82,
+        topologyAlignment: 'Direct hierarchical subgraph. Workflow_01 is an exact topological subset of Workflow_03 containerized data flows.',
+      },
+      subsumptionItems: [
+        {
+          attributeOrTransformation: 'Claims Master Fact Table Ingestion',
+          candidateStatus: 'Extracted & Parsed (6 columns)',
+          targetStatus: 'Extracted & Parsed (6 columns)',
+          subsumptionType: 'Fully Subsumed',
+          details: 'All 6 fields from Workflow_01 are parsed with identical data types in Workflow_03 container #46.',
+        },
+        {
+          attributeOrTransformation: 'Policy Dimension Mapping',
+          candidateStatus: 'Joined on Policy_ID',
+          targetStatus: 'Joined on Policy_ID + Premium Dimension',
+          subsumptionType: 'Superset Match',
+          details: 'Workflow_03 carries all policy dimension fields and enriches with Monthly_Premium calculation.',
+        },
+        {
+          attributeOrTransformation: 'Claim Payment Rollup Calculation',
+          candidateStatus: 'Paid Amount & Payments Made',
+          targetStatus: 'Paid Amount, Payments Made, Month_End_Date',
+          subsumptionType: 'Superset Match',
+          details: 'Superset calculation with temporal month-end partitioning.',
+        },
+        {
+          attributeOrTransformation: 'Diagnosis Categorization',
+          candidateStatus: 'Max ICD Code by Diagnosis Type',
+          targetStatus: 'Max ICD Code by Diagnosis Type',
+          subsumptionType: 'Fully Subsumed',
+          details: 'Identical summarize tool parameters and join logic.',
+        },
+      ],
+      rationalePoints: [
+        'High Schema Overlap (75% Sources, 100% Shared Field Parity): Workflow_01 and Workflow_03 share identical Claims, Policy, and Diagnosis schemas.',
+        'Synchronized Execution Schedule: Both workflows execute on a monthly end-of-period cadence, making unified execution seamless.',
+        'Zero Data Loss: Workflow_03 is a strict functional superset of Workflow_01, generating all metrics required by downstream consumers.',
+        'Compute & Maintenance Reduction: Consolidating eliminates 12 duplicate Alteryx tool nodes and reduces monthly scheduled jobs.',
+      ],
+      validationRequirements: [
+        'Run side-by-side execution on latest Month-End claims extract and verify 100% hash parity on Claims_Consolidated_Mart.',
+        'Confirm downstream BI dashboard Sales & Returns Sample v3 can consume Claims_Consolidated_Mart or the unified export.',
+        'Validate that Premium_Group categorization does not alter existing policy join cardinality.',
+      ],
+    };
+  }
+
+  // 2. Redundant ETL Retirement: Claims_Extract_Volume_v2 (er1)
+  if (rec.id === 'er1') {
+    return {
+      recId: 'er1',
+      title: 'Redundant ETL Pipeline Retirement Analysis',
+      recType: 'RETIRE',
+      recommendationBadge: 'Retire',
+      direction: {
+        absorbed: { name: 'Claims_Extract_Volume_v2', tech: 'Alteryx', role: 'Redundant Candidate' },
+        retained: { name: 'Claims_Extract_Volume', tech: 'Alteryx', role: 'Retained Master' },
+        bannerText: 'REDUNDANT CANDIDATE: Claims_Extract_Volume_v2 (Alteryx) → RETAINED MASTER: Claims_Extract_Volume (Alteryx)',
+      },
+      inScopeWorkflows: [
+        {
+          id: 'c14',
+          name: 'Claims_Extract_Volume_v2',
+          technology: 'Alteryx',
+          complexity: 'High',
+          criticality: 'High',
+          toolCount: 35,
+          sourcesCount: 4,
+          targetsCount: 5,
+          schedule: 'Daily 05:30 AM EST',
+          runtime: '34s',
+          lastRunStatus: 'Success',
+          owner: 'EXL',
+          businessArea: 'Claims',
+        },
+        {
+          id: 'c10',
+          name: 'Claims_Extract_Volume',
+          technology: 'Alteryx',
+          complexity: 'High',
+          criticality: 'High',
+          toolCount: 35,
+          sourcesCount: 4,
+          targetsCount: 5,
+          schedule: 'Daily 05:30 AM EST',
+          runtime: '32s',
+          lastRunStatus: 'Success',
+          owner: 'EXL',
+          businessArea: 'Claims',
+        },
+      ],
+      overlapMetrics: {
+        sourceMetadataPct: 100,
+        targetMetadataPct: 100,
+        frequencyPct: 100,
+        logicPct: 100,
+        dagPct: 100,
+      },
+      sourcesComparison: [
+        {
+          name: 'Claims_Volume_Extract_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 11,
+          totalColumnsCount: 11,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Claim Number', type: 'V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Policy Number', type: 'V_WString', sampleValue: 'POL-10492', isMatching: true },
+            { name: 'Team', type: 'V_WString', sampleValue: 'Team Alpha', isMatching: true },
+            { name: 'Manager', type: 'V_WString', sampleValue: 'Sarah Jenkins', isMatching: true },
+            { name: 'Examiner', type: 'V_WString', sampleValue: 'David Miller', isMatching: true },
+            { name: 'Claim Status', type: 'V_WString', sampleValue: 'Active_Pending', isMatching: true },
+            { name: 'Disability Date', type: 'Date', sampleValue: '2024-01-15', isMatching: true },
+            { name: 'ICD1Code', type: 'V_WString', sampleValue: 'S82.1', isMatching: true },
+            { name: 'ICD1Description', type: 'V_WString', sampleValue: 'Fracture of upper end of tibia', isMatching: true },
+            { name: 'ICD1GroupName', type: 'V_WString', sampleValue: 'Musculoskeletal System', isMatching: true },
+          ],
+        },
+        {
+          name: 'Policy_Master_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 7,
+          totalColumnsCount: 7,
+          columns: [
+            { name: 'Policy Number', type: 'V_WString', sampleValue: 'POL-10492', isMatching: true },
+            { name: 'Product Type', type: 'V_WString', sampleValue: 'Workers Compensation', isMatching: true },
+            { name: 'State', type: 'V_WString', sampleValue: 'CA', isMatching: true },
+            { name: 'Effective Date', type: 'Date', sampleValue: '2023-01-01', isMatching: true },
+            { name: 'Expiration Date', type: 'Date', sampleValue: '2024-01-01', isMatching: true },
+            { name: 'Insured Name', type: 'V_WString', sampleValue: 'Apex Industrial LLC', isMatching: true },
+            { name: 'Annual Premium', type: 'Double', sampleValue: '54,000.00', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claim_Payments_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 4,
+          totalColumnsCount: 4,
+          columns: [
+            { name: 'Claim Number', type: 'V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Payment Date', type: 'Date', sampleValue: '2024-02-10', isMatching: true },
+            { name: 'Payment Amount', type: 'Double', sampleValue: '1,450.00', isMatching: true },
+            { name: 'Payment Type', type: 'V_WString', sampleValue: 'Medical Indemnity', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claim_Diary_Notes_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 4,
+          totalColumnsCount: 4,
+          columns: [
+            { name: 'Claim Number', type: 'V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Last Activity Date', type: 'Date', sampleValue: '2024-03-20', isMatching: true },
+            { name: 'Litigation Flag', type: 'V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Reopened Flag', type: 'V_WString', sampleValue: 'N', isMatching: true },
+          ],
+        },
+      ],
+      targetsComparison: [
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
+          targetType: 'Excel Extract',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - State Performance'],
+          columnsCount: 16,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'Claim Number', type: 'V_WString', isMatching: true },
+            { name: 'Policy Number', type: 'V_WString', isMatching: true },
+            { name: 'Total Paid', type: 'Double', isMatching: true },
+            { name: 'Days Since Last Activity', type: 'Int32', isMatching: true },
+            { name: 'Aging Bucket', type: 'V_WString', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - Agent Performance'],
+          columnsCount: 8,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'Active_Pending', type: 'Int32', isMatching: true },
+            { name: 'Approved', type: 'Int32', isMatching: true },
+            { name: 'Preclaim', type: 'Int32', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Healthcare Claim Analysis Dashboard'],
+          columnsCount: 6,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'Product Type', type: 'V_WString', isMatching: true },
+            { name: 'Claim Count', type: 'Int32', isMatching: true },
+            { name: 'Total Paid Amount', type: 'Double', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_State_Demo_Output.xlsx|||StateSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - State Performance', 'Car Insurance Dashboard'],
+          columnsCount: 6,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'State', type: 'V_WString', isMatching: true },
+            { name: 'Claim Count', type: 'Int32', isMatching: true },
+            { name: 'Total Paid', type: 'Double', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Benefeciery_services_Aging_Dashboard'],
+          columnsCount: 5,
+          columns: [
+            { name: 'Aging Bucket', type: 'V_WString', isMatching: true },
+            { name: 'Litigation Flag', type: 'V_WString', isMatching: true },
+            { name: 'Claim Count', type: 'Int32', isMatching: true },
+          ],
+        },
+      ],
+      frequencyComparison: {
+        leftSchedule: 'Daily 05:30 AM EST',
+        rightSchedule: 'Daily 05:30 AM EST',
+        leftTrigger: 'Redundant Alteryx Server Job',
+        rightTrigger: 'Master Alteryx Server Schedule',
+        leftRuntime: '34 seconds',
+        rightRuntime: '32 seconds',
+        leftStatus: 'Active / Success',
+        rightStatus: 'Active / Success',
+        alignmentSummary: 'Exact duplicate schedule running simultaneously every morning, writing identical files.',
+        overlapPct: 100,
+      },
+      logicComparison: {
+        rules: [
+          {
+            name: 'Days Since Activity Formula',
+            category: 'Formula',
+            leftExpression: "DateTimeDiff(DateTimeToday(),[Last Activity Date],'days')",
+            rightExpression: "DateTimeDiff(DateTimeToday(),[Last Activity Date],'days')",
+            matchType: 'Identical',
+            description: 'Identical date calculation determining adjuster diary recency.',
+          },
+          {
+            name: 'Aging Bucket Rule',
+            category: 'Formula',
+            leftExpression: "if [Days Since Last Activity] > 90 then '90+ Days' elseif [Days Since Last Activity] > 30 then '31-90 Days' else '0-30 Days' endif",
+            rightExpression: "if [Days Since Last Activity] > 90 then '90+ Days' elseif [Days Since Last Activity] > 30 then '31-90 Days' else '0-30 Days' endif",
+            matchType: 'Identical',
+            description: 'Identical claims aging categorisation thresholds.',
+          },
+          {
+            name: 'Cross Tab Quarterly Pivot',
+            category: 'Summarize',
+            leftExpression: 'Group: Quarter End Date, Header: Claim Status, Data: CountDistinct(Claim Number)',
+            rightExpression: 'Group: Quarter End Date, Header: Claim Status, Data: CountDistinct(Claim Number)',
+            matchType: 'Identical',
+            description: 'Exact match matrix pivot on claim status.',
+          },
+          {
+            name: 'Payment & Diary Join Chain',
+            category: 'Join',
+            leftExpression: 'Left Join Policy Number → Left Join Claim Number (Payments) → Left Join Claim Number (Diary)',
+            rightExpression: 'Left Join Policy Number → Left Join Claim Number (Payments) → Left Join Claim Number (Diary)',
+            matchType: 'Identical',
+            description: 'Exact 3-tier join sequence with identical union null-handling logic.',
+          },
+        ],
+        similarityScore: 100,
+        summary: '100% duplicate logic across all 35 tool configurations, formula definitions, joins, and aggregations.',
+      },
+      dagComparison: {
+        stages: [
+          { stageName: 'Source Ingestion (4 Input Nodes)', leftToolCount: 4, rightToolCount: 4, description: 'Reads 4 Excel source tables' },
+          { stageName: 'Historical Detail Branch & Cross Tab', leftToolCount: 14, rightToolCount: 14, description: 'Generates quarterly summaries and examiner breakdowns' },
+          { stageName: 'Payment & Policy Enrichment Join Chain', leftToolCount: 7, rightToolCount: 7, description: 'Multi-table join and null substitution formulas' },
+          { stageName: 'Product, State & Risk Summary Branches', leftToolCount: 6, rightToolCount: 6, description: 'Aggregates by Product Type, State, and Aging Bucket' },
+          { stageName: 'Excel Output Generation (5 Sinks)', leftToolCount: 5, rightToolCount: 5, description: 'Writes to 5 workbook target sheets' },
+        ],
+        leftTotalNodes: 35,
+        rightTotalNodes: 35,
+        similarityScore: 100,
+        topologyAlignment: '100% identical DAG node-for-node and connection-for-connection.',
+      },
+      retirementSafetyChecks: [
+        {
+          checkItem: 'Input Data Sources Redundancy Audit',
+          status: 'passed',
+          details: 'All 4 input Excel files are identically consumed by master workflow Claims_Extract_Volume.',
+        },
+        {
+          checkItem: 'Output Data Mart Parity Audit',
+          status: 'passed',
+          details: 'All 5 output target datasets match the master workflow down to byte and row counts.',
+        },
+        {
+          checkItem: 'Downstream Consumer Impact Assessment',
+          status: 'passed',
+          details: 'All downstream BI dashboards (Executive Summary, State Performance, Agent Performance) point to master outputs.',
+        },
+        {
+          checkItem: 'Scheduler De-registration Safety',
+          status: 'passed',
+          details: 'Disabling Claims_Extract_Volume_v2 will free up 1 daily Alteryx engine worker slot with zero data impact.',
+        },
+      ],
+      rationalePoints: [
+        'Complete Redundancy (100% Exact Match): Claims_Extract_Volume_v2 is a byte-for-byte replica of Claims_Extract_Volume.',
+        'Zero Distinct Business Logic: Contains zero unique calculations, custom filters, or proprietary outputs.',
+        'Safe Immediate Decommissioning: All 6 downstream Tableau and Power BI assets already read the output created by Claims_Extract_Volume.',
+        'Resource Optimization: Eliminates redundant server execution, disk I/O, and lock contention on output Excel files.',
+      ],
+      validationRequirements: [
+        'De-register the scheduled job for Claims_Extract_Volume_v2 in Alteryx Server Gallery.',
+        'Confirm master workflow Claims_Extract_Volume completed today’s 05:30 AM run successfully.',
+        'Archive Claims_Extract_Volume_v2.yxmd into the decommissioned backup repository folder.',
+      ],
+    };
+  }
+
+  // 3. Stale Workflow Retirement: Workflow_04_App (er2)
+  if (rec.id === 'er2') {
+    return {
+      recId: 'er2',
+      title: 'Stale / Orphaned Workflow Decommission Analysis',
+      recType: 'RETIRE',
+      recommendationBadge: 'Retire',
+      direction: {
+        absorbed: { name: 'Workflow_04_App', tech: 'Alteryx', role: 'Stale Candidate' },
+        retained: { name: 'None (Orphaned)', tech: 'Alteryx', role: 'No Replacement Required' },
+        bannerText: 'RETIRED STALE PIPELINE: Workflow_04_App (Alteryx) → REASON: Zero Downstream Consumers & Inactive > 200 Days',
+      },
+      inScopeWorkflows: [
+        {
+          id: 'u4',
+          name: 'Workflow_04_App',
+          technology: 'Alteryx',
+          complexity: 'Low',
+          criticality: 'Low',
+          toolCount: 11,
+          sourcesCount: 2,
+          targetsCount: 0,
+          schedule: 'Inactive (No Active Schedule)',
+          runtime: '8s',
+          lastRunStatus: 'Inactive',
+          owner: 'EXL',
+          businessArea: 'Underwriting',
+        },
+      ],
+      overlapMetrics: {
+        sourceMetadataPct: 0,
+        targetMetadataPct: 0,
+        frequencyPct: 0,
+        logicPct: 0,
+        dagPct: 0,
+      },
+      sourcesComparison: [
+        {
+          name: 'Health_Data',
+          sourceType: 'Alteryx Text Input / Staging Sample',
+          matchStatus: 'unique_left',
+          leftPresent: true,
+          rightPresent: false,
+          matchingColumnsCount: 0,
+          totalColumnsCount: 4,
+          columns: [
+            { name: 'Submit_ID', type: 'Int64', sampleValue: 'SUB-101', isMatching: false },
+            { name: 'Age', type: 'Int32', sampleValue: '42', isMatching: false },
+            { name: 'BMI', type: 'Double', sampleValue: '26.4', isMatching: false },
+            { name: 'Health_Status', type: 'V_WString', sampleValue: 'Standard', isMatching: false },
+          ],
+        },
+        {
+          name: 'Policy_Data',
+          sourceType: 'Alteryx Text Input / Staging Sample',
+          matchStatus: 'unique_left',
+          leftPresent: true,
+          rightPresent: false,
+          matchingColumnsCount: 0,
+          totalColumnsCount: 3,
+          columns: [
+            { name: 'Policy_ID', type: 'Int64', sampleValue: 'POL-009', isMatching: false },
+            { name: 'Policy_Type', type: 'V_WString', sampleValue: 'Term Life', isMatching: false },
+            { name: 'Policy_Status', type: 'V_WString', sampleValue: 'Active', isMatching: false },
+          ],
+        },
+      ],
+      targetsComparison: [],
+      frequencyComparison: {
+        leftSchedule: 'Inactive (No Schedule Triggered)',
+        rightSchedule: 'N/A',
+        leftTrigger: 'Manual Ad-Hoc Execution Only',
+        rightTrigger: 'N/A',
+        leftRuntime: '8 seconds (Last run >200 days ago)',
+        rightRuntime: 'N/A',
+        leftStatus: 'Stale / Inactive (>180 Days Threshold)',
+        rightStatus: 'N/A',
+        alignmentSummary: 'Pipeline has had zero executions in the last 200 days. No production scheduler triggers configured.',
+        overlapPct: 0,
+      },
+      logicComparison: {
+        rules: [
+          {
+            name: 'Underwriting Prototype Join',
+            category: 'Join',
+            leftExpression: 'Join on Submit_ID / Policy_ID',
+            rightExpression: 'N/A',
+            matchType: 'Unique',
+            description: 'Experimental join between health criteria and policy status prototype tables.',
+          },
+          {
+            name: 'Risk Score Filter',
+            category: 'Filter',
+            leftExpression: '[BMI] < 30 AND [Age] < 60',
+            rightExpression: 'N/A',
+            matchType: 'Unique',
+            description: 'Rudimentary filter rule superseded by automated rating engine.',
+          },
+        ],
+        similarityScore: 0,
+        summary: 'Contains experimental prototype logic from early 2024 underwriting testing. Zero active production relevance.',
+      },
+      dagComparison: {
+        stages: [
+          { stageName: 'Sample Data Inputs', leftToolCount: 2, rightToolCount: 0, description: 'Hardcoded Text Input nodes' },
+          { stageName: 'Preparation & Filtering', leftToolCount: 5, rightToolCount: 0, description: 'Data cleansing and filter prototypes' },
+          { stageName: 'Browse Terminals', leftToolCount: 4, rightToolCount: 0, description: 'Browse tools with zero output writers' },
+        ],
+        leftTotalNodes: 11,
+        rightTotalNodes: 0,
+        similarityScore: 0,
+        topologyAlignment: 'Dead-end workflow terminating exclusively in Browse inspection tools. No export sink.',
+      },
+      retirementSafetyChecks: [
+        {
+          checkItem: 'Downstream BI Asset Audit',
+          status: 'passed',
+          details: 'Zero BI dashboards, semantic models, or reports consume data from Workflow_04_App.',
+        },
+        {
+          checkItem: 'Production Sink Check',
+          status: 'passed',
+          details: 'Workflow contains 0 Output Data nodes. All data paths terminate in Browse tools.',
+        },
+        {
+          checkItem: 'Inactivity Threshold Audit',
+          status: 'passed',
+          details: 'Last accessed 200 days ago, exceeding enterprise governance threshold of 180 days.',
+        },
+        {
+          checkItem: 'Business Process Ownership Verification',
+          status: 'passed',
+          details: 'Underwriting confirmed manual experimental testing concluded; production underwriting moved to lakehouse API.',
+        },
+      ],
+      rationalePoints: [
+        'Zero Downstream Consumers: Audit confirmed no BI tools, data warehouses, or reporting layers depend on this workflow.',
+        'Exceeds Inactivity Threshold: Inactive for >200 days (>180 days policy rule for automated decommissioning).',
+        'Dead-End DAG Topology: Terminates in 4 Browse tools without any persistent database or file output nodes.',
+        'Workspace Cleanup: Decommissioning removes obsolete assets and reduces governance inventory overhead.',
+      ],
+      validationRequirements: [
+        'Export and archive the workflow XML definition into the audit archive.',
+        'Delete the unpublished workflow asset from Alteryx Server sandbox space.',
+        'Log decommission event in the BI & ETL Governance audit trail.',
+      ],
+    };
+  }
+
+  // 4. Cross-Technology Modernization Decommission: Claims_Extract_Volume (er3)
+  if (rec.id === 'er3') {
+    return {
+      recId: 'er3',
+      title: 'Modernized Alteryx to Python Decommission Analysis',
+      recType: 'RETIRE',
+      recommendationBadge: 'Retire',
+      direction: {
+        absorbed: { name: 'Claims_Extract_Volume', tech: 'Alteryx', role: 'Legacy Pipeline' },
+        retained: { name: 'claims_processing', tech: 'Python', role: 'Active Modernized Target' },
+        bannerText: 'RETIRED LEGACY PIPELINE: Claims_Extract_Volume (Alteryx) → ACTIVE MODERNIZED TARGET: claims_processing (Python)',
+      },
+      inScopeWorkflows: [
+        {
+          id: 'c10',
+          name: 'Claims_Extract_Volume',
+          technology: 'Alteryx',
+          complexity: 'High',
+          criticality: 'High',
+          toolCount: 35,
+          sourcesCount: 4,
+          targetsCount: 5,
+          schedule: 'Daily 05:30 AM EST',
+          runtime: '32s',
+          lastRunStatus: 'Success',
+          owner: 'EXLService',
+          businessArea: 'Claims',
+        },
+        {
+          id: 'c15',
+          name: 'claims_processing',
+          technology: 'Python',
+          complexity: 'High',
+          criticality: 'High',
+          toolCount: 44,
+          sourcesCount: 4,
+          targetsCount: 5,
+          schedule: 'Daily 05:30 AM EST',
+          runtime: '4.2s',
+          lastRunStatus: 'Success',
+          owner: 'Data Engineering',
+          businessArea: 'Claims',
+        },
+      ],
+      overlapMetrics: {
+        sourceMetadataPct: 100,
+        targetMetadataPct: 100,
+        frequencyPct: 100,
+        logicPct: 96,
+        dagPct: 94,
+      },
+      sourcesComparison: [
+        {
+          name: 'Claims_Volume_Extract_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 11,
+          totalColumnsCount: 11,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Claim Number', type: 'String / V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Policy Number', type: 'String / V_WString', sampleValue: 'POL-10492', isMatching: true },
+            { name: 'Team', type: 'String / V_WString', sampleValue: 'Team Alpha', isMatching: true },
+            { name: 'Manager', type: 'String / V_WString', sampleValue: 'Sarah Jenkins', isMatching: true },
+            { name: 'Examiner', type: 'String / V_WString', sampleValue: 'David Miller', isMatching: true },
+            { name: 'Claim Status', type: 'String / V_WString', sampleValue: 'Active_Pending', isMatching: true },
+            { name: 'Disability Date', type: 'Date', sampleValue: '2024-01-15', isMatching: true },
+            { name: 'ICD1Code', type: 'String / V_WString', sampleValue: 'S82.1', isMatching: true },
+            { name: 'ICD1Description', type: 'String / V_WString', sampleValue: 'Fracture of upper end of tibia', isMatching: true },
+            { name: 'ICD1GroupName', type: 'String / V_WString', sampleValue: 'Musculoskeletal System', isMatching: true },
+          ],
+        },
+        {
+          name: 'Policy_Master_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 7,
+          totalColumnsCount: 7,
+          columns: [
+            { name: 'Policy Number', type: 'String / V_WString', sampleValue: 'POL-10492', isMatching: true },
+            { name: 'Product Type', type: 'String / V_WString', sampleValue: 'Workers Compensation', isMatching: true },
+            { name: 'State', type: 'String / V_WString', sampleValue: 'CA', isMatching: true },
+            { name: 'Effective Date', type: 'Date', sampleValue: '2023-01-01', isMatching: true },
+            { name: 'Expiration Date', type: 'Date', sampleValue: '2024-01-01', isMatching: true },
+            { name: 'Insured Name', type: 'String / V_WString', sampleValue: 'Apex Industrial LLC', isMatching: true },
+            { name: 'Annual Premium', type: 'Float64 / Double', sampleValue: '54,000.00', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claim_Payments_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 4,
+          totalColumnsCount: 4,
+          columns: [
+            { name: 'Claim Number', type: 'String / V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Payment Date', type: 'Date', sampleValue: '2024-02-10', isMatching: true },
+            { name: 'Payment Amount', type: 'Float64 / Double', sampleValue: '1,450.00', isMatching: true },
+            { name: 'Payment Type', type: 'String / V_WString', sampleValue: 'Medical Indemnity', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claim_Diary_Notes_Demo.xlsx',
+          sourceType: 'Excel Workbook (Sheet1$)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          matchingColumnsCount: 4,
+          totalColumnsCount: 4,
+          columns: [
+            { name: 'Claim Number', type: 'String / V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Last Activity Date', type: 'Date', sampleValue: '2024-03-20', isMatching: true },
+            { name: 'Litigation Flag', type: 'String / V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Reopened Flag', type: 'String / V_WString', sampleValue: 'N', isMatching: true },
+          ],
+        },
+      ],
+      targetsComparison: [
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
+          targetType: 'Data Mart / Excel Sheet',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - State Performance'],
+          columnsCount: 16,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'Claim Number', type: 'String', isMatching: true },
+            { name: 'Policy Number', type: 'String', isMatching: true },
+            { name: 'Total Paid', type: 'Float64', isMatching: true },
+            { name: 'Days Since Last Activity', type: 'Int64', isMatching: true },
+            { name: 'Aging Bucket', type: 'String', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
+          targetType: 'Data Mart / Excel Sheet',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - Agent Performance'],
+          columnsCount: 8,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'Active_Pending', type: 'Int64', isMatching: true },
+            { name: 'Approved', type: 'Int64', isMatching: true },
+            { name: 'Preclaim', type: 'Int64', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
+          targetType: 'Data Mart / Excel Sheet',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Healthcare Claim Analysis Dashboard'],
+          columnsCount: 6,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'Product Type', type: 'String', isMatching: true },
+            { name: 'Claim Count', type: 'Int64', isMatching: true },
+            { name: 'Total Paid Amount', type: 'Float64', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_State_Demo_Output.xlsx|||StateSummary',
+          targetType: 'Data Mart / Excel Sheet',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - State Performance', 'Car Insurance Dashboard'],
+          columnsCount: 6,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', isMatching: true },
+            { name: 'State', type: 'String', isMatching: true },
+            { name: 'Claim Count', type: 'Int64', isMatching: true },
+            { name: 'Total Paid', type: 'Float64', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
+          targetType: 'Data Mart / Excel Sheet',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Benefeciery_services_Aging_Dashboard'],
+          columnsCount: 5,
+          columns: [
+            { name: 'Aging Bucket', type: 'String', isMatching: true },
+            { name: 'Litigation Flag', type: 'String', isMatching: true },
+            { name: 'Claim Count', type: 'Int64', isMatching: true },
+          ],
+        },
+      ],
+      frequencyComparison: {
+        leftSchedule: 'Daily 05:30 AM EST (Alteryx Server)',
+        rightSchedule: 'Daily 05:30 AM EST (Airflow / Cron)',
+        leftTrigger: 'Alteryx Server Engine Scheduler',
+        rightTrigger: 'Airflow Python Pipeline DAG',
+        leftRuntime: '32 seconds',
+        rightRuntime: '4.2 seconds (7.6x Speedup)',
+        leftStatus: 'Active Legacy',
+        rightStatus: 'Active Modernized',
+        alignmentSummary: 'Modernized Python pipeline matches the daily 05:30 AM schedule while cutting processing time from 32s to 4.2s.',
+        overlapPct: 100,
+      },
+      logicComparison: {
+        rules: [
+          {
+            name: 'Days Since Activity Vectorization',
+            category: 'Formula',
+            leftExpression: "Alteryx DateTimeDiff(DateTimeToday(),[Last Activity Date],'days')",
+            rightExpression: "(pd.Timestamp.today() - df['Last Activity Date']).dt.days",
+            matchType: 'Equivalent',
+            description: 'Vectorized datetime difference calculation with matching leap year and null handling.',
+          },
+          {
+            name: 'Aging Bucket Categorization',
+            category: 'Formula',
+            leftExpression: 'Alteryx Formula conditional switch statement (0-30, 31-90, 90+)',
+            rightExpression: "pd.cut(df['Days Since Last Activity'], bins=[-1, 30, 90, np.inf], labels=['0-30 Days', '31-90 Days', '90+ Days'])",
+            matchType: 'Equivalent',
+            description: 'Vectorized binning producing identical string classifications.',
+          },
+          {
+            name: 'Multi-Table Relational Merges',
+            category: 'Join',
+            leftExpression: 'Alteryx Join + Union tools for Policy, Payments, and Diary notes',
+            rightExpression: "df_claims.merge(df_policy, how='left').merge(df_payments, how='left').merge(df_diary, how='left')",
+            matchType: 'Equivalent',
+            description: 'Vectorized left joins with automated zero/null imputation for unallocated claims.',
+          },
+          {
+            name: 'Status Matrix CrossTab',
+            category: 'Summarize',
+            leftExpression: 'Alteryx Cross Tab tool pivoting Claim Status across quarters',
+            rightExpression: "pd.pivot_table(df, index='Quarter End Date', columns='Claim Status', values='Claim Number', aggfunc='nunique', fill_value=0)",
+            matchType: 'Identical',
+            description: 'Identical quarter-by-status matrix aggregations.',
+          },
+        ],
+        similarityScore: 96,
+        summary: '96% logic parity achieved through vectorized Python operations. Automated unit test suite verifies 100% output cell parity.',
+      },
+      dagComparison: {
+        stages: [
+          { stageName: 'Source Ingestion (4 Input Sources)', leftToolCount: 4, rightToolCount: 4, description: 'Pandas / Calamine excel reader vs Alteryx Input' },
+          { stageName: 'Claims & Payment Feature Engineering', leftToolCount: 14, rightToolCount: 18, description: 'Vectorized calculations and temporal summaries' },
+          { stageName: 'Relational Merge & Null Imputation', leftToolCount: 7, rightToolCount: 8, description: 'Data frame left joins and fillna logic' },
+          { stageName: 'Multidimensional Aggregations', leftToolCount: 5, rightToolCount: 9, description: 'Pivoting and grouping by Quarter, Product, State, Risk' },
+          { stageName: 'Data Mart Output Writers', leftToolCount: 5, rightToolCount: 5, description: 'XlsxWriter / OpenPyXL multi-sheet export' },
+        ],
+        leftTotalNodes: 35,
+        rightTotalNodes: 44,
+        similarityScore: 94,
+        topologyAlignment: 'Topologically identical multi-branch DAG implemented as a modern modular Python package.',
+      },
+      retirementSafetyChecks: [
+        {
+          checkItem: 'Automated Regression Testing Parity',
+          status: 'passed',
+          details: 'PyTest automated regression suite confirms 0 cell-level diffs across 10,000+ historical rows.',
+        },
+        {
+          checkItem: 'Performance & Latency Benchmark',
+          status: 'passed',
+          details: 'Python execution completes in 4.2s compared to 32s in Alteryx (7.6x improvement).',
+        },
+        {
+          checkItem: 'Downstream BI Lineage Confirmation',
+          status: 'passed',
+          details: 'Tableau and Power BI dashboards have been tested against the Python output and verified.',
+        },
+        {
+          checkItem: 'License Cost Elimination',
+          status: 'passed',
+          details: 'Retiring the Alteryx workflow releases proprietary server engine licensing costs.',
+        },
+      ],
+      rationalePoints: [
+        'Full Modernization Parity: The vectorized Python pipeline claims_processing replicates all 35 Alteryx tools with 100% data fidelity.',
+        'Significant Performance Gain: Execution runtime reduced by 87% (32s down to 4.2s).',
+        'Direct Cloud Lakehouse Readiness: Python pipeline integrates natively into modern CI/CD, Git version control, and Airflow orchestration.',
+        'Safe Decommissioning: Legacy Alteryx workflow can be retired with zero risk to downstream reporting consumers.',
+      ],
+      validationRequirements: [
+        'Complete final dual-run comparison check for today’s production batch.',
+        'Point Airflow production DAG to production target folder.',
+        'Decommission Alteryx Server scheduled task and archive workflow repository.',
+      ],
+    };
+  }
+
+  // Generic Fallback for any other recommendation
+  const isRetire = rec.category.includes('retire');
+  const w1 = rec.assets[0];
+  const w2 = rec.assets[1] || rec.dependentAsset;
+  const a1 = allAssets.find((a) => a.name === w1?.name);
+  const a2 = w2 ? allAssets.find((a) => a.name === w2.name) : undefined;
+  const w1Tools = (a1 && (ALTERYX_DETAIL_DATA as any)[a1.id]?.tools?.length) || 10;
+  const w2Tools = (a2 && (ALTERYX_DETAIL_DATA as any)[a2.id]?.tools?.length) || (w2 ? 15 : 0);
+
+  return {
+    recId: rec.id,
+    title: `${rec.title} Analysis`,
+    recType: isRetire ? 'RETIRE' : 'CONSOLIDATE',
+    recommendationBadge: isRetire ? 'Retire' : 'Consolidate',
+    direction: {
+      absorbed: { name: w1?.name || 'Asset 1', tech: w1?.technology || 'Alteryx', role: isRetire ? 'Candidate to Retire' : 'Absorbed Candidate' },
+      retained: { name: w2?.name || (isRetire ? 'None' : 'Target Asset'), tech: w2?.technology || 'Alteryx', role: isRetire ? 'Retained Alternative' : 'Retained Superset' },
+      bannerText: isRetire
+        ? `RETIRED ASSET: ${w1?.name || ''} (${w1?.technology || ''}) → ${w2 ? `ALTERNATIVE: ${w2.name} (${w2.technology})` : 'REASON: Inactive / Redundant'}`
+        : `ABSORBED CANDIDATE: ${w1?.name || ''} (${w1?.technology || ''}) → RETAINED SUPERSET: ${w2?.name || rec.mergeTarget || ''}`,
+    },
+    inScopeWorkflows: [
+      {
+        id: a1?.id || 'w1',
+        name: w1?.name || 'Workflow 1',
+        technology: w1?.technology || 'Alteryx',
+        complexity: 'Medium',
+        criticality: 'Medium',
+        toolCount: w1Tools,
+        sourcesCount: rec.tables?.length || 2,
+        targetsCount: 1,
+        schedule: 'Daily Scheduled',
+        runtime: '20s',
+        lastRunStatus: 'Success',
+        owner: rec.owner || 'EXL',
+        businessArea: rec.businessArea,
+      },
+      ...(w2
+        ? [
+            {
+              id: a2?.id || 'w2',
+              name: w2.name,
+              technology: w2.technology,
+              complexity: 'High' as const,
+              criticality: 'High' as const,
+              toolCount: w2Tools,
+              sourcesCount: rec.targetTables?.length || rec.tables?.length || 3,
+              targetsCount: 2,
+              schedule: 'Daily Scheduled',
+              runtime: '25s',
+              lastRunStatus: 'Success' as const,
+              owner: rec.targetOwner || rec.owner || 'EXL',
+              businessArea: rec.businessArea,
+            },
+          ]
+        : []),
+    ],
+    overlapMetrics: {
+      sourceMetadataPct: rec.overlapPct || 70,
+      targetMetadataPct: rec.overlapPct || 65,
+      frequencyPct: 100,
+      logicPct: rec.overlapPct || 75,
+      dagPct: 70,
+    },
+    sourcesComparison: (rec.tables || ['Source_Data_1', 'Source_Data_2']).map((t, idx) => ({
+      name: t,
+      sourceType: 'Relational / File Source',
+      matchStatus: idx % 2 === 0 ? 'exact' : 'partial',
+      leftPresent: true,
+      rightPresent: true,
+      matchingColumnsCount: 5,
+      totalColumnsCount: 6,
+      columns: [
+        { name: 'Record_ID', type: 'Int64', sampleValue: '1001', isMatching: true },
+        { name: 'Dimension_Key', type: 'V_WString', sampleValue: 'DIM-01', isMatching: true },
+        { name: 'Amount_Value', type: 'Double', sampleValue: '1,200.00', isMatching: true },
+      ],
+    })),
+    targetsComparison: [
+      {
+        name: 'Consolidated_Output_Mart',
+        targetType: 'Data Mart Sink',
+        matchStatus: 'exact',
+        leftPresent: true,
+        rightPresent: true,
+        downstreamConsumers: ['Executive Dashboard'],
+        columnsCount: 8,
+        columns: [
+          { name: 'Record_ID', type: 'Int64', isMatching: true },
+          { name: 'Total_Metric', type: 'Double', isMatching: true },
+        ],
+      },
+    ],
+    frequencyComparison: {
+      leftSchedule: 'Daily 05:00 AM',
+      rightSchedule: 'Daily 05:30 AM',
+      leftTrigger: 'Scheduled Cron',
+      rightTrigger: 'Scheduled Cron',
+      leftRuntime: '20s',
+      rightRuntime: '25s',
+      leftStatus: 'Active',
+      rightStatus: 'Active',
+      alignmentSummary: 'Both workflows execute on matching daily cadences.',
+      overlapPct: 90,
+    },
+    logicComparison: {
+      rules: [
+        {
+          name: 'Core Transformation & Filter',
+          category: 'Formula',
+          leftExpression: 'Filter Active Records',
+          rightExpression: 'Filter Active Records',
+          matchType: 'Identical',
+          description: 'Standard operational filtering on active entities.',
+        },
+      ],
+      similarityScore: rec.overlapPct || 75,
+      summary: 'High logical alignment across primary transformation paths.',
+    },
+    dagComparison: {
+      stages: [
+        { stageName: 'Ingestion & Prep', leftToolCount: 4, rightToolCount: 6, description: 'Source ingestion and clean' },
+        { stageName: 'Transformation & Sinks', leftToolCount: 6, rightToolCount: 9, description: 'Transform and write' },
+      ],
+      leftTotalNodes: w1Tools,
+      rightTotalNodes: w2Tools || 10,
+      similarityScore: 75,
+      topologyAlignment: 'Aligned pipeline stages and data processing flow.',
+    },
+    rationalePoints: [rec.rationale],
+    validationRequirements: ['Verify output data parity on test run before applying recommendation.'],
+  };
+}
+

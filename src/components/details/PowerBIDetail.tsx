@@ -300,7 +300,7 @@ export default function PowerBIDetail({ asset, onBack }: Props) {
           </div>
           <div>
             <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-              {metadata.summary.totalDAXMeasures}
+              {metadata.daxMeasures.length}
             </div>
             <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
               DAX Measures

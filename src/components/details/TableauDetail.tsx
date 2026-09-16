@@ -84,9 +84,13 @@ export default function TableauDetail({ asset, onBack }: Props) {
     );
   }, [metadata.worksheets, worksheetSearch]);
 
-  // Filter calculated fields (by search and by selected worksheet)
+  // Filter calculated fields (measures only, by search and by selected worksheet)
+  const baseCalculatedMeasures = useMemo(() => {
+    return metadata.calculatedFields.filter((cf) => cf.role === 'measure');
+  }, [metadata.calculatedFields]);
+
   const filteredCalculatedFields = useMemo(() => {
-    let list = metadata.calculatedFields;
+    let list = baseCalculatedMeasures;
 
     if (selectedWorksheet) {
       list = list.filter((cf) => cf.usedInSheets.includes(selectedWorksheet.name));
@@ -97,13 +101,12 @@ export default function TableauDetail({ asset, onBack }: Props) {
       list = list.filter(
         (cf) =>
           cf.name.toLowerCase().includes(q) ||
-          cf.formula.toLowerCase().includes(q) ||
-          cf.role.toLowerCase().includes(q)
+          cf.formula.toLowerCase().includes(q)
       );
     }
 
     return list;
-  }, [metadata.calculatedFields, selectedWorksheet, calcFieldSearch]);
+  }, [baseCalculatedMeasures, selectedWorksheet, calcFieldSearch]);
 
   // Filter data tables
   const filteredTables = useMemo(() => {
@@ -297,7 +300,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
           </div>
           <div>
             <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-              {metadata.summary.totalCalculatedFields}
+              {baseCalculatedMeasures.length}
             </div>
             <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
               Calculated Fields
@@ -582,14 +585,8 @@ export default function TableauDetail({ asset, onBack }: Props) {
                         <h3 className="font-bold text-xs truncate" style={{ color: 'var(--color-text-primary)' }}>
                           {cf.name}
                         </h3>
-                        <span
-                          className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                            cf.role === 'measure'
-                              ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                              : 'bg-blue-500/10 text-blue-500 border border-blue-500/20'
-                          }`}
-                        >
-                          {cf.role}
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                          MEASURE
                         </span>
                         <span className="text-[10px] text-gray-400 font-mono">[{cf.datatype}]</span>
                       </div>

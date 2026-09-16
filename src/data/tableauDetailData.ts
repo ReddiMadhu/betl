@@ -58,7 +58,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 75,
       "totalTables": 2,
-      "totalCalculatedFields": 138,
+      "totalCalculatedFields": 88,
       "totalKpis": 13
     },
     "kpis": [
@@ -3203,14 +3203,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_14",
-        "name": "View | Aggregate",
-        "formula": "[Parameters].[Parameter 4] = 'Show Aggregated'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_15",
         "name": "Avg Claim Cost | Fixed | National or Region",
         "formula": "CASE [Parameters].[Parameter 5]\r\nWHEN 'National' THEN [Calculation_600667632573243414]\r\nWHEN 'Region' THEN AVG([Avg Claim Cost | State (copy)_1734448843613888516])\r\nEND",
@@ -3224,14 +3216,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_17",
-        "name": "Region Filter | Rank",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -3259,51 +3243,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_21",
-        "name": "Histogram Color",
-        "formula": "IF [Calculation_1018376503335067685]=[Calculation_1018376503334752292] THEN\r\n\r\n    // This is the median bin.\r\n\r\n    \"Median\"\r\n\r\nELSEIF [Calculation_1018376503335067685]<[Calculation_1018376503334752292] THEN\r\n\r\n    \"Lower\"\r\n\r\nELSE\r\n\r\n    \"Higher\"\r\n\r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_22",
-        "name": "Bin Max",
-        "formula": "[Calculation_1018376503335067685] + [Parameters].[Parameter 8] -1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_23",
-        "name": "Bin Description",
-        "formula": "REGEXP_REPLACE(STR([Calculation_1018376503335067685]), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\") +\r\n\r\n\" - \" +\r\n\r\nREGEXP_REPLACE(STR([Calculation_1018376503335067685] + [Parameters].[Parameter 8]-1), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\")",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_24",
         "name": "Income | LOD",
         "formula": "{ FIXED [Policy Number]: SUM([Income])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_25",
-        "name": "Region |  Tooltip Filter",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_26",
-        "name": "State Highlight",
-        "formula": "if [Incident State] = [Parameters].[Parameter 7] THEN TRUE End",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -3315,59 +3259,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_28",
-        "name": "Disable Highlighting",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_29",
-        "name": "Gender | Text",
-        "formula": "IF [Gender] = 'Female' THEN 'women' ELSE 'men' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_30",
-        "name": "TRUE",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_31",
-        "name": "FALSE",
-        "formula": "FALSE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_32",
-        "name": "Performance Level | Avg Claim Cost",
-        "formula": "IF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.33)} THEN \"Top Perfomer\" \r\nELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)} THEN \"Average\"  \r\nELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Calculation_1734448843613532163],1)} THEN \"Needs Attention\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_33",
         "name": "Avg Claim Cost | State | Fixed",
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : [Calculation_600667632497045504]}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_34",
-        "name": "State Filter",
-        "formula": "[Incident State] = [Parameters].[Parameter 7]",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -3427,27 +3323,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_42",
-        "name": "Last 10 Years ",
-        "formula": "[Incident Date]>\r\n\r\nDATE(DATEADD('year', -10, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_43",
         "name": "Loss Ratio - Revised",
         "formula": "[Loss Ratio]/1.5",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_44",
-        "name": "View | Detail",
-        "formula": "[Parameters].[Parameter 4] = 'Show Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -3499,35 +3379,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_51",
-        "name": "Year Filter",
-        "formula": "DAY([Incident Date])<= DAY({MAX([Incident Date])})",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_52",
         "name": "Avg Claim Cost | Fixed",
         "formula": "IF [Parameters].[Parameter 1] != 'All' then AVG({FIXED YEAR([Incident Date]) : [Avg Claim Cost (copy)_600667632575893528]})\r\nELSEIF [Parameters].[Parameter 1] = 'All' THEN\r\n[Calculation_600667632497045504]\r\nEND",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_53",
-        "name": "Region Filter",
-        "formula": "[Region] = [Parameters].[Parameter 1] or [Parameters].[Parameter 1] = 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_54",
-        "name": "Max Date",
-        "formula": "{MAX([Incident Date])}",
-        "role": "dimension",
-        "datatype": "date",
         "usedInSheets": []
       },
       {
@@ -3555,30 +3411,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_58",
-        "name": "Region Parameter | Selected",
-        "formula": "Region = [Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_59",
-        "name": "Region | First Letter",
-        "formula": "LEFT([Region],1)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_60",
-        "name": "Info Button",
-        "formula": "'i'",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_61",
         "name": "% Change from National | Fixed",
         "formula": "{FIXED [Region], DATETRUNC('year', [Incident Date]) : [Variance from National (copy)_680043587645292544]}",
@@ -3592,14 +3424,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED : MAX([Calculation_680043587648282625])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_63",
-        "name": "Distance From Target | Days to Settle | Text",
-        "formula": "IF [Calculation_1789899409816530944] > [Parameters].[Parameter 2] THEN 'Over'\r\nELSEIF [Calculation_1789899409816530944] <= [Parameters].[Parameter 2] THEN 'Under'\r\nELSE 'At Target'\r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -3624,46 +3448,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "STR(SUM([Calculation_820218118232264734])) + '/' + STR([Calculation_820218118236938272])",
         "role": "measure",
         "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_67",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_68",
-        "name": "Region or State",
-        "formula": "[Parameters].[Parameter 5]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_69",
-        "name": "Region Selected",
-        "formula": "if [Region] = [Parameters].[Parameter 1] then [Parameters].[Parameter 1] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_70",
-        "name": "Title",
-        "formula": "[Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_71",
-        "name": "Show Selected",
-        "formula": "[Parameters].[Parameter 1] != 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -3728,14 +3512,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : AVG([Satisfaction Score (copy)_820218118194343946])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_80",
-        "name": "Retention Rate Target | Count",
-        "formula": "{FIXED [Incident State]: IF AVG([Retention Rate]) > [Parameters].[Days to Settle Target (copy)_1789899409836019715] THEN COUNTD([Incident State]) END}",
-        "role": "dimension",
-        "datatype": "integer",
         "usedInSheets": []
       },
       {
@@ -3811,22 +3587,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_90",
-        "name": "[Income (bin)]",
-        "formula": "[Income]",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_91",
-        "name": "Last  5 Years",
-        "formula": "[Incident Date]>\r\n\r\nDATE(DATEADD('year', -5, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_92",
         "name": "Retention Rate | Fixed",
         "formula": "{FIXED DATEPART('year', [Incident Date]): AVG([Satisfaction Score (copy)_820218118205710352])}",
@@ -3856,38 +3616,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : AVG([Satisfaction Score (copy)_820218118205710352])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_96",
-        "name": "Performance Level | Days to Settle",
-        "formula": "IF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.33)} THEN \"Top Performer\" \r\nELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.66)} THEN \"Average\" \r\nELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],1)} THEN \"Needs Attention\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_97",
-        "name": "Performance Level | Loss Ratio",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.33)} THEN \"Top Performer\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.66)} THEN \"Average\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],1)} THEN \"Needs Attention\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_98",
-        "name": "Performance Level | Satisfaction Score",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.33)} THEN \"Needs Attention\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.66)} THEN \"Average\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],1)} THEN \"Top Performer\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_99",
-        "name": "Performance Level | Retention Rate",
-        "formula": "IF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.33)} THEN \"Needs Attention\" \r\nELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218]<={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.66)} THEN \"Average\" \r\nELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],1)} THEN \"Top Performaer\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -3971,14 +3699,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_110",
-        "name": "Region Parameter | Selected (copy)",
-        "formula": "IF [Calculation_678917684168884227] = [Calculation_1317302893320302615] THEN '\u25cf' ELSE '\u200e\u200e' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_111",
         "name": "Days to Settle Claim",
         "formula": "IF [Days to Settle Claim] > 50  THEN [Days to Settle Claim]\r\nelseif [Region] = \"Central\" THEN [Days to Settle Claim] * .70\r\nelseif [Region] = \"East\" THEN [Days to Settle Claim] * .15\r\n\r\nelseif  [Region] = \"South\" THEN [Days to Settle Claim] * 1.05\r\nelseif [Region] = \"West\" THEN [Days to Settle Claim] * .475\r\n\r\nELSE [Days to Settle Claim]\r\nEND",
@@ -4059,131 +3779,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_121",
-        "name": "Year Filter Max",
-        "formula": "YEAR([Incident Date]) = YEAR([Calculation_600667632589156385])",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_122",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_123",
-        "name": "Selected | Days to Settle",
-        "formula": "[Parameters].[Parameter 4] = [Display As]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_124",
-        "name": "Disable Highlighting",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_125",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_126",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_127",
-        "name": "Selected | Days to Settle (copy)",
-        "formula": "[Parameters].[Parameter 4] = 'Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_128",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_129",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_130",
-        "name": "Selected | Days to Settle",
-        "formula": "[Display As] = [Parameters].[Parameter 2]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_131",
-        "name": "Selected Text | Days to Settle",
-        "formula": "IF [Calculation_944067107659722753] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_132",
         "name": "Unselected Text | Days to Settle",
         "formula": "IF [Calculation_944067107659722753] = FALSE then [Display As] END",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_133",
-        "name": "Selected Text | Retention Rate",
-        "formula": "IF [Selected | Days to Settle (copy)_944067107671080968] = TRUE then \"\u25b6 \" + STR([Display As]) + \"%\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_134",
-        "name": "Selected Text | Satisfaction Score",
-        "formula": "IF [Selected | Retention Rate (copy)_944067107671183369] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_135",
-        "name": "Selected | Retention Rate",
-        "formula": "[Display As] = [Parameters].[Days to Settle Target (copy)_1789899409836019715]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_136",
-        "name": "Selected | Satisfaction Score",
-        "formula": "[Display As] = [Parameters].[Retention Rate Target (copy)_1789899409843625990]",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -4355,7 +3955,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 48,
       "totalTables": 2,
-      "totalCalculatedFields": 138,
+      "totalCalculatedFields": 88,
       "totalKpis": 16
     },
     "kpis": [
@@ -6460,14 +6060,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_14",
-        "name": "View | Aggregate",
-        "formula": "[Parameters].[Parameter 4] = 'Show Aggregated'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_15",
         "name": "Avg Claim Cost | Fixed | National or Region",
         "formula": "CASE [Parameters].[Parameter 5]\r\nWHEN 'National' THEN [Calculation_600667632573243414]\r\nWHEN 'Region' THEN AVG([Avg Claim Cost | State (copy)_1734448843613888516])\r\nEND",
@@ -6481,14 +6073,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_17",
-        "name": "Region Filter | Rank",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -6516,51 +6100,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_21",
-        "name": "Histogram Color",
-        "formula": "IF [Calculation_1018376503335067685]=[Calculation_1018376503334752292] THEN\r\n\r\n    // This is the median bin.\r\n\r\n    \"Median\"\r\n\r\nELSEIF [Calculation_1018376503335067685]<[Calculation_1018376503334752292] THEN\r\n\r\n    \"Lower\"\r\n\r\nELSE\r\n\r\n    \"Higher\"\r\n\r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_22",
-        "name": "Bin Max",
-        "formula": "[Calculation_1018376503335067685] + [Parameters].[Parameter 8] -1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_23",
-        "name": "Bin Description",
-        "formula": "REGEXP_REPLACE(STR([Calculation_1018376503335067685]), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\") +\r\n\r\n\" - \" +\r\n\r\nREGEXP_REPLACE(STR([Calculation_1018376503335067685] + [Parameters].[Parameter 8]-1), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\")",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_24",
         "name": "Income | LOD",
         "formula": "{ FIXED [Policy Number]: SUM([Income])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_25",
-        "name": "Region |  Tooltip Filter",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_26",
-        "name": "State Highlight",
-        "formula": "if [Incident State] = [Parameters].[Parameter 7] THEN TRUE End",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -6572,59 +6116,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_28",
-        "name": "Disable Highlighting",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_29",
-        "name": "Gender | Text",
-        "formula": "IF [Gender] = 'Female' THEN 'women' ELSE 'men' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_30",
-        "name": "TRUE",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_31",
-        "name": "FALSE",
-        "formula": "FALSE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_32",
-        "name": "Performance Level | Avg Claim Cost",
-        "formula": "IF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.33)} THEN \"Top Perfomer\" \r\nELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)} THEN \"Average\"  \r\nELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Calculation_1734448843613532163],1)} THEN \"Needs Attention\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_33",
         "name": "Avg Claim Cost | State | Fixed",
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : [Calculation_600667632497045504]}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_34",
-        "name": "State Filter",
-        "formula": "[Incident State] = [Parameters].[Parameter 7]",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -6684,27 +6180,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_42",
-        "name": "Last 10 Years ",
-        "formula": "[Incident Date]>\r\n\r\nDATE(DATEADD('year', -10, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_43",
         "name": "Loss Ratio - Revised",
         "formula": "[Loss Ratio]/1.5",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_44",
-        "name": "View | Detail",
-        "formula": "[Parameters].[Parameter 4] = 'Show Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -6756,35 +6236,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_51",
-        "name": "Year Filter",
-        "formula": "DAY([Incident Date])<= DAY({MAX([Incident Date])})",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_52",
         "name": "Avg Claim Cost | Fixed",
         "formula": "IF [Parameters].[Parameter 1] != 'All' then AVG({FIXED YEAR([Incident Date]) : [Avg Claim Cost (copy)_600667632575893528]})\r\nELSEIF [Parameters].[Parameter 1] = 'All' THEN\r\n[Calculation_600667632497045504]\r\nEND",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_53",
-        "name": "Region Filter",
-        "formula": "[Region] = [Parameters].[Parameter 1] or [Parameters].[Parameter 1] = 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_54",
-        "name": "Max Date",
-        "formula": "{MAX([Incident Date])}",
-        "role": "dimension",
-        "datatype": "date",
         "usedInSheets": []
       },
       {
@@ -6812,30 +6268,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_58",
-        "name": "Region Parameter | Selected",
-        "formula": "Region = [Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_59",
-        "name": "Region | First Letter",
-        "formula": "LEFT([Region],1)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_60",
-        "name": "Info Button",
-        "formula": "'i'",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_61",
         "name": "% Change from National | Fixed",
         "formula": "{FIXED [Region], DATETRUNC('year', [Incident Date]) : [Variance from National (copy)_680043587645292544]}",
@@ -6849,14 +6281,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED : MAX([Calculation_680043587648282625])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_63",
-        "name": "Distance From Target | Days to Settle | Text",
-        "formula": "IF [Calculation_1789899409816530944] > [Parameters].[Parameter 2] THEN 'Over'\r\nELSEIF [Calculation_1789899409816530944] <= [Parameters].[Parameter 2] THEN 'Under'\r\nELSE 'At Target'\r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -6881,46 +6305,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "STR(SUM([Calculation_820218118232264734])) + '/' + STR([Calculation_820218118236938272])",
         "role": "measure",
         "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_67",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_68",
-        "name": "Region or State",
-        "formula": "[Parameters].[Parameter 5]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_69",
-        "name": "Region Selected",
-        "formula": "if [Region] = [Parameters].[Parameter 1] then [Parameters].[Parameter 1] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_70",
-        "name": "Title",
-        "formula": "[Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_71",
-        "name": "Show Selected",
-        "formula": "[Parameters].[Parameter 1] != 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -6985,14 +6369,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : AVG([Satisfaction Score (copy)_820218118194343946])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_80",
-        "name": "Retention Rate Target | Count",
-        "formula": "{FIXED [Incident State]: IF AVG([Retention Rate]) > [Parameters].[Days to Settle Target (copy)_1789899409836019715] THEN COUNTD([Incident State]) END}",
-        "role": "dimension",
-        "datatype": "integer",
         "usedInSheets": []
       },
       {
@@ -7068,22 +6444,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_90",
-        "name": "[Income (bin)]",
-        "formula": "[Income]",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_91",
-        "name": "Last  5 Years",
-        "formula": "[Incident Date]>\r\n\r\nDATE(DATEADD('year', -5, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_92",
         "name": "Retention Rate | Fixed",
         "formula": "{FIXED DATEPART('year', [Incident Date]): AVG([Satisfaction Score (copy)_820218118205710352])}",
@@ -7113,38 +6473,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : AVG([Satisfaction Score (copy)_820218118205710352])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_96",
-        "name": "Performance Level | Days to Settle",
-        "formula": "IF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.33)} THEN \"Top Performer\" \r\nELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.66)} THEN \"Average\" \r\nELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],1)} THEN \"Needs Attention\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_97",
-        "name": "Performance Level | Loss Ratio",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.33)} THEN \"Top Performer\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.66)} THEN \"Average\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],1)} THEN \"Needs Attention\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_98",
-        "name": "Performance Level | Satisfaction Score",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.33)} THEN \"Needs Attention\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.66)} THEN \"Average\" \r\nELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],1)} THEN \"Top Performer\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_99",
-        "name": "Performance Level | Retention Rate",
-        "formula": "IF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.33)} THEN \"Needs Attention\" \r\nELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218]<={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.66)} THEN \"Average\" \r\nELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],1)} THEN \"Top Performaer\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -7228,14 +6556,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_110",
-        "name": "Region Parameter | Selected (copy)",
-        "formula": "IF [Calculation_678917684168884227] = [Calculation_1317302893320302615] THEN '\u25cf' ELSE '\u200e\u200e' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_111",
         "name": "Days to Settle Claim",
         "formula": "IF [Days to Settle Claim] > 50  THEN [Days to Settle Claim]\r\nelseif [Region] = \"Central\" THEN [Days to Settle Claim] * .70\r\nelseif [Region] = \"East\" THEN [Days to Settle Claim] * .15\r\n\r\nelseif  [Region] = \"South\" THEN [Days to Settle Claim] * 1.05\r\nelseif [Region] = \"West\" THEN [Days to Settle Claim] * .475\r\n\r\nELSE [Days to Settle Claim]\r\nEND",
@@ -7316,131 +6636,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_121",
-        "name": "Year Filter Max",
-        "formula": "YEAR([Incident Date]) = YEAR([Calculation_600667632589156385])",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_122",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_123",
-        "name": "Selected | Days to Settle",
-        "formula": "[Parameters].[Parameter 4] = [Display As]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_124",
-        "name": "Disable Highlighting",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_125",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_126",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_127",
-        "name": "Selected | Days to Settle (copy)",
-        "formula": "[Parameters].[Parameter 4] = 'Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_128",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_129",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_130",
-        "name": "Selected | Days to Settle",
-        "formula": "[Display As] = [Parameters].[Parameter 2]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_131",
-        "name": "Selected Text | Days to Settle",
-        "formula": "IF [Calculation_944067107659722753] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_132",
         "name": "Unselected Text | Days to Settle",
         "formula": "IF [Calculation_944067107659722753] = FALSE then [Display As] END",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_133",
-        "name": "Selected Text | Retention Rate",
-        "formula": "IF [Selected | Days to Settle (copy)_944067107671080968] = TRUE then \"\u25b6 \" + STR([Display As]) + \"%\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_134",
-        "name": "Selected Text | Satisfaction Score",
-        "formula": "IF [Selected | Retention Rate (copy)_944067107671183369] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_135",
-        "name": "Selected | Retention Rate",
-        "formula": "[Display As] = [Parameters].[Days to Settle Target (copy)_1789899409836019715]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_136",
-        "name": "Selected | Satisfaction Score",
-        "formula": "[Display As] = [Parameters].[Retention Rate Target (copy)_1789899409843625990]",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": []
       },
       {
@@ -7612,7 +6812,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 8,
       "totalTables": 2,
-      "totalCalculatedFields": 5,
+      "totalCalculatedFields": 4,
       "totalKpis": 13
     },
     "kpis": [
@@ -7883,16 +7083,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_3",
-        "name": "District Filter",
-        "formula": "[Region (Table - Database)] = [Parameter 1] or [Parameter 1] = \"All\"",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Benefit Nature Analysis"
-        ]
-      },
-      {
         "id": "cf_4",
         "name": "Number of Records",
         "formula": "1",
@@ -8138,7 +7328,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 14,
       "totalTables": 1,
-      "totalCalculatedFields": 6,
+      "totalCalculatedFields": 4,
       "totalKpis": 10
     },
     "kpis": [
@@ -8751,26 +7941,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_2",
-        "name": "True",
-        "formula": "True",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
-        "id": "cf_3",
-        "name": "False",
-        "formula": "False",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
         "id": "cf_4",
         "name": "Date calculation",
         "formula": "DATEDIFF('year',[birthdate],TODAY())",
@@ -8890,7 +8060,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 14,
       "totalTables": 1,
-      "totalCalculatedFields": 6,
+      "totalCalculatedFields": 4,
       "totalKpis": 13
     },
     "kpis": [
@@ -9518,26 +8688,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_2",
-        "name": "True",
-        "formula": "True",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
-        "id": "cf_3",
-        "name": "False",
-        "formula": "False",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
         "id": "cf_4",
         "name": "Date calculation",
         "formula": "DATEDIFF('year',[birthdate],TODAY())",
@@ -9657,7 +8807,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 10,
       "totalTables": 1,
-      "totalCalculatedFields": 415,
+      "totalCalculatedFields": 362,
       "totalKpis": 8
     },
     "kpis": [
@@ -10132,75 +9282,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
     ],
     "calculatedFields": [
       {
-        "id": "cf_1",
-        "name": "Product (Filter)",
-        "formula": "[Policy Type]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_2",
-        "name": "Deductible Amount (bucket)",
-        "formula": "CASE TRUE\r\nWHEN [LinPack_870107401384373637] <= 1000 THEN \"<1K\"\r\nWHEN [LinPack_870107401384373637] <= 5000 THEN \"1K-5K\"\r\nWHEN [LinPack_870107401384373637] <= 100000 THEN \"5K-10K\"\r\nWHEN [LinPack_870107401384373637] <= 1000000 THEN \">10K\"\r\nELSE \"Others\"\r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_3",
         "name": "Month:Claim Close Date",
         "formula": "max(DATETRUNC('month', [Close Date]))",
         "role": "measure",
         "datatype": "datetime",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_4",
-        "name": "Agent - initials",
-        "formula": "Left([Agent],1)+ \". \" + SPLIT([Agent],\" \",2)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_5",
-        "name": "Closed Claim Flag",
-        "formula": "IF LEFT(UPPER([Claim Status]),1)=\"O\" THEN \"N\" ELSE \"Y\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_6",
-        "name": "Filter: Performance Card (Claim Close Date)",
-        "formula": "if [Months to Current Month (Close Date) (copy)_812055351973294080] <=0 and [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 then \"Y\" else \"N\" end",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_7",
-        "name": "Filter: Performance KPI (Claim Close Date)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\" THEN if [Months to Current Month (Close Date) (copy)_812055351973294080] = 0 or [Months to Current Month (Close Date) (copy)_812055351973294080]=-1 then \"Y\" else \"N\" end // leave -1 also for 'quarter' and 'year'\r\nWHEN \"CM_vs_PY\" THEN if [Months to Current Month (Close Date) (copy)_812055351973294080] = 0 or [Months to Current Month (Close Date) (copy)_812055351973294080]=-12 then \"Y\" else \"N\" end\r\nWHEN \"ACT_vs_TGT\" THEN if [LinPack_243893703856586323] = 0 then \"Y\" else \"N\" end\r\nWHEN \"CYTD_vs_PYTD\" THEN if (YEAR([Close Date])=[Parameters].[LinPack_061584200884467689] or YEAR([Close Date])=[Parameters].[LinPack_061584200884467689]-1) and MONTH([Close Date])<=[Parameters].[LinPack_361207028433950534] then \"Y\" else \"N\" end\r\nWHEN \"YTDACT_vs_YTDTGT\" THEN if YEAR([Close Date])=[Parameters].[LinPack_061584200884467689] and MONTH([Close Date])<=[Parameters].[LinPack_361207028433950534] then \"Y\" else \"N\" end\r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_8",
-        "name": "Open Claims Duration (bucket)",
-        "formula": "CASE TRUE\r\nWHEN [LinPack_800791597013927992] <30  THEN \"0-30 days\"\r\nWHEN [LinPack_800791597013927992] <90  THEN \"1-3 months\"\r\nWHEN [LinPack_800791597013927992] <180   THEN \"3-6 months\"\r\nWHEN [LinPack_800791597013927992] <=365  THEN \"6-12 months\"\r\nWHEN [LinPack_800791597013927992] >365  THEN \"1+ year\"\r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_9",
-        "name": "Insurance Claims - Business Line Filter",
-        "formula": "[Business Line]",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -10284,62 +9370,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_20",
-        "name": "Insurance Claims - Claim Reason Filter",
-        "formula": "[Claim Reason]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_21",
-        "name": "Insurance Claims - Agent Group Filter2",
-        "formula": "[Agent Group]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_22",
-        "name": "Insurance Claims -  Agent Group Filter",
-        "formula": "[Agent Group]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_23",
-        "name": "Days to Close",
-        "formula": "DATEDIFF(\"day\",[Open Date],[Close Date])",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_24",
-        "name": "Days to Close (bucket)",
-        "formula": "IF \r\n        [Calculation_680325065948213248]<30 then \"0-30 days\"\r\nELSEIF  [Calculation_680325065948213248]<90 then \"1-3 months\"\r\nELSEIF  [Calculation_680325065948213248]<180 then \"3-6 months\"\r\nELSEIF  [Calculation_680325065948213248]>=180 then \"> 6 months\"\r\nELSE \"\"\r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_25",
-        "name": "Insurance Claims - Agent Filter",
-        "formula": "[Agent]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_26",
-        "name": "Open Claims Duration (bucket) -Sort",
-        "formula": "CASE TRUE\r\nWHEN [LinPack_800791597013927992] <30  THEN 30\r\nWHEN [LinPack_800791597013927992] <90  THEN 90\r\nWHEN [LinPack_800791597013927992] <180   THEN 180\r\nWHEN [LinPack_800791597013927992] <=365  THEN 365\r\nWHEN [LinPack_800791597013927992] >365  THEN 370\r\nEND",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_27",
         "name": "Closed Claims Perf. -  Value",
         "formula": "IF [Parameters].[LinPack_371749732845320988] =\"CM_vs_PM\" OR [Parameters].[LinPack_371749732845320988] =\"CM_vs_PY\" OR [Parameters].[LinPack_371749732845320988] =\"ACT_vs_TGT\" THEN\r\n    COUNTD(IF YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534] THEN [LinPack_398370742208982663] ELSE NULL END)\r\n\r\nELSEIF [Parameters].[LinPack_371749732845320988] = \"CYTD_vs_PYTD\"  OR [Parameters].[LinPack_371749732845320988] =\"YTDACT_vs_YTDTGT\" THEN \r\n    COUNTD(IF YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) <= [Parameters].[LinPack_361207028433950534] THEN [LinPack_398370742208982663] ELSE NULL END)\r\n\r\nELSE    \r\n    NULL\r\n\r\nEND",
@@ -10416,38 +9446,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "name": "Reimbursed Claims Perf. - Value vs Reference (shape)",
         "formula": "CASE sign([Closed Claims Perf. - Value vs Reference (copy)_1181069061760540674]) \r\nWHEN 1 THEN \r\n    IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25cf\" \r\n    ELSE \"\u25b2\" \r\n    END \r\nWHEN 0 THEN \r\n    IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \" \" \r\n    ELSE \"\u25ba\" \r\n    END \r\nWHEN -1 THEN \r\n    IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25a0\" \r\n    ELSE \"\u25bc\" \r\n    END \r\nELSE \" \" \r\nEND",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_37",
-        "name": "URL Drill-back to Source Application on Claim",
-        "formula": "// This Accelerator is configured to allow you yo drill back to your Source Application to see the detail of each \"Claim\"\r\n// The Drill Back is activated when clicking on a Claim in the Accelerator \r\n//  using a URL with the following format: \r\n//              [URL Prefix] + [Claim] + [URL Suffix]\r\n//\r\n// For example when drilling back to an Opportunity on Salesforce Sales Cloud, \r\n// [URL Prefix] must be: \"https://<YOUR_SALESFORCE_ORG>.lightning.force.com/lightning/r/Opportunity/\" and [URL Sufix] must be \"/view\"\r\n\r\n\"https://tableauaccelerators.github.io/drill-back/?Claim=\"+[Claim Number]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_38",
-        "name": "Days to Close (bucket) (sort)",
-        "formula": "IF \r\n        [Calculation_680325065948213248]<30 then 30\r\nELSEIF  [Calculation_680325065948213248]<90 then 90\r\nELSEIF  [Calculation_680325065948213248]<180 then 180\r\nELSEIF  [Calculation_680325065948213248]>=180 then 999\r\nELSE 999999\r\nEND",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_39",
-        "name": "Is Current Period (Closed)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534]\r\nWHEN \"CM_vs_PY\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534]\r\nWHEN \"ACT_vs_TGT\" THEN  YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534]\r\nWHEN \"CYTD_vs_PYTD\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) <= [Parameters].[LinPack_361207028433950534]\r\nWHEN \"YTDACT_vs_YTDTGT\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) <= [Parameters].[LinPack_361207028433950534]\r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_40",
-        "name": "Filter: Performance Trend (Claim Close Date)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 0 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -12 THEN \"Y\" ELSE \"N\" END\r\nWHEN \"CM_vs_PY\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END\r\nWHEN \"ACT_vs_TGT\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END\r\nWHEN \"CYTD_vs_PYTD\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END\r\nWHEN \"YTDACT_vs_YTDTGT\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": []
       },
@@ -10537,14 +9535,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "[LinPack_632701456957648124]",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_52",
-        "name": "Period: Name of Previous Month",
-        "formula": "[LinPack_915686282814778735] + \"-\" + RIGHT(STR([LinPack_392564468777001906]),2)",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -10780,14 +9770,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_82",
-        "name": "Period: Period Analyzed",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\"  THEN [LinPack_860904326723893347] \r\nWHEN \"CM_vs_PY\"  THEN [LinPack_860904326723893347] \r\nWHEN \"ACT_vs_TGT\"  THEN [LinPack_860904326723893347] \r\nWHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + [LinPack_860904326723893347] \r\nWHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + [LinPack_860904326723893347] \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_83",
         "name": "Open Since (days) Perf. - Value vs Reference",
         "formula": "ZN([LinPack_764754838389350874]) - ZN([LinPack_447391225742565893])",
@@ -10884,14 +9866,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_95",
-        "name": "Period: Months to Current Month",
-        "formula": "-1*(([Parameters].[LinPack_061584200884467689]- [LinPack_438609663205281304])*12+([Parameters].[LinPack_361207028433950534] - [LinPack_771697825390589731]))",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_96",
         "name": "Main Date: Year of Last Date",
         "formula": "{fixed: max(year( {fixed:max([Open Date])}))}",
@@ -10916,34 +9890,10 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_99",
-        "name": "_Nb Reimbursed Claims (Expression)",
-        "formula": "IF UPPER([Is Reimbursed Flag])=\"Y\" THEN [Claim Number] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_100",
         "name": "Indicator2 - Display Prefix",
         "formula": "CASE [Parameters].[LinPack_751643439417515637] \r\nWHEN \"Average Days to Close\" THEN ATTR(\"\") \r\nWHEN \"Claims Reimbursed %\" THEN ATTR(\"\") \r\nWHEN \"Nb Agents\" THEN ATTR(\"\") \r\nWHEN \"Nb Claims\" THEN ATTR(\"\") \r\nWHEN \"Nb Closed Claims\" THEN ATTR(\"\") \r\nWHEN \"Nb Open Claims\" THEN ATTR(\"\") \r\nWHEN \"Nb Open Claims per Agent\" THEN ATTR(\"\") \r\nWHEN \"Nb Reimbursed Claims\" THEN ATTR(\"\") \r\nWHEN \"Open Since (days)\" THEN ATTR(\"\") \r\nWHEN \"Total Damages\" THEN ATTR(\"$ \") \r\nWHEN \"Total Deductible\" THEN ATTR(\"$ \") \r\nWHEN \"Total Outstanding Damages\" THEN ATTR(\"$ \") \r\nWHEN \"Total Paid\" THEN ATTR(\"$ \") \r\nEND",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_101",
-        "name": "Filter: Current vs Previous Period",
-        "formula": "IF [LinPack_243893703856586323] <= 0 AND [LinPack_243893703856586323] >= -12 THEN \"Y\" ELSE \"N\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_102",
-        "name": "Period: Period of Reference (for trends)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\"  THEN NULL \r\nWHEN \"CM_vs_PY\"  THEN STR([Parameters].[LinPack_061584200884467689]-1) \r\nWHEN \"ACT_vs_TGT\"  THEN \"Target \" + STR([Parameters].[LinPack_061584200884467689]) \r\nWHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]-1) \r\nWHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]) + \" Target\" \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": []
       },
@@ -11068,14 +10018,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_118",
-        "name": "Main Date: Month Year (Display)",
-        "formula": "[LinPack_730646459737788785] + \"-\" + [LinPack_781568977391712334]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_119",
         "name": "Indicator Growth from Previous Period %",
         "formula": "CASE [Parameters].[LinPack_953089457033817746] \r\nWHEN \"Average Days to Close\" THEN FLOAT([LinPack_387131796153445582]) \r\nWHEN \"Claims Reimbursed %\" THEN FLOAT([LinPack_008124338648445781]) \r\nWHEN \"Nb Agents\" THEN FLOAT([LinPack_165023047485460467]) \r\nWHEN \"Nb Claims\" THEN FLOAT([LinPack_427328821852568048]) \r\nWHEN \"Nb Closed Claims\" THEN FLOAT([LinPack_955037859702288622]) \r\nWHEN \"Nb Open Claims\" THEN FLOAT([LinPack_218707621094189162]) \r\nWHEN \"Nb Open Claims per Agent\" THEN FLOAT([LinPack_817300268673637113]) \r\nWHEN \"Nb Reimbursed Claims\" THEN FLOAT([LinPack_801947807295716980]) \r\nWHEN \"Open Since (days)\" THEN FLOAT([LinPack_385678673706592736]) \r\nWHEN \"Total Damages\" THEN FLOAT([LinPack_396564432154635016]) \r\nWHEN \"Total Deductible\" THEN FLOAT([LinPack_684364583909523365]) \r\nWHEN \"Total Outstanding Damages\" THEN FLOAT([LinPack_678534132907308170]) \r\nWHEN \"Total Paid\" THEN FLOAT([LinPack_083804381171898417]) \r\nEND",
@@ -11113,14 +10055,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "CASE [Parameters].[LinPack_068528533641913184] \r\nWHEN \"Nb Agents\" THEN FLOAT([LinPack_181359899101592114]) \r\nWHEN \"Nb Claims\" THEN FLOAT([LinPack_885520589467117095]) \r\nWHEN \"Nb Open Claims\" THEN FLOAT([LinPack_542462541075525441]) \r\nWHEN \"Open Since (days)\" THEN FLOAT([LinPack_014352478133387888]) \r\nWHEN \"Total Damages\" THEN FLOAT([LinPack_761139585457102483]) \r\nWHEN \"Total Outstanding Damages\" THEN FLOAT([LinPack_475151873179235566]) \r\nEND",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_124",
-        "name": "_Nb Open Claims (Expression)",
-        "formula": "IF UPPER([Is Closed Flag])=\"N\" THEN [Claim Number] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -11164,14 +10098,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_130",
-        "name": "Period: Month Number of Previous Month",
-        "formula": "IF [Parameters].[LinPack_361207028433950534]=1 THEN \r\n12 \r\nELSE \r\n[Parameters].[LinPack_361207028433950534]-1 \r\nEND",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_131",
         "name": "Open Since (days)  MTD (Current vs Previous Year)",
         "formula": "ZN([LinPack_654200888375634660]) - ZN([LinPack_001470713098156858])",
@@ -11204,14 +10130,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_135",
-        "name": "Period: Year of Previous Month",
-        "formula": "IF [Parameters].[LinPack_361207028433950534]=1 THEN \r\n[Parameters].[LinPack_061584200884467689]-1 \r\nELSE \r\n[Parameters].[LinPack_061584200884467689] \r\nEND",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_136",
         "name": "Total Damages Growth from Previous Period %",
         "formula": "(ZN([LinPack_842036301018049390]) - LOOKUP(ZN([LinPack_842036301018049390]), -1)) / ABS(LOOKUP(ZN([LinPack_842036301018049390]), -1))",
@@ -11225,14 +10143,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "IF ATTR([LinPack_771697825390589731]) <= [Parameters].[LinPack_361207028433950534] THEN \r\n  WINDOW_SUM(COUNTD(IF [Open Date]={FIXED[LinPack_705532015286423348]:MIN(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] THEN [Open Date] END)} THEN [LinPack_705532015286423348] END),FIRST(),0)\r\nEND",
         "role": "measure",
         "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_138",
-        "name": "_Nb Closed Claims (Expression)",
-        "formula": "IF UPPER([Is Closed Flag])=\"Y\" THEN [Claim Number] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -11289,14 +10199,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "ZN([LinPack_677625735102635363]) - ZN([LinPack_459156243435697482])",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_146",
-        "name": "Main Date: Year",
-        "formula": "YEAR([Open Date])",
-        "role": "dimension",
-        "datatype": "integer",
         "usedInSheets": []
       },
       {
@@ -11377,14 +10279,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "SUM(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] AND [LinPack_771697825390589731] = [Parameters].[LinPack_361207028433950534] THEN [LinPack_470157109985822088] ELSE NULL END)",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_157",
-        "name": "Period: Analysis Scope Type",
-        "formula": "[Parameters].[LinPack_371749732845320988]",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -11596,14 +10490,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_184",
-        "name": "Period: Name of Same Month Previous Year",
-        "formula": "[LinPack_816039079638708388] + \"-\" + RIGHT(STR([Parameters].[LinPack_061584200884467689]-1),2)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_185",
         "name": "Nb Agents  MTD  (Current vs Previous Month)",
         "formula": "ZN([LinPack_338901930403833534]) - ZN([LinPack_710552598472596108])",
@@ -11692,26 +10578,10 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_196",
-        "name": "_Nb Agents (Expression)",
-        "formula": "[Agent]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_197",
         "name": "KPI2 - Display Prefix",
         "formula": "CASE [Parameters].[LinPack_190386764494085450] \r\nWHEN \"Nb Agents\" THEN ATTR(\"\") \r\nWHEN \"Nb Claims\" THEN ATTR(\"\") \r\nWHEN \"Nb Open Claims\" THEN ATTR(\"\") \r\nWHEN \"Open Since (days)\" THEN ATTR(\"\") \r\nWHEN \"Total Damages\" THEN ATTR(\"$ \") \r\nWHEN \"Total Outstanding Damages\" THEN ATTR(\"$ \") \r\nEND",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_198",
-        "name": "Dimension",
-        "formula": "CASE [Parameters].[LinPack_178350028745102603] \r\nWHEN \"Agent\" THEN [Agent] \r\nWHEN \"Agent Group\" THEN [Agent Group] \r\nWHEN \"Business Line\" THEN [Business Line] \r\nWHEN \"Claim Number\" THEN [Claim Number] \r\nWHEN \"Claim Status\" THEN [Claim Status] \r\nWHEN \"Is Closed Flag\" THEN [Is Closed Flag] \r\nWHEN \"Is Reimbursed Flag\" THEN [Is Reimbursed Flag] \r\nWHEN \"Policy Holder\" THEN [Policy Holder] \r\nWHEN \"Policy Number\" THEN [Policy Number] \r\nWHEN \"Policy Type\" THEN [Policy Type] \r\nEND",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": []
       },
@@ -11769,22 +10639,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "[LinPack_516603971530074954] / ABS([LinPack_983728631218598473])",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_206",
-        "name": "Period: Analysis Scope",
-        "formula": "[LinPack_186466638269714842] + \" vs \" + [LinPack_739610514840049358]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_207",
-        "name": "Dimension 2",
-        "formula": "CASE [Parameters].[LinPack_485067584180734517] \r\nWHEN \"Agent\" THEN [Agent] \r\nWHEN \"Agent Group\" THEN [Agent Group] \r\nWHEN \"Business Line\" THEN [Business Line] \r\nWHEN \"Claim Number\" THEN [Claim Number] \r\nWHEN \"Claim Status\" THEN [Claim Status] \r\nWHEN \"Is Closed Flag\" THEN [Is Closed Flag] \r\nWHEN \"Is Reimbursed Flag\" THEN [Is Reimbursed Flag] \r\nWHEN \"Policy Holder\" THEN [Policy Holder] \r\nWHEN \"Policy Number\" THEN [Policy Number] \r\nWHEN \"Policy Type\" THEN [Policy Type] \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -11860,14 +10714,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_217",
-        "name": "_Nb Claims (Expression)",
-        "formula": "[Claim Number]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_218",
         "name": "Nb Open Claims  MTD (Current vs Previous Year)",
         "formula": "ZN([LinPack_526992866097063811]) - ZN([LinPack_867010562689685340])",
@@ -11924,14 +10770,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_225",
-        "name": "Main Date: Month (Display)",
-        "formula": "CASE MONTH([Open Date]) \r\nWHEN 1 THEN \"Jan\" \r\nWHEN 2 THEN \"Feb\" \r\nWHEN 3 THEN \"Mar\" \r\nWHEN 4 THEN \"Apr\" \r\nWHEN 5 THEN \"May\" \r\nWHEN 6 THEN \"Jun\" \r\nWHEN 7 THEN \"Jul\" \r\nWHEN 8 THEN \"Aug\" \r\nWHEN 9 THEN \"Sep\" \r\nWHEN 10 THEN \"Oct\" \r\nWHEN 11 THEN \"Nov\" \r\nWHEN 12 THEN \"Dec\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_226",
         "name": "Total Damages Perf. - Value vs Reference %",
         "formula": "[LinPack_058832752294337078] / ABS([LinPack_704066197979510380])",
@@ -11956,27 +10794,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_229",
-        "name": "Period: Period of Reference",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\"  THEN [LinPack_080275071260555808] \r\nWHEN \"CM_vs_PY\"  THEN [LinPack_564331734146295087] \r\nWHEN \"ACT_vs_TGT\"  THEN \"Target \" + [LinPack_860904326723893347] \r\nWHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + [LinPack_564331734146295087] \r\nWHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + [LinPack_860904326723893347] + \" Target\" \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_230",
         "name": "Total Damages  MTD   (Current Month) (for trends)",
         "formula": "[LinPack_116093578182488830]",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_231",
-        "name": "Filter: Performance KPI",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\"  THEN IF [LinPack_243893703856586323] = 0 OR [LinPack_243893703856586323] = -1 THEN \"Y\" ELSE \"N\" END \r\nWHEN \"CM_vs_PY\"  THEN IF [LinPack_243893703856586323] = 0 OR [LinPack_243893703856586323] = -12 THEN \"Y\" ELSE \"N\" END \r\nWHEN \"ACT_vs_TGT\"  THEN IF [LinPack_243893703856586323] = 0 THEN \"Y\" ELSE \"N\" END \r\nWHEN \"CYTD_vs_PYTD\"  THEN IF ([LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] OR [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1) AND [LinPack_771697825390589731] <= [Parameters].[LinPack_361207028433950534] THEN \"Y\" ELSE \"N\" END \r\nWHEN \"YTDACT_vs_YTDTGT\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] AND [LinPack_771697825390589731] <= [Parameters].[LinPack_361207028433950534] THEN \"Y\" ELSE \"N\" END \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -12020,22 +10842,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_237",
-        "name": "Main Date: Month",
-        "formula": "MONTH([Open Date])",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_238",
-        "name": "Main Date: Year (Display)",
-        "formula": "STR([LinPack_438609663205281304])",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_239",
         "name": "Total Outstanding Damages Perf. - Reference",
         "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\" THEN [LinPack_889807749084919034] \r\nWHEN \"CM_vs_PY\" THEN [LinPack_459156243435697482] \r\nWHEN \"ACT_vs_TGT\" THEN NULL \r\nWHEN \"CYTD_vs_PYTD\" THEN [LinPack_358766346315120233] \r\nWHEN \"YTDACT_vs_YTDTGT\" THEN NULL \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
@@ -12068,26 +10874,10 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_243",
-        "name": "Filter: Performance Card",
-        "formula": "IF [LinPack_243893703856586323] <= 0 AND [LinPack_243893703856586323] >= -24 THEN \"Y\" ELSE \"N\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_244",
         "name": "KPI2 - Display Suffix",
         "formula": "CASE [Parameters].[LinPack_190386764494085450] \r\nWHEN \"Nb Agents\" THEN ATTR(\"\") \r\nWHEN \"Nb Claims\" THEN ATTR(\"\") \r\nWHEN \"Nb Open Claims\" THEN ATTR(\"\") \r\nWHEN \"Open Since (days)\" THEN ATTR(\" d\") \r\nWHEN \"Total Damages\" THEN ATTR(\"\") \r\nWHEN \"Total Outstanding Damages\" THEN ATTR(\"\") \r\nEND",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_245",
-        "name": "Period: Month Name of Current Month",
-        "formula": "CASE [Parameters].[LinPack_361207028433950534] \r\nWHEN 1 THEN \"Jan\" \r\nWHEN 2 THEN \"Feb\" \r\nWHEN 3 THEN \"Mar\" \r\nWHEN 4 THEN \"Apr\" \r\nWHEN 5 THEN \"May\" \r\nWHEN 6 THEN \"Jun\" \r\nWHEN 7 THEN \"Jul\" \r\nWHEN 8 THEN \"Aug\" \r\nWHEN 9 THEN \"Sep\" \r\nWHEN 10 THEN \"Oct\" \r\nWHEN 11 THEN \"Nov\" \r\nWHEN 12 THEN \"Dec\" \r\nEND",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": []
       },
@@ -12156,22 +10946,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_254",
-        "name": "Period: Name of Current Month",
-        "formula": "[LinPack_816039079638708388] + \"-\" + RIGHT(STR([Parameters].[LinPack_061584200884467689]),2)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_255",
-        "name": "Period: Period Analyzed (for trends)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\"  THEN NULL \r\nWHEN \"CM_vs_PY\"  THEN STR([Parameters].[LinPack_061584200884467689]) \r\nWHEN \"ACT_vs_TGT\"  THEN \"Actual \" + STR([Parameters].[LinPack_061584200884467689]) \r\nWHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]) \r\nWHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]) + \" Actual\" \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_256",
         "name": "Total Outstanding Damages  MTD   (Current Month) (for trends)",
         "formula": "[LinPack_320355170985958371]",
@@ -12185,14 +10959,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "COUNTD(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 AND [LinPack_771697825390589731] = [Parameters].[LinPack_361207028433950534] THEN [LinPack_370016001432172588] ELSE NULL END)",
         "role": "measure",
         "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_258",
-        "name": "Filter: Performance Trend",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r\nWHEN \"CM_vs_PM\"  THEN IF [LinPack_243893703856586323] <= 0 AND [LinPack_243893703856586323] >= -12 THEN \"Y\" ELSE \"N\" END \r\nWHEN \"CM_vs_PY\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] OR [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 THEN \"Y\" ELSE \"N\" END \r\nWHEN \"ACT_vs_TGT\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] THEN \"Y\" ELSE \"N\" END \r\nWHEN \"CYTD_vs_PYTD\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] OR [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 THEN \"Y\" ELSE \"N\" END \r\nWHEN \"YTDACT_vs_YTDTGT\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] THEN \"Y\" ELSE \"N\" END \r\nWHEN \"NONE\"  THEN NULL \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -12257,14 +11023,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "COUNTD(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 AND [LinPack_771697825390589731] = [Parameters].[LinPack_361207028433950534] THEN [LinPack_705532015286423348] ELSE NULL END)",
         "role": "measure",
         "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_267",
-        "name": "Period: Month Name of Previous Month",
-        "formula": "CASE [Parameters].[LinPack_361207028433950534] \r\nWHEN 2 THEN \"Jan\" \r\nWHEN 3 THEN \"Feb\" \r\nWHEN 4 THEN \"Mar\" \r\nWHEN 5 THEN \"Apr\" \r\nWHEN 6 THEN \"May\" \r\nWHEN 7 THEN \"Jun\" \r\nWHEN 8 THEN \"Jul\" \r\nWHEN 9 THEN \"Aug\" \r\nWHEN 10 THEN \"Sep\" \r\nWHEN 11 THEN \"Oct\" \r\nWHEN 12 THEN \"Nov\" \r\nWHEN 1 THEN \"Dec\" \r\nEND",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": []
       },
       {
@@ -12412,26 +11170,10 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "usedInSheets": []
       },
       {
-        "id": "cf_286",
-        "name": "Months to Current Month (Claim Close Date)",
-        "formula": "-1*(([Parameters].[LinPack_061584200884467689]- year([Close Date]))*12+([Parameters].[LinPack_361207028433950534]-Month([Close Date])))",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": []
-      },
-      {
         "id": "cf_287",
         "name": "Open Claims Duration Days (Display)",
         "formula": "STR([LinPack_323554820047972012])+ 'd '",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_288",
-        "name": "Performance Scope Filter (Claim Close Date)",
-        "formula": "if [Months to Current Month (Close Date) (copy)_812055351973294080] <=0 and [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 then \"Y\" else \"N\" end",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": []
       },
@@ -12513,22 +11255,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "CASE sign([Resolution Time Perf. - Value vs Reference (copy)_148055884324622344]) \r\nWHEN 1 THEN \r\n    IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25a0\" \r\n    ELSE \"\u25b2\" \r\n    END \r\nWHEN 0 THEN \r\n    IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \" \" \r\n    ELSE \"\u25ba\" \r\n    END \r\nWHEN -1 THEN \r\n    IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25cf\" \r\n    ELSE \"\u25bc\" \r\n    END \r\nELSE \" \" \r\nEND",
         "role": "measure",
         "datatype": "string",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_299",
-        "name": "As of Today - Insurance Claims",
-        "formula": "__MyToday",
-        "role": "dimension",
-        "datatype": "datetime",
-        "usedInSheets": []
-      },
-      {
-        "id": "cf_300",
-        "name": "__MyToday",
-        "formula": "MAKEDATE(2023,07,31)+8/24",
-        "role": "dimension",
-        "datatype": "datetime",
         "usedInSheets": []
       },
       {
@@ -15039,7 +13765,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 12,
       "totalTables": 1,
-      "totalCalculatedFields": 14,
+      "totalCalculatedFields": 10,
       "totalKpis": 11
     },
     "kpis": [
@@ -15543,46 +14269,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_9",
-        "name": "Is Open",
-        "formula": "[Case Status] <> 'Closed'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_10",
-        "name": "Is Internal Pending",
-        "formula": "[Case Status] = 'Internal Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_11",
-        "name": "Is External Pending",
-        "formula": "[Case Status] = 'External Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_12",
-        "name": "Is Others Pending",
-        "formula": "[Case Status] = 'Others Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
         "id": "cf_13",
         "name": "Avg OnHand Days",
         "formula": "AVG([OnHand Days])",
@@ -15683,7 +14369,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 18,
       "totalTables": 1,
-      "totalCalculatedFields": 15,
+      "totalCalculatedFields": 10,
       "totalKpis": 8
     },
     "kpis": [
@@ -16323,46 +15009,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_9",
-        "name": "Is Open",
-        "formula": "[Case Status] <> 'Closed'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_10",
-        "name": "Is Internal Pending",
-        "formula": "[Case Status] = 'Internal Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_11",
-        "name": "Is External Pending",
-        "formula": "[Case Status] = 'External Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_12",
-        "name": "Is Others Pending",
-        "formula": "[Case Status] = 'Others Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
         "id": "cf_13",
         "name": "Avg OnHand Days",
         "formula": "AVG([OnHand Days])",
@@ -16377,16 +15023,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "name": "Median OnHand Days",
         "formula": "PERCENTILE([OnHand Days], 0.5)",
         "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_15",
-        "name": "Case Month",
-        "formula": "DATETRUNC('month', [Case Created Date])",
-        "role": "dimension",
         "datatype": "real",
         "usedInSheets": [
           "Aging Bins"

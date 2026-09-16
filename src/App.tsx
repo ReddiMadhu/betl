@@ -47,17 +47,20 @@ export default function App() {
     });
   }, []);
 
+  const [returnView, setReturnView] = useState<ViewState>('results');
+
   // Navigate to a technology detail page for a specific asset
   const navigateToAssetDetail = useCallback((asset: Asset) => {
     setSelectedAsset(asset);
+    setReturnView(view);
     navigateTo('asset-detail');
-  }, [navigateTo]);
+  }, [navigateTo, view]);
 
   // Back from asset detail to results
   const handleBackFromDetail = useCallback(() => {
     setSelectedAsset(null);
-    setView('results');
-  }, []);
+    setView(returnView || 'results');
+  }, [returnView]);
 
   const toggleSidebar = useCallback(() => {
     setSidebarCollapsed((prev) => !prev);
@@ -223,7 +226,10 @@ export default function App() {
           )}
 
           {view === 'rationalization-results' && (
-            <RationalizationResults onStartMigration={() => navigateTo('migration')} />
+            <RationalizationResults
+              onStartMigration={() => navigateTo('migration')}
+              onAssetDetail={navigateToAssetDetail}
+            />
           )}
 
           {/* Stage 3: Migration */}

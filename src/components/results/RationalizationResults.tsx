@@ -19,7 +19,9 @@ import { useCountUp } from '../../hooks/useAnimations';
 import type { OverlapMetric } from '../../data/rationalizationData';
 import MergeReviewModal from './MergeReviewModal';
 import DecommissionReviewModal from './DecommissionReviewModal';
+import EtlRationalisationReviewModal from './EtlRationalisationReviewModal';
 import DownloadDocumentationButton from './DownloadDocumentationButton';
+import type { Asset } from '../../data/discoveryData';
 
 /* ─────────────────────────────────────────────────────────
  * RationalizationResults — BI Compass-inspired layout
@@ -349,17 +351,32 @@ function RecCard({
 
 interface Props {
   onStartMigration?: () => void;
+  onAssetDetail?: (asset: Asset) => void;
 }
 
-export default function RationalizationResults({ onStartMigration }: Props) {
+export default function RationalizationResults({ onStartMigration, onAssetDetail }: Props) {
   const [activeSection, setActiveSection] = useState<'bi' | 'etl'>('bi');
   const [activeTab, setActiveTab] = useState<'all' | 'merge' | 'decommission' | 'keep'>('all');
   const [search, setSearch] = useState('');
   const [crossTechFilterColumn, setCrossTechFilterColumn] = useState<'merge' | 'decommission' | 'all' | null>(null);
+  const [etlModalRec, setEtlModalRec] = useState<Recommendation | null>(null);
   const [mergeModalRec, setMergeModalRec] = useState<Recommendation | null>(null);
   const [decommissionModalRec, setDecommissionModalRec] = useState<Recommendation | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [activeTagFilter, setActiveTagFilter] = useState<{ column: 'merge' | 'decommission'; tag: string } | null>(null);
+
+  const handleReviewRec = useCallback((r: Recommendation, defaultType: 'merge' | 'decommission') => {
+    const isEtl =
+      r.category.startsWith('etl-') ||
+      r.assets.some((a) => a.technology === 'Alteryx' || a.technology === 'Python');
+    if (isEtl) {
+      setEtlModalRec(r);
+    } else if (defaultType === 'merge') {
+      setMergeModalRec(r);
+    } else {
+      setDecommissionModalRec(r);
+    }
+  }, []);
 
   useEffect(() => {
     if (toastMessage) {
@@ -918,7 +935,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                   bulletIcon="!"
                   onCrossTechClick={() => toggleCrossTechFilter('merge')}
                   crossTechActive={crossTechFilterColumn === 'merge' || crossTechFilterColumn === 'all'}
-                  onReview={() => setMergeModalRec(r)}
+                  onReview={() => handleReviewRec(r, 'merge')}
                 />
               ))}
               {displayedMergeRecs.length === 0 && (
@@ -940,7 +957,7 @@ export default function RationalizationResults({ onStartMigration }: Props) {
                   bulletIcon="▲"
                   onCrossTechClick={() => toggleCrossTechFilter('decommission')}
                   crossTechActive={crossTechFilterColumn === 'decommission' || crossTechFilterColumn === 'all'}
-                  onReview={() => setDecommissionModalRec(r)}
+                  onReview={() => handleReviewRec(r, 'decommission')}
                 />
               ))}
               {displayedRetireRecs.length === 0 && (
@@ -969,6 +986,14 @@ export default function RationalizationResults({ onStartMigration }: Props) {
 
       {/* ═══ Review Modals ═══ */}
       <AnimatePresence>
+        {etlModalRec && (
+          <EtlRationalisationReviewModal
+            rec={etlModalRec}
+            onClose={() => setEtlModalRec(null)}
+            onToast={(msg) => setToastMessage(msg)}
+            onAssetDetail={onAssetDetail}
+          />
+        )}
         {mergeModalRec && (
           <MergeReviewModal
             rec={mergeModalRec}
