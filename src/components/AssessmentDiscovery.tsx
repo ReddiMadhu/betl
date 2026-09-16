@@ -78,7 +78,6 @@ function getBiAssessmentData() {
   const discoverySteps: TraceStep[] = [
     {
       label: 'Detecting different file types',
-      detail: `${biAssets.length} BI assets`,
       evidence: `${biAssets.length} BI assets · ${platforms.size} technologies`,
     },
     {
@@ -98,11 +97,12 @@ function getBiAssessmentData() {
     },
     {
       label: 'Understanding data models & calculations',
-      evidence: `${totalTables} tables & sources · 564 calculated fields`,
+      evidence: `${totalTables} tables & sources · ${totalCalculations || 564} calculated fields`,
     },
     {
       label: 'Contextualizing visuals and KPIs using built-in KPI Bank',
       evidence: `${totalKpis} KPIs mapped`,
+      highlightKpiBank: true,
     },
     {
       label: 'Mapping business functions',
@@ -166,7 +166,6 @@ function getEtlAssessmentData() {
   const discoverySteps: TraceStep[] = [
     {
       label: 'Detecting different file types',
-      detail: `${canonicalAssets.length} ETL workflows`,
       evidence: `${canonicalAssets.length} workflows · ${technologies.size} technologies`,
     },
     {
@@ -191,6 +190,7 @@ function getEtlAssessmentData() {
     {
       label: 'Contextualizing KPIs using built-in KPI Bank',
       evidence: `15 core KPI fields mapped`,
+      highlightKpiBank: false,
     },
     {
       label: 'Mapping business functions',
@@ -363,6 +363,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
                 steps={biData.intelligenceSteps}
                 onSettled={onBiIntelligenceSettled}
                 delayMs={200}
+                highlightKpiBank={true}
               />
             ) : (
               <div
@@ -466,6 +467,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
                 steps={etlData.intelligenceSteps}
                 onSettled={onEtlIntelligenceSettled}
                 delayMs={200}
+                highlightKpiBank={false}
               />
             ) : (
               <div

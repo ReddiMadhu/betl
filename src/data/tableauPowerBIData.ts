@@ -91,10 +91,11 @@ export interface TbPbiCorrectionAttempt {
 export interface TbPbiExportArtifact {
   id: string;
   fileName: string;
-  type: 'pbip' | 'tmdl' | 'dax' | 'excel' | 'certificate' | 'bim' | 'data' | 'readme';
+  type: 'pbip' | 'tmdl' | 'dax' | 'excel' | 'certificate' | 'bim' | 'data' | 'readme' | 'bundle';
   description: string;
   size: string;
   mimeType: string;
+  downloadUrl?: string;
   content?: string;
 }
 
@@ -2019,44 +2020,76 @@ export const tbPbiCorrectionHistory: TbPbiCorrectionAttempt[] = [
 
 export const tbPbiExportArtifacts: TbPbiExportArtifact[] = [
   {
-    "id": "art-pbip",
-    "fileName": "Tableau_Insurance_Migration.pbip",
+    "id": "art-bundle",
+    "fileName": "Complete_Tableau_PowerBI_Migration_Bundle.zip",
+    "type": "bundle",
+    "description": "Master Migration Archive: Complete PBIP project folder (template.pbip, report, semantic model) and all 6 real source Excel data workbooks",
+    "size": "137 KB",
+    "mimeType": "application/zip",
+    "downloadUrl": "/exports/mig_a715d02e11e4/Complete_Tableau_PowerBI_Migration_Bundle.zip"
+  },
+  {
+    "id": "art-pbip-zip",
+    "fileName": "Tableau_PowerBI_Migration_PBIP.zip",
     "type": "pbip",
-    "description": "Microsoft Power BI Project definition (.pbip) with semantic model and report metadata",
-    "size": "384 KB",
-    "mimeType": "application/json"
+    "description": "Power BI Project (PBIP) Directory Bundle: template.pbip, template.Report/, template.SemanticModel/ with full TMDL schema",
+    "size": "30.7 KB",
+    "mimeType": "application/zip",
+    "downloadUrl": "/exports/mig_a715d02e11e4/Tableau_PowerBI_Migration_PBIP.zip"
+  },
+  {
+    "id": "art-excel-zip",
+    "fileName": "Insurance_Table_Data_Excel.zip",
+    "type": "excel",
+    "description": "All 6 Genuine Source Excel Workbooks: Brokage.xlsx, Fees.xlsx, Individual_Budget.xlsx, Invoice.xlsx, Meeting.xlsx, Opportunity.xlsx",
+    "size": "107 KB",
+    "mimeType": "application/zip",
+    "downloadUrl": "/exports/mig_a715d02e11e4/Insurance_Table_Data_Excel.zip"
+  },
+  {
+    "id": "art-pbip",
+    "fileName": "template.pbip",
+    "type": "pbip",
+    "description": "Microsoft Power BI Project descriptor (.pbip) entry point linking to report and semantic model metadata",
+    "size": "169 B",
+    "mimeType": "application/json",
+    "downloadUrl": "/exports/mig_a715d02e11e4/template.pbip"
   },
   {
     "id": "art-tmdl",
     "fileName": "model.tmdl",
     "type": "tmdl",
-    "description": "Tabular Model Definition Language (TMDL) file with full table schemas and relationships",
+    "description": "Tabular Model Definition Language (TMDL) root file with table references, culture, and DevMode annotations",
     "size": "417 B",
-    "mimeType": "text/plain"
+    "mimeType": "text/plain",
+    "downloadUrl": "/exports/mig_a715d02e11e4/model.tmdl"
+  },
+  {
+    "id": "art-tmdl-measures",
+    "fileName": "MeasuresTable.tmdl",
+    "type": "tmdl",
+    "description": "TMDL calculated table definition containing all 21 converted DAX measures with lineage tags and format strings",
+    "size": "3.8 KB",
+    "mimeType": "text/plain",
+    "downloadUrl": "/exports/mig_a715d02e11e4/MeasuresTable.tmdl"
   },
   {
     "id": "art-dax",
     "fileName": "Tableau_Insurance_DAX_Measures.dax",
     "type": "dax",
-    "description": "Ready-to-deploy DAX measure expressions with proper lineageTags and formatStrings",
-    "size": "12 KB",
-    "mimeType": "text/plain"
-  },
-  {
-    "id": "art-data",
-    "fileName": "Insurance_Data_Dictionary.xlsx",
-    "type": "excel",
-    "description": "Schema definitions and column statistics across Brokage, Fees, Budget, Invoice, Meeting, Oppty",
-    "size": "114 KB",
-    "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    "description": "Ready-to-deploy DAX measure expressions converted from Tableau calculated fields with formulas and comments",
+    "size": "2.5 KB",
+    "mimeType": "text/plain",
+    "downloadUrl": "/exports/mig_a715d02e11e4/Tableau_Insurance_DAX_Measures.dax"
   },
   {
     "id": "art-cert",
     "fileName": "Migration_Verification_Certificate.json",
     "type": "certificate",
-    "description": "Semantic parity verification audit with 100% column binding and AST validation sign-off",
-    "size": "28 KB",
-    "mimeType": "application/json"
+    "description": "Semantic parity verification audit report with 100% column binding, row counts, and validation sign-off",
+    "size": "2.1 KB",
+    "mimeType": "application/json",
+    "downloadUrl": "/exports/mig_a715d02e11e4/Migration_Verification_Certificate.json"
   }
 ];
 

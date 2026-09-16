@@ -1,0 +1,75 @@
+table Fees
+	lineageTag: cc45c5b1-2319-43b6-9d65-c8fe8581304f
+
+	column 'client_name'
+		dataType: string
+		lineageTag: e5a19f90-5788-4b12-8050-3d1416fa3c22
+		summarizeBy: none
+		sourceColumn: [client_name]
+
+	column 'branch_name'
+		dataType: string
+		lineageTag: 8bc13c9b-9a62-4f24-be9e-d21b8198a348
+		summarizeBy: none
+		sourceColumn: [branch_name]
+
+	column 'solution_group'
+		dataType: string
+		lineageTag: e2db0b80-9625-4777-9922-50cfc51205ab
+		summarizeBy: none
+		sourceColumn: [solution_group]
+
+	column 'Account Executive'
+		dataType: string
+		lineageTag: fb02db9c-2e4f-43b0-a277-46abacf4d02c
+		summarizeBy: none
+		sourceColumn: [Account Executive]
+
+	column 'income_class'
+		dataType: string
+		lineageTag: 77af3302-d271-4a70-ab22-72e7fcafcd0d
+		summarizeBy: none
+		sourceColumn: [income_class]
+
+	column 'Amount'
+		dataType: int64
+		lineageTag: 70e09625-89ce-460e-9458-248e4b9fbf6e
+		summarizeBy: sum
+		sourceColumn: [Amount]
+
+	column 'income_due_date'
+		dataType: string
+		lineageTag: bca48613-a979-48de-9dea-1e1d21367321
+		summarizeBy: none
+		sourceColumn: [income_due_date]
+
+	column 'revenue_transaction_type'
+		dataType: string
+		lineageTag: c113b6fa-35ed-44ea-a618-6ca85c641256
+		summarizeBy: none
+		sourceColumn: [revenue_transaction_type]
+
+	partition Fees = calculated
+		mode: import
+		expression =
+			DATATABLE (
+				"client_name", STRING,
+				"branch_name", STRING,
+				"solution_group", STRING,
+				"Account Executive", STRING,
+				"income_class", STRING,
+				"Amount", INTEGER,
+				"income_due_date", STRING,
+				"revenue_transaction_type", STRING,
+				{
+				{ "A", "Ahmedabad", "Construction, Power & Infrastructure", "Nishant Sharma", "Cross Sell", 139240, "2019-07-17", "Fees" },
+				{ "A", "Ahmedabad", "Construction, Power & Infrastructure", "Nishant Sharma", "Cross Sell", 139240, "2019-01-21", "Fees" },
+				{ "B", "Ahmedabad", "GL Client Network (GNB Inward)", "Divya Dhingra", "Renewal", 2200, "2019-12-20", "Fees" },
+				{ "C", "Ahmedabad", "GL Client Network (GNB Inward)", "Divya Dhingra", "Renewal", 4500, "2019-01-25", "Fees" },
+				{ "D", "Ahmedabad", "Construction, Power & Infrastructure", "Nishant Sharma", "Cross Sell", 118000, "2019-03-15", "Fees" },
+				{ "E", "Ahmedabad", "GL Client Network (GNB Inward)", "Divya Dhingra", "Renewal", 2800, "2019-05-28", "Fees" },
+				{ "F", "Ahmedabad", "GL Client Network (GNB Inward)", "Divya Dhingra", "Renewal", 3241, "2019-01-25", "Fees" },
+				{ "G", "Ahmedabad", "Liability", "Neel Jain", "New", 100000, "2019-04-10", "Fees" },
+				{ "H", "Ahmedabad", "GL Client Network (GNB Inward)", "Divya Dhingra", "Renewal", 5310, "2019-12-06", "Fees" }
+				}
+			)

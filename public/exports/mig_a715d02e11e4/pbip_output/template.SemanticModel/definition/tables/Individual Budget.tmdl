@@ -1,0 +1,77 @@
+table 'Individual Budget'
+	lineageTag: 61902586-21e4-4970-8a8f-1e5bf886ff67
+
+	column 'Branch'
+		dataType: string
+		lineageTag: 4aa4bc6d-67fb-4a67-9747-85a048115a62
+		summarizeBy: none
+		sourceColumn: [Branch]
+
+	column 'Employee Name'
+		dataType: string
+		lineageTag: 686255f5-bed9-41a0-8fd6-8d16a3241841
+		summarizeBy: none
+		sourceColumn: [Employee Name]
+
+	column 'New Role2'
+		dataType: string
+		lineageTag: 1f9d8b7d-bfc7-4749-93ec-6898a7092d88
+		summarizeBy: none
+		sourceColumn: [New Role2]
+
+	column 'New Budget'
+		dataType: double
+		lineageTag: 45575866-98b9-455f-84eb-019f9977a4c7
+		summarizeBy: sum
+		sourceColumn: [New Budget]
+
+	column 'Cross sell bugdet'
+		dataType: double
+		lineageTag: cbecd0f8-ce1c-46e7-9ddc-8b869a70f67d
+		summarizeBy: sum
+		sourceColumn: [Cross sell bugdet]
+
+	column 'Renewal Budget'
+		dataType: double
+		lineageTag: 5b627808-eadc-435d-aebd-c6bca294863c
+		summarizeBy: sum
+		sourceColumn: [Renewal Budget]
+
+	column 'Target budget'
+		dataType: int64
+		lineageTag: b0864a9d-b0f2-411d-8683-191b9e96baf8
+		summarizeBy: sum
+		sourceColumn: [Target budget]
+
+	partition 'Individual Budget' = calculated
+		mode: import
+		expression =
+			DATATABLE (
+				"Branch", STRING,
+				"Employee Name", STRING,
+				"New Role2", STRING,
+				"New Budget", DOUBLE,
+				"Cross sell bugdet", DOUBLE,
+				"Renewal Budget", DOUBLE,
+				"Target budget", INTEGER,
+				{
+				{ "Ahmedabad", "Anil Tailor", "Hunter & Farmer", 0, 250000, 1500000, 1750000 },
+				{ "Ahmedabad", "Ankita Shah", "Servicer", BLANK(), BLANK(), BLANK(), 0 },
+				{ "Ahmedabad", "Divya Dhingra", "Servicer", 0, 0, 0, 0 },
+				{ "Ahmedabad", "Neel Jain", "BH", 1000000, 500000, 1010000, 2510000 },
+				{ "Ahmedabad", "Nishant Sharma", "Hunter & Farmer", 1250000, 3500000, 750000, 5500000 },
+				{ "Ahmedabad", "Ritesh Sharma", "Servicer Claims", BLANK(), BLANK(), BLANK(), 0 },
+				{ "Ahmedabad", "Shloka Shelat", "Hunter & Farmer", 500000, 1250000, 500000, 2250000 },
+				{ "Ahmedabad", "Shobhit Agarwal", "Hunter & Farmer", 1350000, 750000, 750000, 2850000 },
+				{ "Ahmedabad", "Vaibhav K Thaker", "Servicer", 0, 0, 0, 0 },
+				{ "Ahmedabad", "Vidit Shah", "Farmer & Servicer", 0, 1040000, 5010000, 6050000 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 },
+				{ BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), 0 }
+				}
+			)

@@ -1,0 +1,91 @@
+table MeasuresTable
+	lineageTag: 1a06c0c3-d725-4fa2-955b-6df6026b76bf
+
+	measure 'zero' = 0
+		formatString: 0
+		lineageTag: a9d6e6be-ca08-4dfe-bbe1-f71c25c0b0c1
+
+	measure 'cross sell placed achivement%' = DIVIDE([brokage cross sell], SUM('Individual Budget'[Cross sell bugdet]), 0) * 100
+		formatString: 0
+		lineageTag: 2435ced8-0247-4326-b78b-628e664f5b42
+
+	measure 'cross sell fees' = CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = "cross sell")
+		formatString: 0
+		lineageTag: 947ed2e2-4ba6-4812-94cb-f3c0a9003b2f
+
+	measure 'brokage cross sell' = CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = "cross sell")
+		formatString: 0
+		lineageTag: 83ff72ef-796b-402d-aa2b-9cd1d66a0b5d
+
+	measure 'invoice cross sell' = CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = "cross sell")
+		formatString: 0
+		lineageTag: 3a0751e5-7628-48eb-a4d1-fdf681f8ff67
+
+	measure 'invoice new' = CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = "new")
+		formatString: 0
+		lineageTag: 0610be5c-c7d9-4369-ab9a-08830ea4c28b
+
+	measure 'Brokage new' = CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = "new")
+		formatString: 0
+		lineageTag: 2ca83f84-8c8f-4be4-bc62-ceccef314080
+
+	measure 'new fees' = CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = "new")
+		formatString: 0
+		lineageTag: 2dcba9e7-6468-4b94-aa82-ef4f3e299a10
+
+	measure 'brokage renewal' = CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = "renewal")
+		formatString: 0
+		lineageTag: e64cf005-c327-4193-8208-b879d7511d9b
+
+	measure 'Invoice renewal' = CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = "renewal")
+		formatString: 0
+		lineageTag: e0824754-ae7d-406f-9ec7-4a59b318dfb4
+
+	measure 'renewal fees' = CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = "renewal")
+		formatString: 0
+		lineageTag: 2eafb8a0-6acd-4b1b-81fb-74789b112752
+
+	measure 'Open oppty' = IF(SELECTEDVALUE('Opportunity'[stage]) = "Propose solution" || SELECTEDVALUE('Opportunity'[stage]) = "Qualify opportunity", "open", BLANK())
+		formatString: 0
+		lineageTag: 0de312f8-9ad5-4ea6-944d-a95cf3eb515f
+
+	measure 'cross sell archive' = [brokage cross sell] + [cross sell fees]
+		formatString: 0
+		lineageTag: c8e4f526-aa5c-4da6-b999-ea4b731f993b
+
+	measure 'Cross sell invoice placed achivement%' = DIVIDE([invoice cross sell], SUM('Individual Budget'[Cross sell bugdet]), 0) * 100
+		formatString: 0
+		lineageTag: 1d93b6a4-7c62-4705-8cb7-a6948d42ab3f
+
+	measure 'new sell invoice Achivement %' = DIVIDE([invoice new], SUM('Individual Budget'[New Budget]), 0) * 100
+		formatString: 0
+		lineageTag: e0a3e4e7-bab6-4c0c-9acc-ad9d1fa07f64
+
+	measure 'New sell placed Achived%' = DIVIDE([Brokage new], SUM('Individual Budget'[New Budget]), 0) * 100
+		formatString: 0
+		lineageTag: 7663a6af-b2f1-4a41-ae7c-c5b42f910db5
+
+	measure 'Achived new' = [new fees] + [Brokage new]
+		formatString: 0
+		lineageTag: 6a59e221-cc53-461a-b1cf-506a06e37e6a
+
+	measure 'Renewal placed achivemet' = DIVIDE([brokage renewal], SUM('Individual Budget'[Renewal Budget]), 0) * 100
+		formatString: 0
+		lineageTag: 343cea6a-1a68-469e-a4d2-01a6199e2fc3
+
+	measure 'invoice achived' = [brokage renewal] + [brokage renewal]
+		formatString: 0
+		lineageTag: 7a38ea71-31d8-40f8-ae00-fa5186941828
+
+	measure 'Renewal invoice achivement%' = DIVIDE([Invoice renewal], SUM('Individual Budget'[Renewal Budget]), 0) * 100
+		formatString: 0
+		lineageTag: 586d97f3-049a-42c7-9185-f1b505853de5
+
+	measure 'achived renewal' = [brokage renewal] + [renewal fees]
+		formatString: 0
+		lineageTag: d3b32f04-ed77-46a8-8212-3e6ef96c0afb
+
+	partition MeasuresTable = calculated
+		mode: import
+		expression =
+			DATATABLE ( "Dummy", STRING, { { "1" } } )

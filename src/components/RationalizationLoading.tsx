@@ -182,12 +182,20 @@ export default function RationalizationLoading({ onShowResults }: Props) {
         >
           {/* Header */}
           <div className="mb-4">
-            <h2
-              className="text-lg font-bold tracking-tight"
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              BI Rationalization
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2
+                className="text-lg font-bold tracking-tight"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                BI Rationalization
+              </h2>
+              {biDone && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
+                  <CheckCircle2 size={13} />
+                  Completed
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Divider */}
@@ -223,12 +231,20 @@ export default function RationalizationLoading({ onShowResults }: Props) {
         >
           {/* Header */}
           <div className="mb-4">
-            <h2
-              className="text-lg font-bold tracking-tight"
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              ETL Rationalization
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2
+                className="text-lg font-bold tracking-tight"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                ETL Rationalization
+              </h2>
+              {etlDone && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
+                  <CheckCircle2 size={13} />
+                  Completed
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Divider */}
@@ -277,7 +293,7 @@ export default function RationalizationLoading({ onShowResults }: Props) {
             {interdependenceDone && (
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
                 <CheckCircle2 size={13} />
-                Complete
+                Completed
               </span>
             )}
           </div>

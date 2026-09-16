@@ -14,6 +14,7 @@ import {
   FileText,
   FileCheck2,
   Rocket,
+  Settings,
 } from 'lucide-react';
 import type { ViewState } from './navigation/workflowStages';
 import { getSummaryMetrics, TECHNOLOGY_LOGOS } from '../data/discoveryData';
@@ -35,6 +36,7 @@ const ASSESSMENT_ICON_MAP: Record<string, typeof BarChart3> = {
   etl: GitBranch,
   source: Database,
   target: Target,
+  tool: Settings,
   kpi: TrendingUp,
   worksheet: FileSpreadsheet,
   calculated: Calculator,
@@ -207,26 +209,26 @@ export default function TakeAGlance({ onNavigate }: Props) {
   // Assessment metrics
   const assessmentMetrics = useMemo(() => getSummaryMetrics(), []);
 
-  // Platform breakdown counts
+  // Platform breakdown counts w.r.t tool (31 Total Assets: 23 BI + 8 ETL)
   const platformBreakdown = useMemo(
     () => [
-      { name: 'Tableau', count: 8, percentage: 32, tech: 'Tableau' as const },
-      { name: 'Power BI', count: 7, percentage: 28, tech: 'Power BI' as const },
-      { name: 'MicroStrategy', count: 5, percentage: 20, tech: 'MicroStrategy' as const },
-      { name: 'Alteryx', count: 3, percentage: 12, tech: 'Alteryx' as const },
-      { name: 'Python', count: 2, percentage: 8, tech: 'Python' as const },
+      { name: 'Power BI', count: 11, percentage: 35.5, tech: 'Power BI' as const, category: 'BI' },
+      { name: 'Tableau', count: 11, percentage: 35.5, tech: 'Tableau' as const, category: 'BI' },
+      { name: 'Alteryx', count: 7, percentage: 22.6, tech: 'Alteryx' as const, category: 'ETL' },
+      { name: 'MicroStrategy', count: 1, percentage: 3.2, tech: 'MicroStrategy' as const, category: 'BI' },
+      { name: 'Python', count: 1, percentage: 3.2, tech: 'Python' as const, category: 'ETL' },
     ],
     [],
   );
 
-  // Business domain distribution
+  // Business domain distribution (31 Total Assets)
   const domainBreakdown = useMemo(
     () => [
-      { name: 'Claims Management', assets: 8, count: '32%' },
-      { name: 'Policy Administration', assets: 6, count: '24%' },
-      { name: 'Sales & Distribution', assets: 4, count: '16%' },
-      { name: 'Finance & Actuarial', assets: 4, count: '16%' },
-      { name: 'Underwriting Ops', assets: 3, count: '12%' },
+      { name: 'Claims Management', assets: 11, count: '35%' },
+      { name: 'Sales & Distribution', assets: 10, count: '32%' },
+      { name: 'Underwriting Ops', assets: 4, count: '13%' },
+      { name: 'Finance & Actuarial', assets: 3, count: '10%' },
+      { name: 'Customer & Policy', assets: 3, count: '10%' },
     ],
     [],
   );
@@ -276,8 +278,8 @@ export default function TakeAGlance({ onNavigate }: Props) {
           </div>
         </div>
 
-        {/* ── All 7 Assessment Summary Metric Cards ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        {/* ── All 8 Assessment Summary Metric Cards ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-3">
           {assessmentMetrics.map((metric, i) => {
             const IconComponent = ASSESSMENT_ICON_MAP[metric.icon] ?? BarChart3;
             return (
@@ -306,9 +308,37 @@ export default function TakeAGlance({ onNavigate }: Props) {
               <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-primary)' }}>
                 Platform Footprint Breakdown
               </h3>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded border" style={{ color: 'var(--color-text-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                25 Assets
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded border"
+                  style={{
+                    color: 'var(--color-accent)',
+                    borderColor: 'var(--color-border-subtle)',
+                    backgroundColor: 'var(--color-bg-tertiary)',
+                  }}
+                >
+                  23 BI
+                </span>
+                <span
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded border"
+                  style={{
+                    color: '#8B5CF6',
+                    borderColor: 'var(--color-border-subtle)',
+                    backgroundColor: 'var(--color-bg-tertiary)',
+                  }}
+                >
+                  8 ETL
+                </span>
+                <span
+                  className="text-[11px] font-semibold px-2 py-0.5 rounded border"
+                  style={{
+                    color: 'var(--color-text-primary)',
+                    borderColor: 'var(--color-border-subtle)',
+                  }}
+                >
+                  31 Assets
+                </span>
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -320,9 +350,19 @@ export default function TakeAGlance({ onNavigate }: Props) {
                         <img src={TECHNOLOGY_LOGOS[item.tech]} alt={item.name} className="w-full h-full object-contain" />
                       </div>
                       <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{item.name}</span>
+                      <span
+                        className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded border"
+                        style={{
+                          color: item.category === 'ETL' ? '#8B5CF6' : 'var(--color-accent)',
+                          borderColor: item.category === 'ETL' ? '#8B5CF640' : 'var(--color-accent)40',
+                          backgroundColor: item.category === 'ETL' ? '#8B5CF615' : 'var(--color-accent)15',
+                        }}
+                      >
+                        {item.category}
+                      </span>
                     </div>
-                    <span className="font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-                      {item.count} assets ({item.percentage}%)
+                    <span className="font-medium tabular-nums" style={{ color: 'var(--color-text-secondary)' }}>
+                      {item.count} {item.count === 1 ? 'asset' : 'assets'} ({item.percentage}%)
                     </span>
                   </div>
                   <div className="h-2 rounded-full overflow-hidden bg-[var(--color-bg-tertiary)]">
@@ -330,7 +370,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
                       className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${item.percentage}%`,
-                        backgroundColor: 'var(--color-accent)',
+                        backgroundColor: item.category === 'ETL' ? '#8B5CF6' : 'var(--color-accent)',
                       }}
                     />
                   </div>
@@ -352,7 +392,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
                 Business Domain Distribution
               </h3>
               <span className="text-[11px] font-semibold px-2 py-0.5 rounded border" style={{ color: 'var(--color-text-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                5 Core Units
+                31 Assets · 5 Core Units
               </span>
             </div>
 
@@ -634,7 +674,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
       </section>
 
       {/* ════════════════════════════════════════════════════
-       *  SECTION 4: READY OF ACCELERATED MIGRATION FOR KEEP ASSETS
+       *  SECTION 4: READY FOR ACCELERATED MIGRATION OF RETAINED ASSETS
        * ════════════════════════════════════════════════════ */}
       <section className="space-y-4">
         <div className="flex items-center gap-2.5">
@@ -645,7 +685,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
             <Rocket size={17} style={{ color: '#10B981' }} />
           </div>
           <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-            Ready of Accelerated Migration for Keep Assets
+            Ready for Accelerated Migration of Retained Assets
           </h2>
         </div>
       </section>

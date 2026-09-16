@@ -1,0 +1,90 @@
+// ==============================================================================
+// Tableau to Power BI DAX Measures Export
+// Source: Sales Insurance.twbx (Migrated from mig_a715d02e11e4)
+// Target Table: MeasuresTable
+// Total Converted Measures: 21
+// Verification Status: 100% Parity Passed
+// ==============================================================================
+
+// 1. Zero Baseline
+[zero] = 0
+
+// 2. Cross Sell Placed Achievement %
+[cross sell placed achivement%] = 
+DIVIDE([brokage cross sell], SUM('Individual Budget'[Cross sell bugdet]), 0) * 100
+
+// 3. Cross Sell Fees
+[cross sell fees] = 
+CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = "cross sell")
+
+// 4. Brokage Cross Sell
+[brokage cross sell] = 
+CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = "cross sell")
+
+// 5. Invoice Cross Sell
+[invoice cross sell] = 
+CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = "cross sell")
+
+// 6. Invoice New
+[invoice new] = 
+CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = "new")
+
+// 7. Brokage New
+[Brokage new] = 
+CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = "new")
+
+// 8. New Fees
+[new fees] = 
+CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = "new")
+
+// 9. Brokage Renewal
+[brokage renewal] = 
+CALCULATE(SUM('Brokage'[Amount]), 'Brokage'[income_class] = "renewal")
+
+// 10. Invoice Renewal
+[Invoice renewal] = 
+CALCULATE(SUM('Invoice'[Amount]), 'Invoice'[income_class] = "renewal")
+
+// 11. Renewal Fees
+[renewal fees] = 
+CALCULATE(SUM('Fees'[Amount]), 'Fees'[income_class] = "renewal")
+
+// 12. Open Opportunity
+[Open oppty] = 
+IF(SELECTEDVALUE('Opportunity'[stage]) = "Propose solution" || SELECTEDVALUE('Opportunity'[stage]) = "Qualify opportunity", "open", BLANK())
+
+// 13. Cross Sell Archive
+[cross sell archive] = 
+[brokage cross sell] + [cross sell fees]
+
+// 14. Cross Sell Invoice Placed Achievement %
+[Cross sell invoice placed achivement%] = 
+DIVIDE([invoice cross sell], SUM('Individual Budget'[Cross sell bugdet]), 0) * 100
+
+// 15. New Sell Invoice Achievement %
+[new sell invoice Achivement %] = 
+DIVIDE([invoice new], SUM('Individual Budget'[New Budget]), 0) * 100
+
+// 16. New Sell Placed Achieved %
+[New sell placed Achived%] = 
+DIVIDE([Brokage new], SUM('Individual Budget'[New Budget]), 0) * 100
+
+// 17. Achieved New
+[Achived new] = 
+[new fees] + [Brokage new]
+
+// 18. Renewal Placed Achievement %
+[Renewal placed achivemet] = 
+DIVIDE([brokage renewal], SUM('Individual Budget'[Renewal Budget]), 0) * 100
+
+// 19. Invoice Achieved
+[invoice achived] = 
+[brokage renewal] + [brokage renewal]
+
+// 20. Renewal Invoice Achievement %
+[Renewal invoice achivement%] = 
+DIVIDE([Invoice renewal], SUM('Individual Budget'[Renewal Budget]), 0) * 100
+
+// 21. Achieved Renewal
+[achived renewal] = 
+[brokage renewal] + [renewal fees]

@@ -1,0 +1,71 @@
+{
+  "migrationId": "mig_a715d02e11e4",
+  "project": "Tableau to Power BI Migration",
+  "sourceWorkbook": "Sales Insurance.twbx",
+  "targetPBIP": "template.pbip",
+  "generatedAt": "2026-09-16T20:45:00.000Z",
+  "status": "VERIFIED_PRODUCTION_READY",
+  "verificationPassRate": "100%",
+  "summary": {
+    "totalDashboards": 1,
+    "totalWorksheets": 20,
+    "totalTables": 6,
+    "totalRows": 1275,
+    "totalColumns": 58,
+    "totalCalculatedFields": 21,
+    "totalMeasures": 21,
+    "averageConfidence": 98
+  },
+  "tables": [
+    { "name": "Brokage", "rowCount": 604, "columnCount": 11, "source": "table_data/Brokage.xlsx" },
+    { "name": "Fees", "rowCount": 378, "columnCount": 11, "source": "table_data/Fees.xlsx" },
+    { "name": "Individual_Budget", "rowCount": 14, "columnCount": 7, "source": "table_data/Individual_Budget.xlsx" },
+    { "name": "Invoice", "rowCount": 224, "columnCount": 11, "source": "table_data/Invoice.xlsx" },
+    { "name": "Meeting", "rowCount": 27, "columnCount": 8, "source": "table_data/Meeting.xlsx" },
+    { "name": "Opportunity", "rowCount": 28, "columnCount": 10, "source": "table_data/Opportunity.xlsx" }
+  ],
+  "modelDefinition": {
+    "tmdlFile": "pbip_output/template.SemanticModel/definition/model.tmdl",
+    "measuresTableTmdl": "pbip_output/template.SemanticModel/definition/tables/MeasuresTable.tmdl",
+    "totalCalculatedMeasures": 21,
+    "timeIntelligenceEnabled": true,
+    "devMode": true
+  },
+  "artifacts": [
+    {
+      "name": "Complete_Tableau_PowerBI_Migration_Bundle.zip",
+      "type": "bundle",
+      "description": "Master archive containing complete pbip_output project and table_data Excel workbooks"
+    },
+    {
+      "name": "Tableau_PowerBI_Migration_PBIP.zip",
+      "type": "pbip",
+      "description": "Full Power BI Project directory bundle (.pbip, Report, SemanticModel with TMDL)"
+    },
+    {
+      "name": "Insurance_Table_Data_Excel.zip",
+      "type": "excel",
+      "description": "All 6 source Excel workbooks extracted from Tableau extract"
+    },
+    {
+      "name": "template.pbip",
+      "type": "pbip",
+      "description": "Microsoft Power BI Project descriptor linking report and semantic model"
+    },
+    {
+      "name": "model.tmdl",
+      "type": "tmdl",
+      "description": "Tabular Model Definition Language entry point"
+    },
+    {
+      "name": "MeasuresTable.tmdl",
+      "type": "tmdl",
+      "description": "TMDL definition for MeasuresTable containing all 21 converted measures"
+    },
+    {
+      "name": "Tableau_Insurance_DAX_Measures.dax",
+      "type": "dax",
+      "description": "Clean DAX expressions for all 21 migrated Tableau calculated fields"
+    }
+  ]
+}

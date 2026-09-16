@@ -13,6 +13,7 @@ export interface TraceStep {
   label: string;
   detail?: string;
   evidence?: string;
+  highlightKpiBank?: boolean;
 }
 
 interface Props {
@@ -23,6 +24,8 @@ interface Props {
   onSettled?: () => void;
   /** stagger delay before this trace begins (ms) */
   delayMs?: number;
+  /** whether to highlight "built-in KPI Bank" with gold gradient glow */
+  highlightKpiBank?: boolean;
 }
 
 // Phase durations (ms) — controls the overall pacing
@@ -36,6 +39,7 @@ export default function ThinkingTrace({
   steps,
   onSettled,
   delayMs = 0,
+  highlightKpiBank = false,
 }: Props) {
   const [started, setStarted] = useState(delayMs === 0);
   const [stage, setStage] = useState(0); // 0 = closed, 1 = expanding, 2..2+n-1 = steps, last = settled
@@ -78,8 +82,9 @@ export default function ThinkingTrace({
     onSettled?.();
   }, [working, onSettled]);
 
-  // Highlight "built-in KPI Bank" with dual-layer gold gradient glow (Approach 2)
-  const highlightKpiBank = (text: string) => {
+  // Highlight "built-in KPI Bank" with dual-layer gold gradient glow when enabled (BI only)
+  const renderLabel = (text: string, enableHighlight: boolean) => {
+    if (!enableHighlight) return text;
     const keyword = 'built-in KPI Bank';
     const idx = text.indexOf(keyword);
     if (idx === -1) return text;
@@ -235,73 +240,68 @@ export default function ThinkingTrace({
               {steps.slice(0, visibleSteps).map((step, i) => {
                 const isLast = i === visibleSteps - 1;
                 const isActive = isLast && working;
+                const rightContent = step.evidence || step.detail;
+                const shouldHighlight = step.highlightKpiBank ?? highlightKpiBank;
 
                 return (
                   <div
                     key={step.label}
-                    className="flex items-start gap-2.5 rounded-md px-2 py-1.5"
+                    className="flex items-start justify-between gap-3 rounded-md px-2 py-1.5"
                     style={{
                       minHeight: '28px',
                       animation: `fade-up 320ms cubic-bezier(0.23,1,0.32,1) ${i * 120}ms both`,
                     }}
                   >
-                    {/* Check or spinner */}
-                    <div className="pt-0.5 shrink-0">
-                      {isActive ? (
-                        <span
-                          style={{
-                            width: '12px',
-                            height: '12px',
-                            borderRadius: '50%',
-                            border: '1.5px solid var(--color-border-secondary)',
-                            borderTopColor: 'var(--color-accent)',
-                            animation: 'spin 700ms linear infinite',
-                            display: 'block',
-                          }}
-                        />
-                      ) : (
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="var(--color-text-tertiary)"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                      )}
-                    </div>
-
-                    {/* Step label & evidence */}
-                    <div className="flex flex-col min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span
-                          className="text-[12.5px] font-medium"
-                          style={{ color: 'var(--color-text-primary)' }}
-                        >
-                          {highlightKpiBank(step.label)}
-                        </span>
-                        {step.detail && (
+                    {/* Left: Checkmark or spinner + step label */}
+                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                      {/* Check or spinner */}
+                      <div className="pt-0.5 shrink-0 flex items-center justify-center">
+                        {isActive ? (
                           <span
-                            className="text-[11px]"
-                            style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}
+                            style={{
+                              width: '12px',
+                              height: '12px',
+                              borderRadius: '50%',
+                              border: '1.5px solid var(--color-border-secondary)',
+                              borderTopColor: 'var(--color-accent)',
+                              animation: 'spin 700ms linear infinite',
+                              display: 'block',
+                            }}
+                          />
+                        ) : (
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="var(--color-text-tertiary)"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           >
-                            {step.detail}
-                          </span>
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
                         )}
                       </div>
-                      {step.evidence && (
-                        <span
-                          className="text-[11px] leading-snug mt-0.5"
-                          style={{ color: 'var(--color-text-tertiary)', opacity: 0.85 }}
-                        >
-                          {step.evidence}
-                        </span>
-                      )}
+
+                      {/* Step label (main text) */}
+                      <span
+                        className="text-[12.5px] font-medium leading-snug"
+                        style={{ color: 'var(--color-text-primary)' }}
+                      >
+                        {renderLabel(step.label, shouldHighlight)}
+                      </span>
                     </div>
+
+                    {/* Right: under Completed column — same font color and size to main text */}
+                    {rightContent && (
+                      <span
+                        className="text-[12.5px] font-medium leading-snug shrink-0 text-right tabular-nums ml-auto max-w-[48%]"
+                        style={{ color: 'var(--color-text-primary)' }}
+                      >
+                        {rightContent}
+                      </span>
+                    )}
                   </div>
                 );
               })}

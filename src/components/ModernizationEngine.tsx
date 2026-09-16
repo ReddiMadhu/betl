@@ -35,7 +35,7 @@ function IngestionStatsBar() {
         {/* ── Row 1: Total Assets ── */}
         <div className="flex items-center justify-center">
           <div
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-lg border theme-transition text-xs font-semibold shrink-0 whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-lg border theme-transition text-[13.2px] font-semibold shrink-0 whitespace-nowrap"
             style={{
               backgroundColor: 'var(--color-bg-elevated)',
               borderColor: 'var(--color-border-primary)',
@@ -45,7 +45,7 @@ function IngestionStatsBar() {
           >
             <span>Total Assets:</span>
             <span
-              className="font-bold tabular-nums text-sm"
+              className="font-bold tabular-nums text-[15.4px]"
               style={{ color: 'var(--color-accent)' }}
             >
               {totalCount}
@@ -67,13 +67,13 @@ function IngestionStatsBar() {
             {/* Total BI header — centered */}
             <div className="flex items-center justify-center gap-1.5 mb-2">
               <span
-                className="text-xs font-bold tracking-tight"
+                className="text-[13.2px] font-bold tracking-tight"
                 style={{ color: 'var(--color-accent)' }}
               >
                 Total BI:
               </span>
               <span
-                className="text-sm font-extrabold tabular-nums"
+                className="text-[15.4px] font-extrabold tabular-nums"
                 style={{ color: 'var(--color-text-primary)' }}
               >
                 {biCount}
@@ -89,7 +89,7 @@ function IngestionStatsBar() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border theme-transition text-[11px] font-medium shrink-0"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border theme-transition text-[12.1px] font-medium shrink-0"
                   style={{
                     backgroundColor: 'var(--color-bg-tertiary)',
                     borderColor: 'var(--color-border-primary)',
@@ -120,13 +120,13 @@ function IngestionStatsBar() {
             {/* Total ETL header — centered */}
             <div className="flex items-center justify-center gap-1.5 mb-2">
               <span
-                className="text-xs font-bold tracking-tight"
+                className="text-[13.2px] font-bold tracking-tight"
                 style={{ color: 'var(--color-accent)' }}
               >
                 Total ETL:
               </span>
               <span
-                className="text-sm font-extrabold tabular-nums"
+                className="text-[15.4px] font-extrabold tabular-nums"
                 style={{ color: 'var(--color-text-primary)' }}
               >
                 {etlCount}
@@ -141,7 +141,7 @@ function IngestionStatsBar() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border theme-transition text-[11px] font-medium shrink-0"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md border theme-transition text-[12.1px] font-medium shrink-0"
                   style={{
                     backgroundColor: 'var(--color-bg-tertiary)',
                     borderColor: 'var(--color-border-primary)',

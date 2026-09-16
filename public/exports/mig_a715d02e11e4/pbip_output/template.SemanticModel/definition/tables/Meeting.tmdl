@@ -1,0 +1,72 @@
+table Meeting
+	lineageTag: 37934001-07b3-4ce0-a9b4-709eecadbf6e
+
+	column 'Account Executive'
+		dataType: string
+		lineageTag: 339af978-367c-452e-ba8c-4fc7bbfe1580
+		summarizeBy: none
+		sourceColumn: [Account Executive]
+
+	column 'branch_name'
+		dataType: string
+		lineageTag: 9e812f25-a380-4810-b8fc-6f5161c05767
+		summarizeBy: none
+		sourceColumn: [branch_name]
+
+	column 'global_attendees'
+		dataType: string
+		lineageTag: e4bae410-3cda-4d64-893a-04d2fa50b4a6
+		summarizeBy: none
+		sourceColumn: [global_attendees]
+
+	column 'meeting_date'
+		dataType: string
+		lineageTag: 1581be19-9eb2-4b89-aae6-1788f3e16f8e
+		summarizeBy: none
+		sourceColumn: [meeting_date]
+
+	partition Meeting = calculated
+		mode: import
+		expression =
+			DATATABLE (
+				"Account Executive", STRING,
+				"branch_name", STRING,
+				"global_attendees", STRING,
+				"meeting_date", STRING,
+				{
+				{ "Abhinav Shivam", "Ahmedabad", BLANK(), "2019-10-17" },
+				{ "Abhinav Shivam", "Ahmedabad", BLANK(), "2019-10-17" },
+				{ "Abhinav Shivam", "Ahmedabad", BLANK(), "2019-12-24" },
+				{ "Abhinav Shivam", "Ahmedabad", BLANK(), "2020-01-03" },
+				{ "Abhinav Shivam", "Ahmedabad", BLANK(), "2020-01-08" },
+				{ "Abhinav Shivam", "Ahmedabad", "Muralidharan VS", "2020-01-08" },
+				{ "Abhinav Shivam", "Ahmedabad", "Srikanth Boddu", "2020-01-09" },
+				{ "Vinay", "Ahmedabad", BLANK(), "2020-01-02" },
+				{ "Vinay", "Ahmedabad", "Usha G", "2020-01-03" },
+				{ "Vinay", "Ahmedabad", "Usha G", "2020-01-06" },
+				{ "Vinay", "Ahmedabad", "Usha G", "2020-01-07" },
+				{ "Vinay", "Ahmedabad", "Usha G", "2020-01-08" },
+				{ "Animesh Rawat", "Ahmedabad", "Srikanth Boddu", "2020-01-13" },
+				{ "Animesh Rawat", "Ahmedabad", BLANK(), "2020-01-13" },
+				{ "Animesh Rawat", "Ahmedabad", "Usha G", "2020-01-09" },
+				{ "Animesh Rawat", "Ahmedabad", BLANK(), "2020-01-10" },
+				{ "Ketan Jain", "Ahmedabad", BLANK(), "2020-01-03" },
+				{ "Ketan Jain", "Ahmedabad", BLANK(), "2020-01-08" },
+				{ "Ketan Jain", "Ahmedabad", "Jeyaraman N, Srikanth Boddu", "2020-01-13" },
+				{ "Ketan Jain", "Ahmedabad", BLANK(), "2020-01-09" },
+				{ "Juli", "Ahmedabad", BLANK(), "2020-01-06" },
+				{ "Juli", "Ahmedabad", BLANK(), "2020-01-20" },
+				{ "Juli", "Ahmedabad", BLANK(), "2020-01-20" },
+				{ "Shivani Sharma", "Ahmedabad", BLANK(), "2020-01-21" },
+				{ "Shivani Sharma", "Ahmedabad", "Jeyaraman N, Chitra S", "2020-01-21" },
+				{ "Shivani Sharma", "Ahmedabad", "Srikanth Boddu", "2020-01-21" },
+				{ "Shivani Sharma", "Ahmedabad", "Srikanth Boddu", "2020-01-22" },
+				{ "Manish Sharma", "Ahmedabad", "Jeyaraman N", "2020-01-13" },
+				{ "Manish Sharma", "Ahmedabad", "Jeyaraman N", "2020-01-09" },
+				{ "Manish Sharma", "Ahmedabad", "Jeyaraman N", "2020-01-21" },
+				{ "Raju Kumar", "Ahmedabad", "Jeyaraman N", "2020-01-22" },
+				{ "Raju Kumar", "Ahmedabad", BLANK(), "2020-01-20" },
+				{ "Mark", "Ahmedabad", "Jeyaraman N", "2020-01-22" },
+				{ "Mark", "Ahmedabad", "Jeyaraman N, Chitra S", "2020-01-13" }
+				}
+			)
