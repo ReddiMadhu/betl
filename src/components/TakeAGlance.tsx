@@ -1,9 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Compass,
   GitMerge,
-  CheckCircle,
   ExternalLink,
   BarChart3,
   GitBranch,
@@ -192,8 +191,6 @@ function DocCountCard({
 }
 
 export default function TakeAGlance({ onNavigate }: Props) {
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
   // Document counts from manifest
   const [docCounts, setDocCounts] = useState({
     biAssessmentCount: 27,
@@ -206,11 +203,6 @@ export default function TakeAGlance({ onNavigate }: Props) {
   useEffect(() => {
     getDocumentCounts().then(setDocCounts).catch(() => {});
   }, []);
-
-  const triggerToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3500);
-  };
 
   // Assessment metrics
   const assessmentMetrics = useMemo(() => getSummaryMetrics(), []);
@@ -246,26 +238,6 @@ export default function TakeAGlance({ onNavigate }: Props) {
       transition={{ duration: 0.4 }}
       className="space-y-8 pb-16"
     >
-      {/* ── Toast Notification ── */}
-      <AnimatePresence>
-        {toastMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-6 right-8 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl border text-xs font-semibold"
-            style={{
-              backgroundColor: 'var(--color-bg-elevated)',
-              borderColor: 'var(--color-accent)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            <CheckCircle size={16} style={{ color: 'var(--color-accent)' }} />
-            <span>{toastMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* ── Page Header ── */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
