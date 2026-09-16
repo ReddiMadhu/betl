@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BarChart3, GitBranch, Database, Target, TrendingUp, FileSpreadsheet, Calculator } from 'lucide-react';
+import { BarChart3, GitBranch, Database, Target, TrendingUp, FileSpreadsheet, Calculator, Settings } from 'lucide-react';
 import { useCountUp } from '../../hooks/useAnimations';
 import type { SummaryMetric } from '../../data/discoveryData';
 
@@ -7,7 +7,7 @@ import type { SummaryMetric } from '../../data/discoveryData';
  * SummaryMetrics — compact metric cards
  *
  * Large number (count-up) + small label + subtle icon.
- * Includes separate cards for Worksheets and Calculated Fields.
+ * Includes separate cards for Worksheets, Calculated Fields, and Tools.
  * ───────────────────────────────────────────────────────── */
 
 const ICON_MAP: Record<string, typeof BarChart3> = {
@@ -15,6 +15,7 @@ const ICON_MAP: Record<string, typeof BarChart3> = {
   etl: GitBranch,
   source: Database,
   target: Target,
+  tool: Settings,
   kpi: TrendingUp,
   worksheet: FileSpreadsheet,
   calculated: Calculator,

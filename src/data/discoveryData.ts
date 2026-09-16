@@ -55,6 +55,7 @@ export interface BusinessArea {
 
 import { TABLEAU_DETAIL_DATA } from './tableauDetailData';
 import { POWERBI_DETAIL_DATA } from './powerbiDetailData';
+import { ALTERYX_DETAIL_DATA } from './alteryxDetailData';
 
 /* ── Mock discovered assets ── */
 export const allAssets: Asset[] = [
@@ -136,26 +137,46 @@ export function getBusinessAreas(): BusinessArea[] {
 export interface SummaryMetric {
   label: string;
   value: number;
-  icon: 'dashboard' | 'etl' | 'source' | 'target' | 'kpi' | 'worksheet' | 'calculated';
+  icon: 'dashboard' | 'etl' | 'source' | 'target' | 'tool' | 'kpi' | 'worksheet' | 'calculated';
 }
 
 export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric[] {
-  const biKpis = allAssets
-    .filter((a) => !isEtlAsset(a))
-    .reduce((sum, a) => sum + (a.kpiCount ?? 0), 0);
-  const etlKpis = 15;
-  const kpis = filter === 'BI' ? biKpis : filter === 'ETL' ? etlKpis : biKpis + etlKpis;
+  const biAssets = allAssets.filter((a) => !isEtlAsset(a));
+  // BI KPIs Tracked: sum across BI assets, strictly excluding the 15 ETL KPIs
+  const biKpis = biAssets.reduce((sum, a) => sum + (a.kpiCount ?? 0), 0);
+  const kpis = biKpis;
 
-  const dashboards = allAssets.filter(
+  const dashboards = biAssets.filter(
     (a) => a.assetType === 'Dashboard' || a.assetType === 'Report' || !isEtlAsset(a),
   ).length;
-  const etlWorkflows = new Set(
-    allAssets
-      .filter((a) => isEtlAsset(a))
-      .map((a) => a.canonicalId ?? a.id),
-  ).size;
-  const sources = allAssets.reduce((sum, a) => sum + (a.sourceCount ?? 0), 0);
-  const targets = allAssets.reduce((sum, a) => sum + (a.targetCount ?? 0), 0);
+
+  // Deduplicate ETL assets by canonicalId so aliases (p4, p5, p6) map to canonical workflows (8 canonical workflows)
+  const canonicalEtlMap = new Map<string, Asset>();
+  for (const a of allAssets.filter(isEtlAsset)) {
+    const cid = a.canonicalId ?? a.id;
+    if (!canonicalEtlMap.has(cid)) {
+      canonicalEtlMap.set(cid, a);
+    }
+  }
+  const canonicalEtlAssets = Array.from(canonicalEtlMap.values());
+  const etlWorkflows = canonicalEtlAssets.length;
+
+  // ETL Data Sources & Data Targets: Sum of Input Sources and Output Targets across canonical ETL workflows from Detailed Asset View
+  const etlSources = canonicalEtlAssets.reduce((sum, a) => sum + (a.sourceCount ?? 0), 0);
+  const etlTargets = canonicalEtlAssets.reduce((sum, a) => sum + (a.targetCount ?? 0), 0);
+
+  // ETL Tools: Sum of actual tool counts across canonical ETL workflows from Detailed Asset View / Tool Inventory
+  const etlTools = canonicalEtlAssets.reduce((sum, a) => {
+    const cid = a.canonicalId ?? a.id;
+    const count = ALTERYX_DETAIL_DATA[cid]?.tools?.length ?? (a.technology === 'Python' ? 8 : 0);
+    return sum + count;
+  }, 0);
+
+  const biSources = biAssets.reduce((sum, a) => sum + (a.sourceCount ?? 0), 0);
+  const biTargets = biAssets.reduce((sum, a) => sum + (a.targetCount ?? 0), 0);
+
+  const sources = filter === 'BI' ? biSources : filter === 'ETL' ? etlSources : biSources + etlSources;
+  const targets = filter === 'BI' ? biTargets : filter === 'ETL' ? etlTargets : biTargets + etlTargets;
 
   const worksheets = Object.values(TABLEAU_DETAIL_DATA).reduce(
     (sum, item) => sum + item.summary.totalWorksheets,
@@ -176,6 +197,7 @@ export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric
     { label: 'ETL Workflows', value: etlWorkflows, icon: 'etl' },
     { label: 'Data Sources', value: sources, icon: 'source' },
     { label: 'Data Targets', value: targets, icon: 'target' },
+    { label: 'Tools', value: etlTools, icon: 'tool' },
     { label: 'KPIs Tracked', value: kpis, icon: 'kpi' },
     { label: 'Worksheets', value: worksheets, icon: 'worksheet' },
     { label: 'Calculated Fields', value: calcFields, icon: 'calculated' },
@@ -211,7 +233,7 @@ export function getFilteredSummaryMetrics(filter: CategoryFilter): SummaryMetric
   if (filter === 'ALL') return all;
 
   const biIcons = new Set(['dashboard', 'kpi', 'worksheet', 'calculated']);
-  const etlIcons = new Set(['etl', 'source', 'target', 'kpi']);
+  const etlIcons = new Set(['etl', 'source', 'target', 'tool']);
 
   const allowedIcons = filter === 'BI' ? biIcons : etlIcons;
   return all.filter((m) => allowedIcons.has(m.icon));
