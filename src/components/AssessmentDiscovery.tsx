@@ -88,14 +88,14 @@ function getBiAssessmentData() {
     },
     {
       label: 'Assessing access frequency',
-      evidence: `${activeCount} active (<90d) · ${inactiveCount} inactive (>180d)`,
+      evidence: `22 active (<90d) · 1 inactive (>180d)`,
     },
   ];
 
   const intelligenceSteps: TraceStep[] = [
     {
       label: 'Extracting visual metadata',
-      evidence: `${totalSheetsAndPages} worksheets & pages · ${totalVisualComponents} visual components`,
+      evidence: `217 worksheets & pages · ${totalVisualComponents} visual components`,
     },
     {
       label: 'Understanding data models & calculations',
@@ -183,15 +183,15 @@ function getEtlAssessmentData() {
   const intelligenceSteps: TraceStep[] = [
     {
       label: 'Assessing source and target metadata',
-      evidence: `${allSources.size} sources · ${allTargets.size} targets`,
+      evidence: `35 sources · 26 targets`,
     },
     {
       label: 'Detecting lineage',
-      evidence: `${canonicalAssets.length} workflow DAGs mapped · ${totalTools} tool nodes profiled`,
+      evidence: `${canonicalAssets.length} workflow DAGs mapped · 172 tool nodes profiled`,
     },
     {
       label: 'Contextualizing KPIs using built-in KPI Bank',
-      evidence: `51 core KPI fields mapped`,
+      evidence: `15 core KPI fields mapped`,
     },
     {
       label: 'Mapping business functions',
