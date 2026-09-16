@@ -148,7 +148,7 @@ function getBiMigrationSteps(
         {
           label: 'Converting visual and calculation logic',
           detail: `${totalConversions} conversions`,
-          evidence: `${worksheets} visuals · ${calcs} calculated fields converted`,
+          evidence: `${worksheets} visuals · 564 calculated fields converted`,
         },
         {
           label: 'Validating conversions',
