@@ -1,12 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Compass,
   GitMerge,
-  ArrowRightLeft,
   CheckCircle,
   ExternalLink,
-  FolderArchive,
   BarChart3,
   GitBranch,
   Database,
@@ -14,12 +12,15 @@ import {
   TrendingUp,
   FileSpreadsheet,
   Calculator,
-  Code2,
+  FileText,
+  FileCheck2,
+  Rocket,
 } from 'lucide-react';
 import type { ViewState } from './navigation/workflowStages';
 import { getSummaryMetrics, TECHNOLOGY_LOGOS } from '../data/discoveryData';
 import { biOverlapMetrics } from '../data/rationalizationData';
 import { useCountUp } from '../hooks/useAnimations';
+import { getDocumentCounts } from '../utils/documentationDownloader';
 
 /* ─────────────────────────────────────────────────────────
  * TakeAGlance — Program Modernization Executive Overview
@@ -112,8 +113,105 @@ function StatCard({
   );
 }
 
+/* ── Document Count Card (for Section 3) ── */
+function DocCountCard({
+  count,
+  label,
+  sublabel,
+  description,
+  icon: Icon,
+  accentColor,
+  delay = 0,
+}: {
+  count: number;
+  label: string;
+  sublabel: string;
+  description: string;
+  icon: typeof BarChart3;
+  accentColor: string;
+  delay?: number;
+}) {
+  const animatedCount = useCountUp(count, 1000, delay * 1000);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.4, ease: 'easeOut' }}
+      className="rounded-2xl border p-5 theme-transition flex flex-col justify-between"
+      style={{
+        backgroundColor: 'var(--color-bg-elevated)',
+        borderColor: 'var(--color-border-primary)',
+        boxShadow: '0 1px 3px var(--color-card-shadow)',
+      }}
+    >
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: `${accentColor}18` }}
+          >
+            <Icon size={16} style={{ color: accentColor }} />
+          </div>
+          <span
+            className="text-2xl font-black tabular-nums tracking-tight"
+            style={{ color: accentColor }}
+          >
+            {animatedCount}
+          </span>
+        </div>
+        <h4
+          className="text-[13px] font-bold mb-1 leading-snug"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
+          {label}
+        </h4>
+        <p
+          className="text-[10px] leading-relaxed"
+          style={{ color: 'var(--color-text-secondary)' }}
+        >
+          {description}
+        </p>
+      </div>
+      <div
+        className="mt-3 pt-2.5 border-t flex items-center justify-between"
+        style={{ borderColor: 'var(--color-border-subtle)' }}
+      >
+        <span
+          className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+          style={{
+            backgroundColor: `${accentColor}12`,
+            color: accentColor,
+            borderColor: `${accentColor}30`,
+          }}
+        >
+          {sublabel}
+        </span>
+        <span
+          className="text-[10px] font-semibold"
+          style={{ color: 'var(--color-text-tertiary)' }}
+        >
+          Excel + MD
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function TakeAGlance({ onNavigate }: Props) {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Document counts from manifest
+  const [docCounts, setDocCounts] = useState({
+    biAssessmentCount: 27,
+    etlAssessmentCount: 8,
+    sourceToTargetCount: 8,
+    biRationalizationCount: 7,
+    etlRationalizationCount: 3,
+  });
+
+  useEffect(() => {
+    getDocumentCounts().then(setDocCounts).catch(() => {});
+  }, []);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -185,7 +283,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
           className="text-xl md:text-2xl font-bold tracking-tight"
           style={{ color: 'var(--color-text-primary)' }}
         >
-          Impact a glance
+          Impact at a glance
         </h1>
       </motion.div>
 
@@ -203,27 +301,13 @@ export default function TakeAGlance({ onNavigate }: Props) {
             </div>
             <div>
               <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                1. Assessment Discovery &amp; Inventory Cards
+                1. Assessment - Discovery and Intelligence Successfully Completed
               </h2>
               <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                 Deep catalog of ingested reports, workflows, schemas, and calculated metadata
               </p>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => onNavigate('results')}
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border cursor-pointer hover:opacity-85 transition-opacity"
-            style={{
-              borderColor: 'var(--color-border-primary)',
-              backgroundColor: 'var(--color-bg-elevated)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            <span>View Full Assessment</span>
-            <ExternalLink size={12} />
-          </button>
         </div>
 
         {/* ── All 7 Assessment Summary Metric Cards ── */}
@@ -367,7 +451,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
             </div>
             <div>
               <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                2. Rationalization &amp; Overlap Governance Cards
+                2. Rationalization - Decisions Recommended Successfully
               </h2>
               <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                 Automated similarity detection, redundancy elimination, and portfolio consolidation rules
@@ -435,10 +519,6 @@ export default function TakeAGlance({ onNavigate }: Props) {
                 5 BI dashboard merges + 4 ETL workflow unifications combining overlapping KPIs and calculations into master reporting layers.
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t text-[11px] font-semibold flex items-center justify-between" style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-              <span>Efficiency Gain</span>
-              <span className="text-amber-500 font-bold">+34% Throughput</span>
-            </div>
           </div>
 
           {/* Decommission & Retire */}
@@ -469,10 +549,6 @@ export default function TakeAGlance({ onNavigate }: Props) {
               <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                 7 redundant, obsolete, or shadow reports flagged for scheduled shutdown with zero business disruption or downstream orphan queries.
               </p>
-            </div>
-            <div className="mt-4 pt-3 border-t text-[11px] font-semibold flex items-center justify-between" style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-              <span>Cost Avoidance</span>
-              <span className="text-red-500 font-bold">$380,000 / Year</span>
             </div>
           </div>
 
@@ -505,356 +581,106 @@ export default function TakeAGlance({ onNavigate }: Props) {
                 15 high-fidelity core production assets preserved and directly targeted for accelerated automated migration to modern target platforms.
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t text-[11px] font-semibold flex items-center justify-between" style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-tertiary)' }}>
-              <span>Portfolio Health</span>
-              <span className="text-emerald-500 font-bold">100% Retained SLA</span>
-            </div>
           </div>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════════
-       *  SECTION 3: MIGRATION & TRANSLATION PARITY CARDS
+       *  SECTION 3: DOCUMENTATION COMPLETED SUCCESSFULLY
        * ════════════════════════════════════════════════════ */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm"
-              style={{ backgroundColor: 'rgba(16, 185, 129, 0.12)' }}
+              style={{ backgroundColor: 'rgba(99, 102, 241, 0.12)' }}
             >
-              <ArrowRightLeft size={17} style={{ color: '#10B981' }} />
+              <FileCheck2 size={17} style={{ color: '#6366F1' }} />
             </div>
             <div>
               <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
-                3. Automated Migration &amp; Parity Verification Cards
+                3. Documentation Completed Successfully
               </h2>
               <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                Wave conversion fidelity, converted DAX/visual measures, and deployable export packages
+                Automated technical blueprints, specification documents, and rationalization reports generated
               </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => onNavigate('migration-tb-pbi')}
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border cursor-pointer hover:opacity-85 transition-opacity"
-            style={{
-              borderColor: 'var(--color-border-primary)',
-              backgroundColor: 'var(--color-bg-elevated)',
-              color: 'var(--color-text-primary)',
-            }}
-          >
-            <span>Open Migration Workspace</span>
-            <ExternalLink size={12} />
-          </button>
-        </div>
-
-        {/* ── 3 Main Migration Wave Status Cards ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Wave 1: Tableau -> Power BI */}
-          <div
-            className="rounded-2xl border p-5 theme-transition flex flex-col justify-between"
-            style={{
-              backgroundColor: 'var(--color-bg-elevated)',
-              borderColor: 'var(--color-border-primary)',
-            }}
-          >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded flex items-center justify-center p-0.5 bg-[var(--color-bg-tertiary)]">
-                    <img src={TECHNOLOGY_LOGOS.Tableau} alt="Tableau" className="w-full h-full object-contain" />
-                  </div>
-                  <ArrowRightLeft size={13} style={{ color: 'var(--color-accent)' }} />
-                  <div className="w-6 h-6 rounded flex items-center justify-center p-0.5 bg-[var(--color-bg-tertiary)]">
-                    <img src={TECHNOLOGY_LOGOS['Power BI']} alt="Power BI" className="w-full h-full object-contain" />
-                  </div>
-                  <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-primary)' }}>
-                    Wave 1: Tableau → Power BI
-                  </span>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded border inline-flex items-center gap-1 text-emerald-500 bg-emerald-500/10 border-emerald-500/30">
-                  <CheckCircle size={10} /> Valid
-                </span>
-              </div>
-
-              <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                Insurance Sales &amp; Loss Ratio Model
-              </h4>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Data Tables</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>6 Tables</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Model Columns</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>58 Columns</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Worksheets</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>20 Visuals</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>DAX Measures</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>21 Measures</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t flex items-center justify-between" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-                PBIP Package Ready
-              </span>
-              <button
-                type="button"
-                onClick={() => onNavigate('migration-tb-pbi')}
-                className="text-xs font-bold text-[var(--color-accent)] hover:underline cursor-pointer flex items-center gap-1"
-              >
-                Inspect Details →
-              </button>
-            </div>
-          </div>
-
-          {/* Wave 2: MicroStrategy -> Tableau */}
-          <div
-            className="rounded-2xl border p-5 theme-transition flex flex-col justify-between"
-            style={{
-              backgroundColor: 'var(--color-bg-elevated)',
-              borderColor: 'var(--color-border-primary)',
-            }}
-          >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded flex items-center justify-center p-0.5 bg-[var(--color-bg-tertiary)]">
-                    <img src={TECHNOLOGY_LOGOS.MicroStrategy} alt="MicroStrategy" className="w-full h-full object-contain" />
-                  </div>
-                  <ArrowRightLeft size={13} style={{ color: 'var(--color-accent)' }} />
-                  <div className="w-6 h-6 rounded flex items-center justify-center p-0.5 bg-[var(--color-bg-tertiary)]">
-                    <img src={TECHNOLOGY_LOGOS.Tableau} alt="Tableau" className="w-full h-full object-contain" />
-                  </div>
-                  <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-primary)' }}>
-                    Wave 2: MSTR → Tableau
-                  </span>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded border inline-flex items-center gap-1 text-emerald-500 bg-emerald-500/10 border-emerald-500/30">
-                  <CheckCircle size={10} /> Valid
-                </span>
-              </div>
-
-              <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                Underwriting &amp; Commercial Dossiers
-              </h4>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>MSTR Dossiers</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>4 Dossiers</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Semantic Cubes</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>6 Cubes</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Compound Metrics</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>18 Converted</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Level Metrics</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>100% LOD Parity</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t flex items-center justify-between" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-                TWBX / TDSX Ready
-              </span>
-              <button
-                type="button"
-                onClick={() => onNavigate('migration-mstr-tb')}
-                className="text-xs font-bold text-[var(--color-accent)] hover:underline cursor-pointer flex items-center gap-1"
-              >
-                Inspect Details →
-              </button>
-            </div>
-          </div>
-
-          {/* Wave 3: Alteryx -> Python */}
-          <div
-            className="rounded-2xl border p-5 theme-transition flex flex-col justify-between"
-            style={{
-              backgroundColor: 'var(--color-bg-elevated)',
-              borderColor: 'var(--color-border-primary)',
-            }}
-          >
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded flex items-center justify-center p-0.5 bg-[var(--color-bg-tertiary)]">
-                    <img src={TECHNOLOGY_LOGOS.Alteryx} alt="Alteryx" className="w-full h-full object-contain" />
-                  </div>
-                  <ArrowRightLeft size={13} style={{ color: 'var(--color-accent)' }} />
-                  <div className="w-6 h-6 rounded flex items-center justify-center p-0.5 bg-[var(--color-bg-tertiary)]">
-                    <img src={TECHNOLOGY_LOGOS.Python} alt="Python" className="w-full h-full object-contain" />
-                  </div>
-                  <span className="text-xs font-bold ml-1" style={{ color: 'var(--color-text-primary)' }}>
-                    Wave 3: Alteryx → Python
-                  </span>
-                </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded border inline-flex items-center gap-1 text-emerald-500 bg-emerald-500/10 border-emerald-500/30">
-                  <CheckCircle size={10} /> Valid
-                </span>
-              </div>
-
-              <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                Claims Extract &amp; Transformation Pipelines
-              </h4>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Alteryx Workflows</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>5 Workflows</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Pandas Pipelines</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>12 Scripts</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Orchestration</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>Airflow DAGs</div>
-                </div>
-                <div className="p-2 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>Unit Test Suite</div>
-                  <div className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>24 PyTests</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t flex items-center justify-between" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-                Python 3.11 Bundle Ready
-              </span>
-              <button
-                type="button"
-                onClick={() => onNavigate('migration-alt-py')}
-                className="text-xs font-bold text-[var(--color-accent)] hover:underline cursor-pointer flex items-center gap-1"
-              >
-                Inspect Details →
-              </button>
             </div>
           </div>
         </div>
 
-        {/* ── Ready-to-Deploy Artifact Packages ── */}
-        <div
-          className="rounded-2xl border p-5 theme-transition mt-2"
-          style={{
-            backgroundColor: 'var(--color-bg-elevated)',
-            borderColor: 'var(--color-border-primary)',
-          }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-primary)' }}>
-                Deployable Target Migration Packages
-              </h3>
-              <p className="text-[11px]" style={{ color: 'var(--color-text-secondary)' }}>
-                All generated code, schemas, formulas, and visual specifications ready for production deployment
-              </p>
-            </div>
-            <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-              3 Packages Compiled
-            </span>
+        {/* ── 5 Document Count Cards ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* Card 1: Dashboard Specification Documents (BI) */}
+          <DocCountCard
+            count={docCounts.biAssessmentCount}
+            label="Dashboard Specification Documents"
+            sublabel="BI Assessment"
+            description="Individual dashboard inventory and technical specification workbooks for each BI asset."
+            icon={BarChart3}
+            accentColor="#3B82F6"
+            delay={0.05}
+          />
+
+          {/* Card 2: ETL Technical Specification Documents */}
+          <DocCountCard
+            count={docCounts.etlAssessmentCount}
+            label="ETL Technical Specification Documents"
+            sublabel="ETL Assessment"
+            description="Workflow inventory and individual documentation specification for each ETL pipeline."
+            icon={GitBranch}
+            accentColor="#8B5CF6"
+            delay={0.1}
+          />
+
+          {/* Card 3: Source-to-Target Mapping Documents */}
+          <DocCountCard
+            count={docCounts.sourceToTargetCount}
+            label="Source-to-Target Mapping Documents"
+            sublabel="ETL Lineage"
+            description="Detailed source-to-target data mapping specifications for each ETL workflow."
+            icon={Database}
+            accentColor="#06B6D4"
+            delay={0.15}
+          />
+
+          {/* Card 4: Rationalization Documents — BI */}
+          <DocCountCard
+            count={docCounts.biRationalizationCount}
+            label="Rationalization Documents — BI"
+            sublabel="BI Rationalization"
+            description="Rationalization recommendations with rationale for BI dashboard consolidation and decommission."
+            icon={FileCheck2}
+            accentColor="#F59E0B"
+            delay={0.2}
+          />
+
+          {/* Card 5: Rationalization Documents — ETL */}
+          <DocCountCard
+            count={docCounts.etlRationalizationCount}
+            label="Rationalization Documents — ETL"
+            sublabel="ETL Rationalization"
+            description="Rationalization recommendations with rationale for ETL workflow optimization and retirement."
+            icon={FileText}
+            accentColor="#EF4444"
+            delay={0.25}
+          />
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+       *  SECTION 4: READY OF ACCELERATED MIGRATION FOR KEEP ASSETS
+       * ════════════════════════════════════════════════════ */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm"
+            style={{ backgroundColor: 'rgba(16, 185, 129, 0.12)' }}
+          >
+            <Rocket size={17} style={{ color: '#10B981' }} />
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="p-3.5 rounded-xl border flex items-center justify-between bg-[var(--color-bg-tertiary)]" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-[var(--color-accent)]/10 text-[var(--color-accent)]">
-                  <FolderArchive size={18} />
-                </div>
-                <div>
-                  <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                    Insurance_Sales.pbip
-                  </div>
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Power BI Desktop &amp; Fabric (TMDL)
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => triggerToast('Downloaded Insurance_Sales.pbip package')}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border-primary)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Download
-              </button>
-            </div>
-
-            <div className="p-3.5 rounded-xl border flex items-center justify-between bg-[var(--color-bg-tertiary)]" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-500/10 text-blue-500">
-                  <FolderArchive size={18} />
-                </div>
-                <div>
-                  <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                    Underwriting_Model.twbx
-                  </div>
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Tableau Desktop Workbook &amp; Hyper
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => triggerToast('Downloaded Underwriting_Model.twbx package')}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border-primary)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Download
-              </button>
-            </div>
-
-            <div className="p-3.5 rounded-xl border flex items-center justify-between bg-[var(--color-bg-tertiary)]" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-emerald-500/10 text-emerald-500">
-                  <Code2 size={18} />
-                </div>
-                <div>
-                  <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                    claims_pipeline_py.zip
-                  </div>
-                  <div className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                    Python 3.11 + Airflow DAGs
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => triggerToast('Downloaded claims_pipeline_py.zip package')}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border"
-                style={{
-                  backgroundColor: 'var(--color-surface)',
-                  borderColor: 'var(--color-border-primary)',
-                  color: 'var(--color-text-primary)',
-                }}
-              >
-                Download
-              </button>
-            </div>
-          </div>
+          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+            Ready of Accelerated Migration for Keep Assets
+          </h2>
         </div>
       </section>
     </motion.div>

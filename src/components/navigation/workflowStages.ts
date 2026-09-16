@@ -83,8 +83,8 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
   {
     id: 'take-a-glance',
     stageNumber: 4,
-    title: 'Impact a glance',
-    shortTitle: 'Impact a glance',
+    title: 'Impact at a glance',
+    shortTitle: 'Impact at a glance',
     subtitle: 'Program-wide executive summary',
     icon: LayoutDashboard,
     views: ['take-a-glance'],

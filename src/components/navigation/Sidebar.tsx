@@ -49,7 +49,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     id: 'take-a-glance',
-    title: 'Impact a glance',
+    title: 'Impact at a glance',
     icon: LayoutDashboard,
     views: ['take-a-glance'],
     targetView: () => 'take-a-glance',

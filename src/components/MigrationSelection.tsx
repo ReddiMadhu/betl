@@ -2,7 +2,6 @@ import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
-  ExternalLink,
 } from 'lucide-react';
 import { BiLogo, EtlLogo } from './icons/CategoryLogos';
 import {
@@ -100,7 +99,7 @@ export default function MigrationSelection({ onStartMigration }: Props) {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1"
+        className="flex items-center justify-between gap-4 pt-1"
       >
         <h1
           className="text-2xl lg:text-3xl font-bold tracking-tight"
@@ -108,33 +107,6 @@ export default function MigrationSelection({ onStartMigration }: Props) {
         >
           Select Assets to Migrate
         </h1>
-        <div className="flex items-center gap-3 shrink-0">
-          <a
-            href="https://bt.etl.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              borderColor: 'var(--color-border-primary)',
-              color: 'var(--color-text-primary)',
-              boxShadow: '0 1px 3px var(--color-card-shadow)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-accent)';
-              e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-              e.currentTarget.style.boxShadow = '0 1px 3px var(--color-card-shadow)';
-            }}
-            title="biagents (bt.etl.com)"
-          >
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
-            <span>biagents</span>
-            <ExternalLink size={13} style={{ color: 'var(--color-text-tertiary)' }} />
-          </a>
-        </div>
       </motion.div>
 
       {/* ═════════════════════════════════════════════════════════

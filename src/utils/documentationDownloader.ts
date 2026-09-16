@@ -26,7 +26,8 @@ interface Manifest {
  */
 export async function downloadDocumentationZip(
   type: 'assessment' | 'rationalization',
-  onProgress?: (p: DownloadProgress) => void
+  onProgress?: (p: DownloadProgress) => void,
+  subType?: 'bi' | 'etl'
 ): Promise<void> {
   try {
     onProgress?.({
@@ -42,17 +43,24 @@ export async function downloadDocumentationZip(
     }
 
     const manifest: Manifest = await manifestRes.json();
-    const files = type === 'assessment' ? manifest.assessment : manifest.rationalization;
+    let files = type === 'assessment' ? manifest.assessment : manifest.rationalization;
+
+    // 2. Filter by subType if specified (BI or ETL)
+    if (subType === 'bi') {
+      files = files.filter((f) => f.path.startsWith('BI/'));
+    } else if (subType === 'etl') {
+      files = files.filter((f) => f.path.startsWith('ETL/'));
+    }
 
     if (!files || files.length === 0) {
-      throw new Error(`No documentation files found for ${type}`);
+      throw new Error(`No documentation files found for ${type}${subType ? ` (${subType.toUpperCase()})` : ''}`);
     }
 
     const zip = new JSZip();
     const totalFiles = files.length;
     let loadedFiles = 0;
 
-    // 2. Fetch each static file and add to ZIP
+    // 3. Fetch each static file and add to ZIP
     for (const file of files) {
       onProgress?.({
         status: 'fetching',
@@ -72,7 +80,7 @@ export async function downloadDocumentationZip(
       loadedFiles++;
     }
 
-    // 3. Compress ZIP
+    // 4. Compress ZIP
     onProgress?.({
       status: 'zipping',
       progress: 75,
@@ -94,17 +102,17 @@ export async function downloadDocumentationZip(
       }
     );
 
-    // 4. Trigger browser download
+    // 5. Trigger browser download
     onProgress?.({
       status: 'downloading',
       progress: 98,
       currentFile: 'Starting download...',
     });
 
-    const fileName =
-      type === 'assessment'
-        ? 'BI_and_ETL_Assessment_Documentation.zip'
-        : 'BI_and_ETL_Rationalization_Documentation.zip';
+    // Build descriptive filename
+    const subLabel = subType ? `_${subType.toUpperCase()}` : '';
+    const typeLabel = type === 'assessment' ? 'Assessment' : 'Rationalization';
+    const fileName = `${typeLabel}${subLabel}_Documentation.zip`;
 
     const url = URL.createObjectURL(zipBlob);
     const link = document.createElement('a');
@@ -129,5 +137,59 @@ export async function downloadDocumentationZip(
       errorMessage: msg,
     });
     throw error;
+  }
+}
+
+/**
+ * Returns document counts from the manifest for display in summary cards.
+ */
+export async function getDocumentCounts(): Promise<{
+  biAssessmentCount: number;
+  etlAssessmentCount: number;
+  sourceToTargetCount: number;
+  biRationalizationCount: number;
+  etlRationalizationCount: number;
+}> {
+  try {
+    const res = await fetch('/documentation/manifest.json');
+    if (!res.ok) throw new Error('Failed to load manifest');
+    const manifest: Manifest = await res.json();
+
+    // Count unique asset folders (each asset has an xlsx + md, so count xlsx files)
+    const biAssessmentCount = manifest.assessment.filter(
+      (f) => f.path.startsWith('BI/') && f.path.endsWith('.xlsx')
+    ).length;
+
+    const etlAssessmentCount = manifest.assessment.filter(
+      (f) => f.path.startsWith('ETL/') && f.path.endsWith('.xlsx')
+    ).length;
+
+    // Each ETL assessment includes source-to-target mapping
+    const sourceToTargetCount = etlAssessmentCount;
+
+    const biRationalizationCount = manifest.rationalization.filter(
+      (f) => f.path.startsWith('BI/') && f.path.endsWith('.xlsx')
+    ).length;
+
+    const etlRationalizationCount = manifest.rationalization.filter(
+      (f) => f.path.startsWith('ETL/') && f.path.endsWith('.xlsx')
+    ).length;
+
+    return {
+      biAssessmentCount,
+      etlAssessmentCount,
+      sourceToTargetCount,
+      biRationalizationCount,
+      etlRationalizationCount,
+    };
+  } catch {
+    // Return defaults from static data if manifest can't be fetched
+    return {
+      biAssessmentCount: 27,
+      etlAssessmentCount: 8,
+      sourceToTargetCount: 8,
+      biRationalizationCount: 7,
+      etlRationalizationCount: 3,
+    };
   }
 }

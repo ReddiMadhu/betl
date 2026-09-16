@@ -371,7 +371,7 @@ export default function AlteryxPythonWorkspace({ onBack, onFinish }: Props) {
                   className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold cursor-pointer"
                   style={{ backgroundColor: '#10b981', color: '#fff' }}
                 >
-                  <CheckCircle size={14} /> Complete &amp; Impact a glance
+                  <CheckCircle size={14} /> Complete &amp; Impact at a glance
                 </button>
               </div>
             </div>

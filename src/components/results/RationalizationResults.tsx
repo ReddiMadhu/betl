@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   X,
   CheckCircle,
-  ExternalLink,
 } from 'lucide-react';
 import {
   recommendations,
@@ -599,30 +598,6 @@ export default function RationalizationResults({ onStartMigration }: Props) {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          {/* biagents link */}
-          <a
-            href="https://bt.etl.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              borderColor: 'var(--color-border-primary)',
-              color: 'var(--color-text-primary)',
-              boxShadow: '0 1px 3px var(--color-card-shadow)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-accent)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-            }}
-            title="biagents (bt.etl.com)"
-          >
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }} />
-            <span>biagents</span>
-            <ExternalLink size={13} style={{ color: 'var(--color-text-tertiary)' }} />
-          </a>
           {/* Download Documentation Button */}
           <DownloadDocumentationButton type="rationalization" />
           {/* Start Migration button — top right */}
