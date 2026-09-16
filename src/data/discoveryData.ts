@@ -197,7 +197,7 @@ export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric
     { label: 'ETL Workflows', value: etlWorkflows, icon: 'etl' },
     { label: 'Data Sources', value: sources, icon: 'source' },
     { label: 'Data Targets', value: targets, icon: 'target' },
-    { label: 'Tools', value: etlTools, icon: 'tool' },
+    { label: 'ETL Tools', value: etlTools, icon: 'tool' },
     { label: 'KPIs Tracked', value: kpis, icon: 'kpi' },
     { label: 'Worksheets', value: worksheets, icon: 'worksheet' },
     { label: 'Calculated Fields', value: calcFields, icon: 'calculated' },
