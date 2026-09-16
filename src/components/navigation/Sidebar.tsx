@@ -26,26 +26,21 @@ const NAV_ITEMS: NavItem[] = [
     title: 'Assessment',
     icon: Compass,
     views: ['assessment', 'results', 'asset-detail'],
-    targetView: (visited) => (visited.has('results') ? 'results' : 'assessment'),
+    targetView: () => 'results',
   },
   {
     id: 'rationalization',
     title: 'Rationalization',
     icon: GitMerge,
     views: ['rationalization', 'rationalization-results'],
-    targetView: (visited) =>
-      visited.has('rationalization-results') ? 'rationalization-results' : 'rationalization',
+    targetView: () => 'rationalization-results',
   },
   {
     id: 'migration',
     title: 'Migration',
     icon: ArrowRightLeft,
     views: ['migration', 'migration-loading', 'migration-results', 'migration-tb-pbi', 'migration-mstr-tb', 'migration-alt-py'],
-    targetView: (visited) => {
-      if (visited.has('migration-results')) return 'migration-results';
-      if (visited.has('migration-loading')) return 'migration-loading';
-      return 'migration';
-    },
+    targetView: () => 'migration',
   },
   {
     id: 'take-a-glance',

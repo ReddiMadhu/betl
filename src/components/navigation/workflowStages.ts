@@ -40,7 +40,7 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
     subtitle: 'Scan platforms & catalog',
     icon: Compass,
     views: ['assessment', 'results', 'asset-detail'],
-    defaultView: (visited) => (visited.has('results') ? 'results' : 'assessment'),
+    defaultView: () => 'results',
     subItems: [
       { id: 'assessment', label: 'Discovery Scan', description: 'Live platform crawler' },
       { id: 'results', label: 'Catalog & Intelligence', description: '25 assets mapped' },
@@ -54,7 +54,7 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
     subtitle: 'Analyze overlap & score',
     icon: GitMerge,
     views: ['rationalization', 'rationalization-results'],
-    defaultView: (visited) => (visited.has('rationalization-results') ? 'rationalization-results' : 'rationalization'),
+    defaultView: () => 'rationalization-results',
     subItems: [
       { id: 'rationalization', label: 'Analysis Engine', description: 'Rule evaluation' },
       { id: 'rationalization-results', label: 'Recommendations', description: 'Merge & decommission' },
@@ -68,12 +68,7 @@ export const WORKFLOW_STAGES: StageDefinition[] = [
     subtitle: 'Select waves & migrate',
     icon: ArrowRightLeft,
     views: ['migration', 'migration-loading', 'migration-results', 'migration-tb-pbi', 'migration-mstr-tb', 'migration-alt-py'],
-    defaultView: (visited) => {
-      if (visited.has('migration-tb-pbi') || visited.has('migration-mstr-tb') || visited.has('migration-alt-py')) return 'migration';
-      if (visited.has('migration-results')) return 'migration-results';
-      if (visited.has('migration-loading')) return 'migration-loading';
-      return 'migration';
-    },
+    defaultView: () => 'migration',
     subItems: [
       { id: 'migration', label: 'Wave Selection', description: 'Choose target wave' },
       { id: 'migration-loading', label: 'Migration Execution', description: 'Active conversion' },
