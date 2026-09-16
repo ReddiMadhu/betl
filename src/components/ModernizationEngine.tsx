@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Loader2, CheckCircle2 } from 'lucide-react';
 import { agents, totalAssets } from '../data/config';
@@ -5,6 +6,7 @@ import AgentCard from './AgentCard';
 import AgentFlow from './AgentFlow';
 import { useCountUp } from '../hooks/useAnimations';
 import { AwsLogo, AzureLogo } from './icons/CloudLogos';
+import IngestionModal from './IngestionModal';
 
 interface ModernizationEngineProps {
   ingestionState?: 'idle' | 'ingesting' | 'complete';
@@ -167,7 +169,25 @@ export default function ModernizationEngine({
   ingestionState = 'idle',
   onStartIngestion,
 }: ModernizationEngineProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleIngestionButtonClick = useCallback(() => {
+    if (ingestionState === 'ingesting' || ingestionState === 'complete') return;
+    setIsModalOpen(true);
+  }, [ingestionState]);
+
+  const handleModalConnect = useCallback(() => {
+    setIsModalOpen(false);
+    onStartIngestion?.();
+  }, [onStartIngestion]);
+
   return (
+    <>
+    <IngestionModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onConnect={handleModalConnect}
+    />
     <motion.section
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -236,7 +256,7 @@ export default function ModernizationEngine({
         <div className="absolute top-4 right-4 md:top-6 md:right-6 z-20">
           <button
             type="button"
-            onClick={onStartIngestion}
+            onClick={handleIngestionButtonClick}
             disabled={ingestionState === 'ingesting'}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-tight transition-all duration-300 shadow-sm cursor-pointer"
             style={{
@@ -345,5 +365,6 @@ export default function ModernizationEngine({
         }}
       />
     </motion.section>
+    </>
   );
 }
