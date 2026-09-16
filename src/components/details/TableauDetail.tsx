@@ -13,6 +13,7 @@ import {
   Check,
   Calendar,
   User,
+  Target,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
@@ -24,9 +25,10 @@ import type { WorksheetDetail, TableauDetailData } from '../../data/tableauDetai
  * (Tableau Workbook Deep Inspection)
  *
  * Inspired by tb-bi migration-wizard Page1DataUnderstanding:
- * - Executive summary KPI bar (Dashboards, Worksheets, Tables, Calc Fields)
+ * - Executive summary KPI bar (Dashboards, Worksheets, Tables, Calc Fields, KPIs Tracked)
  * - Worksheets / Charts card with dimension/measure/axes breakdown
  * - Calculated Fields card with formula inspector and worksheet filter
+ * - Authoritative Extracted KPI Inventory with evidence worksheet mapping
  * - Full-width Data Tables card with realistic multi-row preview
  * ───────────────────────────────────────────────────────── */
 
@@ -38,7 +40,8 @@ interface Props {
 export default function TableauDetail({ asset, onBack }: Props) {
   const metadata: TableauDetailData = useMemo(() => {
     return TABLEAU_DETAIL_DATA[asset.id] ?? {
-      summary: { totalDashboards: 1, totalWorksheets: 0, totalTables: 0, totalCalculatedFields: 0 },
+      summary: { totalDashboards: 1, totalWorksheets: 0, totalTables: 0, totalCalculatedFields: 0, totalKpis: 0 },
+      kpis: [],
       worksheets: [],
       calculatedFields: [],
       tables: [],
@@ -48,6 +51,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
   const [worksheetSearch, setWorksheetSearch] = useState('');
   const [calcFieldSearch, setCalcFieldSearch] = useState('');
   const [tableSearch, setTableSearch] = useState('');
+  const [kpiSearch, setKpiSearch] = useState('');
 
   const [selectedWorksheet, setSelectedWorksheet] = useState<WorksheetDetail | null>(null);
   const [expandedFormulas, setExpandedFormulas] = useState<Set<string>>(new Set());
@@ -112,6 +116,18 @@ export default function TableauDetail({ asset, onBack }: Props) {
         t.columns.some((c) => c.name.toLowerCase().includes(q))
     );
   }, [metadata.tables, tableSearch]);
+
+  // Filter authoritative KPIs
+  const filteredKpis = useMemo(() => {
+    const list = metadata.kpis ?? [];
+    if (!kpiSearch.trim()) return list;
+    const q = kpiSearch.toLowerCase();
+    return list.filter(
+      (k) =>
+        k.name.toLowerCase().includes(q) ||
+        k.evidence.toLowerCase().includes(q)
+    );
+  }, [metadata.kpis, kpiSearch]);
 
   return (
     <motion.div
@@ -203,8 +219,8 @@ export default function TableauDetail({ asset, onBack }: Props) {
         </div>
       </div>
 
-      {/* ── Executive Summary Bar (4 KPI Cards from Page 1 Command Center) ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ── Executive Summary Bar (5 KPI Cards from Page 1 Command Center) ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {/* Dashboards Card */}
         <div
           className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
@@ -221,7 +237,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
               {metadata.summary.totalDashboards}
             </div>
             <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-              Tableau Dashboards
+              Dashboards
             </div>
           </div>
         </div>
@@ -242,7 +258,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
               {metadata.summary.totalWorksheets}
             </div>
             <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-              Worksheets / Charts
+              Worksheets
             </div>
           </div>
         </div>
@@ -263,12 +279,12 @@ export default function TableauDetail({ asset, onBack }: Props) {
               {metadata.summary.totalTables}
             </div>
             <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-              Data Sources & Tables
+              Data Tables
             </div>
           </div>
         </div>
 
-        {/* Calculated Fields Card */}
+        {/* Calculated Fields (Measures) Card */}
         <div
           className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
           style={{
@@ -284,7 +300,28 @@ export default function TableauDetail({ asset, onBack }: Props) {
               {metadata.summary.totalCalculatedFields}
             </div>
             <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-              Calculated Fields
+              Calculated Measures
+            </div>
+          </div>
+        </div>
+
+        {/* KPIs Tracked Card */}
+        <div
+          className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
+          style={{
+            backgroundColor: 'var(--color-bg-elevated)',
+            borderColor: 'var(--color-border-primary)',
+          }}
+        >
+          <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center shrink-0">
+            <Target className="w-6 h-6 text-amber-500" />
+          </div>
+          <div>
+            <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+              {metadata.summary.totalKpis ?? metadata.kpis?.length ?? asset.kpiCount ?? 0}
+            </div>
+            <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
+              KPIs Tracked
             </div>
           </div>
         </div>
@@ -617,6 +654,97 @@ export default function TableauDetail({ asset, onBack }: Props) {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* ── Extracted KPI Inventory & Evidence Mapping Card ── */}
+      <div
+        className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
+        style={{
+          backgroundColor: 'var(--color-bg-elevated)',
+          borderColor: 'var(--color-border-primary)',
+        }}
+      >
+        {/* Card Header */}
+        <div
+          className="p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0"
+          style={{ borderColor: 'var(--color-border-primary)' }}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+              <Target className="w-4 h-4 text-amber-500" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                Extracted KPIs & Evidence Mapping ({filteredKpis.length})
+              </h2>
+              <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+                Authoritative business metrics with source worksheet lineage
+              </p>
+            </div>
+          </div>
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search KPIs or evidence sheets..."
+              value={kpiSearch}
+              onChange={(e) => setKpiSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
+              style={{
+                backgroundColor: 'var(--color-bg-tertiary)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-text-primary)',
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Card Body - Grid of KPI Cards */}
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto">
+          {filteredKpis.map((kpi, idx) => (
+            <div
+              key={kpi.id || idx}
+              className="p-3.5 rounded-xl border transition-all hover:border-amber-500/40 flex flex-col justify-between gap-2.5 shadow-xs"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border-subtle)',
+              }}
+            >
+              <div className="flex items-start gap-2.5">
+                <span className="w-5 h-5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-amber-500/20">
+                  {idx + 1}
+                </span>
+                <h3 className="font-semibold text-xs leading-snug" style={{ color: 'var(--color-text-primary)' }}>
+                  {kpi.name}
+                </h3>
+              </div>
+              <div
+                className="pt-2 border-t flex items-center gap-1.5 text-[11px]"
+                style={{ borderColor: 'var(--color-border-subtle)' }}
+              >
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 shrink-0">
+                  Evidence:
+                </span>
+                <span
+                  className="font-mono text-[11px] truncate px-1.5 py-0.5 rounded border"
+                  style={{
+                    backgroundColor: 'var(--color-bg-tertiary)',
+                    borderColor: 'var(--color-border-subtle)',
+                    color: 'var(--color-text-secondary)',
+                  }}
+                  title={kpi.evidence}
+                >
+                  {kpi.evidence}
+                </span>
+              </div>
+            </div>
+          ))}
+          {filteredKpis.length === 0 && (
+            <div className="col-span-full text-center py-8 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+              No KPIs match your search query.
+            </div>
+          )}
         </div>
       </div>
 

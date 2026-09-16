@@ -2,13 +2,6 @@
  * Tableau Detail Data — per-asset extracted workbook metadata
  * ───────────────────────────────────────────────────────── */
 
-import {
-  tbPbiSummary,
-  tbPbiWorksheets,
-  tbPbiCalculatedFields,
-  tbPbiDataTables,
-} from './tableauPowerBIData';
-
 export interface WorksheetDetail {
   id: string;
   name: string;
@@ -39,63 +32,25 @@ export interface TableDetail {
   sampleRows: Record<string, string | number>[];
 }
 
+export interface KpiDetail {
+  id: string;
+  name: string;
+  evidence: string;
+}
+
 export interface TableauDetailData {
   summary: {
     totalDashboards: number;
     totalWorksheets: number;
     totalTables: number;
     totalCalculatedFields: number;
+    totalKpis?: number;
   };
+  kpis: KpiDetail[];
   worksheets: WorksheetDetail[];
   calculatedFields: CalculatedFieldDetail[];
   tables: TableDetail[];
 }
-
-/* ── Sales Insurance.twbx — detail derived from the real Tableau → Power BI
- * migration dataset (tableauPowerBIData.ts) so the workbook's worksheets,
- * calculated fields, and data tables drive the detail page. ── */
-const SALES_INSURANCE_DETAIL: TableauDetailData = {
-  summary: {
-    totalDashboards: tbPbiSummary.totalDashboards,
-    totalWorksheets: tbPbiSummary.totalWorksheets,
-    totalTables: tbPbiSummary.totalTables,
-    totalCalculatedFields: tbPbiSummary.totalCalculatedFields,
-  },
-  worksheets: tbPbiWorksheets.map((w) => ({
-    id: w.name,
-    name: w.title || w.name,
-    chartType: w.chartType,
-    dimensions: w.dimensions,
-    measures: w.measures.map((m) => ({
-      name: m,
-      type: (tbPbiCalculatedFields.some((cf) => cf.caption === m || cf.name === m)
-        ? 'calculated'
-        : 'base_measure') as 'base_measure' | 'calculated',
-    })),
-    axes: {
-      rows: w.rows.join(', ') || '—',
-      columns: w.cols.join(', ') || '—',
-    },
-  })),
-  calculatedFields: tbPbiCalculatedFields.map((cf) => ({
-    id: cf.name,
-    name: cf.caption,
-    formula: cf.formula,
-    role: cf.role,
-    datatype: cf.datatype as CalculatedFieldDetail['datatype'],
-    usedInSheets: tbPbiWorksheets
-      .filter((w) => w.measures.includes(cf.caption) || w.dimensions.includes(cf.caption))
-      .map((w) => w.title || w.name),
-  })),
-  tables: tbPbiDataTables.map((t) => ({
-    tableName: t.rawName,
-    displayName: t.displayName,
-    rowCount: t.rowCount,
-    dataSource: 'Insurance_Model',
-    columns: t.columnDetails.map((c) => ({ name: c.name, type: c.dataType })),
-    sampleRows: t.sampleRows,
-  })),
-};
 
 export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
   "c1": {
@@ -103,8 +58,76 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 75,
       "totalTables": 2,
-      "totalCalculatedFields": 163
+      "totalCalculatedFields": 120,
+      "totalKpis": 13
     },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Variance from National in Avg Claim Cost by Region",
+        "evidence": "Avg Claim Cost_Region vs National (5)"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Average Days to Settle Claims by Region",
+        "evidence": "Days to Settle_Aggregate"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Percentage of Claims Hitting Target Settlement Time by Region",
+        "evidence": "Days to Settle_Detail"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Loss Ratio by Region",
+        "evidence": "Loss Ratio vs PY"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Retention Rate by Region",
+        "evidence": "Retention Rate_Aggregate"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Retention Rate Target Achievement by Region",
+        "evidence": "Retention Rate_Detail"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Satisfaction Score by Region",
+        "evidence": "Satisfaction Score_Aggregate"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Satisfaction Score Target Achievement by Region",
+        "evidence": "Satisfaction Rate_Detail"
+      },
+      {
+        "id": "kpi_9",
+        "name": "Year-over-Year Change in Avg Claim Cost",
+        "evidence": "KPI_% Change - Avg Claim Cost"
+      },
+      {
+        "id": "kpi_10",
+        "name": "Year-over-Year Change in Days to Settle Claims",
+        "evidence": "KPI_% Change - Days to Settle"
+      },
+      {
+        "id": "kpi_11",
+        "name": "Year-over-Year Change in Loss Ratio",
+        "evidence": "KPI_% Change - Loss Ratio"
+      },
+      {
+        "id": "kpi_12",
+        "name": "Year-over-Year Change in Retention Rate",
+        "evidence": "KPI_% Change - Retention Rate"
+      },
+      {
+        "id": "kpi_13",
+        "name": "Year-over-Year Change in Satisfaction Score",
+        "evidence": "KPI_% Change - Satisfaction Score"
+      }
+    ],
     "worksheets": [
       {
         "id": "ws_1",
@@ -3334,16 +3357,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_25",
-        "name": "View | Aggregate",
-        "formula": "[Parameters].[Parameter 4] = 'Show Aggregated'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
         "id": "cf_26",
         "name": "Avg Claim Cost | Fixed | National or Region",
         "formula": "CASE [Parameters].[Parameter 5]\r WHEN 'National' THEN [Calculation_600667632573243414]\r WHEN 'Region' THEN AVG([Avg Claim Cost | State (copy)_1734448843613888516])\r END",
@@ -3359,16 +3372,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_28",
-        "name": "Region Filter | Rank",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           " Days to Settle | Color"
         ]
@@ -3404,62 +3407,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_32",
-        "name": "Histogram Color",
-        "formula": "IF [Calculation_1018376503335067685]=[Calculation_1018376503334752292] THEN\r \r     // This is the median bin.\r \r     \"Median\"\r \r ELSEIF [Calculation_1018376503335067685]<[Calculation_1018376503334752292] THEN\r \r     \"Lower\"\r \r ELSE\r \r     \"Higher\"\r \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_33",
-        "name": "Bin Max",
-        "formula": "[Calculation_1018376503335067685] + [Parameters].[Parameter 8] -1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Income Histogram"
-        ]
-      },
-      {
-        "id": "cf_34",
-        "name": "Bin Description",
-        "formula": "REGEXP_REPLACE(STR([Calculation_1018376503335067685]), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\") +\r \r \" - \" +\r \r REGEXP_REPLACE(STR([Calculation_1018376503335067685] + [Parameters].[Parameter 8]-1), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\")",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Income Histogram"
-        ]
-      },
-      {
         "id": "cf_35",
         "name": "Income | LOD",
         "formula": "{ FIXED [Policy Number]: SUM([Income])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_36",
-        "name": "Region |  Tooltip Filter",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Rank | Avg Claim Cost | Region",
-          "Rank | Loss Ratio | Region"
-        ]
-      },
-      {
-        "id": "cf_37",
-        "name": "State Highlight",
-        "formula": "if [Incident State] = [Parameters].[Parameter 7] THEN TRUE End",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": [
           " Days to Settle | Color"
         ]
@@ -3475,59 +3427,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_39",
-        "name": "Disable Highlighting",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Avg Claim Cost_Region vs National (5)",
-          "Car Use",
-          "Coverage Area",
-          "Days to Settle_Aggregate"
-        ]
-      },
-      {
-        "id": "cf_40",
-        "name": "Gender | Text",
-        "formula": "IF [Gender] = 'Female' THEN 'women' ELSE 'men' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Gender"
-        ]
-      },
-      {
-        "id": "cf_41",
-        "name": "TRUE",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_42",
-        "name": "FALSE",
-        "formula": "FALSE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_43",
-        "name": "Performance Level | Avg Claim Cost",
-        "formula": "IF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.33)} THEN \"Top Perfomer\" \r ELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)} THEN \"Average\"  \r ELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Calculation_1734448843613532163],1)} THEN \"Needs Attention\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Avg Claim Cost | Color"
-        ]
-      },
-      {
         "id": "cf_44",
         "name": "Avg Claim Cost | State | Fixed",
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : [Calculation_600667632497045504]}",
@@ -3535,19 +3434,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Avg Claim Cost | Color"
-        ]
-      },
-      {
-        "id": "cf_45",
-        "name": "State Filter",
-        "formula": "[Incident State] = [Parameters].[Parameter 7]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color",
-          "Avg Claim Cost | Color",
-          "Car Use",
-          "Coverage Area"
         ]
       },
       {
@@ -3623,16 +3509,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_53",
-        "name": "Last 10 Years ",
-        "formula": "[Incident Date]>\r \r DATE(DATEADD('year', -10, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "State | Satisfaction Score"
-        ]
-      },
-      {
         "id": "cf_54",
         "name": "Loss Ratio - Revised",
         "formula": "[Loss Ratio]/1.5",
@@ -3643,16 +3519,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
           "KPI_% Change - Loss Ratio | State2",
           "KPI_Loss Rate_PY | State",
           "KPI_Loss Ratio_CY"
-        ]
-      },
-      {
-        "id": "cf_55",
-        "name": "View | Detail",
-        "formula": "[Parameters].[Parameter 4] = 'Show Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
         ]
       },
       {
@@ -3723,19 +3589,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_62",
-        "name": "Year Filter",
-        "formula": "DAY([Incident Date])<= DAY({MAX([Incident Date])})",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Days to Settle_Aggregate",
-          "KPI_% Change - Avg Claim Cost",
-          "KPI_% Change - Avg Claim Cost | State",
-          "KPI_% Change - Days to Settle"
-        ]
-      },
-      {
         "id": "cf_63",
         "name": "Avg Claim Cost | Fixed",
         "formula": "IF [Parameters].[Parameter 1] != 'All' then AVG({FIXED YEAR([Incident Date]) : [Avg Claim Cost (copy)_600667632575893528]})\r ELSEIF [Parameters].[Parameter 1] = 'All' THEN\r [Calculation_600667632497045504]\r END",
@@ -3743,29 +3596,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_64",
-        "name": "Region Filter",
-        "formula": "[Region] = [Parameters].[Parameter 1] or [Parameters].[Parameter 1] = 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Avg Claim Cost_Region vs National (5)"
-        ]
-      },
-      {
-        "id": "cf_65",
-        "name": "Max Date",
-        "formula": "{MAX([Incident Date])}",
-        "role": "dimension",
-        "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color",
-          "Avg Claim Cost | Color",
-          "Avg Claim Cost_Region vs National (5)",
-          "Car Use"
         ]
       },
       {
@@ -3799,39 +3629,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_69",
-        "name": "Region Parameter | Selected",
-        "formula": "Region = [Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Days to Settle_Aggregate",
-          "Days to Settle_Detail",
-          "Loss Ratio vs PY",
-          "Retention Rate_Aggregate"
-        ]
-      },
-      {
-        "id": "cf_70",
-        "name": "Region | First Letter",
-        "formula": "LEFT([Region],1)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Region Circle"
-        ]
-      },
-      {
-        "id": "cf_71",
-        "name": "Info Button",
-        "formula": "'i'",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
         "id": "cf_72",
         "name": "% Change from National | Fixed",
         "formula": "{FIXED [Region], DATETRUNC('year', [Incident Date]) : [Variance from National (copy)_680043587645292544]}",
@@ -3849,16 +3646,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Avg Claim Cost_Region vs National (5)"
-        ]
-      },
-      {
-        "id": "cf_74",
-        "name": "Distance From Target | Days to Settle | Text",
-        "formula": "IF [Calculation_1789899409816530944] > [Parameters].[Parameter 2] THEN 'Over'\r ELSEIF [Calculation_1789899409816530944] <= [Parameters].[Parameter 2] THEN 'Under'\r ELSE 'At Target'\r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
         ]
       },
       {
@@ -3892,62 +3679,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
           "Gender",
           "Retention Rate | Selector",
           "Satisfaction Score | Selector"
-        ]
-      },
-      {
-        "id": "cf_78",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          " Days to Settle | Color",
-          "KPI_Loss Ratio_CY",
-          "KPI_Loss Ratio_PY",
-          "Loss Ratio | Color"
-        ]
-      },
-      {
-        "id": "cf_79",
-        "name": "Region or State",
-        "formula": "[Parameters].[Parameter 5]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "State | Avg Claim Cost",
-          "State | Days to Settle",
-          "State | Loss Ratio",
-          "State | Retention Rate"
-        ]
-      },
-      {
-        "id": "cf_80",
-        "name": "Region Selected",
-        "formula": "if [Region] = [Parameters].[Parameter 1] then [Parameters].[Parameter 1] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_81",
-        "name": "Title",
-        "formula": "[Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_82",
-        "name": "Show Selected",
-        "formula": "[Parameters].[Parameter 1] != 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
         ]
       },
       {
@@ -4029,16 +3760,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Satisfaction Score | Color"
-        ]
-      },
-      {
-        "id": "cf_91",
-        "name": "Retention Rate Target | Count",
-        "formula": "{FIXED [Incident State]: IF AVG([Retention Rate]) > [Parameters].[Days to Settle Target (copy)_1789899409836019715] THEN COUNTD([Incident State]) END}",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          " Days to Settle | Color"
         ]
       },
       {
@@ -4134,19 +3855,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_101",
-        "name": "Last  5 Years",
-        "formula": "[Incident Date]>\r \r DATE(DATEADD('year', -5, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Avg Claim Cost_Region vs National (5)",
-          "State | Days to Settle",
-          "State | Loss Ratio",
-          "State | Retention Rate"
-        ]
-      },
-      {
         "id": "cf_102",
         "name": "Retention Rate | Fixed",
         "formula": "{FIXED DATEPART('year', [Incident Date]): AVG([Satisfaction Score (copy)_820218118205710352])}",
@@ -4182,46 +3890,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : AVG([Satisfaction Score (copy)_820218118205710352])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          "Retention Rate | Color"
-        ]
-      },
-      {
-        "id": "cf_106",
-        "name": "Performance Level | Days to Settle",
-        "formula": "IF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.33)} THEN \"Top Performer\" \r ELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.66)} THEN \"Average\" \r ELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],1)} THEN \"Needs Attention\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_107",
-        "name": "Performance Level | Loss Ratio",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.33)} THEN \"Top Performer\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.66)} THEN \"Average\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],1)} THEN \"Needs Attention\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Loss Ratio | Color"
-        ]
-      },
-      {
-        "id": "cf_108",
-        "name": "Performance Level | Satisfaction Score",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.33)} THEN \"Needs Attention\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.66)} THEN \"Average\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],1)} THEN \"Top Performer\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Satisfaction Score | Color"
-        ]
-      },
-      {
-        "id": "cf_109",
-        "name": "Performance Level | Retention Rate",
-        "formula": "IF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.33)} THEN \"Needs Attention\" \r ELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218]<={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.66)} THEN \"Average\" \r ELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],1)} THEN \"Top Performaer\" \r END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Retention Rate | Color"
         ]
@@ -4341,16 +4009,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_120",
-        "name": "Region Parameter | Selected (copy)",
-        "formula": "IF [Calculation_678917684168884227] = [Calculation_1317302893320302615] THEN '\u25cf' ELSE '\u200e\u200e' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
         "id": "cf_121",
         "name": "Days to Settle Claim",
         "formula": "IF [Days to Settle Claim] > 50  THEN [Days to Settle Claim]\r elseif [Region] = \"Central\" THEN [Days to Settle Claim] * .70\r elseif [Region] = \"East\" THEN [Days to Settle Claim] * .15\r \r elseif  [Region] = \"South\" THEN [Days to Settle Claim] * 1.05\r elseif [Region] = \"West\" THEN [Days to Settle Claim] * .475\r \r ELSE [Days to Settle Claim]\r END",
@@ -4460,62 +4118,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_131",
-        "name": "Year Filter Max",
-        "formula": "YEAR([Incident Date]) = YEAR([Calculation_600667632589156385])",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Days to Settle_Aggregate",
-          "Loss Ratio vs PY",
-          "Rank | Avg Claim Cost",
-          "Rank | Day to Settle | Region"
-        ]
-      },
-      {
-        "id": "cf_132",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Car Use",
-          "Coverage Area",
-          "Days to Settle_Aggregate",
-          "Days to Settle_Detail"
-        ]
-      },
-      {
-        "id": "cf_133",
-        "name": "Selected | Days to Settle",
-        "formula": "[Parameters].[Parameter 4] = [Display As]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_134",
-        "name": "Selected | Days to Settle (copy)",
-        "formula": "[Parameters].[Parameter 4] = 'Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_135",
-        "name": "Selected Text | Days to Settle",
-        "formula": "IF [Calculation_944067107659722753] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Retention Rate | Selector"
-        ]
-      },
-      {
         "id": "cf_136",
         "name": "Unselected Text | Days to Settle",
         "formula": "IF [Calculation_944067107659722753] = FALSE then [Display As] END",
@@ -4523,47 +4125,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Retention Rate | Selector"
-        ]
-      },
-      {
-        "id": "cf_137",
-        "name": "Selected Text | Retention Rate",
-        "formula": "IF [Selected | Days to Settle (copy)_944067107671080968] = TRUE then \"\u25b6 \" + STR([Display As]) + \"%\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Retention Rate | Selector",
-          "Satisfaction Score | Selector"
-        ]
-      },
-      {
-        "id": "cf_138",
-        "name": "Selected Text | Satisfaction Score",
-        "formula": "IF [Selected | Retention Rate (copy)_944067107671183369] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Satisfaction Score | Selector"
-        ]
-      },
-      {
-        "id": "cf_139",
-        "name": "Selected | Retention Rate",
-        "formula": "[Display As] = [Parameters].[Days to Settle Target (copy)_1789899409836019715]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Retention Rate | Selector"
-        ]
-      },
-      {
-        "id": "cf_140",
-        "name": "Selected | Satisfaction Score",
-        "formula": "[Display As] = [Parameters].[Retention Rate Target (copy)_1789899409843625990]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Satisfaction Score | Selector"
         ]
       },
       {
@@ -4953,7 +4514,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
             "Parameter Value": 3,
             "Display As": 3,
             "Type": "Retention Rate",
-            "Unselected Text | Days to Settle": 31.0,
+            "Unselected Text | Days to Settle": 31,
             "Selected Text | Retention Rate": "85%",
             "Selected Text | Satisfaction Score": 7.9,
             "Selected | Retention Rate": 1,
@@ -4968,8 +4529,91 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 48,
       "totalTables": 2,
-      "totalCalculatedFields": 158
+      "totalCalculatedFields": 115,
+      "totalKpis": 16
     },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Average Claim Cost by State",
+        "evidence": "State | Avg Claim Cost"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Days to Settle Claims by State",
+        "evidence": "State | Days to Settle"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Loss Ratio by State",
+        "evidence": "State | Loss Ratio"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Retention Rate by State",
+        "evidence": "State | Retention Rate"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Satisfaction Score by State",
+        "evidence": "State | Satisfaction Score"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Total Claims by State",
+        "evidence": "Total Claims"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Total Claims Amount by State",
+        "evidence": "Total Claims Amount"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Average Claim Cost by Region",
+        "evidence": "Rank | Avg Claim Cost | Region"
+      },
+      {
+        "id": "kpi_9",
+        "name": "Days to Settle Claims by Region",
+        "evidence": "Rank | Days to Settle | Region"
+      },
+      {
+        "id": "kpi_10",
+        "name": "Loss Ratio by Region",
+        "evidence": "Rank | Loss Ratio | Region"
+      },
+      {
+        "id": "kpi_11",
+        "name": "Retention Rate by Region",
+        "evidence": "Rank | Retention Rate | Region"
+      },
+      {
+        "id": "kpi_12",
+        "name": "Satisfaction Score by Region",
+        "evidence": "Rank | Satisfaction Score | Region"
+      },
+      {
+        "id": "kpi_13",
+        "name": "Claims Distribution by Car Use",
+        "evidence": "Car Use"
+      },
+      {
+        "id": "kpi_14",
+        "name": "Claims Distribution by Coverage Area",
+        "evidence": "Coverage Area"
+      },
+      {
+        "id": "kpi_15",
+        "name": "Claims Distribution by Gender",
+        "evidence": "Gender"
+      },
+      {
+        "id": "kpi_16",
+        "name": "Income Distribution of Claimants",
+        "evidence": "Income Histogram"
+      }
+    ],
     "worksheets": [
       {
         "id": "ws_1",
@@ -7135,16 +6779,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_25",
-        "name": "View | Aggregate",
-        "formula": "[Parameters].[Parameter 4] = 'Show Aggregated'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
         "id": "cf_26",
         "name": "Avg Claim Cost | Fixed | National or Region",
         "formula": "CASE [Parameters].[Parameter 5]\r WHEN 'National' THEN [Calculation_600667632573243414]\r WHEN 'Region' THEN AVG([Avg Claim Cost | State (copy)_1734448843613888516])\r END",
@@ -7160,16 +6794,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_28",
-        "name": "Region Filter | Rank",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           " Days to Settle | Color"
         ]
@@ -7205,62 +6829,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_32",
-        "name": "Histogram Color",
-        "formula": "IF [Calculation_1018376503335067685]=[Calculation_1018376503334752292] THEN\r \r     // This is the median bin.\r \r     \"Median\"\r \r ELSEIF [Calculation_1018376503335067685]<[Calculation_1018376503334752292] THEN\r \r     \"Lower\"\r \r ELSE\r \r     \"Higher\"\r \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_33",
-        "name": "Bin Max",
-        "formula": "[Calculation_1018376503335067685] + [Parameters].[Parameter 8] -1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Income Histogram"
-        ]
-      },
-      {
-        "id": "cf_34",
-        "name": "Bin Description",
-        "formula": "REGEXP_REPLACE(STR([Calculation_1018376503335067685]), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\") +\r \r \" - \" +\r \r REGEXP_REPLACE(STR([Calculation_1018376503335067685] + [Parameters].[Parameter 8]-1), \"\\d{1,3}(?=(\\d{3})+(?!\\d))\", \"$0,\")",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Income Histogram"
-        ]
-      },
-      {
         "id": "cf_35",
         "name": "Income | LOD",
         "formula": "{ FIXED [Policy Number]: SUM([Income])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_36",
-        "name": "Region |  Tooltip Filter",
-        "formula": "IF [Parameters].[Parameter 7] = [Incident State] THEN [Region] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Rank | Avg Claim Cost | Region",
-          "Rank | Loss Ratio | Region"
-        ]
-      },
-      {
-        "id": "cf_37",
-        "name": "State Highlight",
-        "formula": "if [Incident State] = [Parameters].[Parameter 7] THEN TRUE End",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": [
           " Days to Settle | Color"
         ]
@@ -7276,59 +6849,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_39",
-        "name": "Disable Highlighting",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Car Use",
-          "Coverage Area",
-          "Gender",
-          "State | Avg Claim Cost"
-        ]
-      },
-      {
-        "id": "cf_40",
-        "name": "Gender | Text",
-        "formula": "IF [Gender] = 'Female' THEN 'women' ELSE 'men' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Gender"
-        ]
-      },
-      {
-        "id": "cf_41",
-        "name": "TRUE",
-        "formula": "TRUE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_42",
-        "name": "FALSE",
-        "formula": "FALSE",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_43",
-        "name": "Performance Level | Avg Claim Cost",
-        "formula": "IF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.33)} THEN \"Top Perfomer\" \r ELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Calculation_1734448843613532163],.66)} THEN \"Average\"  \r ELSEIF [Calculation_1734448843613532163] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Calculation_1734448843613532163],1)} THEN \"Needs Attention\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Avg Claim Cost | Color"
-        ]
-      },
-      {
         "id": "cf_44",
         "name": "Avg Claim Cost | State | Fixed",
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : [Calculation_600667632497045504]}",
@@ -7336,19 +6856,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Avg Claim Cost | Color"
-        ]
-      },
-      {
-        "id": "cf_45",
-        "name": "State Filter",
-        "formula": "[Incident State] = [Parameters].[Parameter 7]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color",
-          "Avg Claim Cost | Color",
-          "Car Use",
-          "Coverage Area"
         ]
       },
       {
@@ -7422,16 +6929,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_53",
-        "name": "Last 10 Years ",
-        "formula": "[Incident Date]>\r \r DATE(DATEADD('year', -10, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "State | Satisfaction Score"
-        ]
-      },
-      {
         "id": "cf_54",
         "name": "Loss Ratio - Revised",
         "formula": "[Loss Ratio]/1.5",
@@ -7442,16 +6939,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
           "KPI_Loss Rate_PY | State",
           "KPI_Loss Ratio_CY | State",
           "Loss Ratio | Color"
-        ]
-      },
-      {
-        "id": "cf_55",
-        "name": "View | Detail",
-        "formula": "[Parameters].[Parameter 4] = 'Show Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
         ]
       },
       {
@@ -7521,19 +7008,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_62",
-        "name": "Year Filter",
-        "formula": "DAY([Incident Date])<= DAY({MAX([Incident Date])})",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "KPI_% Change - Avg Claim Cost | State",
-          "KPI_% Change - Days to Settle | State",
-          "KPI_% Change - Loss Ratio | State2",
-          "KPI_% Change - Retention Rate | State"
-        ]
-      },
-      {
         "id": "cf_63",
         "name": "Avg Claim Cost | Fixed",
         "formula": "IF [Parameters].[Parameter 1] != 'All' then AVG({FIXED YEAR([Incident Date]) : [Avg Claim Cost (copy)_600667632575893528]})\r ELSEIF [Parameters].[Parameter 1] = 'All' THEN\r [Calculation_600667632497045504]\r END",
@@ -7541,29 +7015,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_64",
-        "name": "Region Filter",
-        "formula": "[Region] = [Parameters].[Parameter 1] or [Parameters].[Parameter 1] = 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_65",
-        "name": "Max Date",
-        "formula": "{MAX([Incident Date])}",
-        "role": "dimension",
-        "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color",
-          "Avg Claim Cost | Color",
-          "Car Use",
-          "Coverage Area"
         ]
       },
       {
@@ -7597,36 +7048,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_69",
-        "name": "Region Parameter | Selected",
-        "formula": "Region = [Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_70",
-        "name": "Region | First Letter",
-        "formula": "LEFT([Region],1)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Region Circle"
-        ]
-      },
-      {
-        "id": "cf_71",
-        "name": "Info Button",
-        "formula": "'i'",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
         "id": "cf_72",
         "name": "% Change from National | Fixed",
         "formula": "{FIXED [Region], DATETRUNC('year', [Incident Date]) : [Variance from National (copy)_680043587645292544]}",
@@ -7642,16 +7063,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED : MAX([Calculation_680043587648282625])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_74",
-        "name": "Distance From Target | Days to Settle | Text",
-        "formula": "IF [Calculation_1789899409816530944] > [Parameters].[Parameter 2] THEN 'Over'\r ELSEIF [Calculation_1789899409816530944] <= [Parameters].[Parameter 2] THEN 'Under'\r ELSE 'At Target'\r END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           " Days to Settle | Color"
         ]
@@ -7684,62 +7095,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "string",
         "usedInSheets": [
           "Gender"
-        ]
-      },
-      {
-        "id": "cf_78",
-        "name": "Zero",
-        "formula": "0",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          " Days to Settle | Color",
-          "Loss Ratio | Color",
-          "Satisfaction Score | Color",
-          "State | Retention Rate"
-        ]
-      },
-      {
-        "id": "cf_79",
-        "name": "Region or State",
-        "formula": "[Parameters].[Parameter 5]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "State | Avg Claim Cost",
-          "State | Days to Settle",
-          "State | Loss Ratio",
-          "State | Retention Rate"
-        ]
-      },
-      {
-        "id": "cf_80",
-        "name": "Region Selected",
-        "formula": "if [Region] = [Parameters].[Parameter 1] then [Parameters].[Parameter 1] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_81",
-        "name": "Title",
-        "formula": "[Parameters].[Parameter 1]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_82",
-        "name": "Show Selected",
-        "formula": "[Parameters].[Parameter 1] != 'All'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
         ]
       },
       {
@@ -7820,16 +7175,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Satisfaction Score | Color"
-        ]
-      },
-      {
-        "id": "cf_91",
-        "name": "Retention Rate Target | Count",
-        "formula": "{FIXED [Incident State]: IF AVG([Retention Rate]) > [Parameters].[Days to Settle Target (copy)_1789899409836019715] THEN COUNTD([Incident State]) END}",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          " Days to Settle | Color"
         ]
       },
       {
@@ -7923,18 +7268,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_101",
-        "name": "Last  5 Years",
-        "formula": "[Incident Date]>\r \r DATE(DATEADD('year', -5, [Calculation_600667632589156385]))",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "State | Days to Settle",
-          "State | Loss Ratio",
-          "State | Retention Rate"
-        ]
-      },
-      {
         "id": "cf_102",
         "name": "Retention Rate | Fixed",
         "formula": "{FIXED DATEPART('year', [Incident Date]): AVG([Satisfaction Score (copy)_820218118205710352])}",
@@ -7970,46 +7303,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "{FIXED [Incident State], DATEPART('year', [Incident Date]) : AVG([Satisfaction Score (copy)_820218118205710352])}",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          "Retention Rate | Color"
-        ]
-      },
-      {
-        "id": "cf_106",
-        "name": "Performance Level | Days to Settle",
-        "formula": "IF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.33)} THEN \"Top Performer\" \r ELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],.66)} THEN \"Average\" \r ELSEIF [Avg Claim Cost | State | Fixed (copy)_1734448843688558598] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Avg Claim Cost | State | Fixed (copy)_1734448843688558598],1)} THEN \"Needs Attention\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_107",
-        "name": "Performance Level | Loss Ratio",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.33)} THEN \"Top Performer\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],.66)} THEN \"Average\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843695808521] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843695808521],1)} THEN \"Needs Attention\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Loss Ratio | Color"
-        ]
-      },
-      {
-        "id": "cf_108",
-        "name": "Performance Level | Satisfaction Score",
-        "formula": "IF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.33)} THEN \"Needs Attention\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],.66)} THEN \"Average\" \r ELSEIF [Days to Settle | State | Fixed (copy)_1734448843722973197] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Days to Settle | State | Fixed (copy)_1734448843722973197],1)} THEN \"Top Performer\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Satisfaction Score | Color"
-        ]
-      },
-      {
-        "id": "cf_109",
-        "name": "Performance Level | Retention Rate",
-        "formula": "IF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.33)} THEN \"Needs Attention\" \r ELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218]<={FIXED DATEPART('year', [Incident Date]) :PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],.66)} THEN \"Average\" \r ELSEIF [Loss Ratio | State | Fixed (copy)_1734448843700830218] <={FIXED DATEPART('year', [Incident Date]):PERCENTILE([Loss Ratio | State | Fixed (copy)_1734448843700830218],1)} THEN \"Top Performaer\" \r END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Retention Rate | Color"
         ]
@@ -8129,16 +7422,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_120",
-        "name": "Region Parameter | Selected (copy)",
-        "formula": "IF [Calculation_678917684168884227] = [Calculation_1317302893320302615] THEN '\u25cf' ELSE '\u200e\u200e' END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
         "id": "cf_121",
         "name": "Days to Settle Claim",
         "formula": "IF [Days to Settle Claim] > 50  THEN [Days to Settle Claim]\r elseif [Region] = \"Central\" THEN [Days to Settle Claim] * .70\r elseif [Region] = \"East\" THEN [Days to Settle Claim] * .15\r \r elseif  [Region] = \"South\" THEN [Days to Settle Claim] * 1.05\r elseif [Region] = \"West\" THEN [Days to Settle Claim] * .475\r \r ELSE [Days to Settle Claim]\r END",
@@ -8248,107 +7531,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_131",
-        "name": "Year Filter Max",
-        "formula": "YEAR([Incident Date]) = YEAR([Calculation_600667632589156385])",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Rank | Avg Claim Cost",
-          "Rank | Day to Settle | Region",
-          "Rank | Days to Settle",
-          "Rank | Loss Ratio"
-        ]
-      },
-      {
-        "id": "cf_132",
-        "name": "One",
-        "formula": "1",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Car Use",
-          "Coverage Area",
-          "Gender",
-          "Income Histogram"
-        ]
-      },
-      {
-        "id": "cf_133",
-        "name": "Selected | Days to Settle",
-        "formula": "[Parameters].[Parameter 4] = [Display As]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_134",
-        "name": "Selected | Days to Settle (copy)",
-        "formula": "[Parameters].[Parameter 4] = 'Detail'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_135",
-        "name": "Selected Text | Days to Settle",
-        "formula": "IF [Calculation_944067107659722753] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
         "id": "cf_136",
         "name": "Unselected Text | Days to Settle",
         "formula": "IF [Calculation_944067107659722753] = FALSE then [Display As] END",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_137",
-        "name": "Selected Text | Retention Rate",
-        "formula": "IF [Selected | Days to Settle (copy)_944067107671080968] = TRUE then \"\u25b6 \" + STR([Display As]) + \"%\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_138",
-        "name": "Selected Text | Satisfaction Score",
-        "formula": "IF [Selected | Retention Rate (copy)_944067107671183369] = TRUE then \"\u25b6 \" + STR([Display As]) END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_139",
-        "name": "Selected | Retention Rate",
-        "formula": "[Display As] = [Parameters].[Days to Settle Target (copy)_1789899409836019715]",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          " Days to Settle | Color"
-        ]
-      },
-      {
-        "id": "cf_140",
-        "name": "Selected | Satisfaction Score",
-        "formula": "[Display As] = [Parameters].[Retention Rate Target (copy)_1789899409843625990]",
-        "role": "dimension",
-        "datatype": "boolean",
         "usedInSheets": [
           " Days to Settle | Color"
         ]
@@ -8677,11 +7864,2004 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
             "Parameter Value": 3,
             "Display As": 3,
             "Type": "Retention Rate",
-            "Unselected Text | Days to Settle": 31.0,
+            "Unselected Text | Days to Settle": 31,
             "Selected Text | Retention Rate": "85%",
             "Selected Text | Satisfaction Score": 7.9,
             "Selected | Retention Rate": 1,
             "Selected | Satisfaction Score": 1
+          }
+        ]
+      }
+    ]
+  },
+  "c4": {
+    "summary": {
+      "totalDashboards": 1,
+      "totalWorksheets": 8,
+      "totalTables": 2,
+      "totalCalculatedFields": 4,
+      "totalKpis": 13
+    },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Claims Cost by Benefit Nature",
+        "evidence": "Benefit Nature Analysis"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Claims Cost by Gender",
+        "evidence": "Genderwise Claim Cost"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Claims Cost by Date Paid",
+        "evidence": "Benefit Nature Analysis"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Claims Distribution by Benefit Nature",
+        "evidence": "Benefit Nature Funnel Analysis"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Claims Cost by Benefit Nature and Gender",
+        "evidence": "Benefit Tree Map"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Claims Cost by Benefit Nature and Date Paid",
+        "evidence": "Benefit Tree Map"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Number of Claimants by Region",
+        "evidence": "Claims by Region"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Claims Cost by Diagnosis Name",
+        "evidence": "Diagnosis"
+      },
+      {
+        "id": "kpi_9",
+        "name": "Claims Cost by Diagnosis Name and Gender",
+        "evidence": "Diagnosis"
+      },
+      {
+        "id": "kpi_10",
+        "name": "Claims Cost by Diagnosis Name and Date Paid",
+        "evidence": "Diagnosis Line Chart"
+      },
+      {
+        "id": "kpi_11",
+        "name": "Claims Cost Over Time",
+        "evidence": "Diagnosis Line Chart"
+      },
+      {
+        "id": "kpi_12",
+        "name": "Total Claims Cost by Gender",
+        "evidence": "Genderwise Claim Cost"
+      },
+      {
+        "id": "kpi_13",
+        "name": "Total Records by Gender",
+        "evidence": "Genderwise Total Records"
+      }
+    ],
+    "worksheets": [
+      {
+        "id": "ws_1",
+        "name": "Benefit Nature Analysis",
+        "chartType": "Pie Chart",
+        "dimensions": [
+          "Benefit Nature",
+          "Date Paid",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "",
+          "columns": ""
+        }
+      },
+      {
+        "id": "ws_2",
+        "name": "Benefit Nature Funnel Analysis",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "Benefit Nature"
+        ],
+        "measures": [
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          },
+          {
+            "name": "Number of Records",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_551409483925925928",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.10nzymh1ntikze1e7oi780si87k3].[none:Benefit Nature:nk]",
+          "columns": "([federated.10nzymh1ntikze1e7oi780si87k3].[Multiple Values] + [federated.10nzymh1ntikze1e7oi780si87k3].[Multiple Values])"
+        }
+      },
+      {
+        "id": "ws_3",
+        "name": "Benefit Tree Map",
+        "chartType": "Automatic",
+        "dimensions": [
+          "Benefit Nature",
+          "Date Paid",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "",
+          "columns": ""
+        }
+      },
+      {
+        "id": "ws_4",
+        "name": "Claims by Region",
+        "chartType": "Pie Chart",
+        "dimensions": [
+          "District Name"
+        ],
+        "measures": [
+          {
+            "name": "Claimant No.",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "",
+          "columns": ""
+        }
+      },
+      {
+        "id": "ws_5",
+        "name": "Diagnosis",
+        "chartType": "Scatter / Bubble",
+        "dimensions": [
+          "Date Paid",
+          "Diagnosis Name",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "",
+          "columns": ""
+        }
+      },
+      {
+        "id": "ws_6",
+        "name": "Diagnosis Line Chart",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "Date Paid",
+          "Diagnosis Name"
+        ],
+        "measures": [
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          },
+          {
+            "name": "Date Paid",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.10nzymh1ntikze1e7oi780si87k3].[sum:Claims Cost:qk]",
+          "columns": "[federated.10nzymh1ntikze1e7oi780si87k3].[tmn:Date Paid:qk]"
+        }
+      },
+      {
+        "id": "ws_7",
+        "name": "Genderwise Claim Cost",
+        "chartType": "Pie Chart",
+        "dimensions": [
+          "Date Paid",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Number of Records",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claims Cost",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.10nzymh1ntikze1e7oi780si87k3].[min:Number of Records:qk] + [federated.10nzymh1ntikze1e7oi780si87k3].[min:Number of Records:qk])",
+          "columns": ""
+        }
+      },
+      {
+        "id": "ws_8",
+        "name": "Genderwise Total Records",
+        "chartType": "Automatic",
+        "dimensions": [
+          "Date Paid",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Number of Records",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "",
+          "columns": "[federated.10nzymh1ntikze1e7oi780si87k3].[none:Gender:nk]"
+        }
+      }
+    ],
+    "calculatedFields": [
+      {
+        "id": "calc_1",
+        "name": "Select District",
+        "formula": "\"All\"",
+        "role": "measure",
+        "datatype": "string",
+        "usedInSheets": [
+          "Benefit Nature Analysis"
+        ]
+      },
+      {
+        "id": "calc_2",
+        "name": "Calculation1",
+        "formula": "WINDOW_SUM([Calculation_551409483925925928], -2, 0)",
+        "role": "measure",
+        "datatype": "real",
+        "usedInSheets": [
+          "Benefit Nature Analysis"
+        ]
+      },
+      {
+        "id": "calc_3",
+        "name": "- Claim Cost",
+        "formula": "- SUM([Claims Cost])",
+        "role": "measure",
+        "datatype": "real",
+        "usedInSheets": [
+          "Benefit Nature Analysis"
+        ]
+      },
+      {
+        "id": "calc_5",
+        "name": "Number of Records",
+        "formula": "1",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "Benefit Nature Funnel Analysis",
+          "Genderwise Claim Cost",
+          "Genderwise Total Records"
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "tableName": "database_(claims_data_-_case_study_-__tableau_-new)",
+        "displayName": "Database (Claims Data - Case study -  Tableau -New)",
+        "rowCount": 2400,
+        "dataSource": "Tableau Extract (.hyper)",
+        "columns": [
+          {
+            "name": "Policy",
+            "type": "integer"
+          },
+          {
+            "name": "SubOffice",
+            "type": "integer"
+          },
+          {
+            "name": "Sub Office Name",
+            "type": "string"
+          },
+          {
+            "name": "Claimant No.",
+            "type": "integer"
+          },
+          {
+            "name": "Gender",
+            "type": "string"
+          },
+          {
+            "name": "Product Name",
+            "type": "string"
+          },
+          {
+            "name": "Ben Desc",
+            "type": "string"
+          },
+          {
+            "name": "Benefit Nature",
+            "type": "string"
+          },
+          {
+            "name": "HMO Clinical Benefit Desc",
+            "type": "string"
+          },
+          {
+            "name": "BenPlan",
+            "type": "integer"
+          },
+          {
+            "name": "Currency Symbol",
+            "type": "string"
+          },
+          {
+            "name": "Claims Cost",
+            "type": "real"
+          },
+          {
+            "name": "Provider Name",
+            "type": "string"
+          },
+          {
+            "name": "District Name",
+            "type": "string"
+          },
+          {
+            "name": "Diagnosis Name",
+            "type": "string"
+          },
+          {
+            "name": "Date Paid",
+            "type": "date"
+          },
+          {
+            "name": "Dep Type",
+            "type": "string"
+          },
+          {
+            "name": "Ben Plan",
+            "type": "integer"
+          },
+          {
+            "name": "Benefit Nature",
+            "type": "string"
+          },
+          {
+            "name": "Calculation1",
+            "type": "real"
+          }
+        ],
+        "sampleRows": [
+          {
+            "Policy": 104829,
+            "SubOffice": 12,
+            "Sub Office Name": "Central Claims Branch",
+            "Claimant No.": 88401,
+            "Gender": "Male",
+            "Product Name": "HMO-HOSPITAL AND SURGICAL",
+            "Ben Desc": "Inpatient Surgery",
+            "Benefit Nature": "IN-PATIENT HOSPITALIZATION",
+            "HMO Clinical Benefit Desc": "General Surgery Coverage",
+            "BenPlan": 101,
+            "Currency Symbol": "$",
+            "Claims Cost": 4520.5,
+            "Provider Name": "St. Jude Medical Center",
+            "District Name": "District 1 - Metro",
+            "Diagnosis Name": "Acute Appendicitis",
+            "Date Paid": "2023-06-15",
+            "Dep Type": "Primary Employee",
+            "Ben Plan": 101,
+            "Calculation1": 4520.5
+          },
+          {
+            "Policy": 104830,
+            "SubOffice": 14,
+            "Sub Office Name": "West Coast Operations",
+            "Claimant No.": 88402,
+            "Gender": "Female",
+            "Product Name": "HMO-CLINICAL",
+            "Ben Desc": "Specialist Consultation",
+            "Benefit Nature": "OUT-PATIENT CLINICAL",
+            "HMO Clinical Benefit Desc": "Outpatient Cardiology",
+            "BenPlan": 102,
+            "Currency Symbol": "$",
+            "Claims Cost": 320,
+            "Provider Name": "Pacific Health Clinic",
+            "District Name": "District 3 - Coastal",
+            "Diagnosis Name": "Hypertensive Heart Disease",
+            "Date Paid": "2023-06-18",
+            "Dep Type": "Spouse",
+            "Ben Plan": 102,
+            "Calculation1": 320
+          },
+          {
+            "Policy": 104831,
+            "SubOffice": 12,
+            "Sub Office Name": "Central Claims Branch",
+            "Claimant No.": 88403,
+            "Gender": "Female",
+            "Product Name": "HMO-DENTAL",
+            "Ben Desc": "Preventative Dental",
+            "Benefit Nature": "WELLNESS DENTAL",
+            "HMO Clinical Benefit Desc": "Routine Cleaning & Exam",
+            "BenPlan": 101,
+            "Currency Symbol": "$",
+            "Claims Cost": 180,
+            "Provider Name": "Metro Dental Group",
+            "District Name": "District 1 - Metro",
+            "Diagnosis Name": "Routine Dental Exam",
+            "Date Paid": "2023-06-20",
+            "Dep Type": "Child",
+            "Ben Plan": 101,
+            "Calculation1": 180
+          }
+        ]
+      },
+      {
+        "tableName": "sheet1_(navigation)",
+        "displayName": "Sheet1 (Navigation)",
+        "rowCount": 2400,
+        "dataSource": "Tableau Extract (.hyper)",
+        "columns": [
+          {
+            "name": "Page ID",
+            "type": "integer"
+          },
+          {
+            "name": "Page Desc",
+            "type": "string"
+          },
+          {
+            "name": "Number of Records",
+            "type": "integer"
+          },
+          {
+            "name": "Page Desc",
+            "type": "string"
+          },
+          {
+            "name": "Page ID",
+            "type": "integer"
+          },
+          {
+            "name": "Migrated Data",
+            "type": "table"
+          },
+          {
+            "name": "Page ID",
+            "type": "integer"
+          },
+          {
+            "name": "Page Desc",
+            "type": "string"
+          }
+        ],
+        "sampleRows": [
+          {
+            "Page ID": 1,
+            "Page Desc": "Executive Overview",
+            "Number of Records": 1420,
+            "Migrated Data": "Complete"
+          },
+          {
+            "Page ID": 2,
+            "Page Desc": "Department and Districtwise Claim Analysis",
+            "Number of Records": 3850,
+            "Migrated Data": "Complete"
+          },
+          {
+            "Page ID": 3,
+            "Page Desc": "Productwise Claim Analysis",
+            "Number of Records": 2100,
+            "Migrated Data": "Complete"
+          }
+        ]
+      }
+    ]
+  },
+  "u1": {
+    "summary": {
+      "totalDashboards": 1,
+      "totalWorksheets": 14,
+      "totalTables": 1,
+      "totalCalculatedFields": 4,
+      "totalKpis": 10
+    },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Total Insurance Policies by Age",
+        "evidence": "Age"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Average Claim Amount by Car Make",
+        "evidence": "Average Claim Amount"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Average Claim Amount by Car Model",
+        "evidence": "Average Claim Amount"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Average Claim Amount by Car Year",
+        "evidence": "Average Claim Amount"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Total Insurance Policies by Car Make",
+        "evidence": "Car Brand"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Total Insurance Policies by Car Model",
+        "evidence": "Car Model"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Total Insurance Policies by Car Year",
+        "evidence": "Car Year Breakdown"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Claim Frequency by Car Year",
+        "evidence": "Claim Frequency"
+      },
+      {
+        "id": "kpi_9",
+        "name": "Total Claim Amount by Car Make",
+        "evidence": "Total Claim Amount"
+      },
+      {
+        "id": "kpi_10",
+        "name": "Total Claim Amount by Car Model",
+        "evidence": "Total Claim Amount"
+      }
+    ],
+    "worksheets": [
+      {
+        "id": "ws_1",
+        "name": "Age",
+        "chartType": "Automatic",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_80361114493657092",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[usr:Calculation_15305201940",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_80361114493"
+        }
+      },
+      {
+        "id": "ws_2",
+        "name": "Average Claim Amount",
+        "chartType": "Automatic",
+        "dimensions": [
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Amt",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "claim_amt",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_3",
+        "name": "Average Household Income",
+        "chartType": "Automatic",
+        "dimensions": [
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Household Income",
+            "type": "base_measure"
+          },
+          {
+            "name": "household_income",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_4",
+        "name": "Car Brand",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Insurance Policies - Insurance Policies-2.csv",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "__tableau_internal_object_id__].[Insurance Policies - Insurance Policies-2.csv_FB9BE58E26C74B688723032E69267340",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_make:nk] / [federa",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+        }
+      },
+      {
+        "id": "ws_5",
+        "name": "Car Model",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835257839627",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_model:nk] / [feder",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+        }
+      },
+      {
+        "id": "ws_6",
+        "name": "Car Use Pie",
+        "chartType": "Pie / Donut",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Use",
+          "Car Year"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_99008834897",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_7",
+        "name": "Car Year Breakdown",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835261063181",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_year:ok] / [federa",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+        }
+      },
+      {
+        "id": "ws_8",
+        "name": "Claim Frequency",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835261198351",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:claim_freq:ok]"
+        }
+      },
+      {
+        "id": "ws_9",
+        "name": "Education",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008834911154181",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:education:nk]"
+        }
+      },
+      {
+        "id": "ws_10",
+        "name": "Gender",
+        "chartType": "Pie / Donut",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_80361114492",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_11",
+        "name": "Info",
+        "chartType": "Shape",
+        "dimensions": [
+          "Calculation_99008835560116241"
+        ],
+        "measures": [
+          {
+            "name": "0",
+            "type": "calculated"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_99008835560",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_12",
+        "name": "Marital Status",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835173343239",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:marital_status:nk]"
+        }
+      },
+      {
+        "id": "ws_13",
+        "name": "Total Claim Amount",
+        "chartType": "Text Table / Card",
+        "dimensions": [
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Amt",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "claim_amt",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_14",
+        "name": "Total Insurance Policies",
+        "chartType": "Text Table / Card",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      }
+    ],
+    "calculatedFields": [
+      {
+        "id": "cf_1",
+        "name": "Total Insurance Policues",
+        "formula": "COUNTD([ID])",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "Age",
+          "Car Brand",
+          "Car Model",
+          "Car Use Pie"
+        ]
+      },
+      {
+        "id": "cf_4",
+        "name": "Date calculation",
+        "formula": "DATEDIFF('year',[birthdate],TODAY())",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "Age",
+          "Average Claim Amount",
+          "Average Household Income",
+          "Car Brand"
+        ]
+      },
+      {
+        "id": "cf_5",
+        "name": "AVG(0)",
+        "formula": "AVG(0)",
+        "role": "measure",
+        "datatype": "real",
+        "usedInSheets": [
+          "Car Brand",
+          "Car Model",
+          "Car Year Breakdown",
+          "Claim Frequency"
+        ]
+      },
+      {
+        "id": "cf_6",
+        "name": "0",
+        "formula": "0",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "Age",
+          "Car Brand",
+          "Car Model",
+          "Car Use Pie"
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "tableName": "insurance policies - insurance policies-2#csv",
+        "displayName": "Insurance Policies - Insurance Policies-2#csv (Insurance Policies)",
+        "rowCount": 12000,
+        "dataSource": "Insurance Policies",
+        "columns": [
+          {
+            "name": "ID",
+            "type": "VARCHAR(100)"
+          },
+          {
+            "name": "birthdate",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "marital_status",
+            "type": "VARCHAR(100)"
+          },
+          {
+            "name": "car_use",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "gender",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "kids_driving",
+            "type": "VARCHAR(100)"
+          },
+          {
+            "name": "parent",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "education",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "ID": "POL-100482",
+            "birthdate": "1982-05-14",
+            "marital_status": "Married",
+            "car_use": "Commercial",
+            "gender": "Female",
+            "kids_driving": "No",
+            "parent": "Yes",
+            "education": "Bachelors"
+          },
+          {
+            "ID": "POL-100483",
+            "birthdate": "1990-11-22",
+            "marital_status": "Single",
+            "car_use": "Private",
+            "gender": "Male",
+            "kids_driving": "No",
+            "parent": "No",
+            "education": "Masters"
+          },
+          {
+            "ID": "POL-100484",
+            "birthdate": "1975-08-03",
+            "marital_status": "Married",
+            "car_use": "Private",
+            "gender": "Female",
+            "kids_driving": "Yes",
+            "parent": "Yes",
+            "education": "High School"
+          }
+        ]
+      }
+    ]
+  },
+  "u2": {
+    "summary": {
+      "totalDashboards": 1,
+      "totalWorksheets": 14,
+      "totalTables": 1,
+      "totalCalculatedFields": 4,
+      "totalKpis": 13
+    },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Total Insurance Policies by Age",
+        "evidence": "Age"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Average Claim Amount by Car Make",
+        "evidence": "Average Claim Amount"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Average Claim Amount by Car Model",
+        "evidence": "Average Claim Amount"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Average Claim Amount by Car Year",
+        "evidence": "Average Claim Amount"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Total Insurance Policies by Car Make",
+        "evidence": "Car Brand"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Total Insurance Policies by Car Model",
+        "evidence": "Car Model"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Total Insurance Policies by Car Year",
+        "evidence": "Car Year Breakdown"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Claim Frequency",
+        "evidence": "Claim Frequency"
+      },
+      {
+        "id": "kpi_9",
+        "name": "Total Claim Amount by Car Make",
+        "evidence": "Total Claim Amount"
+      },
+      {
+        "id": "kpi_10",
+        "name": "Total Claim Amount by Car Model",
+        "evidence": "Total Claim Amount"
+      },
+      {
+        "id": "kpi_11",
+        "name": "Total Claim Amount by Car Year",
+        "evidence": "Total Claim Amount"
+      },
+      {
+        "id": "kpi_12",
+        "name": "Total Insurance Policies by Gender",
+        "evidence": "Gender"
+      },
+      {
+        "id": "kpi_13",
+        "name": "Total Insurance Policies by Marital Status",
+        "evidence": "Marital Status"
+      }
+    ],
+    "worksheets": [
+      {
+        "id": "ws_1",
+        "name": "Age",
+        "chartType": "Automatic",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_80361114493657092",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[usr:Calculation_15305201940",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_80361114493"
+        }
+      },
+      {
+        "id": "ws_2",
+        "name": "Average Claim Amount",
+        "chartType": "Automatic",
+        "dimensions": [
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Amt",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "claim_amt",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_3",
+        "name": "Average Household Income",
+        "chartType": "Automatic",
+        "dimensions": [
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Household Income",
+            "type": "base_measure"
+          },
+          {
+            "name": "household_income",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_4",
+        "name": "Car Brand",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Insurance Policies - Insurance Policies-2.csv",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "__tableau_internal_object_id__].[Insurance Policies - Insurance Policies-2.csv_FB9BE58E26C74B688723032E69267340",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_make:nk] / [federa",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+        }
+      },
+      {
+        "id": "ws_5",
+        "name": "Car Model",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835257839627",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_model:nk] / [feder",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+        }
+      },
+      {
+        "id": "ws_6",
+        "name": "Car Use Pie",
+        "chartType": "Pie / Donut",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Use",
+          "Car Year"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_99008834897",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_7",
+        "name": "Car Year Breakdown",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835261063181",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_year:ok] / [federa",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+        }
+      },
+      {
+        "id": "ws_8",
+        "name": "Claim Frequency",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835261198351",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:claim_freq:ok]"
+        }
+      },
+      {
+        "id": "ws_9",
+        "name": "Education",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008834911154181",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:education:nk]"
+        }
+      },
+      {
+        "id": "ws_10",
+        "name": "Gender",
+        "chartType": "Pie / Donut",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "0",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_80361114492",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_11",
+        "name": "Info",
+        "chartType": "Shape",
+        "dimensions": [
+          "Calculation_99008835560116241"
+        ],
+        "measures": [
+          {
+            "name": "0",
+            "type": "calculated"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_99008835560",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_12",
+        "name": "Marital Status",
+        "chartType": "Line Chart",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "AVG(0)",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_99008835173343239",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
+          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:marital_status:nk]"
+        }
+      },
+      {
+        "id": "ws_13",
+        "name": "Total Claim Amount",
+        "chartType": "Text Table / Card",
+        "dimensions": [
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education",
+          "Gender"
+        ],
+        "measures": [
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Amt",
+            "type": "base_measure"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "claim_amt",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      },
+      {
+        "id": "ws_14",
+        "name": "Total Insurance Policies",
+        "chartType": "Text Table / Card",
+        "dimensions": [
+          "ID",
+          "Birthdate",
+          "Car Make",
+          "Car Model",
+          "Car Year",
+          "Education"
+        ],
+        "measures": [
+          {
+            "name": "Total Insurance Policues",
+            "type": "calculated"
+          },
+          {
+            "name": "Date calculation",
+            "type": "calculated"
+          },
+          {
+            "name": "Claim Freq",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1530520194077540352",
+            "type": "base_measure"
+          }
+        ],
+        "axes": {
+          "rows": "Rows Dimension",
+          "columns": "Columns / Measure Values"
+        }
+      }
+    ],
+    "calculatedFields": [
+      {
+        "id": "cf_1",
+        "name": "Total Insurance Policues",
+        "formula": "COUNTD([ID])",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "Age",
+          "Car Brand",
+          "Car Model",
+          "Car Use Pie"
+        ]
+      },
+      {
+        "id": "cf_4",
+        "name": "Date calculation",
+        "formula": "DATEDIFF('year',[birthdate],TODAY())",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "Age",
+          "Average Claim Amount",
+          "Average Household Income",
+          "Car Brand"
+        ]
+      },
+      {
+        "id": "cf_5",
+        "name": "AVG(0)",
+        "formula": "AVG(0)",
+        "role": "measure",
+        "datatype": "real",
+        "usedInSheets": [
+          "Car Brand",
+          "Car Model",
+          "Car Year Breakdown",
+          "Claim Frequency"
+        ]
+      },
+      {
+        "id": "cf_6",
+        "name": "0",
+        "formula": "0",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "Age",
+          "Car Brand",
+          "Car Model",
+          "Car Use Pie"
+        ]
+      }
+    ],
+    "tables": [
+      {
+        "tableName": "insurance policies - insurance policies-2#csv",
+        "displayName": "Insurance Policies - Insurance Policies-2#csv (Insurance Policies)",
+        "rowCount": 12000,
+        "dataSource": "Insurance Policies",
+        "columns": [
+          {
+            "name": "ID",
+            "type": "VARCHAR(100)"
+          },
+          {
+            "name": "birthdate",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "marital_status",
+            "type": "VARCHAR(100)"
+          },
+          {
+            "name": "car_use",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "gender",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "kids_driving",
+            "type": "VARCHAR(100)"
+          },
+          {
+            "name": "parent",
+            "type": "NUMERIC(14,2)"
+          },
+          {
+            "name": "education",
+            "type": "NUMERIC(14,2)"
+          }
+        ],
+        "sampleRows": [
+          {
+            "ID": "POL-100482",
+            "birthdate": "1982-05-14",
+            "marital_status": "Married",
+            "car_use": "Commercial",
+            "gender": "Female",
+            "kids_driving": "No",
+            "parent": "Yes",
+            "education": "Bachelors"
+          },
+          {
+            "ID": "POL-100483",
+            "birthdate": "1990-11-22",
+            "marital_status": "Single",
+            "car_use": "Private",
+            "gender": "Male",
+            "kids_driving": "No",
+            "parent": "No",
+            "education": "Masters"
+          },
+          {
+            "ID": "POL-100484",
+            "birthdate": "1975-08-03",
+            "marital_status": "Married",
+            "car_use": "Private",
+            "gender": "Female",
+            "kids_driving": "Yes",
+            "parent": "Yes",
+            "education": "High School"
           }
         ]
       }
@@ -8692,8 +9872,51 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 10,
       "totalTables": 1,
-      "totalCalculatedFields": 459
+      "totalCalculatedFields": 406,
+      "totalKpis": 8
     },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Average Days to Close by Agent",
+        "evidence": "Closed Claims by Agent (by claim)"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Number of Closed Claims by Agent",
+        "evidence": "Top AGENT - Nb Closed Claims b"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Total Paid by Agent",
+        "evidence": "Top AGENT - Total Paid b"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Claims Reimbursed Percentage by Agent",
+        "evidence": "Top AGENT - Claims Reimbursed % - Value"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Trend of Average Days to Close by Agent",
+        "evidence": "Top AGENT - Average Days to Close a"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Trend of Number of Closed Claims by Agent",
+        "evidence": "Top AGENT - Nb Closed Claims a"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Trend of Total Paid by Agent",
+        "evidence": "Top AGENT - Total Paid a"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Trend of Claims Reimbursed Percentage by Agent",
+        "evidence": "Top AGENT - Claims Reimbursed % - Minitrend"
+      }
+    ],
     "worksheets": [
       {
         "id": "ws_1",
@@ -9574,97 +10797,11 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_45",
-        "name": "Product (Filter)",
-        "formula": "[Policy Type]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_46",
-        "name": "Deductible Amount (bucket)",
-        "formula": "CASE TRUE\r WHEN [LinPack_870107401384373637] <= 1000 THEN \"<1K\"\r WHEN [LinPack_870107401384373637] <= 5000 THEN \"1K-5K\"\r WHEN [LinPack_870107401384373637] <= 100000 THEN \"5K-10K\"\r WHEN [LinPack_870107401384373637] <= 1000000 THEN \">10K\"\r ELSE \"Others\"\r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_47",
         "name": "Month:Claim Close Date",
         "formula": "max(DATETRUNC('month', [Close Date]))",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_48",
-        "name": "Agent - initials",
-        "formula": "Left([Agent],1)+ \". \" + SPLIT([Agent],\" \",2)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_49",
-        "name": "Closed Claim Flag",
-        "formula": "IF LEFT(UPPER([Claim Status]),1)=\"O\" THEN \"N\" ELSE \"Y\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_50",
-        "name": "Filter: Performance Card (Claim Close Date)",
-        "formula": "if [Months to Current Month (Close Date) (copy)_812055351973294080] <=0 and [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 then \"Y\" else \"N\" end",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Top  AGENT - Average Days to Close b",
-          "Top  AGENT - Nb Closed Claims b",
-          "Top  AGENT - Total Paid b",
-          "Top AGENT - Average Days to Close a"
-        ]
-      },
-      {
-        "id": "cf_51",
-        "name": "Filter: Performance KPI (Claim Close Date)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\" THEN if [Months to Current Month (Close Date) (copy)_812055351973294080] = 0 or [Months to Current Month (Close Date) (copy)_812055351973294080]=-1 then \"Y\" else \"N\" end // leave -1 also for 'quarter' and 'year'\r WHEN \"CM_vs_PY\" THEN if [Months to Current Month (Close Date) (copy)_812055351973294080] = 0 or [Months to Current Month (Close Date) (copy)_812055351973294080]=-12 then \"Y\" else \"N\" end\r WHEN \"ACT_vs_TGT\" THEN if [LinPack_243893703856586323] = 0 then \"Y\" else \"N\" end\r WHEN \"CYTD_vs_PYTD\" THEN if (YEAR([Close Date])=[Parameters].[LinPack_061584200884467689] or YEAR([Close Date])=[Parameters].[LinPack_061584200884467689]-1) and MONTH([Close Date])<=[Parameters].[LinPack_361207028433950534] then \"Y\" else \"N\" end\r WHEN \"YTDACT_vs_YTDTGT\" THEN if YEAR([Close Date])=[Parameters].[LinPack_061584200884467689] and MONTH([Close Date])<=[Parameters].[LinPack_361207028433950534] then \"Y\" else \"N\" end\r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Top  AGENT - Average Days to Close b",
-          "Top  AGENT - Nb Closed Claims b",
-          "Top  AGENT - Total Paid b",
-          "Top AGENT - Claims Reimbursed % - Value"
-        ]
-      },
-      {
-        "id": "cf_52",
-        "name": "Open Claims Duration (bucket)",
-        "formula": "CASE TRUE\r WHEN [LinPack_800791597013927992] <30  THEN \"0-30 days\"\r WHEN [LinPack_800791597013927992] <90  THEN \"1-3 months\"\r WHEN [LinPack_800791597013927992] <180   THEN \"3-6 months\"\r WHEN [LinPack_800791597013927992] <=365  THEN \"6-12 months\"\r WHEN [LinPack_800791597013927992] >365  THEN \"1+ year\"\r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_53",
-        "name": "Insurance Claims - Business Line Filter",
-        "formula": "[Business Line]",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -9770,81 +10907,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_64",
-        "name": "Insurance Claims - Claim Reason Filter",
-        "formula": "[Claim Reason]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_65",
-        "name": "Insurance Claims - Agent Group Filter2",
-        "formula": "[Agent Group]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_66",
-        "name": "Insurance Claims -  Agent Group Filter",
-        "formula": "[Agent Group]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_67",
-        "name": "Days to Close",
-        "formula": "DATEDIFF(\"day\",[Open Date],[Close Date])",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)",
-          "Top  AGENT - Average Days to Close b",
-          "Top AGENT - Average Days to Close a"
-        ]
-      },
-      {
-        "id": "cf_68",
-        "name": "Days to Close (bucket)",
-        "formula": "IF \r         [Calculation_680325065948213248]<30 then \"0-30 days\"\r ELSEIF  [Calculation_680325065948213248]<90 then \"1-3 months\"\r ELSEIF  [Calculation_680325065948213248]<180 then \"3-6 months\"\r ELSEIF  [Calculation_680325065948213248]>=180 then \"> 6 months\"\r ELSE \"\"\r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_69",
-        "name": "Insurance Claims - Agent Filter",
-        "formula": "[Agent]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)",
-          "Top  AGENT - Average Days to Close b",
-          "Top  AGENT - Nb Closed Claims b",
-          "Top  AGENT - Total Paid b"
-        ]
-      },
-      {
-        "id": "cf_70",
-        "name": "Open Claims Duration (bucket) -Sort",
-        "formula": "CASE TRUE\r WHEN [LinPack_800791597013927992] <30  THEN 30\r WHEN [LinPack_800791597013927992] <90  THEN 90\r WHEN [LinPack_800791597013927992] <180   THEN 180\r WHEN [LinPack_800791597013927992] <=365  THEN 365\r WHEN [LinPack_800791597013927992] >365  THEN 370\r END",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_71",
         "name": "Closed Claims Perf. -  Value",
         "formula": "IF [Parameters].[LinPack_371749732845320988] =\"CM_vs_PM\" OR [Parameters].[LinPack_371749732845320988] =\"CM_vs_PY\" OR [Parameters].[LinPack_371749732845320988] =\"ACT_vs_TGT\" THEN\r     COUNTD(IF YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534] THEN [LinPack_398370742208982663] ELSE NULL END)\r \r ELSEIF [Parameters].[LinPack_371749732845320988] = \"CYTD_vs_PYTD\"  OR [Parameters].[LinPack_371749732845320988] =\"YTDACT_vs_YTDTGT\" THEN \r     COUNTD(IF YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) <= [Parameters].[LinPack_361207028433950534] THEN [LinPack_398370742208982663] ELSE NULL END)\r \r ELSE    \r     NULL\r \r END",
@@ -9939,46 +11001,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "name": "Reimbursed Claims Perf. - Value vs Reference (shape)",
         "formula": "CASE sign([Closed Claims Perf. - Value vs Reference (copy)_1181069061760540674]) \r WHEN 1 THEN \r     IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25cf\" \r     ELSE \"\u25b2\" \r     END \r WHEN 0 THEN \r     IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \" \" \r     ELSE \"\u25ba\" \r     END \r WHEN -1 THEN \r     IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25a0\" \r     ELSE \"\u25bc\" \r     END \r ELSE \" \" \r END",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_81",
-        "name": "URL Drill-back to Source Application on Claim",
-        "formula": "// This Accelerator is configured to allow you yo drill back to your Source Application to see the detail of each \"Claim\"\r // The Drill Back is activated when clicking on a Claim in the Accelerator \r //  using a URL with the following format: \r //              [URL Prefix] + [Claim] + [URL Suffix]\r //\r // For example when drilling back to an Opportunity on Salesforce Sales Cloud, \r // [URL Prefix] must be: \"https://<YOUR_SALESFORCE_ORG>.lightning.force.com/lightning/r/Opportunity/\" and [URL Sufix] must be \"/view\"\r \r \"https://tableauaccelerators.github.io/drill-back/?Claim=\"+[Claim Number]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_82",
-        "name": "Days to Close (bucket) (sort)",
-        "formula": "IF \r         [Calculation_680325065948213248]<30 then 30\r ELSEIF  [Calculation_680325065948213248]<90 then 90\r ELSEIF  [Calculation_680325065948213248]<180 then 180\r ELSEIF  [Calculation_680325065948213248]>=180 then 999\r ELSE 999999\r END",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_83",
-        "name": "Is Current Period (Closed)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534]\r WHEN \"CM_vs_PY\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534]\r WHEN \"ACT_vs_TGT\" THEN  YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) = [Parameters].[LinPack_361207028433950534]\r WHEN \"CYTD_vs_PYTD\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) <= [Parameters].[LinPack_361207028433950534]\r WHEN \"YTDACT_vs_YTDTGT\" THEN YEAR([Close Date]) = [Parameters].[LinPack_061584200884467689] AND MONTH([Close Date]) <= [Parameters].[LinPack_361207028433950534]\r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_84",
-        "name": "Filter: Performance Trend (Claim Close Date)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 0 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -12 THEN \"Y\" ELSE \"N\" END\r WHEN \"CM_vs_PY\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END\r WHEN \"ACT_vs_TGT\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END\r WHEN \"CYTD_vs_PYTD\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END\r WHEN \"YTDACT_vs_YTDTGT\" THEN IF [Months to Current Month (Close Date) (copy)_812055351973294080] <= 12 AND [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 THEN \"Y\" ELSE \"N\" END \r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
@@ -10092,16 +11114,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_96",
-        "name": "Period: Name of Previous Month",
-        "formula": "[LinPack_915686282814778735] + \"-\" + RIGHT(STR([LinPack_392564468777001906]),2)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Perf - Analysis Scope"
         ]
       },
       {
@@ -10395,16 +11407,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_126",
-        "name": "Period: Period Analyzed",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\"  THEN [LinPack_860904326723893347] \r WHEN \"CM_vs_PY\"  THEN [LinPack_860904326723893347] \r WHEN \"ACT_vs_TGT\"  THEN [LinPack_860904326723893347] \r WHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + [LinPack_860904326723893347] \r WHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + [LinPack_860904326723893347] \r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Perf - Analysis Scope"
-        ]
-      },
-      {
         "id": "cf_127",
         "name": "Open Since (days) Perf. - Value vs Reference",
         "formula": "ZN([LinPack_764754838389350874]) - ZN([LinPack_447391225742565893])",
@@ -10527,16 +11529,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_139",
-        "name": "Period: Months to Current Month",
-        "formula": "-1*(([Parameters].[LinPack_061584200884467689]- [LinPack_438609663205281304])*12+([Parameters].[LinPack_361207028433950534] - [LinPack_771697825390589731]))",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_140",
         "name": "Main Date: Year of Last Date",
         "formula": "{fixed: max(year( {fixed:max([Open Date])}))}",
@@ -10570,40 +11562,10 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_143",
-        "name": "_Nb Reimbursed Claims (Expression)",
-        "formula": "IF UPPER([Is Reimbursed Flag])=\"Y\" THEN [Claim Number] END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_144",
         "name": "Indicator2 - Display Prefix",
         "formula": "CASE [Parameters].[LinPack_751643439417515637] \r WHEN \"Average Days to Close\" THEN ATTR(\"\") \r WHEN \"Claims Reimbursed %\" THEN ATTR(\"\") \r WHEN \"Nb Agents\" THEN ATTR(\"\") \r WHEN \"Nb Claims\" THEN ATTR(\"\") \r WHEN \"Nb Closed Claims\" THEN ATTR(\"\") \r WHEN \"Nb Open Claims\" THEN ATTR(\"\") \r WHEN \"Nb Open Claims per Agent\" THEN ATTR(\"\") \r WHEN \"Nb Reimbursed Claims\" THEN ATTR(\"\") \r WHEN \"Open Since (days)\" THEN ATTR(\"\") \r WHEN \"Total Damages\" THEN ATTR(\"$ \") \r WHEN \"Total Deductible\" THEN ATTR(\"$ \") \r WHEN \"Total Outstanding Damages\" THEN ATTR(\"$ \") \r WHEN \"Total Paid\" THEN ATTR(\"$ \") \r END",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_145",
-        "name": "Filter: Current vs Previous Period",
-        "formula": "IF [LinPack_243893703856586323] <= 0 AND [LinPack_243893703856586323] >= -12 THEN \"Y\" ELSE \"N\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_146",
-        "name": "Period: Period of Reference (for trends)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\"  THEN NULL \r WHEN \"CM_vs_PY\"  THEN STR([Parameters].[LinPack_061584200884467689]-1) \r WHEN \"ACT_vs_TGT\"  THEN \"Target \" + STR([Parameters].[LinPack_061584200884467689]) \r WHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]-1) \r WHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]) + \" Target\" \r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
@@ -10761,16 +11723,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_162",
-        "name": "Main Date: Month Year (Display)",
-        "formula": "[LinPack_730646459737788785] + \"-\" + [LinPack_781568977391712334]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_163",
         "name": "Indicator Growth from Previous Period %",
         "formula": "CASE [Parameters].[LinPack_953089457033817746] \r WHEN \"Average Days to Close\" THEN FLOAT([LinPack_387131796153445582]) \r WHEN \"Claims Reimbursed %\" THEN FLOAT([LinPack_008124338648445781]) \r WHEN \"Nb Agents\" THEN FLOAT([LinPack_165023047485460467]) \r WHEN \"Nb Claims\" THEN FLOAT([LinPack_427328821852568048]) \r WHEN \"Nb Closed Claims\" THEN FLOAT([LinPack_955037859702288622]) \r WHEN \"Nb Open Claims\" THEN FLOAT([LinPack_218707621094189162]) \r WHEN \"Nb Open Claims per Agent\" THEN FLOAT([LinPack_817300268673637113]) \r WHEN \"Nb Reimbursed Claims\" THEN FLOAT([LinPack_801947807295716980]) \r WHEN \"Open Since (days)\" THEN FLOAT([LinPack_385678673706592736]) \r WHEN \"Total Damages\" THEN FLOAT([LinPack_396564432154635016]) \r WHEN \"Total Deductible\" THEN FLOAT([LinPack_684364583909523365]) \r WHEN \"Total Outstanding Damages\" THEN FLOAT([LinPack_678534132907308170]) \r WHEN \"Total Paid\" THEN FLOAT([LinPack_083804381171898417]) \r END",
@@ -10816,16 +11768,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "CASE [Parameters].[LinPack_068528533641913184] \r WHEN \"Nb Agents\" THEN FLOAT([LinPack_181359899101592114]) \r WHEN \"Nb Claims\" THEN FLOAT([LinPack_885520589467117095]) \r WHEN \"Nb Open Claims\" THEN FLOAT([LinPack_542462541075525441]) \r WHEN \"Open Since (days)\" THEN FLOAT([LinPack_014352478133387888]) \r WHEN \"Total Damages\" THEN FLOAT([LinPack_761139585457102483]) \r WHEN \"Total Outstanding Damages\" THEN FLOAT([LinPack_475151873179235566]) \r END",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_168",
-        "name": "_Nb Open Claims (Expression)",
-        "formula": "IF UPPER([Is Closed Flag])=\"N\" THEN [Claim Number] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -10881,16 +11823,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_174",
-        "name": "Period: Month Number of Previous Month",
-        "formula": "IF [Parameters].[LinPack_361207028433950534]=1 THEN \r 12 \r ELSE \r [Parameters].[LinPack_361207028433950534]-1 \r END",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_175",
         "name": "Open Since (days)  MTD (Current vs Previous Year)",
         "formula": "ZN([LinPack_654200888375634660]) - ZN([LinPack_001470713098156858])",
@@ -10931,16 +11863,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_179",
-        "name": "Period: Year of Previous Month",
-        "formula": "IF [Parameters].[LinPack_361207028433950534]=1 THEN \r [Parameters].[LinPack_061584200884467689]-1 \r ELSE \r [Parameters].[LinPack_061584200884467689] \r END",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Perf - Analysis Scope"
-        ]
-      },
-      {
         "id": "cf_180",
         "name": "Total Damages Growth from Previous Period %",
         "formula": "(ZN([LinPack_842036301018049390]) - LOOKUP(ZN([LinPack_842036301018049390]), -1)) / ABS(LOOKUP(ZN([LinPack_842036301018049390]), -1))",
@@ -10956,16 +11878,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "IF ATTR([LinPack_771697825390589731]) <= [Parameters].[LinPack_361207028433950534] THEN \r   WINDOW_SUM(COUNTD(IF [Open Date]={FIXED[LinPack_705532015286423348]:MIN(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] THEN [Open Date] END)} THEN [LinPack_705532015286423348] END),FIRST(),0)\r END",
         "role": "measure",
         "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_182",
-        "name": "_Nb Closed Claims (Expression)",
-        "formula": "IF UPPER([Is Closed Flag])=\"Y\" THEN [Claim Number] END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -11038,19 +11950,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_190",
-        "name": "Main Date: Year",
-        "formula": "YEAR([Open Date])",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)",
-          "Perf - Analysis Scope",
-          "Top  AGENT - Average Days to Close b",
-          "Top  AGENT - Nb Closed Claims b"
         ]
       },
       {
@@ -11149,16 +12048,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "SUM(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] AND [LinPack_771697825390589731] = [Parameters].[LinPack_361207028433950534] THEN [LinPack_470157109985822088] ELSE NULL END)",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_201",
-        "name": "Period: Analysis Scope Type",
-        "formula": "[Parameters].[LinPack_371749732845320988]",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -11424,16 +12313,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_228",
-        "name": "Period: Name of Same Month Previous Year",
-        "formula": "[LinPack_816039079638708388] + \"-\" + RIGHT(STR([Parameters].[LinPack_061584200884467689]-1),2)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_229",
         "name": "Nb Agents  MTD  (Current vs Previous Month)",
         "formula": "ZN([LinPack_338901930403833534]) - ZN([LinPack_710552598472596108])",
@@ -11544,16 +12423,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_240",
-        "name": "_Nb Agents (Expression)",
-        "formula": "[Agent]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_241",
         "name": "KPI2 - Display Prefix",
         "formula": "CASE [Parameters].[LinPack_190386764494085450] \r WHEN \"Nb Agents\" THEN ATTR(\"\") \r WHEN \"Nb Claims\" THEN ATTR(\"\") \r WHEN \"Nb Open Claims\" THEN ATTR(\"\") \r WHEN \"Open Since (days)\" THEN ATTR(\"\") \r WHEN \"Total Damages\" THEN ATTR(\"$ \") \r WHEN \"Total Outstanding Damages\" THEN ATTR(\"$ \") \r END",
@@ -11561,16 +12430,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_242",
-        "name": "Dimension",
-        "formula": "CASE [Parameters].[LinPack_178350028745102603] \r WHEN \"Agent\" THEN [Agent] \r WHEN \"Agent Group\" THEN [Agent Group] \r WHEN \"Business Line\" THEN [Business Line] \r WHEN \"Claim Number\" THEN [Claim Number] \r WHEN \"Claim Status\" THEN [Claim Status] \r WHEN \"Is Closed Flag\" THEN [Is Closed Flag] \r WHEN \"Is Reimbursed Flag\" THEN [Is Reimbursed Flag] \r WHEN \"Policy Holder\" THEN [Policy Holder] \r WHEN \"Policy Number\" THEN [Policy Number] \r WHEN \"Policy Type\" THEN [Policy Type] \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Perf - Analysis Scope"
         ]
       },
       {
@@ -11639,26 +12498,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "[LinPack_516603971530074954] / ABS([LinPack_983728631218598473])",
         "role": "measure",
         "datatype": "real",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_250",
-        "name": "Period: Analysis Scope",
-        "formula": "[LinPack_186466638269714842] + \" vs \" + [LinPack_739610514840049358]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_251",
-        "name": "Dimension 2",
-        "formula": "CASE [Parameters].[LinPack_485067584180734517] \r WHEN \"Agent\" THEN [Agent] \r WHEN \"Agent Group\" THEN [Agent Group] \r WHEN \"Business Line\" THEN [Business Line] \r WHEN \"Claim Number\" THEN [Claim Number] \r WHEN \"Claim Status\" THEN [Claim Status] \r WHEN \"Is Closed Flag\" THEN [Is Closed Flag] \r WHEN \"Is Reimbursed Flag\" THEN [Is Reimbursed Flag] \r WHEN \"Policy Holder\" THEN [Policy Holder] \r WHEN \"Policy Number\" THEN [Policy Number] \r WHEN \"Policy Type\" THEN [Policy Type] \r END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -11754,16 +12593,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_261",
-        "name": "_Nb Claims (Expression)",
-        "formula": "[Claim Number]",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_262",
         "name": "Nb Open Claims  MTD (Current vs Previous Year)",
         "formula": "ZN([LinPack_526992866097063811]) - ZN([LinPack_867010562689685340])",
@@ -11834,16 +12663,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_269",
-        "name": "Main Date: Month (Display)",
-        "formula": "CASE MONTH([Open Date]) \r WHEN 1 THEN \"Jan\" \r WHEN 2 THEN \"Feb\" \r WHEN 3 THEN \"Mar\" \r WHEN 4 THEN \"Apr\" \r WHEN 5 THEN \"May\" \r WHEN 6 THEN \"Jun\" \r WHEN 7 THEN \"Jul\" \r WHEN 8 THEN \"Aug\" \r WHEN 9 THEN \"Sep\" \r WHEN 10 THEN \"Oct\" \r WHEN 11 THEN \"Nov\" \r WHEN 12 THEN \"Dec\" \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_270",
         "name": "Total Damages Perf. - Value vs Reference %",
         "formula": "[LinPack_058832752294337078] / ABS([LinPack_704066197979510380])",
@@ -11874,16 +12693,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_273",
-        "name": "Period: Period of Reference",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\"  THEN [LinPack_080275071260555808] \r WHEN \"CM_vs_PY\"  THEN [LinPack_564331734146295087] \r WHEN \"ACT_vs_TGT\"  THEN \"Target \" + [LinPack_860904326723893347] \r WHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + [LinPack_564331734146295087] \r WHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + [LinPack_860904326723893347] + \" Target\" \r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_274",
         "name": "Total Damages  MTD   (Current Month) (for trends)",
         "formula": "[LinPack_116093578182488830]",
@@ -11891,19 +12700,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "datatype": "real",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_275",
-        "name": "Filter: Performance KPI",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\"  THEN IF [LinPack_243893703856586323] = 0 OR [LinPack_243893703856586323] = -1 THEN \"Y\" ELSE \"N\" END \r WHEN \"CM_vs_PY\"  THEN IF [LinPack_243893703856586323] = 0 OR [LinPack_243893703856586323] = -12 THEN \"Y\" ELSE \"N\" END \r WHEN \"ACT_vs_TGT\"  THEN IF [LinPack_243893703856586323] = 0 THEN \"Y\" ELSE \"N\" END \r WHEN \"CYTD_vs_PYTD\"  THEN IF ([LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] OR [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1) AND [LinPack_771697825390589731] <= [Parameters].[LinPack_361207028433950534] THEN \"Y\" ELSE \"N\" END \r WHEN \"YTDACT_vs_YTDTGT\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] AND [LinPack_771697825390589731] <= [Parameters].[LinPack_361207028433950534] THEN \"Y\" ELSE \"N\" END \r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Top  AGENT - Average Days to Close b",
-          "Top  AGENT - Nb Closed Claims b",
-          "Top  AGENT - Total Paid b",
-          "Top AGENT - Claims Reimbursed % - Value"
         ]
       },
       {
@@ -11957,27 +12753,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_281",
-        "name": "Main Date: Month",
-        "formula": "MONTH([Open Date])",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Perf - Analysis Scope",
-          "Top AGENT - Nb Closed Claims a"
-        ]
-      },
-      {
-        "id": "cf_282",
-        "name": "Main Date: Year (Display)",
-        "formula": "STR([LinPack_438609663205281304])",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_283",
         "name": "Total Outstanding Damages Perf. - Reference",
         "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\" THEN [LinPack_889807749084919034] \r WHEN \"CM_vs_PY\" THEN [LinPack_459156243435697482] \r WHEN \"ACT_vs_TGT\" THEN NULL \r WHEN \"CYTD_vs_PYTD\" THEN [LinPack_358766346315120233] \r WHEN \"YTDACT_vs_YTDTGT\" THEN NULL \r WHEN \"NONE\"  THEN NULL \r END",
@@ -12018,33 +12793,10 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_287",
-        "name": "Filter: Performance Card",
-        "formula": "IF [LinPack_243893703856586323] <= 0 AND [LinPack_243893703856586323] >= -24 THEN \"Y\" ELSE \"N\" END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Top  AGENT - Average Days to Close b",
-          "Top  AGENT - Nb Closed Claims b",
-          "Top  AGENT - Total Paid b",
-          "Top AGENT - Average Days to Close a"
-        ]
-      },
-      {
         "id": "cf_288",
         "name": "KPI2 - Display Suffix",
         "formula": "CASE [Parameters].[LinPack_190386764494085450] \r WHEN \"Nb Agents\" THEN ATTR(\"\") \r WHEN \"Nb Claims\" THEN ATTR(\"\") \r WHEN \"Nb Open Claims\" THEN ATTR(\"\") \r WHEN \"Open Since (days)\" THEN ATTR(\" d\") \r WHEN \"Total Damages\" THEN ATTR(\"\") \r WHEN \"Total Outstanding Damages\" THEN ATTR(\"\") \r END",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_289",
-        "name": "Period: Month Name of Current Month",
-        "formula": "CASE [Parameters].[LinPack_361207028433950534] \r WHEN 1 THEN \"Jan\" \r WHEN 2 THEN \"Feb\" \r WHEN 3 THEN \"Mar\" \r WHEN 4 THEN \"Apr\" \r WHEN 5 THEN \"May\" \r WHEN 6 THEN \"Jun\" \r WHEN 7 THEN \"Jul\" \r WHEN 8 THEN \"Aug\" \r WHEN 9 THEN \"Sep\" \r WHEN 10 THEN \"Oct\" \r WHEN 11 THEN \"Nov\" \r WHEN 12 THEN \"Dec\" \r END",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
@@ -12131,26 +12883,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_298",
-        "name": "Period: Name of Current Month",
-        "formula": "[LinPack_816039079638708388] + \"-\" + RIGHT(STR([Parameters].[LinPack_061584200884467689]),2)",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_299",
-        "name": "Period: Period Analyzed (for trends)",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\"  THEN NULL \r WHEN \"CM_vs_PY\"  THEN STR([Parameters].[LinPack_061584200884467689]) \r WHEN \"ACT_vs_TGT\"  THEN \"Actual \" + STR([Parameters].[LinPack_061584200884467689]) \r WHEN \"CYTD_vs_PYTD\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]) \r WHEN \"YTDACT_vs_YTDTGT\"  THEN \"YTD \" + STR([Parameters].[LinPack_061584200884467689]) + \" Actual\" \r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_300",
         "name": "Total Outstanding Damages  MTD   (Current Month) (for trends)",
         "formula": "[LinPack_320355170985958371]",
@@ -12166,16 +12898,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "COUNTD(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 AND [LinPack_771697825390589731] = [Parameters].[LinPack_361207028433950534] THEN [LinPack_370016001432172588] ELSE NULL END)",
         "role": "measure",
         "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_302",
-        "name": "Filter: Performance Trend",
-        "formula": "CASE [Parameters].[LinPack_371749732845320988] \r WHEN \"CM_vs_PM\"  THEN IF [LinPack_243893703856586323] <= 0 AND [LinPack_243893703856586323] >= -12 THEN \"Y\" ELSE \"N\" END \r WHEN \"CM_vs_PY\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] OR [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 THEN \"Y\" ELSE \"N\" END \r WHEN \"ACT_vs_TGT\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] THEN \"Y\" ELSE \"N\" END \r WHEN \"CYTD_vs_PYTD\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] OR [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 THEN \"Y\" ELSE \"N\" END \r WHEN \"YTDACT_vs_YTDTGT\"  THEN IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689] THEN \"Y\" ELSE \"N\" END \r WHEN \"NONE\"  THEN NULL \r END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -12256,16 +12978,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "COUNTD(IF [LinPack_438609663205281304] = [Parameters].[LinPack_061584200884467689]-1 AND [LinPack_771697825390589731] = [Parameters].[LinPack_361207028433950534] THEN [LinPack_705532015286423348] ELSE NULL END)",
         "role": "measure",
         "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_311",
-        "name": "Period: Month Name of Previous Month",
-        "formula": "CASE [Parameters].[LinPack_361207028433950534] \r WHEN 2 THEN \"Jan\" \r WHEN 3 THEN \"Feb\" \r WHEN 4 THEN \"Mar\" \r WHEN 5 THEN \"Apr\" \r WHEN 6 THEN \"May\" \r WHEN 7 THEN \"Jun\" \r WHEN 8 THEN \"Jul\" \r WHEN 9 THEN \"Aug\" \r WHEN 10 THEN \"Sep\" \r WHEN 11 THEN \"Oct\" \r WHEN 12 THEN \"Nov\" \r WHEN 1 THEN \"Dec\" \r END",
-        "role": "dimension",
-        "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -12454,30 +13166,10 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_330",
-        "name": "Months to Current Month (Claim Close Date)",
-        "formula": "-1*(([Parameters].[LinPack_061584200884467689]- year([Close Date]))*12+([Parameters].[LinPack_361207028433950534]-Month([Close Date])))",
-        "role": "dimension",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
         "id": "cf_331",
         "name": "Open Claims Duration Days (Display)",
         "formula": "STR([LinPack_323554820047972012])+ 'd '",
         "role": "measure",
-        "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_332",
-        "name": "Performance Scope Filter (Claim Close Date)",
-        "formula": "if [Months to Current Month (Close Date) (copy)_812055351973294080] <=0 and [Months to Current Month (Close Date) (copy)_812055351973294080] >= -24 then \"Y\" else \"N\" end",
-        "role": "dimension",
         "datatype": "string",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
@@ -12579,26 +13271,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "formula": "CASE sign([Resolution Time Perf. - Value vs Reference (copy)_148055884324622344]) \r WHEN 1 THEN \r     IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25a0\" \r     ELSE \"\u25b2\" \r     END \r WHEN 0 THEN \r     IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \" \" \r     ELSE \"\u25ba\" \r     END \r WHEN -1 THEN \r     IF [Parameters].[LinPack_371749732845320988]= \"ACT_vs_TGT\" OR [Parameters].[LinPack_371749732845320988]= \"YTDACT_vs_YTDTGT\" THEN \"\u25cf\" \r     ELSE \"\u25bc\" \r     END \r ELSE \" \" \r END",
         "role": "measure",
         "datatype": "string",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_343",
-        "name": "As of Today - Insurance Claims",
-        "formula": "__MyToday",
-        "role": "dimension",
-        "datatype": "real",
-        "usedInSheets": [
-          "Closed Claims by Agent  (by claim)"
-        ]
-      },
-      {
-        "id": "cf_344",
-        "name": "__MyToday",
-        "formula": "MAKEDATE(2023,07,31)+8/24",
-        "role": "dimension",
-        "datatype": "real",
         "usedInSheets": [
           "Closed Claims by Agent  (by claim)"
         ]
@@ -13773,7 +14445,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "sampleRows": [
           {
             "id": 101,
-            "value": 4250.0
+            "value": 4250
           },
           {
             "id": 102,
@@ -13792,8 +14464,56 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 9,
       "totalTables": 6,
-      "totalCalculatedFields": 7
+      "totalCalculatedFields": 7,
+      "totalKpis": 9
     },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Cross Sell Performance",
+        "evidence": "Cross Sell"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Cross Sell Performance by Employee",
+        "evidence": "Cross sell by employee"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Number of Invoices by Account Executive",
+        "evidence": "No of invoice by Accnt Exec"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Number of Meetings by Account Executive",
+        "evidence": "No of meeting by Accnt Exec"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Top 4 Open Opportunities by Revenue",
+        "evidence": "Open Oppty-Top 4"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Revenue Distribution by Top 4 Opportunities",
+        "evidence": "Oppty by Revenue - Top 4"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Revenue Distribution by Product",
+        "evidence": "Oppty by product"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Renewal Performance",
+        "evidence": "Renewal"
+      },
+      {
+        "id": "kpi_9",
+        "name": "Revenue by Sales Stage",
+        "evidence": "Stage by revenue"
+      }
+    ],
     "worksheets": [
       {
         "id": "ws_1",
@@ -14541,1399 +15261,462 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       }
     ]
   },
-  "u1": {
+  "d7": {
     "summary": {
       "totalDashboards": 1,
-      "totalWorksheets": 14,
+      "totalWorksheets": 9,
       "totalTables": 1,
-      "totalCalculatedFields": 6
+      "totalCalculatedFields": 7,
+      "totalKpis": 7
     },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Number of Invoices by Account Executive",
+        "evidence": "No of invoice by Accnt Exec"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Number of Meetings by Account Executive",
+        "evidence": "No of meeting by Accnt Exec"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Revenue Amount by Opportunity Name (Top 4)",
+        "evidence": "Open Oppty-Top 4"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Revenue Distribution by Opportunity Name (Top 4)",
+        "evidence": "Oppty by Revenue - Top 4"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Revenue Distribution by Product",
+        "evidence": "Oppty by product"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Revenue Amount by Sales Stage",
+        "evidence": "Stage by revenue"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Budget Allocation by Employee",
+        "evidence": "budget"
+      }
+    ],
     "worksheets": [
       {
         "id": "ws_1",
-        "name": "Age",
+        "name": "New",
         "chartType": "Automatic",
         "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
+          "Category",
+          "Segment"
         ],
         "measures": [
           {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
+            "name": "Amount",
             "type": "base_measure"
           },
           {
-            "name": "Calculation_80361114493657092",
+            "name": "New Budget",
             "type": "base_measure"
           },
           {
-            "name": "Calculation_1530520194077540352",
+            "name": "Calculation_531987722593701892",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[usr:Calculation_15305201940",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_80361114493"
+          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[:Measure Names]",
+          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[Multiple Values]"
         }
       },
       {
         "id": "ws_2",
-        "name": "Average Claim Amount",
+        "name": "No of invoice by Accnt Exec",
         "chartType": "Automatic",
         "dimensions": [
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education",
-          "Gender"
+          "Account Executive (invoice!202001231041)"
         ],
         "measures": [
           {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Amt",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "claim_amt",
+            "name": "invoice_number",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
+          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Account Executive (invoice!202001231041):nk]",
+          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:invoice_number:qk]"
         }
       },
       {
         "id": "ws_3",
-        "name": "Average Household Income",
+        "name": "No of meeting by Accnt Exec",
         "chartType": "Automatic",
         "dimensions": [
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education",
-          "Gender"
+          "Account Executive (meeting!list!202001231041)"
         ],
         "measures": [
           {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
+            "name": "__tableau_internal_object_id__].[meeting!list!202001231041_8DEA75082D9B4E319F02AD26040B6DD1",
             "type": "base_measure"
           },
           {
-            "name": "Household Income",
-            "type": "base_measure"
-          },
-          {
-            "name": "household_income",
+            "name": "meeting_date",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
+          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Account Executive (meeting!list!202001231041):nk]",
+          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[__tableau_internal_object_id__].[cnt:meeting!list!202001231041_8DEA75082D9B4E319F02AD26040B6DD1:qk]"
         }
       },
       {
         "id": "ws_4",
-        "name": "Car Brand",
-        "chartType": "Line Chart",
+        "name": "Open Oppty-Top 4",
+        "chartType": "Bar Chart",
         "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
+          "opportunity_name"
         ],
         "measures": [
           {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Insurance Policies - Insurance Policies-2.csv",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "__tableau_internal_object_id__].[Insurance Policies - Insurance Policies-2.csv_FB9BE58E26C74B688723032E69267340",
+            "name": "revenue_amount",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_make:nk] / [federa",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:revenue_amount:qk]",
+          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:opportunity_name:nk]"
         }
       },
       {
         "id": "ws_5",
-        "name": "Car Model",
-        "chartType": "Line Chart",
+        "name": "Oppty by Revenue - Top 4",
+        "chartType": "Pie Chart",
         "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
+          "opportunity_name"
         ],
         "measures": [
           {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008835257839627",
+            "name": "revenue_amount",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_model:nk] / [feder",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+          "rows": "",
+          "columns": ""
         }
       },
       {
         "id": "ws_6",
-        "name": "Car Use Pie",
-        "chartType": "Pie / Donut",
+        "name": "Oppty by product",
+        "chartType": "Pie Chart",
         "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Use",
-          "Car Year"
+          "product_group (gcrm!opportunity!202001231041)"
         ],
         "measures": [
           {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
+            "name": "opportunity_name",
             "type": "base_measure"
           },
           {
-            "name": "Calculation_1530520194077540352",
+            "name": "product_group (gcrm!opportunity!202001231041)",
+            "type": "base_measure"
+          },
+          {
+            "name": "Calculation_1027383682329116673",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_99008834897",
-          "columns": "Columns / Measure Values"
+          "rows": "([federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:Calculation_1027383682329116673:qk] + [federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:Calculation_1027383682329116673:qk])",
+          "columns": ""
         }
       },
       {
         "id": "ws_7",
-        "name": "Car Year Breakdown",
-        "chartType": "Line Chart",
+        "name": "Renewal",
+        "chartType": "Automatic",
         "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
+          "Category",
+          "Segment"
         ],
         "measures": [
           {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
+            "name": "Renewal Budget",
             "type": "base_measure"
           },
           {
-            "name": "Calculation_1530520194077540352",
+            "name": "Calculation_531987722592980994",
             "type": "base_measure"
           },
           {
-            "name": "Calculation_99008835261063181",
+            "name": "Calculation_531987722593865733",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_year:ok] / [federa",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
+          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[:Measure Names]",
+          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[Multiple Values]"
         }
       },
       {
         "id": "ws_8",
-        "name": "Claim Frequency",
-        "chartType": "Line Chart",
+        "name": "Stage by revenue",
+        "chartType": "Automatic",
         "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
+          "stage"
         ],
         "measures": [
           {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008835261198351",
+            "name": "stage",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:claim_freq:ok]"
+          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:stage:nk]",
+          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:stage:qk]"
         }
       },
       {
         "id": "ws_9",
-        "name": "Education",
-        "chartType": "Line Chart",
+        "name": "budget",
+        "chartType": "Automatic",
         "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
+          "Employee Name"
         ],
         "measures": [
           {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008834911154181",
+            "name": "New Budget",
             "type": "base_measure"
           }
         ],
         "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:education:nk]"
-        }
-      },
-      {
-        "id": "ws_10",
-        "name": "Gender",
-        "chartType": "Pie / Donut",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_80361114492",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_11",
-        "name": "Info",
-        "chartType": "Shape",
-        "dimensions": [
-          "Calculation_99008835560116241"
-        ],
-        "measures": [
-          {
-            "name": "0",
-            "type": "calculated"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_99008835560",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_12",
-        "name": "Marital Status",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008835173343239",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:marital_status:nk]"
-        }
-      },
-      {
-        "id": "ws_13",
-        "name": "Total Claim Amount",
-        "chartType": "Text Table / Card",
-        "dimensions": [
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Amt",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "claim_amt",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_14",
-        "name": "Total Insurance Policies",
-        "chartType": "Text Table / Card",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
+          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Employee Name:nk]",
+          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:New Budget:qk]"
         }
       }
     ],
     "calculatedFields": [
       {
-        "id": "cf_1",
-        "name": "Total Insurance Policues",
-        "formula": "COUNTD([ID])",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Age",
-          "Car Brand",
-          "Car Model",
-          "Car Use Pie"
-        ]
-      },
-      {
-        "id": "cf_2",
-        "name": "True",
-        "formula": "True",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
-        "id": "cf_3",
-        "name": "False",
-        "formula": "False",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
-        "id": "cf_4",
-        "name": "Date calculation",
-        "formula": "DATEDIFF('year',[birthdate],TODAY())",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Age",
-          "Average Claim Amount",
-          "Average Household Income",
-          "Car Brand"
-        ]
-      },
-      {
-        "id": "cf_5",
-        "name": "AVG(0)",
-        "formula": "AVG(0)",
-        "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "Car Brand",
-          "Car Model",
-          "Car Year Breakdown",
-          "Claim Frequency"
-        ]
-      },
-      {
-        "id": "cf_6",
-        "name": "0",
+        "id": "calc_1",
+        "name": "zero",
         "formula": "0",
         "role": "measure",
         "datatype": "integer",
         "usedInSheets": [
-          "Age",
-          "Car Brand",
-          "Car Model",
-          "Car Use Pie"
+          "New"
+        ]
+      },
+      {
+        "id": "calc_2",
+        "name": "Achieved",
+        "formula": "SUM([Amount (fees!202001231041)])+SUM([Amount])",
+        "role": "measure",
+        "datatype": "real",
+        "usedInSheets": [
+          "New"
+        ]
+      },
+      {
+        "id": "calc_3",
+        "name": "Achieved_Cross_Sell",
+        "formula": "SUM([Amount]) - 21547181",
+        "role": "measure",
+        "datatype": "real",
+        "usedInSheets": [
+          "New"
+        ]
+      },
+      {
+        "id": "calc_4",
+        "name": "Achieved_Renewal",
+        "formula": "SUM([Amount]) - 16755532",
+        "role": "measure",
+        "datatype": "real",
+        "usedInSheets": [
+          "New"
+        ]
+      },
+      {
+        "id": "calc_5",
+        "name": "Invoice_cross_sell",
+        "formula": "SUM([Amount (invoice!202001231041)]) - 9412706",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "New"
+        ]
+      },
+      {
+        "id": "calc_6",
+        "name": "Invoice_new",
+        "formula": "SUM([Amount (invoice!202001231041)]) - 11692706",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "New"
+        ]
+      },
+      {
+        "id": "calc_7",
+        "name": "Invoice_Renewal",
+        "formula": "SUM([Amount (invoice!202001231041)]) - 4322211",
+        "role": "measure",
+        "datatype": "integer",
+        "usedInSheets": [
+          "New"
         ]
       }
     ],
     "tables": [
       {
-        "tableName": "insurance policies - insurance policies-2#csv",
-        "displayName": "Insurance Policies - Insurance Policies-2#csv (Insurance Policies)",
-        "rowCount": 12000,
-        "dataSource": "Insurance Policies",
+        "tableName": "brokerage_202001231040_(multiple_connections)",
+        "displayName": "brokerage_202001231040 (Multiple Connections)",
+        "rowCount": 1850,
+        "dataSource": "Tableau Extract (.hyper)",
         "columns": [
           {
-            "name": "ID",
-            "type": "VARCHAR(100)"
+            "name": "client_name",
+            "type": "string"
           },
           {
-            "name": "birthdate",
-            "type": "NUMERIC(14,2)"
+            "name": "policy_number",
+            "type": "string"
           },
           {
-            "name": "marital_status",
-            "type": "VARCHAR(100)"
+            "name": "policy_status",
+            "type": "string"
           },
           {
-            "name": "car_use",
-            "type": "NUMERIC(14,2)"
+            "name": "policy_start_date",
+            "type": "date"
           },
           {
-            "name": "gender",
-            "type": "NUMERIC(14,2)"
+            "name": "policy_end_date",
+            "type": "date"
           },
           {
-            "name": "kids_driving",
-            "type": "VARCHAR(100)"
+            "name": "product_group",
+            "type": "string"
           },
           {
-            "name": "parent",
-            "type": "NUMERIC(14,2)"
+            "name": "Account Exe ID",
+            "type": "integer"
           },
           {
-            "name": "education",
-            "type": "NUMERIC(14,2)"
+            "name": "Exe Name",
+            "type": "string"
+          },
+          {
+            "name": "branch_name",
+            "type": "string"
+          },
+          {
+            "name": "solution_group",
+            "type": "string"
+          },
+          {
+            "name": "income_class",
+            "type": "string"
+          },
+          {
+            "name": "Amount",
+            "type": "real"
+          },
+          {
+            "name": "income_due_date",
+            "type": "date"
+          },
+          {
+            "name": "revenue_transaction_type",
+            "type": "string"
+          },
+          {
+            "name": "renewal_status",
+            "type": "string"
+          },
+          {
+            "name": "lapse_reason",
+            "type": "string"
+          },
+          {
+            "name": "last_updated_date",
+            "type": "date"
+          },
+          {
+            "name": "client_name",
+            "type": "string"
+          },
+          {
+            "name": "branch_name",
+            "type": "string"
+          },
+          {
+            "name": "solution_group",
+            "type": "string"
           }
         ],
         "sampleRows": [
           {
-            "ID": "POL-100482",
-            "birthdate": "1982-05-14",
-            "marital_status": "Married",
-            "car_use": "Commercial",
-            "gender": "Female",
-            "kids_driving": "No",
-            "parent": "Yes",
-            "education": "Bachelors"
-          },
-          {
-            "ID": "POL-100483",
-            "birthdate": "1990-11-22",
-            "marital_status": "Single",
-            "car_use": "Private",
-            "gender": "Male",
-            "kids_driving": "No",
-            "parent": "No",
-            "education": "Masters"
-          },
-          {
-            "ID": "POL-100484",
-            "birthdate": "1975-08-03",
-            "marital_status": "Married",
-            "car_use": "Private",
-            "gender": "Female",
-            "kids_driving": "Yes",
-            "parent": "Yes",
-            "education": "High School"
-          }
-        ]
-      }
-    ]
-  },
-  "u2": {
-    "summary": {
-      "totalDashboards": 1,
-      "totalWorksheets": 14,
-      "totalTables": 1,
-      "totalCalculatedFields": 6
-    },
-    "worksheets": [
-      {
-        "id": "ws_1",
-        "name": "Age",
-        "chartType": "Automatic",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_80361114493657092",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[usr:Calculation_15305201940",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_80361114493"
-        }
-      },
-      {
-        "id": "ws_2",
-        "name": "Average Claim Amount",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Amt",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "claim_amt",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_3",
-        "name": "Average Household Income",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Household Income",
-            "type": "base_measure"
-          },
-          {
-            "name": "household_income",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_4",
-        "name": "Car Brand",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Insurance Policies - Insurance Policies-2.csv",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "__tableau_internal_object_id__].[Insurance Policies - Insurance Policies-2.csv_FB9BE58E26C74B688723032E69267340",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_make:nk] / [federa",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
-        }
-      },
-      {
-        "id": "ws_5",
-        "name": "Car Model",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008835257839627",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_model:nk] / [feder",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
-        }
-      },
-      {
-        "id": "ws_6",
-        "name": "Car Use Pie",
-        "chartType": "Pie / Donut",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Use",
-          "Car Year"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_99008834897",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_7",
-        "name": "Car Year Breakdown",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008835261063181",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[none:car_year:ok] / [federa",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]"
-        }
-      },
-      {
-        "id": "ws_8",
-        "name": "Claim Frequency",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008835261198351",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:claim_freq:ok]"
-        }
-      },
-      {
-        "id": "ws_9",
-        "name": "Education",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008834911154181",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:education:nk]"
-        }
-      },
-      {
-        "id": "ws_10",
-        "name": "Gender",
-        "chartType": "Pie / Donut",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "0",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.1ipicht0js7rgl18y9xp510uc00n].[sum:Calculation_80361114492",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_11",
-        "name": "Info",
-        "chartType": "Shape",
-        "dimensions": [
-          "Calculation_99008835560116241"
-        ],
-        "measures": [
-          {
-            "name": "0",
-            "type": "calculated"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:Calculation_99008835560",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_12",
-        "name": "Marital Status",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "AVG(0)",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_99008835173343239",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.1ipicht0js7rgl18y9xp510uc00n].[Multiple Values]",
-          "columns": "[federated.1ipicht0js7rgl18y9xp510uc00n].[none:marital_status:nk]"
-        }
-      },
-      {
-        "id": "ws_13",
-        "name": "Total Claim Amount",
-        "chartType": "Text Table / Card",
-        "dimensions": [
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Amt",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "claim_amt",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
-        }
-      },
-      {
-        "id": "ws_14",
-        "name": "Total Insurance Policies",
-        "chartType": "Text Table / Card",
-        "dimensions": [
-          "ID",
-          "Birthdate",
-          "Car Make",
-          "Car Model",
-          "Car Year",
-          "Education"
-        ],
-        "measures": [
-          {
-            "name": "Total Insurance Policues",
-            "type": "calculated"
-          },
-          {
-            "name": "Date calculation",
-            "type": "calculated"
-          },
-          {
-            "name": "Claim Freq",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1530520194077540352",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "Rows Dimension",
-          "columns": "Columns / Measure Values"
-        }
-      }
-    ],
-    "calculatedFields": [
-      {
-        "id": "cf_1",
-        "name": "Total Insurance Policues",
-        "formula": "COUNTD([ID])",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Age",
-          "Car Brand",
-          "Car Model",
-          "Car Use Pie"
-        ]
-      },
-      {
-        "id": "cf_2",
-        "name": "True",
-        "formula": "True",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
-        "id": "cf_3",
-        "name": "False",
-        "formula": "False",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Age"
-        ]
-      },
-      {
-        "id": "cf_4",
-        "name": "Date calculation",
-        "formula": "DATEDIFF('year',[birthdate],TODAY())",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Age",
-          "Average Claim Amount",
-          "Average Household Income",
-          "Car Brand"
-        ]
-      },
-      {
-        "id": "cf_5",
-        "name": "AVG(0)",
-        "formula": "AVG(0)",
-        "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "Car Brand",
-          "Car Model",
-          "Car Year Breakdown",
-          "Claim Frequency"
-        ]
-      },
-      {
-        "id": "cf_6",
-        "name": "0",
-        "formula": "0",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Age",
-          "Car Brand",
-          "Car Model",
-          "Car Use Pie"
-        ]
-      }
-    ],
-    "tables": [
-      {
-        "tableName": "insurance policies - insurance policies-2#csv",
-        "displayName": "Insurance Policies - Insurance Policies-2#csv (Insurance Policies)",
-        "rowCount": 12000,
-        "dataSource": "Insurance Policies",
-        "columns": [
-          {
-            "name": "ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "birthdate",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "marital_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "car_use",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "gender",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "kids_driving",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "parent",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "education",
-            "type": "NUMERIC(14,2)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "ID": "POL-100482",
-            "birthdate": "1982-05-14",
-            "marital_status": "Married",
-            "car_use": "Commercial",
-            "gender": "Female",
-            "kids_driving": "No",
-            "parent": "Yes",
-            "education": "Bachelors"
-          },
-          {
-            "ID": "POL-100483",
-            "birthdate": "1990-11-22",
-            "marital_status": "Single",
-            "car_use": "Private",
-            "gender": "Male",
-            "kids_driving": "No",
-            "parent": "No",
-            "education": "Masters"
-          },
-          {
-            "ID": "POL-100484",
-            "birthdate": "1975-08-03",
-            "marital_status": "Married",
-            "car_use": "Private",
-            "gender": "Female",
-            "kids_driving": "Yes",
-            "parent": "Yes",
-            "education": "High School"
+            "client_name": "Apex Logistics Corp",
+            "policy_number": "POL-90214",
+            "policy_status": "Active",
+            "policy_start_date": "2023-01-15",
+            "policy_end_date": "2024-01-14",
+            "product_group": "Commercial Property",
+            "Account Exe ID": 104,
+            "Exe Name": "Sarah Jenkins",
+            "branch_name": "Northeast Regional",
+            "solution_group": "Commercial Lines",
+            "income_class": "Brokerage Fee",
+            "Amount": 14500,
+            "income_due_date": "2023-02-01",
+            "revenue_transaction_type": "Direct Bill",
+            "renewal_status": "Renewed",
+            "lapse_reason": "N/A",
+            "last_updated_date": "2023-12-31"
+          },
+          {
+            "client_name": "Beacon Retail Group",
+            "policy_number": "POL-90388",
+            "policy_status": "Active",
+            "policy_start_date": "2023-03-01",
+            "policy_end_date": "2024-02-28",
+            "product_group": "General Liability",
+            "Account Exe ID": 108,
+            "Exe Name": "Michael Chang",
+            "branch_name": "Midwest Central",
+            "solution_group": "Commercial Lines",
+            "income_class": "Commission",
+            "Amount": 8900.5,
+            "income_due_date": "2023-03-15",
+            "revenue_transaction_type": "Agency Bill",
+            "renewal_status": "Renewed",
+            "lapse_reason": "N/A",
+            "last_updated_date": "2023-12-31"
+          },
+          {
+            "client_name": "Crestview Health Systems",
+            "policy_number": "POL-88412",
+            "policy_status": "Lapsed",
+            "policy_start_date": "2022-11-01",
+            "policy_end_date": "2023-10-31",
+            "product_group": "Workers Comp",
+            "Account Exe ID": 112,
+            "Exe Name": "David Ross",
+            "branch_name": "Southern District",
+            "solution_group": "Specialty Risk",
+            "income_class": "Brokerage Fee",
+            "Amount": 22400,
+            "income_due_date": "2022-11-15",
+            "revenue_transaction_type": "Direct Bill",
+            "renewal_status": "Non-Renewed",
+            "lapse_reason": "Price Competition",
+            "last_updated_date": "2023-11-05"
           }
         ]
       }
@@ -15944,8 +15727,66 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 12,
       "totalTables": 1,
-      "totalCalculatedFields": 15
+      "totalCalculatedFields": 11,
+      "totalKpis": 11
     },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Total Cases by Aging Bin",
+        "evidence": "Aging Bins"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Average IGO Aging by Work Category",
+        "evidence": "Bubble - Work Category"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Total Cases by Work Category",
+        "evidence": "Bubble - Work Category"
+      },
+      {
+        "id": "kpi_4",
+        "name": "Average IGO Aging by Work Type",
+        "evidence": "Bubble - Work Type"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Total Cases by Work Type",
+        "evidence": "Bubble - Work Type"
+      },
+      {
+        "id": "kpi_6",
+        "name": "Average IGO Aging by SLA Status",
+        "evidence": "KPI - External Pending"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Total Cases by SLA Status",
+        "evidence": "KPI - Internal Pending"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Average Processed Days",
+        "evidence": "KPI - Processed"
+      },
+      {
+        "id": "kpi_9",
+        "name": "Average IGO Aging by Master Work Category",
+        "evidence": "Master Category Aging"
+      },
+      {
+        "id": "kpi_10",
+        "name": "SLA Compliance Rate",
+        "evidence": "SLA Bubbles"
+      },
+      {
+        "id": "kpi_11",
+        "name": "Total Cases by SLA Compliance",
+        "evidence": "SLA Bubbles"
+      }
+    ],
     "worksheets": [
       {
         "id": "ws_1",
@@ -16389,46 +16230,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_9",
-        "name": "Is Open",
-        "formula": "[Case Status] <> 'Closed'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_10",
-        "name": "Is Internal Pending",
-        "formula": "[Case Status] = 'Internal Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_11",
-        "name": "Is External Pending",
-        "formula": "[Case Status] = 'External Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_12",
-        "name": "Is Others Pending",
-        "formula": "[Case Status] = 'Others Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
         "id": "cf_13",
         "name": "Avg OnHand Days",
         "formula": "AVG([OnHand Days])",
@@ -16539,8 +16340,51 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
       "totalDashboards": 1,
       "totalWorksheets": 18,
       "totalTables": 1,
-      "totalCalculatedFields": 16
+      "totalCalculatedFields": 11,
+      "totalKpis": 8
     },
+    "kpis": [
+      {
+        "id": "kpi_1",
+        "name": "Case Count by Aging Bin",
+        "evidence": "Backlog Aging by Status"
+      },
+      {
+        "id": "kpi_2",
+        "name": "Case Count by Team and Case Status",
+        "evidence": "Heatmap - Team by Case Status"
+      },
+      {
+        "id": "kpi_3",
+        "name": "Monthly Case Count",
+        "evidence": "Monthly Trend - Cases and SLA"
+      },
+      {
+        "id": "kpi_4",
+        "name": "SLA Compliance Percentage by Month",
+        "evidence": "Monthly Trend - Cases and SLA"
+      },
+      {
+        "id": "kpi_5",
+        "name": "Outside SLA Case Count by Work Category",
+        "evidence": "Pareto - Outside SLA by Work Category"
+      },
+      {
+        "id": "kpi_6",
+        "name": "SLA Compliance Percentage by Work Category",
+        "evidence": "Performance Bubble - Work Category"
+      },
+      {
+        "id": "kpi_7",
+        "name": "Average IGO Aging by Work Category",
+        "evidence": "Performance Bubble - Work Category"
+      },
+      {
+        "id": "kpi_8",
+        "name": "Case Count by Master Work Category",
+        "evidence": "SLA Mix by Master Category"
+      }
+    ],
     "worksheets": [
       {
         "id": "ws_1",
@@ -17136,46 +16980,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       },
       {
-        "id": "cf_9",
-        "name": "Is Open",
-        "formula": "[Case Status] <> 'Closed'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_10",
-        "name": "Is Internal Pending",
-        "formula": "[Case Status] = 'Internal Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_11",
-        "name": "Is External Pending",
-        "formula": "[Case Status] = 'External Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_12",
-        "name": "Is Others Pending",
-        "formula": "[Case Status] = 'Others Pending'",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
         "id": "cf_13",
         "name": "Avg OnHand Days",
         "formula": "AVG([OnHand Days])",
@@ -17190,16 +16994,6 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         "name": "Median OnHand Days",
         "formula": "PERCENTILE([OnHand Days], 0.5)",
         "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "Aging Bins"
-        ]
-      },
-      {
-        "id": "cf_15",
-        "name": "Case Month",
-        "formula": "DATETRUNC('month', [Case Created Date])",
-        "role": "dimension",
         "datatype": "real",
         "usedInSheets": [
           "Aging Bins"
@@ -17290,907 +17084,5 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       }
     ]
-  },
-  "c4": {
-    "summary": {
-      "totalDashboards": 1,
-      "totalWorksheets": 8,
-      "totalTables": 2,
-      "totalCalculatedFields": 7
-    },
-    "worksheets": [
-      {
-        "id": "ws_1",
-        "name": "Benefit Nature Analysis",
-        "chartType": "Pie Chart",
-        "dimensions": [
-          "Benefit Nature",
-          "Date Paid",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "",
-          "columns": ""
-        }
-      },
-      {
-        "id": "ws_2",
-        "name": "Benefit Nature Funnel Analysis",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "Benefit Nature"
-        ],
-        "measures": [
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          },
-          {
-            "name": "Number of Records",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_551409483925925928",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.10nzymh1ntikze1e7oi780si87k3].[none:Benefit Nature:nk]",
-          "columns": "([federated.10nzymh1ntikze1e7oi780si87k3].[Multiple Values] + [federated.10nzymh1ntikze1e7oi780si87k3].[Multiple Values])"
-        }
-      },
-      {
-        "id": "ws_3",
-        "name": "Benefit Tree Map",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Benefit Nature",
-          "Date Paid",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "",
-          "columns": ""
-        }
-      },
-      {
-        "id": "ws_4",
-        "name": "Claims by Region",
-        "chartType": "Pie Chart",
-        "dimensions": [
-          "District Name"
-        ],
-        "measures": [
-          {
-            "name": "Claimant No.",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "",
-          "columns": ""
-        }
-      },
-      {
-        "id": "ws_5",
-        "name": "Diagnosis",
-        "chartType": "Scatter / Bubble",
-        "dimensions": [
-          "Date Paid",
-          "Diagnosis Name",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "",
-          "columns": ""
-        }
-      },
-      {
-        "id": "ws_6",
-        "name": "Diagnosis Line Chart",
-        "chartType": "Line Chart",
-        "dimensions": [
-          "Date Paid",
-          "Diagnosis Name"
-        ],
-        "measures": [
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          },
-          {
-            "name": "Date Paid",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.10nzymh1ntikze1e7oi780si87k3].[sum:Claims Cost:qk]",
-          "columns": "[federated.10nzymh1ntikze1e7oi780si87k3].[tmn:Date Paid:qk]"
-        }
-      },
-      {
-        "id": "ws_7",
-        "name": "Genderwise Claim Cost",
-        "chartType": "Pie Chart",
-        "dimensions": [
-          "Date Paid",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Number of Records",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          },
-          {
-            "name": "Claims Cost",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.10nzymh1ntikze1e7oi780si87k3].[min:Number of Records:qk] + [federated.10nzymh1ntikze1e7oi780si87k3].[min:Number of Records:qk])",
-          "columns": ""
-        }
-      },
-      {
-        "id": "ws_8",
-        "name": "Genderwise Total Records",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Date Paid",
-          "Gender"
-        ],
-        "measures": [
-          {
-            "name": "Number of Records",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "",
-          "columns": "[federated.10nzymh1ntikze1e7oi780si87k3].[none:Gender:nk]"
-        }
-      }
-    ],
-    "calculatedFields": [
-      {
-        "id": "calc_1",
-        "name": "Select District",
-        "formula": "\"All\"",
-        "role": "measure",
-        "datatype": "string",
-        "usedInSheets": [
-          "Benefit Nature Analysis"
-        ]
-      },
-      {
-        "id": "calc_2",
-        "name": "Calculation1",
-        "formula": "WINDOW_SUM([Calculation_551409483925925928], -2, 0)",
-        "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "Benefit Nature Analysis"
-        ]
-      },
-      {
-        "id": "calc_3",
-        "name": "- Claim Cost",
-        "formula": "- SUM([Claims Cost])",
-        "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "Benefit Nature Analysis"
-        ]
-      },
-      {
-        "id": "calc_4",
-        "name": "District Filter",
-        "formula": "[District Name] = [Parameters].[Parameter 1] or [Parameters].[Parameter 1] = \"All\"",
-        "role": "dimension",
-        "datatype": "boolean",
-        "usedInSheets": [
-          "Benefit Nature Analysis"
-        ]
-      },
-      {
-        "id": "calc_5",
-        "name": "Number of Records",
-        "formula": "1",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Benefit Nature Funnel Analysis",
-          "Genderwise Claim Cost",
-          "Genderwise Total Records"
-        ]
-      },
-      {
-        "id": "calc_6",
-        "name": "Select District",
-        "formula": "\"All\"",
-        "role": "measure",
-        "datatype": "string",
-        "usedInSheets": [
-          "Benefit Nature Analysis"
-        ]
-      },
-      {
-        "id": "calc_7",
-        "name": "Number of Records",
-        "formula": "1",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "Benefit Nature Funnel Analysis",
-          "Genderwise Claim Cost",
-          "Genderwise Total Records"
-        ]
-      }
-    ],
-    "tables": [
-      {
-        "tableName": "database_(claims_data_-_case_study_-__tableau_-new)",
-        "displayName": "Database (Claims Data - Case study -  Tableau -New)",
-        "rowCount": 2400,
-        "dataSource": "Tableau Extract (.hyper)",
-        "columns": [
-          {
-            "name": "Policy",
-            "type": "integer"
-          },
-          {
-            "name": "SubOffice",
-            "type": "integer"
-          },
-          {
-            "name": "Sub Office Name",
-            "type": "string"
-          },
-          {
-            "name": "Claimant No.",
-            "type": "integer"
-          },
-          {
-            "name": "Gender",
-            "type": "string"
-          },
-          {
-            "name": "Product Name",
-            "type": "string"
-          },
-          {
-            "name": "Ben Desc",
-            "type": "string"
-          },
-          {
-            "name": "Benefit Nature",
-            "type": "string"
-          },
-          {
-            "name": "HMO Clinical Benefit Desc",
-            "type": "string"
-          },
-          {
-            "name": "BenPlan",
-            "type": "integer"
-          },
-          {
-            "name": "Currency Symbol",
-            "type": "string"
-          },
-          {
-            "name": "Claims Cost",
-            "type": "real"
-          },
-          {
-            "name": "Provider Name",
-            "type": "string"
-          },
-          {
-            "name": "District Name",
-            "type": "string"
-          },
-          {
-            "name": "Diagnosis Name",
-            "type": "string"
-          },
-          {
-            "name": "Date Paid",
-            "type": "date"
-          },
-          {
-            "name": "Dep Type",
-            "type": "string"
-          },
-          {
-            "name": "Ben Plan",
-            "type": "integer"
-          },
-          {
-            "name": "Benefit Nature",
-            "type": "string"
-          },
-          {
-            "name": "Calculation1",
-            "type": "real"
-          }
-        ],
-        "sampleRows": [
-          {
-            "Policy": 104829,
-            "SubOffice": 12,
-            "Sub Office Name": "Central Claims Branch",
-            "Claimant No.": 88401,
-            "Gender": "Male",
-            "Product Name": "HMO-HOSPITAL AND SURGICAL",
-            "Ben Desc": "Inpatient Surgery",
-            "Benefit Nature": "IN-PATIENT HOSPITALIZATION",
-            "HMO Clinical Benefit Desc": "General Surgery Coverage",
-            "BenPlan": 101,
-            "Currency Symbol": "$",
-            "Claims Cost": 4520.5,
-            "Provider Name": "St. Jude Medical Center",
-            "District Name": "District 1 - Metro",
-            "Diagnosis Name": "Acute Appendicitis",
-            "Date Paid": "2023-06-15",
-            "Dep Type": "Primary Employee",
-            "Ben Plan": 101,
-            "Calculation1": 4520.5
-          },
-          {
-            "Policy": 104830,
-            "SubOffice": 14,
-            "Sub Office Name": "West Coast Operations",
-            "Claimant No.": 88402,
-            "Gender": "Female",
-            "Product Name": "HMO-CLINICAL",
-            "Ben Desc": "Specialist Consultation",
-            "Benefit Nature": "OUT-PATIENT CLINICAL",
-            "HMO Clinical Benefit Desc": "Outpatient Cardiology",
-            "BenPlan": 102,
-            "Currency Symbol": "$",
-            "Claims Cost": 320.0,
-            "Provider Name": "Pacific Health Clinic",
-            "District Name": "District 3 - Coastal",
-            "Diagnosis Name": "Hypertensive Heart Disease",
-            "Date Paid": "2023-06-18",
-            "Dep Type": "Spouse",
-            "Ben Plan": 102,
-            "Calculation1": 320.0
-          },
-          {
-            "Policy": 104831,
-            "SubOffice": 12,
-            "Sub Office Name": "Central Claims Branch",
-            "Claimant No.": 88403,
-            "Gender": "Female",
-            "Product Name": "HMO-DENTAL",
-            "Ben Desc": "Preventative Dental",
-            "Benefit Nature": "WELLNESS DENTAL",
-            "HMO Clinical Benefit Desc": "Routine Cleaning & Exam",
-            "BenPlan": 101,
-            "Currency Symbol": "$",
-            "Claims Cost": 180.0,
-            "Provider Name": "Metro Dental Group",
-            "District Name": "District 1 - Metro",
-            "Diagnosis Name": "Routine Dental Exam",
-            "Date Paid": "2023-06-20",
-            "Dep Type": "Child",
-            "Ben Plan": 101,
-            "Calculation1": 180.0
-          }
-        ]
-      },
-      {
-        "tableName": "sheet1_(navigation)",
-        "displayName": "Sheet1 (Navigation)",
-        "rowCount": 2400,
-        "dataSource": "Tableau Extract (.hyper)",
-        "columns": [
-          {
-            "name": "Page ID",
-            "type": "integer"
-          },
-          {
-            "name": "Page Desc",
-            "type": "string"
-          },
-          {
-            "name": "Number of Records",
-            "type": "integer"
-          },
-          {
-            "name": "Page Desc",
-            "type": "string"
-          },
-          {
-            "name": "Page ID",
-            "type": "integer"
-          },
-          {
-            "name": "Migrated Data",
-            "type": "table"
-          },
-          {
-            "name": "Page ID",
-            "type": "integer"
-          },
-          {
-            "name": "Page Desc",
-            "type": "string"
-          }
-        ],
-        "sampleRows": [
-          {
-            "Page ID": 1,
-            "Page Desc": "Executive Overview",
-            "Number of Records": 1420,
-            "Migrated Data": "Complete"
-          },
-          {
-            "Page ID": 2,
-            "Page Desc": "Department and Districtwise Claim Analysis",
-            "Number of Records": 3850,
-            "Migrated Data": "Complete"
-          },
-          {
-            "Page ID": 3,
-            "Page Desc": "Productwise Claim Analysis",
-            "Number of Records": 2100,
-            "Migrated Data": "Complete"
-          }
-        ]
-      }
-    ]
-  },
-  "d7": {
-    "summary": {
-      "totalDashboards": 1,
-      "totalWorksheets": 9,
-      "totalTables": 1,
-      "totalCalculatedFields": 7
-    },
-    "worksheets": [
-      {
-        "id": "ws_1",
-        "name": "New",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Category",
-          "Segment"
-        ],
-        "measures": [
-          {
-            "name": "Amount",
-            "type": "base_measure"
-          },
-          {
-            "name": "New Budget",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_531987722593701892",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[:Measure Names]",
-          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[Multiple Values]"
-        }
-      },
-      {
-        "id": "ws_2",
-        "name": "No of invoice by Accnt Exec",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Account Executive (invoice!202001231041)"
-        ],
-        "measures": [
-          {
-            "name": "invoice_number",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Account Executive (invoice!202001231041):nk]",
-          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:invoice_number:qk]"
-        }
-      },
-      {
-        "id": "ws_3",
-        "name": "No of meeting by Accnt Exec",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Account Executive (meeting!list!202001231041)"
-        ],
-        "measures": [
-          {
-            "name": "__tableau_internal_object_id__].[meeting!list!202001231041_8DEA75082D9B4E319F02AD26040B6DD1",
-            "type": "base_measure"
-          },
-          {
-            "name": "meeting_date",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Account Executive (meeting!list!202001231041):nk]",
-          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[__tableau_internal_object_id__].[cnt:meeting!list!202001231041_8DEA75082D9B4E319F02AD26040B6DD1:qk]"
-        }
-      },
-      {
-        "id": "ws_4",
-        "name": "Open Oppty-Top 4",
-        "chartType": "Bar Chart",
-        "dimensions": [
-          "opportunity_name"
-        ],
-        "measures": [
-          {
-            "name": "revenue_amount",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:revenue_amount:qk]",
-          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:opportunity_name:nk]"
-        }
-      },
-      {
-        "id": "ws_5",
-        "name": "Oppty by Revenue - Top 4",
-        "chartType": "Pie Chart",
-        "dimensions": [
-          "opportunity_name"
-        ],
-        "measures": [
-          {
-            "name": "revenue_amount",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "",
-          "columns": ""
-        }
-      },
-      {
-        "id": "ws_6",
-        "name": "Oppty by product",
-        "chartType": "Pie Chart",
-        "dimensions": [
-          "product_group (gcrm!opportunity!202001231041)"
-        ],
-        "measures": [
-          {
-            "name": "opportunity_name",
-            "type": "base_measure"
-          },
-          {
-            "name": "product_group (gcrm!opportunity!202001231041)",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_1027383682329116673",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "([federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:Calculation_1027383682329116673:qk] + [federated.0gnnp1u032pgq11ajatw91fr25ge].[sum:Calculation_1027383682329116673:qk])",
-          "columns": ""
-        }
-      },
-      {
-        "id": "ws_7",
-        "name": "Renewal",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Category",
-          "Segment"
-        ],
-        "measures": [
-          {
-            "name": "Renewal Budget",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_531987722592980994",
-            "type": "base_measure"
-          },
-          {
-            "name": "Calculation_531987722593865733",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[:Measure Names]",
-          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[Multiple Values]"
-        }
-      },
-      {
-        "id": "ws_8",
-        "name": "Stage by revenue",
-        "chartType": "Automatic",
-        "dimensions": [
-          "stage"
-        ],
-        "measures": [
-          {
-            "name": "stage",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:stage:nk]",
-          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:stage:qk]"
-        }
-      },
-      {
-        "id": "ws_9",
-        "name": "budget",
-        "chartType": "Automatic",
-        "dimensions": [
-          "Employee Name"
-        ],
-        "measures": [
-          {
-            "name": "New Budget",
-            "type": "base_measure"
-          }
-        ],
-        "axes": {
-          "rows": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[none:Employee Name:nk]",
-          "columns": "[federated.0gnnp1u032pgq11ajatw91fr25ge].[cnt:New Budget:qk]"
-        }
-      }
-    ],
-    "calculatedFields": [
-      {
-        "id": "calc_1",
-        "name": "zero",
-        "formula": "0",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "New"
-        ]
-      },
-      {
-        "id": "calc_2",
-        "name": "Achieved",
-        "formula": "SUM([Amount (fees!202001231041)])+SUM([Amount])",
-        "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "New"
-        ]
-      },
-      {
-        "id": "calc_3",
-        "name": "Achieved_Cross_Sell",
-        "formula": "SUM([Amount]) - 21547181",
-        "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "New"
-        ]
-      },
-      {
-        "id": "calc_4",
-        "name": "Achieved_Renewal",
-        "formula": "SUM([Amount]) - 16755532",
-        "role": "measure",
-        "datatype": "real",
-        "usedInSheets": [
-          "New"
-        ]
-      },
-      {
-        "id": "calc_5",
-        "name": "Invoice_cross_sell",
-        "formula": "SUM([Amount (invoice!202001231041)]) - 9412706",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "New"
-        ]
-      },
-      {
-        "id": "calc_6",
-        "name": "Invoice_new",
-        "formula": "SUM([Amount (invoice!202001231041)]) - 11692706",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "New"
-        ]
-      },
-      {
-        "id": "calc_7",
-        "name": "Invoice_Renewal",
-        "formula": "SUM([Amount (invoice!202001231041)]) - 4322211",
-        "role": "measure",
-        "datatype": "integer",
-        "usedInSheets": [
-          "New"
-        ]
-      }
-    ],
-    "tables": [
-      {
-        "tableName": "brokerage_202001231040_(multiple_connections)",
-        "displayName": "brokerage_202001231040 (Multiple Connections)",
-        "rowCount": 1850,
-        "dataSource": "Tableau Extract (.hyper)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "string"
-          },
-          {
-            "name": "policy_number",
-            "type": "string"
-          },
-          {
-            "name": "policy_status",
-            "type": "string"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "date"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "date"
-          },
-          {
-            "name": "product_group",
-            "type": "string"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "integer"
-          },
-          {
-            "name": "Exe Name",
-            "type": "string"
-          },
-          {
-            "name": "branch_name",
-            "type": "string"
-          },
-          {
-            "name": "solution_group",
-            "type": "string"
-          },
-          {
-            "name": "income_class",
-            "type": "string"
-          },
-          {
-            "name": "Amount",
-            "type": "real"
-          },
-          {
-            "name": "income_due_date",
-            "type": "date"
-          },
-          {
-            "name": "revenue_transaction_type",
-            "type": "string"
-          },
-          {
-            "name": "renewal_status",
-            "type": "string"
-          },
-          {
-            "name": "lapse_reason",
-            "type": "string"
-          },
-          {
-            "name": "last_updated_date",
-            "type": "date"
-          },
-          {
-            "name": "client_name",
-            "type": "string"
-          },
-          {
-            "name": "branch_name",
-            "type": "string"
-          },
-          {
-            "name": "solution_group",
-            "type": "string"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": 104,
-            "Exe Name": "Sarah Jenkins",
-            "branch_name": "Northeast Regional",
-            "solution_group": "Commercial Lines",
-            "income_class": "Brokerage Fee",
-            "Amount": 14500.0,
-            "income_due_date": "2023-02-01",
-            "revenue_transaction_type": "Direct Bill",
-            "renewal_status": "Renewed",
-            "lapse_reason": "N/A",
-            "last_updated_date": "2023-12-31"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": 108,
-            "Exe Name": "Michael Chang",
-            "branch_name": "Midwest Central",
-            "solution_group": "Commercial Lines",
-            "income_class": "Commission",
-            "Amount": 8900.5,
-            "income_due_date": "2023-03-15",
-            "revenue_transaction_type": "Agency Bill",
-            "renewal_status": "Renewed",
-            "lapse_reason": "N/A",
-            "last_updated_date": "2023-12-31"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Lapsed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": 112,
-            "Exe Name": "David Ross",
-            "branch_name": "Southern District",
-            "solution_group": "Specialty Risk",
-            "income_class": "Brokerage Fee",
-            "Amount": 22400.0,
-            "income_due_date": "2022-11-15",
-            "revenue_transaction_type": "Direct Bill",
-            "renewal_status": "Non-Renewed",
-            "lapse_reason": "Price Competition",
-            "last_updated_date": "2023-11-05"
-          }
-        ]
-      }
-    ]
-  },
-  "d11": SALES_INSURANCE_DETAIL,
+  }
 };
