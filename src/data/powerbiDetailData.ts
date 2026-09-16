@@ -1749,19 +1749,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": "Commercial Auto",
+            "Agency state": "TX",
+            "AOR + Agent": "AOR-201 Robert Miller",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": "Property",
+            "Agency state": "FL",
+            "AOR + Agent": "AOR-205 Lisa Anderson",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": "General Liability",
+            "Agency state": "CA",
+            "AOR + Agent": "AOR-212 Kevin Patel",
+            "Reporting Period": "2023-Q4"
           }
         ]
       },
@@ -1793,19 +1796,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": "Commercial Auto",
+            "Agency state": "TX",
+            "AOR + Agent": "AOR-201 Robert Miller",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": "Property",
+            "Agency state": "FL",
+            "AOR + Agent": "AOR-205 Lisa Anderson",
+            "Reporting Period": "2023-Q4"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": "General Liability",
+            "Agency state": "CA",
+            "AOR + Agent": "AOR-212 Kevin Patel",
+            "Reporting Period": "2023-Q4"
           }
         ]
       },
@@ -1825,19 +1831,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "District": "District 1 - North",
+            "Agent": "AOR-201 Robert Miller"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "District": "District 2 - South",
+            "Agent": "AOR-205 Lisa Anderson"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "District": "District 3 - West",
+            "Agent": "AOR-212 Kevin Patel"
           }
         ]
       }
@@ -2974,28 +2977,28 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "Daily Assigned Import Rate by CY": 150,
-            "Import Assigned-Rate": 150,
-            "Imported datetime adjusted": 150,
-            "LOB": 150,
-            "State": 150,
-            "bind": 150
+            "Daily Assigned Import Rate by CY": 0.85,
+            "Import Assigned-Rate": 0.92,
+            "Imported datetime adjusted": 20230901,
+            "LOB": 1.0,
+            "State": 39.0,
+            "bind": 1.0
           },
           {
-            "Daily Assigned Import Rate by CY": 300,
-            "Import Assigned-Rate": 300,
-            "Imported datetime adjusted": 300,
-            "LOB": 300,
-            "State": 300,
-            "bind": 300
+            "Daily Assigned Import Rate by CY": 0.78,
+            "Import Assigned-Rate": 0.88,
+            "Imported datetime adjusted": 20230902,
+            "LOB": 2.0,
+            "State": 42.0,
+            "bind": 0.0
           },
           {
-            "Daily Assigned Import Rate by CY": 450,
-            "Import Assigned-Rate": 450,
-            "Imported datetime adjusted": 450,
-            "LOB": 450,
-            "State": 450,
-            "bind": 450
+            "Daily Assigned Import Rate by CY": 0.91,
+            "Import Assigned-Rate": 0.95,
+            "Imported datetime adjusted": 20230903,
+            "LOB": 1.0,
+            "State": 26.0,
+            "bind": 1.0
           }
         ]
       },
@@ -3015,13 +3018,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "Allocated_IND": 150
+            "Allocated_IND": 100
+          },
+          {
+            "Allocated_IND": 200
           },
           {
             "Allocated_IND": 300
-          },
-          {
-            "Allocated_IND": 450
           }
         ]
       }
@@ -3664,19 +3667,34 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Weekday": "Monday",
+            "Territory": "Northeast",
+            "Agency_Division": "Commercial",
+            "AB_TEST_GROUP": "Test A",
+            "SHOPPING_ALERT_DATE": "2023-08-14",
+            "PLCY_NUM": "POL-44012",
+            "AGENT_STATE": "NY",
+            "Total Alert": 14
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Weekday": "Wednesday",
+            "Territory": "Midwest",
+            "Agency_Division": "Personal",
+            "AB_TEST_GROUP": "Control",
+            "SHOPPING_ALERT_DATE": "2023-08-16",
+            "PLCY_NUM": "POL-44089",
+            "AGENT_STATE": "IL",
+            "Total Alert": 8
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Weekday": "Friday",
+            "Territory": "Southeast",
+            "Agency_Division": "Commercial",
+            "AB_TEST_GROUP": "Test B",
+            "SHOPPING_ALERT_DATE": "2023-08-18",
+            "PLCY_NUM": "POL-44155",
+            "AGENT_STATE": "FL",
+            "Total Alert": 22
           }
         ]
       }
@@ -4903,19 +4921,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Month": "January",
+            "Opportunity Days": 45,
+            "ProductRevenue": 125000.0,
+            "FactoredProductRevenue": 106250.0,
+            "Opportunity ID": "OPP-1001"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Month": "February",
+            "Opportunity Days": 32,
+            "ProductRevenue": 98000.0,
+            "FactoredProductRevenue": 83300.0,
+            "Opportunity ID": "OPP-1002"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Month": "March",
+            "Opportunity Days": 60,
+            "ProductRevenue": 210000.0,
+            "FactoredProductRevenue": 178500.0,
+            "Opportunity ID": "OPP-1003"
           }
         ]
       },
@@ -4935,19 +4959,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Product Code": "PROD-AUTO",
+            "Product Name": "Commercial Fleet Auto",
+            "Category": "Automotive"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Product Code": "PROD-HOME",
+            "Product Name": "Homeowners Comprehensive",
+            "Category": "Property"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Product Code": "PROD-COMM",
+            "Product Name": "General Commercial Liability",
+            "Category": "Liability"
           }
         ]
       },
@@ -4975,19 +4999,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Region": "East",
+            "State": "NY",
+            "Segment": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Region": "West",
+            "State": "CA",
+            "Segment": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Region": "Central",
+            "State": "TX",
+            "Segment": 3
           }
         ]
       },
@@ -5007,19 +5031,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Sales Stage": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Sales Stage": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Sales Stage": 3
           }
         ]
       },
@@ -5039,19 +5057,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Opportunity Size": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Opportunity Size": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Opportunity Size": 3
           }
         ]
       },
@@ -5071,19 +5083,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Partner": 101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Partner": 102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Partner": 103
           }
         ]
       }
@@ -5304,19 +5310,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "AOR + Agent": 101,
+            "District": 4,
+            "Reporting Period": 202303,
+            "Line of Business": 1,
+            "Agency State": "OH"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "AOR + Agent": 104,
+            "District": 2,
+            "Reporting Period": 202303,
+            "Line of Business": 2,
+            "Agency State": "PA"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "AOR + Agent": 109,
+            "District": 7,
+            "Reporting Period": 202303,
+            "Line of Business": 1,
+            "Agency State": "MI"
           }
         ]
       },
@@ -5348,19 +5360,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": 1,
+            "Agency state": 39,
+            "AOR + Agent": 101,
+            "Reporting Period": 202303
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": 2,
+            "Agency state": 42,
+            "AOR + Agent": 104,
+            "Reporting Period": 202303
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": 1,
+            "Agency state": 26,
+            "AOR + Agent": 109,
+            "Reporting Period": 202303
           }
         ]
       },
@@ -5392,19 +5407,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": 1,
+            "Agency state": 39,
+            "AOR + Agent": 101,
+            "Reporting Period": 202303
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": 2,
+            "Agency state": 42,
+            "AOR + Agent": 104,
+            "Reporting Period": 202303
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": 1,
+            "Agency state": 26,
+            "AOR + Agent": 109,
+            "Reporting Period": 202303
           }
         ]
       }
@@ -5647,25 +5665,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "AOR + Agent": 150,
-            "Agency State": 150,
-            "District": 150,
-            "Line of Business": 150,
-            "Reporting Period": 150
+            "AOR + Agent": 101.0,
+            "Agency State": 39.0,
+            "District": 4.0,
+            "Line of Business": 1.0,
+            "Reporting Period": 202303.0
           },
           {
-            "AOR + Agent": 300,
-            "Agency State": 300,
-            "District": 300,
-            "Line of Business": 300,
-            "Reporting Period": 300
+            "AOR + Agent": 104.0,
+            "Agency State": 42.0,
+            "District": 2.0,
+            "Line of Business": 2.0,
+            "Reporting Period": 202303.0
           },
           {
-            "AOR + Agent": 450,
-            "Agency State": 450,
-            "District": 450,
-            "Line of Business": 450,
-            "Reporting Period": 450
+            "AOR + Agent": 109.0,
+            "Agency State": 26.0,
+            "District": 7.0,
+            "Line of Business": 1.0,
+            "Reporting Period": 202303.0
           }
         ]
       },
@@ -5697,22 +5715,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "AOR + Agent": 150,
-            "Agency state": 150,
-            "Line of Business": 150,
-            "Reporting Period": 150
+            "AOR + Agent": 101.0,
+            "Agency state": 39.0,
+            "Line of Business": 1.0,
+            "Reporting Period": 202303.0
           },
           {
-            "AOR + Agent": 300,
-            "Agency state": 300,
-            "Line of Business": 300,
-            "Reporting Period": 300
+            "AOR + Agent": 104.0,
+            "Agency state": 42.0,
+            "Line of Business": 2.0,
+            "Reporting Period": 202303.0
           },
           {
-            "AOR + Agent": 450,
-            "Agency state": 450,
-            "Line of Business": 450,
-            "Reporting Period": 450
+            "AOR + Agent": 109.0,
+            "Agency state": 26.0,
+            "Line of Business": 1.0,
+            "Reporting Period": 202303.0
           }
         ]
       },
@@ -5736,16 +5754,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "NB Counts": 150,
-            "NB Counts Agents in Bottom Quartile": 150
+            "NB Counts": 45.0,
+            "NB Counts Agents in Bottom Quartile": 12.0
           },
           {
-            "NB Counts": 300,
-            "NB Counts Agents in Bottom Quartile": 300
+            "NB Counts": 58.0,
+            "NB Counts Agents in Bottom Quartile": 16.0
           },
           {
-            "NB Counts": 450,
-            "NB Counts Agents in Bottom Quartile": 450
+            "NB Counts": 62.0,
+            "NB Counts Agents in Bottom Quartile": 19.0
           }
         ]
       },
@@ -5769,16 +5787,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "R12 Loss Score Ratio Var to Bottom Quartile": 150,
-            "R12_OVERALL_SCORE": 150
+            "R12 Loss Score Ratio Var to Bottom Quartile": -0.14,
+            "R12_OVERALL_SCORE": 78.5
           },
           {
-            "R12 Loss Score Ratio Var to Bottom Quartile": 300,
-            "R12_OVERALL_SCORE": 300
+            "R12 Loss Score Ratio Var to Bottom Quartile": -0.08,
+            "R12_OVERALL_SCORE": 82.1
           },
           {
-            "R12 Loss Score Ratio Var to Bottom Quartile": 450,
-            "R12_OVERALL_SCORE": 450
+            "R12 Loss Score Ratio Var to Bottom Quartile": -0.22,
+            "R12_OVERALL_SCORE": 71.3
           }
         ]
       },
@@ -5798,13 +5816,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "Agent": 150
+            "Agent": 101.0
           },
           {
-            "Agent": 300
+            "Agent": 104.0
           },
           {
-            "Agent": 450
+            "Agent": 109.0
           }
         ]
       },
@@ -5824,13 +5842,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "Agent": 150
+            "Agent": 101.0
           },
           {
-            "Agent": 300
+            "Agent": 104.0
           },
           {
-            "Agent": 450
+            "Agent": 109.0
           }
         ]
       }
@@ -6051,19 +6069,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "AOR + Agent": 301,
+            "District": 5,
+            "Reporting Period": 202302,
+            "Line of Business": 1,
+            "Agency State": "IL"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "AOR + Agent": 308,
+            "District": 1,
+            "Reporting Period": 202302,
+            "Line of Business": 2,
+            "Agency State": "OH"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "AOR + Agent": 315,
+            "District": 8,
+            "Reporting Period": 202302,
+            "Line of Business": 1,
+            "Agency State": "IN"
           }
         ]
       },
@@ -6095,19 +6119,22 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Line of Business": 1,
+            "Agency state": 17,
+            "AOR + Agent": 301,
+            "Reporting Period": 202302
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Line of Business": 2,
+            "Agency state": 39,
+            "AOR + Agent": 308,
+            "Reporting Period": 202302
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Line of Business": 1,
+            "Agency state": 18,
+            "AOR + Agent": 315,
+            "Reporting Period": 202302
           }
         ]
       }
@@ -6829,19 +6856,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Country/Region": "United States",
+            "Sales Region": "North America"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Country/Region": "United Kingdom",
+            "Sales Region": "EMEA"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Country/Region": "Germany",
+            "Sales Region": "EMEA"
           }
         ]
       },
@@ -6869,19 +6893,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 1001,
+            "Name": "Hardware Infrastructure",
+            "Metric_Value": 245000.0
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 1002,
+            "Name": "Software Licensing",
+            "Metric_Value": 189000.0
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 1003,
+            "Name": "Cloud Services",
+            "Metric_Value": 312000.0
           }
         ]
       },
@@ -6905,19 +6929,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Period": 202301,
+            "Month": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Period": 202302,
+            "Month": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Period": 202303,
+            "Month": 3
           }
         ]
       },
@@ -6941,19 +6962,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "IT Sub Area": 101,
+            "IT Area": 10
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "IT Sub Area": 102,
+            "IT Area": 10
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "IT Sub Area": 201,
+            "IT Area": 20
           }
         ]
       },
@@ -6973,19 +6991,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Business Area": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Business Area": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Business Area": 3
           }
         ]
       },
@@ -7005,19 +7017,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Scenario": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Scenario": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Scenario": 3
           }
         ]
       },
@@ -7041,19 +7047,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Cost Element Group": 10,
+            "Cost element name": 101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Cost Element Group": 10,
+            "Cost element name": 102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Cost Element Group": 20,
+            "Cost element name": 201
           }
         ]
       },
@@ -7077,19 +7080,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "VP": 1,
+            "Department": 101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "VP": 2,
+            "Department": 102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "VP": 3,
+            "Department": 103
           }
         ]
       }
@@ -9661,19 +9661,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Design Factor": 1.25,
+            "Topic": 101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Design Factor": 0.95,
+            "Topic": 102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Design Factor": 1.1,
+            "Topic": 103
           }
         ]
       },
@@ -9709,19 +9706,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Category Image": "https://assets.store.com/cat1.png",
+            "Product": 101,
+            "Segment": 1,
+            "Category": "Monitors",
+            "Product Image": 1001
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Category Image": "https://assets.store.com/cat2.png",
+            "Product": 102,
+            "Segment": 2,
+            "Category": "Peripherals",
+            "Product Image": 1002
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Category Image": "https://assets.store.com/cat3.png",
+            "Product": 103,
+            "Segment": 1,
+            "Category": "Office",
+            "Product Image": 1003
           }
         ]
       },
@@ -9749,19 +9752,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Status": 1,
+            "Dates": 20230501,
+            "Date": 20230501
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Status": 1,
+            "Dates": 20230502,
+            "Date": 20230502
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Status": 2,
+            "Dates": 20230503,
+            "Date": 20230503
           }
         ]
       },
@@ -9789,19 +9792,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 301,
+            "Name": "Total Sales Amount",
+            "Metric_Value": 892400.0
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 302,
+            "Name": "Total Return Amount",
+            "Metric_Value": 42100.0
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 303,
+            "Name": "Return Rate %",
+            "Metric_Value": 4.72
           }
         ]
       },
@@ -9829,19 +9832,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Latitude": 40.7128,
+            "Store": 101,
+            "Longitude": -74.006
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Latitude": 34.0522,
+            "Store": 102,
+            "Longitude": -118.2437
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Latitude": 41.8781,
+            "Store": 103,
+            "Longitude": -87.6298
           }
         ]
       },
@@ -9889,19 +9892,34 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Type": "Loyalty Member",
+            "Segment": 1,
+            "Promotion": 10,
+            "Unit": 2,
+            "Product": 101,
+            "Age": 34,
+            "Price Range": 2,
+            "Category": "Monitors"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Type": "New Customer",
+            "Segment": 3,
+            "Promotion": 15,
+            "Unit": 1,
+            "Product": 102,
+            "Age": 28,
+            "Price Range": 1,
+            "Category": "Peripherals"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Type": "Repeat Customer",
+            "Segment": 2,
+            "Promotion": 0,
+            "Unit": 1,
+            "Product": 103,
+            "Age": 45,
+            "Price Range": 2,
+            "Category": "Office"
           }
         ]
       },
@@ -9921,19 +9939,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Date": 20230101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Date": 20230102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Date": 20230103
           }
         ]
       },
@@ -9953,19 +9965,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "% Return Rate": 4.72
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "% Return Rate": 5.1
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "% Return Rate": 3.85
           }
         ]
       },
@@ -9985,19 +9991,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "RuleID": 101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "RuleID": 102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "RuleID": 103
           }
         ]
       },
@@ -10025,19 +10025,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Product Image": 1001,
+            "Segmented by": 1,
+            "Product": 101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Product Image": 1002,
+            "Segmented by": 2,
+            "Product": 102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Product Image": 1003,
+            "Segmented by": 1,
+            "Product": 103
           }
         ]
       },
@@ -10065,19 +10065,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 401,
+            "Name": "Visual Color Scale",
+            "Metric_Value": 1.0
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 402,
+            "Name": "Dynamic Card Title",
+            "Metric_Value": 1.0
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 403,
+            "Name": "Conditional Format Indicator",
+            "Metric_Value": 1.0
           }
         ]
       },
@@ -10097,19 +10097,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "URL": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "URL": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "URL": 3
           }
         ]
       },
@@ -10129,19 +10123,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "URL": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "URL": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "URL": 3
           }
         ]
       }
@@ -10498,19 +10486,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "FiscalMonth": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "FiscalMonth": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "FiscalMonth": 3
           }
         ]
       },
@@ -10538,19 +10520,19 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "ID": 501,
+            "Name": "Gross Sales",
+            "Metric_Value": 124500.5
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "ID": 502,
+            "Name": "Discounts & Allowances",
+            "Metric_Value": 14200.0
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "ID": 503,
+            "Name": "Net Sales",
+            "Metric_Value": 110300.5
           }
         ]
       },
@@ -10570,19 +10552,13 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "District": 1
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "District": 2
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "District": 3
           }
         ]
       },
@@ -10618,19 +10594,25 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Name": "Store 101 - Main St",
+            "Chain": 1,
+            "PostalCode": 10001,
+            "StoreNumber": 101,
+            "Store Type": "Flagship"
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Name": "Store 102 - West End",
+            "Chain": 1,
+            "PostalCode": 10025,
+            "StoreNumber": 102,
+            "Store Type": "Standard"
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Name": "Store 103 - Airport Plaza",
+            "Chain": 2,
+            "PostalCode": 11430,
+            "StoreNumber": 103,
+            "Store Type": "Express"
           }
         ]
       },
@@ -10654,19 +10636,16 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
         ],
         "sampleRows": [
           {
-            "ID": 101,
-            "Status": "Active",
-            "Amount": 4500.0
+            "Category": "Electronics",
+            "Buyer": 101
           },
           {
-            "ID": 102,
-            "Status": "Pending",
-            "Amount": 2100.0
+            "Category": "Apparel",
+            "Buyer": 102
           },
           {
-            "ID": 103,
-            "Status": "Completed",
-            "Amount": 8900.0
+            "Category": "Home Goods",
+            "Buyer": 103
           }
         ]
       }
