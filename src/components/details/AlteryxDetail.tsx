@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -13,14 +13,15 @@ import {
   CheckCircle2,
   AlertTriangle,
   Play,
-  ArrowRight,
   FileInput,
   FileOutput,
+  Info,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 import type { AlteryxDetailData } from '../../data/alteryxDetailData';
-import { ALTERYX_DETAIL_DATA } from '../../data/alteryxDetailData';
+import { ALTERYX_DETAIL_DATA, getWorkflowBusinessSummary } from '../../data/alteryxDetailData';
+import { AlteryxWorkflowOverview } from './AlteryxWorkflowOverview';
 
 /* ─────────────────────────────────────────────────────────
  * AlteryxDetail — full-page detail view for Alteryx ETL
@@ -106,7 +107,8 @@ function StatusBadge({ status }: { status: 'valid' | 'warning' | 'error' }) {
 }
 
 export default function AlteryxDetail({ asset, onBack }: Props) {
-  const detailData: AlteryxDetailData = ALTERYX_DETAIL_DATA[asset.canonicalId ?? asset.id] ?? ALTERYX_DETAIL_DATA[asset.id] ?? {
+  const workflowId = asset.canonicalId ?? asset.id;
+  const detailData: AlteryxDetailData = ALTERYX_DETAIL_DATA[workflowId] ?? ALTERYX_DETAIL_DATA[asset.id] ?? {
     tools: [],
     connections: [],
     pipelineStages: [],
@@ -114,9 +116,18 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
     lastRunStatus: '',
     avgRuntime: '-',
   };
-  const { tools, connections, pipelineStages } = detailData;
+  const { tools, connections } = detailData;
+  const summary = getWorkflowBusinessSummary(workflowId, detailData, asset.description);
   const [expandedTool, setExpandedTool] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'pipeline' | 'tools' | 'connections'>('pipeline');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
 
   const logo = TECHNOLOGY_LOGOS[asset.technology];
   const inputConns = connections.filter((c) => c.direction === 'input');
@@ -128,6 +139,22 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
+      {/* ── Toast Notification ── */}
+      {toastMessage && (
+        <div
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl border text-sm font-medium"
+          style={{
+            backgroundColor: 'var(--color-bg-secondary)',
+            borderColor: 'var(--color-border-primary)',
+            color: 'var(--color-text-primary)',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
+          }}
+        >
+          <Info size={16} style={{ color: 'var(--color-accent)' }} className="shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* ── Back button ── */}
       <button
         type="button"
@@ -222,8 +249,8 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
         className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
       >
         <StatCard icon={Settings} label="Tool Count" value={tools.length} color="#8B5CF6" />
-        <StatCard icon={FileInput} label="Input Sources" value={asset.sourceCount ?? inputConns.length} color="#3B82F6" />
-        <StatCard icon={FileOutput} label="Output Targets" value={asset.targetCount ?? outputConns.length} color="#22C55E" />
+        <StatCard icon={FileInput} label="Input Sources" value={summary.sourceInputs.length || asset.sourceCount || inputConns.length} color="#3B82F6" />
+        <StatCard icon={FileOutput} label="Output Targets" value={summary.businessOutputs.length || asset.targetCount || outputConns.length} color="#22C55E" />
         <StatCard icon={Clock} label="Avg Runtime" value={detailData.avgRuntime || '-'} color="#F59E0B" />
       </motion.div>
 
@@ -262,7 +289,7 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
           ))}
         </div>
 
-        {/* ── Pipeline Flow Tab ── */}
+        {/* ── Pipeline Flow Tab (Alteryx Workflow Overview) ── */}
         {activeTab === 'pipeline' && (
           <div
             className="rounded-xl border p-6 theme-transition"
@@ -272,68 +299,15 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
               boxShadow: '0 1px 4px var(--color-card-shadow)',
             }}
           >
-            <h3 className="text-[14px] font-bold mb-5" style={{ color: 'var(--color-text-primary)' }}>
-              ETL Pipeline Stages
-            </h3>
-
-            <div className="flex items-center justify-between gap-4 overflow-x-auto py-4">
-              {pipelineStages.map((stage, i) => (
-                <div key={stage.id} className="flex items-center gap-4 flex-1 min-w-[140px]">
-                  <div className="flex-1">
-                    <div
-                      className="rounded-xl border p-4 text-center"
-                      style={{
-                        borderColor: stage.color,
-                        backgroundColor: `${stage.color}08`,
-                      }}
-                    >
-                      <stage.icon size={28} style={{ color: stage.color, margin: '0 auto 8px' }} />
-                      <h4 className="text-[13px] font-bold mb-0.5" style={{ color: 'var(--color-text-primary)' }}>
-                        {stage.label}
-                      </h4>
-                      <p className="text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                        {stage.tools} tools
-                      </p>
-                    </div>
-                  </div>
-                  {i < pipelineStages.length - 1 && (
-                    <ArrowRight size={20} className="shrink-0" style={{ color: 'var(--color-border-secondary)' }} />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Mini input/output summary */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-5 border-t" style={{ borderColor: 'var(--color-border-subtle)' }}>
-              <div>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
-                  Data Sources ({inputConns.length})
-                </h4>
-                <div className="flex flex-col gap-1.5">
-                  {inputConns.map((c) => (
-                    <div key={c.id} className="flex items-center gap-2 text-[11px]">
-                      <FileInput size={10} style={{ color: '#3B82F6' }} />
-                      <span style={{ color: 'var(--color-text-primary)' }}>{c.name}</span>
-                      <span style={{ color: 'var(--color-text-tertiary)' }}>· {c.type}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-tertiary)' }}>
-                  Targets ({outputConns.length})
-                </h4>
-                <div className="flex flex-col gap-1.5">
-                  {outputConns.map((c) => (
-                    <div key={c.id} className="flex items-center gap-2 text-[11px]">
-                      <FileOutput size={10} style={{ color: '#22C55E' }} />
-                      <span style={{ color: 'var(--color-text-primary)' }}>{c.name}</span>
-                      <span style={{ color: 'var(--color-text-tertiary)' }}>· {c.type}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <AlteryxWorkflowOverview
+              asset={asset}
+              detailData={detailData}
+              onSelectTool={(toolId) => {
+                setActiveTab('tools');
+                setExpandedTool(toolId);
+              }}
+              onShowToast={(msg) => setToastMessage(msg)}
+            />
           </div>
         )}
 

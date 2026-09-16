@@ -963,3 +963,679 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
 ALTERYX_DETAIL_DATA.p4 = ALTERYX_DETAIL_DATA.c11; // Workflow_03
 ALTERYX_DETAIL_DATA.p5 = ALTERYX_DETAIL_DATA.c12; // Workflow_01
 ALTERYX_DETAIL_DATA.p6 = ALTERYX_DETAIL_DATA.c13; // Workflow_02
+
+/* ─────────────────────────────────────────────────────────
+ * Workflow SVG Path Configuration
+ * 
+ * Maps workflow asset IDs to browser-openable SVG paths/URLs.
+ * Uses Vite static asset imports to resolve direct browser URLs.
+ * ───────────────────────────────────────────────────────── */
+import demoClaimsVolumeExtractSvg from './Demo Claims Volume Extract.svg';
+
+export const WORKFLOW_SVG_PATHS: Record<string, string> = {
+  // Add/import the corresponding workflow SVG assets here.
+  c10: demoClaimsVolumeExtractSvg, // Claims_Extract_Volume
+  c11: '', // Workflow_03
+  c12: '', // Workflow_01
+  c13: '', // Workflow_02
+  c14: demoClaimsVolumeExtractSvg, // Claims_Extract_Volume_v2
+  u4: '',  // Workflow_04
+  d6: '',  // Burritos_Distribution
+  p4: '',  // Workflow_03 (Policy Administration)
+  p5: '',  // Workflow_01 (Policy Administration)
+  p6: '',  // Workflow_02 (Policy Administration)
+};
+
+/* ── Alteryx Workflow Overview / Business Intelligence Types ── */
+export interface BusinessInput {
+  toolId?: number | string;
+  name: string;
+  sourceFilename?: string;
+  sourceType?: string;
+  businessRole?: string;
+}
+
+export interface BusinessOutput {
+  toolId?: number | string;
+  name: string;
+  destinationType?: string;
+  businessMeaning?: string;
+  likelyUse?: string;
+}
+
+export interface BusinessStage {
+  stageNumber: number;
+  name: string;
+  shortTitle?: string;
+  summary: string;
+  description?: string;
+  businessPurpose?: string;
+  majorTransformation?: string;
+  toolCount: number;
+  toolIds: (number | string)[];
+  annotations?: string[];
+}
+
+export interface WorkflowBusinessSummary {
+  businessPurpose: string;
+  oneLinePurpose: string;
+  sourceInputs: BusinessInput[];
+  processingStages: BusinessStage[];
+  businessOutputs: BusinessOutput[];
+  metrics?: {
+    totalNodes: number;
+    totalConnections: number;
+    inputCount: number;
+    outputCount: number;
+  };
+}
+
+export const WORKFLOW_BUSINESS_SUMMARIES: Record<string, WorkflowBusinessSummary> = {
+  c10: {
+    oneLinePurpose: 'Extracts and enriches claims data from multiple Excel sources, summarising claim volume by quarter and status.',
+    businessPurpose: 'Extracts historical claims volume and financial payment transactions from core Excel workbooks, enriches claim details with policy attributes and adjuster notes, and generates executive quarterly, product-level, geographical, and aging risk summary deliverables.',
+    sourceInputs: [
+      { name: 'Claims_Volume_Extract_Demo.xlsx', sourceFilename: 'Claims_Volume_Extract_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Primary claims volume extract' },
+      { name: 'Policy_Master_Demo.xlsx', sourceFilename: 'Policy_Master_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Policy reference attributes' },
+      { name: 'Claim_Payments_Demo.xlsx', sourceFilename: 'Claim_Payments_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Claim payment transactions' },
+      { name: 'Claim_Diary_Notes_Demo.xlsx', sourceFilename: 'Claim_Diary_Notes_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Adjuster diary notes' },
+    ],
+    businessOutputs: [
+      { name: 'Claims Historical Detail', destinationType: 'Excel (Detail Sheet)', likelyUse: 'Claim-level audit and historical analysis' },
+      { name: 'Claims Quarter Summary', destinationType: 'Excel (QuarterSummary Sheet)', likelyUse: 'Quarterly management volume reporting' },
+      { name: 'Product Type Summary', destinationType: 'Excel (ProductTypeSummary Sheet)', likelyUse: 'Product line loss performance reviews' },
+      { name: 'State Summary', destinationType: 'Excel (StateSummary Sheet)', likelyUse: 'Geographical volume and state distribution' },
+      { name: 'Aging/Litigation Risk Summary', destinationType: 'Excel (AgingRiskSummary Sheet)', likelyUse: 'Litigation tracking and diary aging risk' },
+    ],
+    processingStages: [
+      {
+        stageNumber: 1,
+        name: 'Extract Claims Data',
+        shortTitle: '01 EXTRACT CLAIMS DATA',
+        summary: 'Reads claims volume dataset and initializes branch processing.',
+        businessPurpose: 'Primary claims data extraction from core operational workbook.',
+        majorTransformation: 'Sequential branch fan-out via Block Until Done.',
+        toolCount: 2,
+        toolIds: ['t1', 't2'],
+        annotations: ['Reads Claims_Volume_Extract_Demo.xlsx', 'Fans out to quarterly and team summarization branches'],
+      },
+      {
+        stageNumber: 2,
+        name: 'Create Summarizations',
+        shortTitle: '02 CREATE SUMMARIZATIONS',
+        summary: 'Claims volume aggregation by quarter and status with cross-tab pivots.',
+        businessPurpose: 'Quarterly historical volume and status distribution rollups.',
+        majorTransformation: 'CrossTab pivot and quarter-end date descending sorting.',
+        toolCount: 5,
+        toolIds: ['t3', 't4', 't5', 't6', 't7'],
+        annotations: ['Group by Quarter End Date and Claim Status', 'Pivot claim status counts', 'Preview temp snapshot in Browse'],
+      },
+      {
+        stageNumber: 3,
+        name: 'Latest Quarter Team Analysis',
+        shortTitle: '03 LATEST QUARTER TEAM ANALYSIS',
+        summary: 'Claims volume aggregation by manager and examiner for the most recent quarter.',
+        businessPurpose: 'Executive team productivity scorecard for the active reporting period.',
+        majorTransformation: 'Finds max quarter and filters managerial records via Join.',
+        toolCount: 7,
+        toolIds: ['t8', 't9', 't10', 't11', 't12', 't13', 't14'],
+        annotations: ['Find latest reporting quarter end date', 'Join manager and examiner summaries to latest quarter', 'CrossTab pivot by team and manager'],
+      },
+      {
+        stageNumber: 4,
+        name: 'Detail Exports',
+        shortTitle: '04 DETAIL EXPORTS',
+        summary: 'Prepares claim-level historical details and quarterly summary Excel exports.',
+        businessPurpose: 'Publishes core historical claim detail and quarterly volume worksheets.',
+        majorTransformation: 'Field projection, sorting, and multi-tab Excel output generation.',
+        toolCount: 4,
+        toolIds: ['t15', 't16', 't17', 't18'],
+        annotations: ['Select claim detail and diagnosis fields', 'Write Claims_Historical_Extract_Demo_Output.xlsx (Detail & QuarterSummary)'],
+      },
+      {
+        stageNumber: 5,
+        name: 'Additional Claims Data Sources',
+        shortTitle: '05 ADDITIONAL CLAIMS DATA SOURCES',
+        summary: 'Ingests policy master, payments, and adjuster diary records.',
+        businessPurpose: 'Enrichment feed ingestion from auxiliary underwriting and transaction systems.',
+        majorTransformation: 'Multi-source file ingestion.',
+        toolCount: 3,
+        toolIds: ['t101', 't102', 't103'],
+        annotations: ['Reads Policy_Master_Demo.xlsx', 'Reads Claim_Payments_Demo.xlsx', 'Reads Claim_Diary_Notes_Demo.xlsx'],
+      },
+      {
+        stageNumber: 6,
+        name: 'Enrichment & Joins',
+        shortTitle: '06 ENRICHMENT & JOINS',
+        summary: 'Aggregates payments and executes relational joins to enrich claims with policy and diary notes.',
+        businessPurpose: 'Consolidates financial payment metrics and adjuster notes with base claims.',
+        majorTransformation: 'Payment summarization, multi-table left outer joins, and null flag default formatting.',
+        toolCount: 8,
+        toolIds: ['t104', 't111', 't112', 't113', 't114', 't115', 't116', 't117'],
+        annotations: ['Roll up total payments per claim', 'Join claims with policy master attributes', 'Join claims with adjuster diary entries', 'Default missing payments to 0'],
+      },
+      {
+        stageNumber: 7,
+        name: 'Aging Risk Categorization',
+        shortTitle: '07 AGING RISK CATEGORIZATION',
+        summary: 'Computes activity duration and assigns aging risk buckets.',
+        businessPurpose: 'Categorizes claims into duration-based aging risk tiers.',
+        majorTransformation: 'Calculates date difference from current date and assigns aging buckets (0-30, 31-90, 90+ days).',
+        toolCount: 1,
+        toolIds: ['t118'],
+        annotations: ['DateTimeDiff calculation against DateTimeToday()', 'Assign Aging Bucket categories'],
+      },
+      {
+        stageNumber: 8,
+        name: 'Risk & Geographic Exports',
+        shortTitle: '08 RISK & GEOGRAPHIC EXPORTS',
+        summary: 'Aggregates and outputs claims by product type, state, and aging/litigation risk.',
+        businessPurpose: 'Publishes segmented risk, state-level, and product-line reporting deliverables.',
+        majorTransformation: 'Multidimensional rollups and Excel report exports.',
+        toolCount: 9,
+        toolIds: ['t130', 't131', 't132', 't140', 't141', 't142', 't150', 't151', 't152'],
+        annotations: ['Summarize and write Claims_By_Product_Type_Demo_Output.xlsx', 'Summarize and write Claims_By_State_Demo_Output.xlsx', 'Summarize and write Claims_Aging_Risk_Demo_Output.xlsx'],
+      },
+    ],
+  },
+  c11: {
+    oneLinePurpose: 'Consolidates policy, claims and payment data from multiple sources.',
+    businessPurpose: 'Ingests multi-source policy data, customer demographics, and transactional claims payments to calculate month-end schedules, categorize premium risk tiers, and generate consolidated claims marts.',
+    sourceInputs: [
+      { name: 'Source Input #1', sourceFilename: 'Policy Data', sourceType: 'Alteryx Text Input', businessRole: 'Policy profiles (Policy_ID, Plan, Start Date)' },
+      { name: 'Source Input #2', sourceFilename: 'Policy Premium Data', sourceType: 'Alteryx Text Input', businessRole: 'Snapshot month and monthly premium amounts' },
+      { name: 'Source Input #3', sourceFilename: 'Claims Data', sourceType: 'Alteryx Text Input', businessRole: 'Core claims transaction records' },
+      { name: 'Source Input #4', sourceFilename: 'Diagnosis Data', sourceType: 'Alteryx Text Input', businessRole: 'Diagnosis types and ICD codes' },
+      { name: 'Source Input #5', sourceFilename: 'Payment Data', sourceType: 'Alteryx Text Input', businessRole: 'Payment transactions and amounts' },
+    ],
+    businessOutputs: [
+      { name: 'Policy Consolidation Output', destinationType: 'Excel / Control Container', likelyUse: 'Enterprise policy administration reporting' },
+      { name: 'Claims Consolidated Mart', destinationType: 'Enterprise Mart', likelyUse: 'Downstream cross-sell and claims dashboards' },
+      { name: 'SL Monthly Volume', destinationType: 'Analytical Dataset', likelyUse: 'Executive claims frequency tracking' },
+    ],
+    processingStages: [
+      {
+        stageNumber: 1,
+        name: 'Data Ingestion',
+        shortTitle: '01 DATA INGESTION',
+        summary: 'Ingests policy, premium, claims, diagnosis, and payment source datasets.',
+        businessPurpose: 'Extracts multi-stream input feeds into standardized pipeline branches.',
+        majorTransformation: 'Simultaneous 5-stream data ingestion.',
+        toolCount: 5,
+        toolIds: ['#1', '#6', '#28', '#31', '#39'],
+        annotations: ['Ingest Policy Data (#1)', 'Ingest Policy Premium (#6)', 'Ingest Diagnosis Data (#28)', 'Ingest Claims Data (#31)', 'Ingest Payment Data (#39)'],
+      },
+      {
+        stageNumber: 2,
+        name: 'Parsing & Schema Standardization',
+        shortTitle: '02 PARSING & SCHEMA STANDARDIZATION',
+        summary: 'Delimits text records, strips delimiters, and standardizes column schemas.',
+        businessPurpose: 'Cleanses raw input feeds and enforces canonical field schemas.',
+        majorTransformation: 'Delimiter splitting, dynamic header assignment, and column projection.',
+        toolCount: 15,
+        toolIds: ['#2', '#3', '#4', '#7', '#8', '#9', '#26', '#27', '#29', '#32', '#33', '#34', '#40', '#41', '#42'],
+        annotations: ['Text to columns delimiter splitting across all streams', 'Dynamic renaming from first row headers', 'Select and cast typed columns'],
+      },
+      {
+        stageNumber: 3,
+        name: 'Policy & Premium Enrichment',
+        shortTitle: '03 POLICY & PREMIUM ENRICHMENT',
+        summary: 'Joins policy profiles with monthly premium metrics and assigns premium tier categories.',
+        businessPurpose: 'Derives policyholder premium risk tiers (High / Medium).',
+        majorTransformation: 'Join on Policy_ID and Premium_Group formula evaluation.',
+        toolCount: 4,
+        toolIds: ['#16', '#17', '#18', '#46'],
+        annotations: ['Join Policy Data with Premium Data on Policy_ID', 'Formula: categorize Monthly_Premium into Premium_Group', 'Data Ingestion Control Container'],
+      },
+      {
+        stageNumber: 4,
+        name: 'Diagnosis & Payment Rollup',
+        shortTitle: '04 DIAGNOSIS & PAYMENT ROLLUP',
+        summary: 'Aggregates max ICD codes, computes month-end payment schedules, and rolls up paid amounts per claim.',
+        businessPurpose: 'Calculates chronological payment deadlines and primary diagnosis codes.',
+        majorTransformation: 'Month_End_Date formula derivation and grouped metric aggregations.',
+        toolCount: 6,
+        toolIds: ['#22', '#25', '#36', '#37', '#38', '#44'],
+        annotations: ['Formula: DateTimeTrim Month_End_Date derivation', 'Summarize: Max ICD_Code by Diagnosis_Type', 'Summarize: Paid Amount sum and distinct Payments Made count'],
+      },
+      {
+        stageNumber: 5,
+        name: 'Claims & Policy Consolidation',
+        shortTitle: '05 CLAIMS & POLICY CONSOLIDATION',
+        summary: 'Joins enriched policy records with claims and payment aggregations for downstream publication.',
+        businessPurpose: 'Publishes unified enterprise analytical claims mart.',
+        majorTransformation: 'Multi-stream relational joins on Claim_ID and Policy_ID.',
+        toolCount: 4,
+        toolIds: ['#23', '#24', '#43', '#45'],
+        annotations: ['Join claims with diagnosis ICD rollups', 'Join claims with payment aggregates', 'Join consolidated claims with policy profiles', 'Control Container WF01 (Claims Summary)'],
+      },
+    ],
+  },
+  c12: {
+    oneLinePurpose: 'Consolidates claims and payments data through various transformations.',
+    businessPurpose: 'Consolidates claims payment records, calculates month-end dates, derives maximum diagnosis ICD codes per claim, and produces unified claims settlement output.',
+    sourceInputs: [
+      { name: 'Source Input #1', sourceFilename: 'Claims Data', sourceType: 'Alteryx Text Input', businessRole: 'Base claims transactions' },
+      { name: 'Source Input #2', sourceFilename: 'Diagnosis Data', sourceType: 'Alteryx Text Input', businessRole: 'Claim diagnosis classifications and ICD codes' },
+      { name: 'Source Input #3', sourceFilename: 'Payment Data', sourceType: 'Alteryx Text Input', businessRole: 'Claim settlement payment details' },
+    ],
+    businessOutputs: [
+      { name: 'WF01_Output.xlsx', destinationType: 'Excel Workbook (Sheet1)', likelyUse: 'Claims consolidation and settlement reporting' },
+    ],
+    processingStages: [
+      {
+        stageNumber: 1,
+        name: 'Source Extraction',
+        shortTitle: '01 SOURCE EXTRACTION',
+        summary: 'Ingests raw claims, diagnosis, and payment transaction text feeds.',
+        businessPurpose: 'Input data feed extraction from core transactional tables.',
+        majorTransformation: 'Multi-stream ingestion.',
+        toolCount: 3,
+        toolIds: ['#8', '#11', '#15'],
+        annotations: ['Ingest Claims Data (#8)', 'Ingest Diagnosis Data (#11)', 'Ingest Payment Data (#15)'],
+      },
+      {
+        stageNumber: 2,
+        name: 'Parsing & Schema Standardization',
+        shortTitle: '02 PARSING & SCHEMA STANDARDIZATION',
+        summary: 'Delimits text feeds into structured columns and renames schema fields.',
+        businessPurpose: 'Cleanses raw feeds and applies header renaming.',
+        majorTransformation: 'Delimiter splitting and dynamic renaming.',
+        toolCount: 6,
+        toolIds: ['#6', '#7', '#9', '#12', '#13', '#14', '#18', '#19', '#20'],
+        annotations: ['Text to columns on Field1', 'Select required columns and rename headers'],
+      },
+      {
+        stageNumber: 3,
+        name: 'Payment Schedule & ICD Rollup',
+        shortTitle: '03 PAYMENT SCHEDULE & ICD ROLLUP',
+        summary: 'Computes month-end payment dates, aggregates payment totals, and finds max ICD codes.',
+        businessPurpose: 'Derives settlement payment dates and rollup metrics per claim.',
+        majorTransformation: 'Month_End_Date formula and Summarize aggregations.',
+        toolCount: 4,
+        toolIds: ['#16', '#17', '#5', '#10'],
+        annotations: ['Formula: Month_End_Date derivation', 'Summarize: Sum of Payment_Amount and distinct Payment_ID count', 'Summarize: Max ICD_Code by Diagnosis_Type'],
+      },
+      {
+        stageNumber: 4,
+        name: 'Relational Integration',
+        shortTitle: '04 RELATIONAL INTEGRATION',
+        summary: 'Joins diagnosis records, payment summaries, and claims records on Claim_ID.',
+        businessPurpose: 'Integrates disparate streams into single enriched claims record.',
+        majorTransformation: 'Relational joins on Claim_ID and Diagnosis_Type.',
+        toolCount: 3,
+        toolIds: ['#1', '#2', '#3'],
+        annotations: ['Join claims with payment summary', 'Join claims with diagnosis classification'],
+      },
+      {
+        stageNumber: 5,
+        name: 'Deliverable Export',
+        shortTitle: '05 DELIVERABLE EXPORT',
+        summary: 'Writes consolidated claims and payment records to Excel output.',
+        businessPurpose: 'Exports finalized settlement reporting dataset.',
+        majorTransformation: 'Output file generation.',
+        toolCount: 1,
+        toolIds: ['#4'],
+        annotations: ['Write WF01_Output.xlsx (Sheet1)'],
+      },
+    ],
+  },
+  c13: {
+    oneLinePurpose: 'Calculates key dates and aggregates claim volumes by industry type.',
+    businessPurpose: 'Calculates key operational dates including Clm_Service_Date and Month_End_Date using predefined formula logic and aggregates claim volume summaries by industry sector.',
+    sourceInputs: [
+      { name: 'Source Input #1', sourceFilename: 'Claim Industry Data', sourceType: 'Alteryx Text Input', businessRole: 'Industry classifications' },
+      { name: 'Source Input #2', sourceFilename: 'Claims Data', sourceType: 'Alteryx Text Input', businessRole: 'Claims transaction records' },
+      { name: 'Source Input #3', sourceFilename: 'Payment Data', sourceType: 'Alteryx Text Input', businessRole: 'Payment history records' },
+    ],
+    businessOutputs: [
+      { name: 'SL_Monthly_C_Volume.xlsx', destinationType: 'Excel Workbook (Sheet1)', likelyUse: 'Industry claim volume performance reports' },
+    ],
+    processingStages: [
+      {
+        stageNumber: 1,
+        name: 'Source Ingestion',
+        shortTitle: '01 SOURCE INGESTION',
+        summary: 'Ingests claim industry data, claims data, and payment stream inputs.',
+        businessPurpose: 'Extracts 3 transactional feeds into the workflow.',
+        majorTransformation: 'Multi-stream text input extraction.',
+        toolCount: 3,
+        toolIds: ['#1', '#7', '#11'],
+        annotations: ['Ingest Claim Industry Data', 'Ingest Claims Data', 'Ingest Payment Data'],
+      },
+      {
+        stageNumber: 2,
+        name: 'Field Extraction & Parsing',
+        shortTitle: '02 FIELD EXTRACTION & PARSING',
+        summary: 'Parses delimited strings and applies dynamic column headers.',
+        businessPurpose: 'Standardizes column types and formats.',
+        majorTransformation: 'Text delimiter parsing and field selection.',
+        toolCount: 6,
+        toolIds: ['#2', '#5', '#6', '#8', '#9', '#10'],
+        annotations: ['Text to columns delimiter parsing', 'Dynamic column renaming', 'Select required attributes'],
+      },
+      {
+        stageNumber: 3,
+        name: 'Date Derivation & Summarization',
+        shortTitle: '03 DATE DERIVATION & SUMMARIZATION',
+        summary: 'Derives service dates, month-end dates, and calculates payment aggregates.',
+        businessPurpose: 'Computes settlement chronology and payment sums.',
+        majorTransformation: 'Clm_Service_Date and Month_End_Date formulas with Summarize totals.',
+        toolCount: 4,
+        toolIds: ['#12', '#13', '#14', '#15'],
+        annotations: ['Formula: Clm_Service_Date derivation', 'Formula: Month_End_Date derivation', 'Summarize payment totals by claim'],
+      },
+      {
+        stageNumber: 4,
+        name: 'Industry Join',
+        shortTitle: '04 INDUSTRY JOIN',
+        summary: 'Joins claims with industry classification and service date rollups.',
+        businessPurpose: 'Enriches claims with commercial industry sectors.',
+        majorTransformation: 'Relational join on Claim_ID and Industry_Type.',
+        toolCount: 4,
+        toolIds: ['#3', '#4', '#16'],
+        annotations: ['Join claims with industry categories', 'Filter active industry claims'],
+      },
+      {
+        stageNumber: 5,
+        name: 'Volume Publication',
+        shortTitle: '05 VOLUME PUBLICATION',
+        summary: 'Exports monthly industry claim volume reports to Excel.',
+        businessPurpose: 'Publishes industry volume summary deliverable.',
+        majorTransformation: 'Excel output generation.',
+        toolCount: 1,
+        toolIds: ['#17'],
+        annotations: ['Write SL_Monthly_C_Volume.xlsx'],
+      },
+    ],
+  },
+  c14: {
+    oneLinePurpose: 'Secondary extract workflow for aging-litigation risk categorization.',
+    businessPurpose: 'Extracts historical claims volume and financial payment transactions from core Excel workbooks, enriches claim details with policy attributes and adjuster notes, and generates executive quarterly, product-level, geographical, and aging risk summary deliverables.',
+    sourceInputs: [
+      { name: 'Claims_Volume_Extract_Demo.xlsx', sourceFilename: 'Claims_Volume_Extract_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Primary claims volume extract' },
+      { name: 'Policy_Master_Demo.xlsx', sourceFilename: 'Policy_Master_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Policy reference attributes' },
+      { name: 'Claim_Payments_Demo.xlsx', sourceFilename: 'Claim_Payments_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Claim payment transactions' },
+      { name: 'Claim_Diary_Notes_Demo.xlsx', sourceFilename: 'Claim_Diary_Notes_Demo.xlsx', sourceType: 'Excel Workbook', businessRole: 'Adjuster diary notes' },
+    ],
+    businessOutputs: [
+      { name: 'Claims Historical Detail', destinationType: 'Excel (Detail Sheet)', likelyUse: 'Claim-level audit and historical analysis' },
+      { name: 'Claims Quarter Summary', destinationType: 'Excel (QuarterSummary Sheet)', likelyUse: 'Quarterly management volume reporting' },
+      { name: 'Product Type Summary', destinationType: 'Excel (ProductTypeSummary Sheet)', likelyUse: 'Product line loss performance reviews' },
+      { name: 'State Summary', destinationType: 'Excel (StateSummary Sheet)', likelyUse: 'Geographical volume and state distribution' },
+      { name: 'Aging/Litigation Risk Summary', destinationType: 'Excel (AgingRiskSummary Sheet)', likelyUse: 'Litigation tracking and diary aging risk' },
+    ],
+    processingStages: [
+      {
+        stageNumber: 1,
+        name: 'Extract Claims Data',
+        shortTitle: '01 EXTRACT CLAIMS DATA',
+        summary: 'Reads claims volume dataset and initializes branch processing.',
+        businessPurpose: 'Primary claims data extraction from core operational workbook.',
+        majorTransformation: 'Sequential branch fan-out via Block Until Done.',
+        toolCount: 2,
+        toolIds: ['t1', 't2'],
+        annotations: ['Reads Claims_Volume_Extract_Demo.xlsx', 'Fans out to quarterly and team summarization branches'],
+      },
+      {
+        stageNumber: 2,
+        name: 'Create Summarizations',
+        shortTitle: '02 CREATE SUMMARIZATIONS',
+        summary: 'Claims volume aggregation by quarter and status with cross-tab pivots.',
+        businessPurpose: 'Quarterly historical volume and status distribution rollups.',
+        majorTransformation: 'CrossTab pivot and quarter-end date descending sorting.',
+        toolCount: 5,
+        toolIds: ['t3', 't4', 't5', 't6', 't7'],
+        annotations: ['Group by Quarter End Date and Claim Status', 'Pivot claim status counts', 'Preview temp snapshot in Browse'],
+      },
+      {
+        stageNumber: 3,
+        name: 'Latest Quarter Team Analysis',
+        shortTitle: '03 LATEST QUARTER TEAM ANALYSIS',
+        summary: 'Claims volume aggregation by manager and examiner for the most recent quarter.',
+        businessPurpose: 'Executive team productivity scorecard for the active reporting period.',
+        majorTransformation: 'Finds max quarter and filters managerial records via Join.',
+        toolCount: 7,
+        toolIds: ['t8', 't9', 't10', 't11', 't12', 't13', 't14'],
+        annotations: ['Find latest reporting quarter end date', 'Join manager and examiner summaries to latest quarter', 'CrossTab pivot by team and manager'],
+      },
+      {
+        stageNumber: 4,
+        name: 'Detail Exports',
+        shortTitle: '04 DETAIL EXPORTS',
+        summary: 'Prepares claim-level historical details and quarterly summary Excel exports.',
+        businessPurpose: 'Publishes core historical claim detail and quarterly volume worksheets.',
+        majorTransformation: 'Field projection, sorting, and multi-tab Excel output generation.',
+        toolCount: 4,
+        toolIds: ['t15', 't16', 't17', 't18'],
+        annotations: ['Select claim detail and diagnosis fields', 'Write Claims_Historical_Extract_Demo_Output.xlsx (Detail & QuarterSummary)'],
+      },
+      {
+        stageNumber: 5,
+        name: 'Additional Claims Data Sources',
+        shortTitle: '05 ADDITIONAL CLAIMS DATA SOURCES',
+        summary: 'Ingests policy master, payments, and adjuster diary records.',
+        businessPurpose: 'Enrichment feed ingestion from auxiliary underwriting and transaction systems.',
+        majorTransformation: 'Multi-source file ingestion.',
+        toolCount: 3,
+        toolIds: ['t101', 't102', 't103'],
+        annotations: ['Reads Policy_Master_Demo.xlsx', 'Reads Claim_Payments_Demo.xlsx', 'Reads Claim_Diary_Notes_Demo.xlsx'],
+      },
+      {
+        stageNumber: 6,
+        name: 'Enrichment & Joins',
+        shortTitle: '06 ENRICHMENT & JOINS',
+        summary: 'Aggregates payments and executes relational joins to enrich claims with policy and diary notes.',
+        businessPurpose: 'Consolidates financial payment metrics and adjuster notes with base claims.',
+        majorTransformation: 'Payment summarization, multi-table left outer joins, and null flag default formatting.',
+        toolCount: 8,
+        toolIds: ['t104', 't111', 't112', 't113', 't114', 't115', 't116', 't117'],
+        annotations: ['Roll up total payments per claim', 'Join claims with policy master attributes', 'Join claims with adjuster diary entries', 'Default missing payments to 0'],
+      },
+      {
+        stageNumber: 7,
+        name: 'Aging Risk Categorization',
+        shortTitle: '07 AGING RISK CATEGORIZATION',
+        summary: 'Computes activity duration and assigns aging risk buckets.',
+        businessPurpose: 'Categorizes claims into duration-based aging risk tiers.',
+        majorTransformation: 'Calculates date difference from current date and assigns aging buckets (0-30, 31-90, 90+ days).',
+        toolCount: 1,
+        toolIds: ['t118'],
+        annotations: ['DateTimeDiff calculation against DateTimeToday()', 'Assign Aging Bucket categories'],
+      },
+      {
+        stageNumber: 8,
+        name: 'Risk & Geographic Exports',
+        shortTitle: '08 RISK & GEOGRAPHIC EXPORTS',
+        summary: 'Aggregates and outputs claims by product type, state, and aging/litigation risk.',
+        businessPurpose: 'Publishes segmented risk, state-level, and product-line reporting deliverables.',
+        majorTransformation: 'Multidimensional rollups and Excel report exports.',
+        toolCount: 9,
+        toolIds: ['t130', 't131', 't132', 't140', 't141', 't142', 't150', 't151', 't152'],
+        annotations: ['Summarize and write Claims_By_Product_Type_Demo_Output.xlsx', 'Summarize and write Claims_By_State_Demo_Output.xlsx', 'Summarize and write Claims_Aging_Risk_Demo_Output.xlsx'],
+      },
+    ],
+  },
+  u4: {
+    oneLinePurpose: 'Consolidates operational data across volume performance, geography, and operation metrics.',
+    businessPurpose: 'Ingests customer underwriting profiles and characteristic weight tables, evaluates risk scores via custom underwriting macro logic, and outputs validated underwriting profiles.',
+    sourceInputs: [
+      { name: 'Source Input #30', sourceFilename: 'Customer Underwriting Data', sourceType: 'Alteryx Text Input', businessRole: 'Customer demographic and policy records' },
+      { name: 'Source Input #31', sourceFilename: 'Customer Characteristics Mapping', sourceType: 'Alteryx Text Input', businessRole: 'Attribute-value-weight mappings' },
+    ],
+    businessOutputs: [
+      { name: 'Underwriting Profile Inspection', destinationType: 'BrowseV2 Output', likelyUse: 'Underwriting validation and rating inspection' },
+    ],
+    processingStages: [
+      {
+        stageNumber: 1,
+        name: 'Profile Ingestion',
+        shortTitle: '01 PROFILE INGESTION',
+        summary: 'Ingests customer demographic attributes and characteristic weight tables.',
+        businessPurpose: 'Extracts underwriting profiles and score mappings.',
+        majorTransformation: 'Dual stream text input extraction.',
+        toolCount: 2,
+        toolIds: ['#30', '#31'],
+        annotations: ['Ingest Customer Underwriting Data', 'Ingest Customer Characteristics Mapping'],
+      },
+      {
+        stageNumber: 2,
+        name: 'Macro Execution',
+        shortTitle: '02 MACRO EXECUTION',
+        summary: 'Executes custom Underwriting Macro logic to calculate customer risk ratings.',
+        businessPurpose: 'Underwriting risk scoring and rating computation.',
+        majorTransformation: 'Custom macro execution (Workflow_04_Macro.yxmc).',
+        toolCount: 1,
+        toolIds: ['#36'],
+        annotations: ['Execute Workflow_04_Macro.yxmc on incoming profiles'],
+      },
+      {
+        stageNumber: 3,
+        name: 'Profile Inspection',
+        shortTitle: '03 PROFILE INSPECTION',
+        summary: 'Profiles and inspects transformed underwriting risk scores.',
+        businessPurpose: 'Output validation.',
+        majorTransformation: 'Data profiling and preview.',
+        toolCount: 1,
+        toolIds: ['#35'],
+        annotations: ['Inspect and profile output records in BrowseV2'],
+      },
+    ],
+  },
+  d6: {
+    oneLinePurpose: 'Processes operational distribution data with date filtering and volume aggregations.',
+    businessPurpose: 'Reads regional operational distribution datasets, parses dates, filters records for Thursday operational cycles, and calculates average distribution volume for reporting.',
+    sourceInputs: [
+      { name: '4701229_YK5IEQ9R.xlsx', sourceFilename: '4701229_YK5IEQ9R.xlsx', sourceType: 'Excel Workbook (Sheet1)', businessRole: 'Distribution volume and date records' },
+    ],
+    businessOutputs: [
+      { name: 'Workflow8_output.xlsx', destinationType: 'Excel Workbook (Sheet1)', likelyUse: 'Thursday operational distribution volume report' },
+    ],
+    processingStages: [
+      {
+        stageNumber: 1,
+        name: 'Data Ingestion',
+        shortTitle: '01 DATA INGESTION',
+        summary: 'Reads operational distribution records from Excel workbook.',
+        businessPurpose: 'Extracts source records from 4701229_YK5IEQ9R.xlsx.',
+        majorTransformation: 'Excel workbook file reading.',
+        toolCount: 1,
+        toolIds: ['#1'],
+        annotations: ['Read 4701229_YK5IEQ9R.xlsx (Sheet1)'],
+      },
+      {
+        stageNumber: 2,
+        name: 'Date Parsing & Filtering',
+        shortTitle: '02 DATE PARSING & FILTERING',
+        summary: 'Converts date strings to datetime and filters records for Thursday cycles.',
+        businessPurpose: 'Standardizes dates and isolates Thursday operational schedules.',
+        majorTransformation: 'Custom datetime parsing and DayOfWeek filter.',
+        toolCount: 2,
+        toolIds: ['#3', '#4'],
+        annotations: ['Convert Date to DateTime_Out', "Filter: DayOfWeek([DateTime_Out]) = 'Thursday'"],
+      },
+      {
+        stageNumber: 3,
+        name: 'Volume Summarization',
+        shortTitle: '03 VOLUME SUMMARIZATION',
+        summary: 'Calculates average distribution volume metrics.',
+        businessPurpose: 'Computes average distribution volume for the period.',
+        majorTransformation: 'Average aggregation on Burritos field.',
+        toolCount: 1,
+        toolIds: ['#5'],
+        annotations: ['Summarize: Average of Burritos -> Avg_Burritos'],
+      },
+      {
+        stageNumber: 4,
+        name: 'Report Export',
+        shortTitle: '04 REPORT EXPORT',
+        summary: 'Publishes summarized distribution metrics to Workflow8_output.xlsx.',
+        businessPurpose: 'Delivers distribution reporting workbook.',
+        majorTransformation: 'Excel output generation.',
+        toolCount: 1,
+        toolIds: ['#6'],
+        annotations: ['Write Workflow8_output.xlsx (Sheet1)'],
+      },
+    ],
+  },
+};
+
+// Aliases
+WORKFLOW_BUSINESS_SUMMARIES.p4 = WORKFLOW_BUSINESS_SUMMARIES.c11;
+WORKFLOW_BUSINESS_SUMMARIES.p5 = WORKFLOW_BUSINESS_SUMMARIES.c12;
+WORKFLOW_BUSINESS_SUMMARIES.p6 = WORKFLOW_BUSINESS_SUMMARIES.c13;
+
+/**
+ * Returns deterministic business summary facts for a given workflow asset.
+ * Falls back to dynamically generated facts from detailData if not explicitly registered.
+ */
+export function getWorkflowBusinessSummary(assetId: string, detailData?: AlteryxDetailData, fallbackDescription?: string): WorkflowBusinessSummary {
+  const registered = WORKFLOW_BUSINESS_SUMMARIES[assetId];
+  if (registered) return registered;
+
+  // Dynamic fallback from detailData
+  const tools = detailData?.tools ?? [];
+  const connections = detailData?.connections ?? [];
+  const inputConns = connections.filter((c) => c.direction === 'input');
+  const outputConns = connections.filter((c) => c.direction === 'output');
+
+  const sourceInputs: BusinessInput[] = inputConns.length > 0
+    ? inputConns.map((c, i) => ({
+        name: c.name || `Source Input #${i + 1}`,
+        sourceFilename: c.name,
+        sourceType: c.type || 'Data Source',
+      }))
+    : [{ name: 'Source Input #1', sourceFilename: 'Source Data', sourceType: 'Data Source' }];
+
+  const businessOutputs: BusinessOutput[] = outputConns.length > 0
+    ? outputConns.map((c) => ({
+        name: c.name || 'Analytical Deliverable',
+        destinationType: c.type || 'Output Dataset',
+        likelyUse: 'Downstream analytical reporting',
+      }))
+    : [{ name: 'Analytical Output', destinationType: 'Output Dataset', likelyUse: 'Reporting' }];
+
+  const stages: BusinessStage[] = detailData?.pipelineStages && detailData.pipelineStages.length > 0
+    ? detailData.pipelineStages.map((stg, i) => ({
+        stageNumber: i + 1,
+        name: stg.label,
+        shortTitle: `0${i + 1} ${stg.label.toUpperCase()}`,
+        summary: `${stg.label} operational stage processing ${stg.tools} tools.`,
+        toolCount: stg.tools,
+        toolIds: tools.slice(i * 3, i * 3 + stg.tools).map((t) => t.id),
+      }))
+    : [
+        {
+          stageNumber: 1,
+          name: 'Data Ingestion & Extraction',
+          shortTitle: '01 DATA INGESTION',
+          summary: 'Extracts and validates raw input feeds.',
+          toolCount: inputConns.length || 1,
+          toolIds: tools.filter((t) => t.category === 'Input').map((t) => t.id),
+        },
+        {
+          stageNumber: 2,
+          name: 'Transformation & Processing',
+          shortTitle: '02 TRANSFORMATION & PROCESSING',
+          summary: 'Applies business rules, filtering, and metric aggregations.',
+          toolCount: Math.max(1, tools.length - inputConns.length - outputConns.length),
+          toolIds: tools.filter((t) => t.category !== 'Input' && t.category !== 'Output').map((t) => t.id),
+        },
+        {
+          stageNumber: 3,
+          name: 'Deliverables Publication',
+          shortTitle: '03 DELIVERABLES PUBLICATION',
+          summary: 'Publishes finalized analytical reporting deliverables.',
+          toolCount: outputConns.length || 1,
+          toolIds: tools.filter((t) => t.category === 'Output').map((t) => t.id),
+        },
+      ];
+
+  return {
+    oneLinePurpose: fallbackDescription || 'Data preparation and reporting workflow.',
+    businessPurpose: fallbackDescription || 'Executes multi-stage data integration and analytical transformation pipeline to publish reporting deliverables.',
+    sourceInputs,
+    processingStages: stages,
+    businessOutputs,
+  };
+}
