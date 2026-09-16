@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
-  Cloud,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -11,11 +10,9 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Sparkles,
   ArrowRight,
-  Shield,
-  Zap,
 } from 'lucide-react';
+import { AzureLogo } from './icons/CloudLogos';
 
 /* ─────────────────────────────────────────────────────────
  * Env defaults — auto-fill from VITE_* env variables
@@ -83,11 +80,6 @@ export default function IngestionModal({ isOpen, onClose, onConnect }: Ingestion
   const modalRef = useRef<HTMLDivElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
-  // Determine if env values are pre-filled
-  const hasEnvValues =
-    !!ENV_DEFAULTS.storageAccountName ||
-    !!ENV_DEFAULTS.connectionString ||
-    !!ENV_DEFAULTS.containerName;
 
   // Reset state when modal opens
   useEffect(() => {
@@ -226,13 +218,14 @@ export default function IngestionModal({ isOpen, onClose, onConnect }: Ingestion
                 <div className="flex items-center gap-3">
                   {/* Azure icon container */}
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border"
                     style={{
-                      backgroundColor: 'var(--color-accent-subtle)',
-                      boxShadow: '0 0 20px var(--color-accent-glow)',
+                      backgroundColor: 'rgba(0, 120, 212, 0.08)',
+                      borderColor: 'rgba(0, 120, 212, 0.22)',
+                      boxShadow: '0 0 20px rgba(0, 120, 212, 0.15)',
                     }}
                   >
-                    <Cloud size={22} style={{ color: 'var(--color-accent)' }} />
+                    <AzureLogo className="w-6 h-6" />
                   </div>
                   <div>
                     <h2
@@ -264,23 +257,6 @@ export default function IngestionModal({ isOpen, onClose, onConnect }: Ingestion
                   <X size={16} />
                 </button>
               </div>
-
-              {/* Env auto-fill badge */}
-              {hasEnvValues && (
-                <motion.div
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium"
-                  style={{
-                    backgroundColor: 'var(--color-badge-bg)',
-                    color: 'var(--color-badge-text)',
-                  }}
-                >
-                  <Sparkles size={11} />
-                  <span>Auto-filled from environment variables</span>
-                </motion.div>
-              )}
             </div>
 
             {/* ── Divider ── */}
@@ -493,25 +469,7 @@ export default function IngestionModal({ isOpen, onClose, onConnect }: Ingestion
             />
 
             {/* ── Footer ── */}
-            <div className="px-6 py-4 flex items-center justify-between">
-              {/* Security badges */}
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex items-center gap-1 text-[10px] font-medium"
-                  style={{ color: 'var(--color-text-tertiary)' }}
-                >
-                  <Shield size={11} />
-                  <span>Encrypted</span>
-                </div>
-                <div
-                  className="flex items-center gap-1 text-[10px] font-medium"
-                  style={{ color: 'var(--color-text-tertiary)' }}
-                >
-                  <Zap size={11} />
-                  <span>TLS 1.2+</span>
-                </div>
-              </div>
-
+            <div className="px-6 py-4 flex items-center justify-end">
               {/* Action buttons */}
               <div className="flex items-center gap-2.5">
                 <button
