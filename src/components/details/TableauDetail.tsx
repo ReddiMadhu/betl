@@ -284,7 +284,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
           </div>
         </div>
 
-        {/* Calculated Fields (Measures) Card */}
+        {/* Calculated Fields Card */}
         <div
           className="rounded-xl border p-4 theme-transition flex items-center gap-3.5 shadow-sm"
           style={{
@@ -300,7 +300,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
               {metadata.summary.totalCalculatedFields}
             </div>
             <div className="text-xs font-semibold" style={{ color: 'var(--color-text-tertiary)' }}>
-              Calculated Measures
+              Calculated Fields
             </div>
           </div>
         </div>
