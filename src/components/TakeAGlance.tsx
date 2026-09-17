@@ -210,8 +210,8 @@ export default function TakeAGlance({ onNavigate }: Props) {
     biAssessmentCount: 27,
     etlAssessmentCount: 8,
     sourceToTargetCount: 8,
-    biRationalizationCount: 7,
-    etlRationalizationCount: 3,
+    biRationalizationCount: 21,
+    etlRationalizationCount: 8,
   });
 
   useEffect(() => {
