@@ -8,10 +8,11 @@ import {
 import type { Asset } from '../../data/discoveryData';
 import type { AlteryxDetailData } from '../../data/alteryxDetailData';
 import {
-  WORKFLOW_SVG_PATHS,
   getWorkflowBusinessSummary,
+  getWorkflowLineageSvg,
 } from '../../data/alteryxDetailData';
 import type { BusinessStage } from '../../data/alteryxDetailData';
+import LineageViewerModal from './LineageViewerModal';
 
 /* ─────────────────────────────────────────────────────────
  * AlteryxWorkflowOverview — Exact adaptation of the
@@ -29,7 +30,7 @@ export const AlteryxWorkflowOverview: React.FC<AlteryxWorkflowOverviewProps> = (
   asset,
   detailData,
   onSelectTool,
-  onShowToast,
+  onShowToast: _onShowToast,
 }) => {
   const workflowId = asset.canonicalId ?? asset.id;
   const summary = useMemo(
@@ -38,6 +39,7 @@ export const AlteryxWorkflowOverview: React.FC<AlteryxWorkflowOverviewProps> = (
   );
 
   const [expandedStage, setExpandedStage] = useState<number | null>(null);
+  const [isLineageModalOpen, setIsLineageModalOpen] = useState(false);
 
   // Map tool ID to direct Alteryx tool name and details
   const toolMap = useMemo(() => {
@@ -57,17 +59,7 @@ export const AlteryxWorkflowOverview: React.FC<AlteryxWorkflowOverviewProps> = (
   };
 
   const handleViewEndToEndLineage = () => {
-    const svgPath = WORKFLOW_SVG_PATHS[workflowId] || WORKFLOW_SVG_PATHS[asset.id];
-    if (svgPath && svgPath.trim() !== '') {
-      window.open(svgPath, '_blank');
-    } else {
-      const msg = 'End-to-end lineage SVG is not configured for this workflow.';
-      if (onShowToast) {
-        onShowToast(msg);
-      } else {
-        console.warn(`[Lineage] ${msg} (Workflow ID: ${workflowId})`);
-      }
-    }
+    setIsLineageModalOpen(true);
   };
 
   const totalTools = detailData.tools.length;
@@ -587,6 +579,16 @@ export const AlteryxWorkflowOverview: React.FC<AlteryxWorkflowOverviewProps> = (
           </div>
         </div>
       )}
+
+      {/* Interactive Lineage DAG Modal (Works in Azure Storage Account & Locally) */}
+      <LineageViewerModal
+        isOpen={isLineageModalOpen}
+        onClose={() => setIsLineageModalOpen(false)}
+        svgContent={getWorkflowLineageSvg(workflowId, asset.name)}
+        workflowTitle={asset.name}
+        toolCount={totalTools}
+        connectionCount={totalConnections}
+      />
     </div>
   );
 };

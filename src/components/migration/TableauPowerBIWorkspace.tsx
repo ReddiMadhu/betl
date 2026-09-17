@@ -612,15 +612,6 @@ export default function TableauPowerBIWorkspace({ onBack, onFinish }: Props) {
                             </span>
                           </div>
                         </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold"
-                            style={{ backgroundColor: '#10b98115', color: '#10b981' }}
-                          >
-                            <CheckCircle size={12} /> Valid
-                          </span>
-                        </div>
                       </div>
 
                       {/* Collapsible Expanded Body */}
