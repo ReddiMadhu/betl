@@ -35,7 +35,7 @@
     {
       "name": "Complete_Tableau_PowerBI_Migration_Bundle.zip",
       "type": "bundle",
-      "description": "Master archive containing complete pbip_output project and table_data Excel workbooks"
+      "description": "Master archive containing complete pbip_output project, verification report, and table_data Excel workbooks"
     },
     {
       "name": "Tableau_PowerBI_Migration_PBIP.zip",
@@ -46,21 +46,6 @@
       "name": "Insurance_Table_Data_Excel.zip",
       "type": "excel",
       "description": "All 6 source Excel workbooks extracted from Tableau extract"
-    },
-    {
-      "name": "template.pbip",
-      "type": "pbip",
-      "description": "Microsoft Power BI Project descriptor linking report and semantic model"
-    },
-    {
-      "name": "model.tmdl",
-      "type": "tmdl",
-      "description": "Tabular Model Definition Language entry point"
-    },
-    {
-      "name": "MeasuresTable.tmdl",
-      "type": "tmdl",
-      "description": "TMDL definition for MeasuresTable containing all 21 converted measures"
     },
     {
       "name": "Tableau_Insurance_DAX_Measures.dax",

@@ -1852,6 +1852,7 @@ export interface MstrArtifact {
   description: string;
   size_bytes: number;
   environment: string;
+  download_url?: string;
 }
 
 export const mstrArtifacts: MstrArtifact[] = [
@@ -1860,16 +1861,18 @@ export const mstrArtifacts: MstrArtifact[] = [
     type: 'twbx',
     file_name: 'PC_Claims_Executive_Dashboard_prod.twbx',
     description: 'Production-ready Tableau packaged workbook configured with production datasource paths for direct server deployment.',
-    size_bytes: 284672,
+    size_bytes: 1171277,
     environment: 'production',
+    download_url: '/exports/mstr-tableau/PC_Claims_Executive_Dashboard_prod.twbx',
   },
   {
     id: 'art-2',
     type: 'twbx',
     file_name: 'PC_Claims_Executive_Dashboard_staging.twbx',
     description: 'Self-contained staging workbook with embedded extracts for local validation & Tableau Desktop verification.',
-    size_bytes: 312832,
+    size_bytes: 219424,
     environment: 'staging',
+    download_url: '/exports/mstr-tableau/PC_Claims_Executive_Dashboard_staging.twbx',
   },
   {
     id: 'art-3',
@@ -1878,22 +1881,25 @@ export const mstrArtifacts: MstrArtifact[] = [
     description: 'High-performance Hyper extract containing pre-aggregated analytical rows.',
     size_bytes: 524288,
     environment: 'production',
+    download_url: '/exports/mstr-tableau/Claims_Extract.hyper',
   },
   {
     id: 'art-4',
     type: 'tds',
     file_name: 'Claims_Datasource.tds',
     description: 'Tableau data source definition with calculated field logic & metadata.',
-    size_bytes: 43008,
+    size_bytes: 8277,
     environment: 'production',
+    download_url: '/exports/mstr-tableau/Claims_Datasource.tds',
   },
   {
     id: 'art-5',
     type: 'xlsx',
     file_name: 'PC_Claims_Migration_Documentation.xlsx',
     description: 'Comprehensive extraction & translation report: Overview & KPIs, MSTR Source Metadata, Metric & Logic Translation Matrix, Visual & Worksheet Mapping, and Execution Audit Trail.',
-    size_bytes: 66560,
+    size_bytes: 13445,
     environment: 'documentation',
+    download_url: '/exports/mstr-tableau/PC_Claims_Migration_Documentation.xlsx',
   },
 ];
 

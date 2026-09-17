@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<datasource formatted-name="Migrated_DS" inline="true" version="18.1">
+  <column caption="Loss Cause" datatype="string" name="[Loss Cause]" role="dimension" type="ordinal"/>
+  <column caption="Loss Date" datatype="date" name="[Loss Date]" role="dimension" type="ordinal"/>
+  <column caption="State" datatype="string" name="[State]" role="dimension" type="ordinal"/>
+  <column caption="Claim Status" datatype="string" name="[Claim Status]" role="dimension" type="ordinal"/>
+  <column caption="State Name" datatype="string" name="[State Name]" role="dimension" type="ordinal"/>
+  <column caption="Reported Date" datatype="date" name="[Reported Date]" role="dimension" type="ordinal"/>
+  <column caption="Latitude" datatype="real" name="[Latitude]" role="measure" type="quantitative"/>
+  <column caption="Coverage" datatype="string" name="[Coverage]" role="dimension" type="ordinal"/>
+  <column caption="Claim ID" datatype="string" name="[Claim ID]" role="dimension" type="ordinal"/>
+  <column caption="Region" datatype="string" name="[Region]" role="dimension" type="ordinal"/>
+  <column caption="Region State" datatype="string" name="[Region State]" role="dimension" type="ordinal"/>
+  <column caption="Severity Band" datatype="string" name="[Severity Band]" role="dimension" type="ordinal"/>
+  <column caption="Adjuster Name" datatype="string" name="[Adjuster Name]" role="dimension" type="ordinal"/>
+  <column caption="Customer Age" datatype="real" name="[Customer Age]" role="measure" type="quantitative"/>
+  <column caption="Longitude" datatype="real" name="[Longitude]" role="measure" type="quantitative"/>
+  <column caption="Litigation" datatype="string" name="[Litigation]" role="dimension" type="ordinal"/>
+  <column caption="Fraud Score" datatype="real" name="[Fraud Score]" role="measure" type="quantitative"/>
+  <column caption="Line of Business" datatype="string" name="[Line of Business]" role="dimension" type="ordinal"/>
+  <column caption="Claim Status Category" datatype="string" name="[Claim Status Category]" role="dimension" type="ordinal"/>
+  <column caption="Policy ID" datatype="string" name="[Policy ID]" role="dimension" type="ordinal"/>
+  <column caption="States" datatype="real" name="[States]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="COUNTD([State])"/>
+  </column>
+  <column caption="High Fraud Claims" datatype="real" name="[High Fraud Claims]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="SUM(IF ([Fraud Score] &gt;= 70) THEN 1 ELSE 0 END)"/>
+  </column>
+  <column caption="Sum (Subrogation)" datatype="real" name="[Sum (Subrogation)]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="ZN(SUM([Subrogation]))"/>
+  </column>
+  <column caption="Reserve" datatype="real" name="[Reserve]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="ZN(SUM([Reserve Amount USD]))"/>
+  </column>
+  <column caption="Claim_Count_2" datatype="real" name="[Claim_Count_2]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="COUNTD([Claim ID])"/>
+  </column>
+  <column caption="Total Incurred USD" datatype="real" name="[Total Incurred USD]" role="measure" type="quantitative"/>
+  <column caption="Paid Amount" datatype="real" name="[Paid Amount]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="ZN(SUM([Paid Amount USD]))"/>
+  </column>
+  <column caption="Subrogation" datatype="real" name="[Subrogation]" role="measure" type="quantitative"/>
+  <column caption="State Loss Rank" datatype="real" name="[State Loss Rank]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="Rank(MAX([Total Incurred USD]))"/>
+  </column>
+  <column caption="Row Count - MSTR_PC_Claims_Sample_Data_500K_With_Resolution_Time.xlsx" datatype="real" name="[Row Count - MSTR_PC_Claims_Sample_Data_500K_With_Resolution_Time.xlsx]" role="measure" type="quantitative"/>
+  <column caption="Avg_Claim_Resolution_Days" datatype="real" name="[Avg_Claim_Resolution_Days]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="AVG([Claim Resolution Time Days])"/>
+  </column>
+  <column caption="Count (Region)" datatype="real" name="[Count (Region)]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="COUNTD([Region])"/>
+  </column>
+  <column caption="Litigation Claims" datatype="real" name="[Litigation Claims]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="SUM(IF ([Litigation] = &quot;Yes&quot;) THEN 1 ELSE 0 END)"/>
+  </column>
+  <column caption="Litigation Rate" datatype="real" name="[Litigation Rate]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="IIF(COUNT([Claim ID]) = 0, NULL, SUM(IF ([Litigation] = &quot;Yes&quot;) THEN 1 ELSE 0 END) / COUNT([Claim ID]))"/>
+  </column>
+  <column caption="Recovery Amount USD" datatype="real" name="[Recovery Amount USD]" role="measure" type="quantitative"/>
+  <column caption="Salvage" datatype="real" name="[Salvage]" role="measure" type="quantitative"/>
+  <column caption="Avg Severity" datatype="real" name="[Avg Severity]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="AVG(ZN([Total Incurred USD]))"/>
+  </column>
+  <column caption="Count (Claim ID)" datatype="real" name="[Count (Claim ID)]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="COUNT([Claim ID])"/>
+  </column>
+  <column caption="Recovery" datatype="real" name="[Recovery]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="ZN(SUM([Recovery Amount USD]))"/>
+  </column>
+  <column caption="Claim Resolution Time Days" datatype="real" name="[Claim Resolution Time Days]" role="measure" type="quantitative"/>
+  <column caption="Avg (Fraud Score)" datatype="real" name="[Avg (Fraud Score)]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="AVG([Fraud Score])"/>
+  </column>
+  <column caption="Total Incurred" datatype="real" name="[Total Incurred]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="SUM([Total Incurred USD])"/>
+  </column>
+  <column caption="Net Losses" datatype="real" name="[Net Losses]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="SUM(([Paid Amount USD] + [Reserve Amount USD]) - [Recovery Amount USD])"/>
+  </column>
+  <column caption="Sum (Salvage)" datatype="real" name="[Sum (Salvage)]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="SUM(ZN([Salvage]))"/>
+  </column>
+  <column caption="Total_Claims" datatype="real" name="[Total_Claims]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="COUNT([Claim ID])"/>
+  </column>
+  <column caption="Paid Amount USD" datatype="real" name="[Paid Amount USD]" role="measure" type="quantitative"/>
+  <column caption="Top State Loss" datatype="real" name="[Top State Loss]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="MAX([Total Incurred USD])"/>
+  </column>
+  <column caption="Litigation Incurred Loss" datatype="real" name="[Litigation Incurred Loss]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="SUM(IF ([Litigation] = &quot;Yes&quot;) THEN [Total Incurred USD] ELSE 0 END)"/>
+  </column>
+  <column caption="High Fraud Rate" datatype="real" name="[High Fraud Rate]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="IIF(COUNT([Claim ID]) = 0, NULL, SUM(IF ([Fraud Score] &gt;= 70) THEN 1 ELSE 0 END) / COUNT([Claim ID]))"/>
+  </column>
+  <column caption="Count (Adjuster Name)" datatype="real" name="[Count (Adjuster Name)]" role="measure" type="quantitative">
+    <calculation class="tableau" formula="COUNTD([Adjuster Name])"/>
+  </column>
+  <column caption="Reserve Amount USD" datatype="real" name="[Reserve Amount USD]" role="measure" type="quantitative"/>
+  <connection class="hyper" dbname="artifacts\e096da45-fd6c-42c7-8554-9e064b04f8ef\hyper\extract.hyper" default-settings="yes" sslmode="" tablename="" username="">
+    <relation name="Extract" table="[Extract].[Extract]" type="table"/>
+  </connection>
+</datasource>

@@ -2023,7 +2023,7 @@ export const tbPbiExportArtifacts: TbPbiExportArtifact[] = [
     "id": "art-bundle",
     "fileName": "Complete_Tableau_PowerBI_Migration_Bundle.zip",
     "type": "bundle",
-    "description": "Master Migration Archive: Complete PBIP project folder (template.pbip, report, semantic model) and all 6 real source Excel data workbooks",
+    "description": "Master Migration Archive: Complete PBIP project folder (template.pbip, report, semantic model), verification audit report, and all 6 real source Excel data workbooks",
     "size": "137 KB",
     "mimeType": "application/zip",
     "downloadUrl": "/exports/mig_a715d02e11e4/Complete_Tableau_PowerBI_Migration_Bundle.zip"
@@ -2047,33 +2047,6 @@ export const tbPbiExportArtifacts: TbPbiExportArtifact[] = [
     "downloadUrl": "/exports/mig_a715d02e11e4/Insurance_Table_Data_Excel.zip"
   },
   {
-    "id": "art-pbip",
-    "fileName": "template.pbip",
-    "type": "pbip",
-    "description": "Microsoft Power BI Project descriptor (.pbip) entry point linking to report and semantic model metadata",
-    "size": "169 B",
-    "mimeType": "application/json",
-    "downloadUrl": "/exports/mig_a715d02e11e4/template.pbip"
-  },
-  {
-    "id": "art-tmdl",
-    "fileName": "model.tmdl",
-    "type": "tmdl",
-    "description": "Tabular Model Definition Language (TMDL) root file with table references, culture, and DevMode annotations",
-    "size": "417 B",
-    "mimeType": "text/plain",
-    "downloadUrl": "/exports/mig_a715d02e11e4/model.tmdl"
-  },
-  {
-    "id": "art-tmdl-measures",
-    "fileName": "MeasuresTable.tmdl",
-    "type": "tmdl",
-    "description": "TMDL calculated table definition containing all 21 converted DAX measures with lineage tags and format strings",
-    "size": "3.8 KB",
-    "mimeType": "text/plain",
-    "downloadUrl": "/exports/mig_a715d02e11e4/MeasuresTable.tmdl"
-  },
-  {
     "id": "art-dax",
     "fileName": "Tableau_Insurance_DAX_Measures.dax",
     "type": "dax",
@@ -2081,15 +2054,6 @@ export const tbPbiExportArtifacts: TbPbiExportArtifact[] = [
     "size": "2.5 KB",
     "mimeType": "text/plain",
     "downloadUrl": "/exports/mig_a715d02e11e4/Tableau_Insurance_DAX_Measures.dax"
-  },
-  {
-    "id": "art-cert",
-    "fileName": "Migration_Verification_Certificate.json",
-    "type": "certificate",
-    "description": "Semantic parity verification audit report with 100% column binding, row counts, and validation sign-off",
-    "size": "2.1 KB",
-    "mimeType": "application/json",
-    "downloadUrl": "/exports/mig_a715d02e11e4/Migration_Verification_Certificate.json"
   }
 ];
 

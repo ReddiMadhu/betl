@@ -66,6 +66,39 @@ export default function MstrTableauWorkspace({ onBack, onFinish }: Props) {
   const [visualPageFilter, setVisualPageFilter] = useState('all');
   const [visualTypeFilter, setVisualTypeFilter] = useState('all');
 
+  // Export Center download state
+  const [downloadingArtifactId, setDownloadingArtifactId] = useState<string | null>(null);
+  const [downloadedArtifactIds, setDownloadedArtifactIds] = useState<Set<string>>(new Set());
+
+  const handleDownloadArtifact = (art: typeof mstrArtifacts[0]) => {
+    setDownloadingArtifactId(art.id);
+    const url = art.download_url || `/exports/mstr-tableau/${art.file_name}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = art.file_name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => {
+      setDownloadingArtifactId(null);
+      setDownloadedArtifactIds(prev => new Set(prev).add(art.id));
+    }, 600);
+  };
+
+  const handleDownloadBundle = () => {
+    setDownloadingArtifactId('bundle');
+    const link = document.createElement('a');
+    link.href = '/exports/mstr-tableau/PC_Claims_Tableau_Migration_Bundle.zip';
+    link.download = 'PC_Claims_Tableau_Migration_Bundle.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => {
+      setDownloadingArtifactId(null);
+      setDownloadedArtifactIds(new Set(mstrArtifacts.map(a => a.id)));
+    }, 800);
+  };
+
   /* ── Derived data ── */
   const dossiers = useMemo(() => mstrObjects.filter(o => o.type_name === 'dossier'), []);
   const cubes = useMemo(() => mstrObjects.filter(o => o.type_name === 'cube'), []);
@@ -1124,10 +1157,27 @@ export default function MstrTableauWorkspace({ onBack, onFinish }: Props) {
           {activeTab === 'export' && (
             <div className="space-y-4">
               {/* Header */}
-              <div className="flex items-center gap-2">
-                <FolderTree size={18} style={{ color: 'var(--color-accent)' }} />
-                <h3 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>Artifact Explorer</h3>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)' }}>{mstrArtifacts.length}</span>
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex items-center gap-2">
+                  <FolderTree size={18} style={{ color: 'var(--color-accent)' }} />
+                  <h3 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>Artifact Explorer</h3>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)' }}>{mstrArtifacts.length}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDownloadBundle}
+                  disabled={downloadingArtifactId !== null}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition-all border shadow-sm"
+                  style={{
+                    backgroundColor: 'var(--color-accent)',
+                    borderColor: 'var(--color-accent)',
+                    color: '#ffffff',
+                    opacity: downloadingArtifactId === 'bundle' ? 0.7 : 1,
+                  }}
+                >
+                  <Download size={14} className={downloadingArtifactId === 'bundle' ? 'animate-bounce' : ''} />
+                  {downloadingArtifactId === 'bundle' ? 'Packaging Bundle...' : 'Download All Artifacts (.zip)'}
+                </button>
               </div>
 
               {/* Artifact Cards Grid */}
@@ -1136,32 +1186,61 @@ export default function MstrTableauWorkspace({ onBack, onFinish }: Props) {
                   const isTwbx = art.file_name.endsWith('.twbx');
                   const isHyper = art.file_name.endsWith('.hyper');
                   const isXlsx = art.file_name.endsWith('.xlsx');
+                  const isDownloading = downloadingArtifactId === art.id;
+                  const isDownloaded = downloadedArtifactIds.has(art.id);
                   return (
                     <div key={art.id} className="rounded-xl border p-5 flex flex-col justify-between gap-4 theme-transition"
                       style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border-primary)' }}>
                       <div>
                         <div className="flex items-center gap-2.5 mb-3">
-                          <div className="w-9 h-9 rounded-lg flex items-center justify-center"
+                          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                             style={{
                               backgroundColor: isTwbx ? 'var(--color-accent-muted)' : isHyper ? '#10b98120' : isXlsx ? '#10b98120' : '#3b82f620',
                               color: isTwbx ? 'var(--color-accent)' : isHyper ? '#10b981' : isXlsx ? '#10b981' : '#3b82f6',
                             }}>
                             {isTwbx ? <Layers size={18} /> : isHyper ? <Database size={18} /> : isXlsx ? <FileSpreadsheet size={18} /> : <FileCode size={18} />}
                           </div>
-                          <div>
-                            <h4 className="text-[0.9375rem] font-bold" style={{ color: 'var(--color-text-primary)' }}>{art.file_name}</h4>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-tertiary)' }}>{art.type}</span>
+                          <div className="min-w-0">
+                            <h4 className="text-[0.9375rem] font-bold truncate" style={{ color: 'var(--color-text-primary)' }} title={art.file_name}>{art.file_name}</h4>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded uppercase font-semibold" style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-tertiary)' }}>{art.type}</span>
+                              <span className="text-[11px]" style={{ color: 'var(--color-text-quaternary)' }}>• {art.environment}</span>
+                            </div>
                           </div>
                         </div>
                         <p className="text-[13px] leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{art.description}</p>
                       </div>
                       <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                        <span className="text-xs font-mono" style={{ color: 'var(--color-text-quaternary)' }}>
-                          {Math.round(art.size_bytes / 1024)} KB
+                        <span className="text-xs font-mono font-medium" style={{ color: 'var(--color-text-quaternary)' }}>
+                          {art.size_bytes >= 1048576
+                            ? `${(art.size_bytes / (1024 * 1024)).toFixed(2)} MB`
+                            : `${Math.round(art.size_bytes / 1024)} KB`}
                         </span>
-                        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer theme-transition"
-                          style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)', border: '1px solid var(--color-accent)' }}>
-                          <Download size={13} /> Download
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadArtifact(art)}
+                          disabled={downloadingArtifactId !== null}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer theme-transition"
+                          style={{
+                            backgroundColor: isDownloaded ? 'rgba(16, 185, 129, 0.12)' : 'var(--color-accent-muted)',
+                            color: isDownloaded ? '#10b981' : 'var(--color-accent)',
+                            border: `1px solid ${isDownloaded ? '#10b981' : 'var(--color-accent)'}`,
+                            opacity: isDownloading ? 0.7 : 1,
+                          }}
+                        >
+                          {isDownloading ? (
+                            <>
+                              <Download size={13} className="animate-bounce" /> Downloading...
+                            </>
+                          ) : isDownloaded ? (
+                            <>
+                              <CheckCircle2 size={13} /> Downloaded
+                            </>
+                          ) : (
+                            <>
+                              <Download size={13} /> Download
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>

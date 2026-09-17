@@ -97,7 +97,7 @@ function getBiAssessmentData() {
     },
     {
       label: 'Understanding data models & calculations',
-      evidence: `${totalTables} tables & sources · 564 calculated fields`,
+      evidence: `${totalTables} tables & sources · ${totalCalculations || 564} calculated fields`,
     },
     {
       label: 'Contextualizing visuals and KPIs using built-in KPI Bank',
@@ -194,7 +194,7 @@ function getEtlAssessmentData() {
     },
     {
       label: 'Mapping business functions',
-      evidence: `${canonicalAssets.length} workflows mapped · 4 business functions`,
+      evidence: `${canonicalAssets.length} workflows mapped · ${businessAreas.size || 4} business functions`,
     },
     {
       label: 'Detecting business purpose',
@@ -486,15 +486,15 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
         </motion.section>
       </div>
 
-      {/* ─── Show Results button — bottom right ─── */}
+      {/* ─── Show Results button — top right ─── */}
       <AnimatePresence>
         {showResults && (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
+            exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex justify-end"
+            style={{ position: 'fixed', top: 24, right: 36, zIndex: 50 }}
           >
             <motion.button
               whileHover={{ scale: 1.02, y: -1 }}

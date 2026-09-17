@@ -333,15 +333,15 @@ export default function RationalizationLoading({ onShowResults }: Props) {
         )}
       </motion.section>
 
-      {/* ─── Show Results button — bottom right ─── */}
+      {/* ─── Show Results button — top right ─── */}
       <AnimatePresence>
         {allDone && (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
+            exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex justify-end mb-8"
+            style={{ position: 'fixed', top: 24, right: 36, zIndex: 50 }}
           >
             <motion.button
               whileHover={{ scale: 1.02, y: -1 }}

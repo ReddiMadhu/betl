@@ -4,7 +4,7 @@ import {
   Database, ArrowLeft, Download, CheckCircle,
   Table2, Code2, FileDown, ChevronDown, ChevronRight, Search,
   FileSpreadsheet, Layers, Eye, Copy, Check,
-  FileCode, CheckCheck, Package
+  CheckCheck, Package
 } from 'lucide-react';
 import {
   tbPbiSummary, tbPbiWorksheets,
@@ -847,144 +847,172 @@ export default function TableauPowerBIWorkspace({ onBack, onFinish }: Props) {
           {/* ══════════════════════════════════════════════════════════════
               TAB 4: EXPORT CENTER (PBIP, TMDL, DAX, Excel Downloads)
              ══════════════════════════════════════════════════════════════ */}
-          {activeTab === 'export' && (
-            <div className="space-y-5">
-              {/* Genuine Export Assets Info Banner */}
-              <div
-                className="rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 theme-transition"
-                style={{
-                  backgroundColor: 'var(--color-bg-elevated)',
-                  borderColor: 'var(--color-border-primary)'
-                }}
-              >
-                <div className="flex items-center gap-3">
+          {activeTab === 'export' && (() => {
+            const masterBundle = tbPbiExportArtifacts.find(a => a.type === 'bundle');
+            const modularAssets = tbPbiExportArtifacts.filter(a => a.type !== 'bundle');
+
+            return (
+              <div className="space-y-6">
+                {/* Master Bundle Hero Card */}
+                {masterBundle && (
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)' }}
+                    className="rounded-2xl border p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 theme-transition relative overflow-hidden"
+                    style={{
+                      backgroundColor: 'var(--color-bg-elevated)',
+                      borderColor: 'var(--color-accent)',
+                      boxShadow: '0 4px 24px -2px rgba(234, 88, 12, 0.15)'
+                    }}
                   >
-                    <Package size={20} />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                        Verified Export Assets Ready for Download
-                      </h3>
-                      <span
-                        className="text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold"
-                        style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}
+                    <div className="flex items-start gap-4 flex-1">
+                      <div
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-sm"
+                        style={{ backgroundColor: 'var(--color-accent-muted)', color: 'var(--color-accent)' }}
                       >
-                        mig_a715d02e11e4
-                      </span>
+                        <Package size={28} />
+                      </div>
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider text-white"
+                            style={{ backgroundColor: 'var(--color-accent)' }}
+                          >
+                            Master Bundle
+                          </span>
+                          <span
+                            className="text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold"
+                            style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}
+                          >
+                            100% PARITY VERIFIED
+                          </span>
+                          <span className="text-xs font-mono" style={{ color: 'var(--color-text-quaternary)' }}>
+                            ID: mig_a715d02e11e4
+                          </span>
+                        </div>
+                        <h3 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                          {masterBundle.fileName}
+                        </h3>
+                        <p className="text-xs leading-relaxed max-w-2xl" style={{ color: 'var(--color-text-secondary)' }}>
+                          {masterBundle.description}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
+                          <span className="font-mono font-semibold px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
+                            {masterBundle.size}
+                          </span>
+                          <span>•</span>
+                          <span>Includes PBIP Project, TMDL Schemas, 21 DAX Measures & 6 Tables</span>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
-                      Source directory: <code className="font-mono text-[11px] px-1 py-0.2 rounded" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>tb-bi/bknd/exports/mig_a715d02e11e4</code> · Real PBIP, TMDL schemas, 21 DAX measures, and all 6 Excel tables.
-                    </p>
+
+                    <button
+                      onClick={() => handleDownloadArtifact(masterBundle)}
+                      className="flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-sm font-bold shrink-0 cursor-pointer shadow-md hover:opacity-95 transition-all w-full md:w-auto"
+                      style={{ backgroundColor: 'var(--color-accent)', color: '#ffffff' }}
+                    >
+                      <Download size={16} /> Download Master Bundle (.ZIP)
+                    </button>
+                  </div>
+                )}
+
+                {/* Modular & Developer Assets Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                        Modular & Developer Deliverables
+                      </h4>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                        Targeted assets for custom deployments, direct DAX inspection, and audit compliance
+                      </p>
+                    </div>
+                    <span
+                      className="text-xs font-semibold px-2.5 py-1 rounded-full font-mono"
+                      style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)' }}
+                    >
+                      {modularAssets.length} Assets
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {modularAssets.map(art => {
+                      const isPbip = art.type === 'pbip';
+                      const isExcel = art.type === 'excel';
+                      const isDax = art.type === 'dax';
+
+                      return (
+                        <div
+                          key={art.id}
+                          className="rounded-xl border p-4 flex flex-col justify-between gap-4 theme-transition hover:border-[var(--color-border-hover)]"
+                          style={{
+                            backgroundColor: 'var(--color-bg-elevated)',
+                            borderColor: 'var(--color-border-primary)'
+                          }}
+                        >
+                          <div>
+                            <div className="flex items-center gap-3 mb-2.5">
+                              <div
+                                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                style={{
+                                  backgroundColor: isPbip ? 'var(--color-accent-muted)' : isExcel ? '#10b98115' : '#3b82f615',
+                                  color: isPbip ? 'var(--color-accent)' : isExcel ? '#10b981' : '#3b82f6',
+                                }}
+                              >
+                                {isPbip ? <Layers size={18} /> :
+                                 isExcel ? <FileSpreadsheet size={18} /> :
+                                 isDax ? <Code2 size={18} /> :
+                                 <Database size={18} />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-sm font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
+                                    {art.fileName}
+                                  </h4>
+                                </div>
+                                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded uppercase font-semibold" style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-tertiary)' }}>
+                                  {art.type}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                              {art.description}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--color-border-subtle)' }}>
+                            <span className="text-xs font-mono font-medium" style={{ color: 'var(--color-text-quaternary)' }}>
+                              {art.size}
+                            </span>
+                            <button
+                              onClick={() => handleDownloadArtifact(art)}
+                              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer theme-transition"
+                              style={{
+                                backgroundColor: 'var(--color-bg-secondary)',
+                                color: 'var(--color-text-primary)',
+                                border: '1px solid var(--color-border-subtle)'
+                              }}
+                            >
+                              <Download size={13} /> Download
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    const bundle = tbPbiExportArtifacts.find(a => a.id === 'art-bundle');
-                    if (bundle) handleDownloadArtifact(bundle);
-                  }}
-                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-sm"
-                  style={{ backgroundColor: 'var(--color-accent)', color: '#ffffff' }}
-                >
-                  <Download size={14} /> Download Master Bundle (.ZIP)
-                </button>
+                {/* Bottom Finish Button */}
+                <div className="flex justify-end pt-4">
+                  <button
+                    onClick={onFinish ?? onBack}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold cursor-pointer"
+                    style={{ backgroundColor: '#10b981', color: '#ffffff' }}
+                  >
+                    <CheckCircle size={15} /> Complete &amp; Impact at a glance
+                  </button>
+                </div>
               </div>
-
-              {/* Artifacts Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {tbPbiExportArtifacts.map(art => {
-                  const isBundle = art.type === 'bundle';
-                  const isPbip = art.type === 'pbip';
-                  const isTmdl = art.type === 'tmdl';
-                  const isDax = art.type === 'dax';
-                  const isExcel = art.type === 'excel';
-                  const isCert = art.type === 'certificate';
-
-                  return (
-                    <div
-                      key={art.id}
-                      className={`rounded-xl border p-5 flex flex-col justify-between gap-4 theme-transition ${
-                        isBundle ? 'md:col-span-2' : ''
-                      }`}
-                      style={{
-                        backgroundColor: 'var(--color-bg-elevated)',
-                        borderColor: isBundle ? 'var(--color-accent)' : 'var(--color-border-primary)',
-                        boxShadow: isBundle ? '0 0 20px -3px rgba(234, 88, 12, 0.12)' : undefined
-                      }}
-                    >
-                      <div>
-                        <div className="flex items-center gap-3 mb-2.5">
-                          <div
-                            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                            style={{
-                              backgroundColor: isBundle ? 'var(--color-accent-muted)' : isPbip ? 'var(--color-accent-muted)' : isTmdl ? '#3b82f615' : isDax ? '#10b98115' : isExcel ? '#10b98115' : '#8b5cf615',
-                              color: isBundle ? 'var(--color-accent)' : isPbip ? 'var(--color-accent)' : isTmdl ? '#3b82f6' : isDax ? '#10b981' : isExcel ? '#10b981' : '#8b5cf6',
-                            }}
-                          >
-                            {isBundle ? <Package size={20} /> :
-                             isPbip ? <Layers size={18} /> :
-                             isTmdl ? <FileCode size={18} /> :
-                             isDax ? <Code2 size={18} /> :
-                             isExcel ? <FileSpreadsheet size={18} /> :
-                             isCert ? <CheckCheck size={18} /> :
-                             <Database size={18} />}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>{art.fileName}</h4>
-                              {isBundle && (
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-accent)', color: '#ffffff' }}>
-                                  MASTER BUNDLE
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded uppercase" style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-tertiary)' }}>
-                              {art.type}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                          {art.description}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                        <span className="text-xs font-mono" style={{ color: 'var(--color-text-quaternary)' }}>
-                          {art.size}
-                        </span>
-                        <button
-                          onClick={() => handleDownloadArtifact(art)}
-                          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer theme-transition"
-                          style={{
-                            backgroundColor: isBundle ? 'var(--color-accent)' : 'var(--color-accent-muted)',
-                            color: isBundle ? '#ffffff' : 'var(--color-accent)',
-                            border: isBundle ? 'none' : '1px solid var(--color-accent)'
-                          }}
-                        >
-                          <Download size={13} /> {isBundle ? 'Download Master ZIP' : 'Download'}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Bottom Finish Button */}
-              <div className="flex justify-end pt-4">
-                <button
-                  onClick={onFinish ?? onBack}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold cursor-pointer"
-                  style={{ backgroundColor: '#10b981', color: '#ffffff' }}
-                >
-                  <CheckCircle size={15} /> Complete &amp; Impact at a glance
-                </button>
-              </div>
-            </div>
-          )}
+            );
+          })()}
         </motion.div>
       </AnimatePresence>
     </motion.div>
