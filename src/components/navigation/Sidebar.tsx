@@ -89,7 +89,7 @@ export default function Sidebar({
               type="button"
               onClick={() => onNavigate('home')}
               className="w-10 h-10 rounded-xl flex items-center justify-center bg-transparent border-none cursor-pointer transition-opacity hover:opacity-85"
-              title="AI on BI and ETL Home"
+              title="BI and ETL Modernization Home"
             >
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm"
@@ -109,7 +109,7 @@ export default function Sidebar({
                 onCloseMobile();
               }}
               className="flex items-center gap-2.5 min-w-0 text-left bg-transparent border-none cursor-pointer p-1 rounded-lg transition-opacity hover:opacity-85"
-              title="AI on BI and ETL Home"
+              title="BI and ETL Modernization Home"
             >
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm"
@@ -119,14 +119,14 @@ export default function Sidebar({
               </div>
               <div className="min-w-0 flex flex-col">
                 <span
-                  className="text-[15px] font-bold tracking-tight truncate leading-tight"
+                  className="text-[14px] font-bold tracking-tight truncate leading-tight"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  <span style={{ color: 'var(--color-accent)' }}>AI</span> on BI and ETL
+                  BI and ETL
                 </span>
                 <span
-                  className="text-[10px] tracking-wide uppercase font-medium truncate"
-                  style={{ color: 'var(--color-text-tertiary)' }}
+                  className="text-[10px] tracking-wider uppercase font-semibold truncate"
+                  style={{ color: 'var(--color-accent)' }}
                 >
                   Modernization
                 </span>
