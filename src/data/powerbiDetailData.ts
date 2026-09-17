@@ -37,8 +37,12 @@ export interface PowerBIKpiDetail {
   id: string;
   name: string;
   evidence: string;
-  logic?: string;
-  definition?: string;
+  logic?: string | null;
+  definition?: string | null;
+  confidence?: string | null;
+  page?: string | null;
+  category?: string | null;
+  source?: string | null;
 }
 
 export interface PowerBIDetailData {
@@ -66,244 +70,380 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Survival Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet and calculated fields related to survival rate.",
-        "logic": "Survival rate is calculated as the ratio of retained policies (LAG13) to the cohort size.",
-        "definition": "The percentage of policies or agents retained over a specific period, broken down by agent."
+            "id": "kpi_1",
+            "name": "Survival Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the '13/1 Survival Rate' worksheet and calculated fields related to survival rate.",
+            "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet and calculated fields related to survival rate.",
+            "logic": "Survival rate is calculated as the ratio of retained policies (LAG13) to the cohort size.",
+            "definition": "The percentage of policies or agents retained over a specific period, broken down by agent.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_2",
-        "name": "New Business Counts by Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'NB Counts' worksheet and related calculated fields.",
-        "logic": "Count of new business policies or applications processed by each agent.",
-        "definition": "The total number of new policies or applications processed, segmented by agent."
+            "id": "kpi_2",
+            "name": "New Business Counts by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'NB Counts' worksheet and related calculated fields.",
+            "evidence": "Page 1 \u2022 Derived from the 'NB Counts' worksheet and related calculated fields.",
+            "logic": "Count of new business policies or applications processed by each agent.",
+            "definition": "The total number of new policies or applications processed, segmented by agent.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_3",
-        "name": "Bottom Quartile Agents by Survival Rate",
-        "evidence": "Page 1 \u2022 Derived from the 'Bottom 25% Agents' worksheet and survival rate quartile calculations.",
-        "logic": "Agents in the bottom 25% based on survival rate performance.",
-        "definition": "The list of agents whose survival rate performance falls in the bottom quartile."
+            "id": "kpi_3",
+            "name": "Bottom Quartile Agents by Survival Rate",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'Bottom 25% Agents' worksheet and survival rate quartile calculations.",
+            "evidence": "Page 1 \u2022 Derived from the 'Bottom 25% Agents' worksheet and survival rate quartile calculations.",
+            "logic": "Agents in the bottom 25% based on survival rate performance.",
+            "definition": "The list of agents whose survival rate performance falls in the bottom quartile.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_4",
-        "name": "Conversion Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data in the 'AOR + Agent' worksheet.",
-        "logic": "Conversion rate is calculated as the ratio of new business counts to quote counts.",
-        "definition": "The percentage of quotes converted into new business policies, segmented by agent."
+            "id": "kpi_4",
+            "name": "Conversion Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data in the 'AOR + Agent' worksheet.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data in the 'AOR + Agent' worksheet.",
+            "logic": "Conversion rate is calculated as the ratio of new business counts to quote counts.",
+            "definition": "The percentage of quotes converted into new business policies, segmented by agent.",
+            "confidence": "88%"
       },
       {
-        "id": "kpi_5",
-        "name": "Survival Rate Variance to Bottom Quartile by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields related to survival rate variance.",
-        "logic": "Difference between an agent's survival rate and the average survival rate of the bottom quartile.",
-        "definition": "The variance in survival rate for an agent compared to the bottom quartile average."
+            "id": "kpi_5",
+            "name": "Survival Rate Variance to Bottom Quartile by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields related to survival rate variance.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields related to survival rate variance.",
+            "logic": "Difference between an agent's survival rate and the average survival rate of the bottom quartile.",
+            "definition": "The variance in survival rate for an agent compared to the bottom quartile average.",
+            "confidence": "80%"
       },
       {
-        "id": "kpi_6",
-        "name": "Survival Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet, which focuses on survival rate metrics for agents in the bottom quartile.",
-        "logic": "Calculated as the ratio of policies still active after 13 months to the total cohort of policies.",
-        "definition": "The percentage of policies associated with an agent that remain active after 13 months."
+            "id": "kpi_6",
+            "name": "Survival Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the '13/1 Survival Rate' worksheet, which focuses on survival rate metrics for agents in the bottom quartile.",
+            "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet, which focuses on survival rate metrics for agents in the bottom quartile.",
+            "logic": "Calculated as the ratio of policies still active after 13 months to the total cohort of policies.",
+            "definition": "The percentage of policies associated with an agent that remain active after 13 months.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_7",
-        "name": "New Business Counts by Agent",
-        "evidence": "Page 1 \u2022 Extracted from the 'NB Counts' worksheet, which tracks new business counts at the agent level.",
-        "logic": "Count of new business policies attributed to each agent.",
-        "definition": "The total number of new business policies generated by an agent."
+            "id": "kpi_7",
+            "name": "New Business Counts by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Extracted from the 'NB Counts' worksheet, which tracks new business counts at the agent level.",
+            "evidence": "Page 1 \u2022 Extracted from the 'NB Counts' worksheet, which tracks new business counts at the agent level.",
+            "logic": "Count of new business policies attributed to each agent.",
+            "definition": "The total number of new business policies generated by an agent.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_8",
-        "name": "R12 Loss Ratio Score by Agent",
-        "evidence": "Page 1 \u2022 Sourced from the 'R12_Loss_Ratio_Score' worksheet, which evaluates rolling 12-month loss ratio scores for agents.",
-        "logic": "Rolling 12-month loss ratio calculated as total claims divided by total premiums for each agent.",
-        "definition": "A measure of an agent's loss ratio over the past 12 months, indicating the profitability of their portfolio."
+            "id": "kpi_8",
+            "name": "R12 Loss Ratio Score by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Sourced from the 'R12_Loss_Ratio_Score' worksheet, which evaluates rolling 12-month loss ratio scores for agents.",
+            "evidence": "Page 1 \u2022 Sourced from the 'R12_Loss_Ratio_Score' worksheet, which evaluates rolling 12-month loss ratio scores for agents.",
+            "logic": "Rolling 12-month loss ratio calculated as total claims divided by total premiums for each agent.",
+            "definition": "A measure of an agent's loss ratio over the past 12 months, indicating the profitability of their portfolio.",
+            "confidence": "92%"
       },
       {
-        "id": "kpi_9",
-        "name": "Overall Performance Score by Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'R12_OVERALL_SCORE' worksheet, which provides a composite performance score for agents.",
-        "logic": "Composite score based on multiple metrics, including survival rate, new business counts, and loss ratio.",
-        "definition": "A comprehensive score reflecting an agent's overall performance across key business metrics."
+            "id": "kpi_9",
+            "name": "Overall Performance Score by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'R12_OVERALL_SCORE' worksheet, which provides a composite performance score for agents.",
+            "evidence": "Page 1 \u2022 Derived from the 'R12_OVERALL_SCORE' worksheet, which provides a composite performance score for agents.",
+            "logic": "Composite score based on multiple metrics, including survival rate, new business counts, and loss ratio.",
+            "definition": "A comprehensive score reflecting an agent's overall performance across key business metrics.",
+            "confidence": "88%"
       },
       {
-        "id": "kpi_10",
-        "name": "Survival Rate Quartile by Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'Survival Rate Quartile' field in the datasource, used to categorize agents into quartiles based on survival rate.",
-        "logic": "Agents are ranked by survival rate and divided into quartiles.",
-        "definition": "The quartile ranking of an agent based on their survival rate performance."
+            "id": "kpi_10",
+            "name": "Survival Rate Quartile by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'Survival Rate Quartile' field in the datasource, used to categorize agents into quartiles based on survival rate.",
+            "evidence": "Page 1 \u2022 Derived from the 'Survival Rate Quartile' field in the datasource, used to categorize agents into quartiles based on survival rate.",
+            "logic": "Agents are ranked by survival rate and divided into quartiles.",
+            "definition": "The quartile ranking of an agent based on their survival rate performance.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_11",
-        "name": "R12 Loss Ratio Score",
-        "evidence": "Page 1 \u2022 Extracted from the 'R12_Loss_Ratio_Score' worksheet.",
-        "logic": "Rolling 12-month loss ratio calculated as claims paid divided by premiums earned.",
-        "definition": "The rolling 12-month loss ratio measures the proportion of claims paid relative to premiums earned over the past 12 months."
+            "id": "kpi_11",
+            "name": "R12 Loss Ratio Score",
+            "page": "Page 1",
+            "category": null,
+            "source": "Extracted from the 'R12_Loss_Ratio_Score' worksheet.",
+            "evidence": "Page 1 \u2022 Extracted from the 'R12_Loss_Ratio_Score' worksheet.",
+            "logic": "Rolling 12-month loss ratio calculated as claims paid divided by premiums earned.",
+            "definition": "The rolling 12-month loss ratio measures the proportion of claims paid relative to premiums earned over the past 12 months.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_12",
-        "name": "Survival Rate",
-        "evidence": "Page 1 \u2022 Extracted from the '13/1 Survival Rate' worksheet.",
-        "logic": "Calculated as the ratio of active agents or policies at the end of a period to those at the beginning.",
-        "definition": "The survival rate indicates the retention of agents or policies over a specific period."
+            "id": "kpi_12",
+            "name": "Survival Rate",
+            "page": "Page 1",
+            "category": null,
+            "source": "Extracted from the '13/1 Survival Rate' worksheet.",
+            "evidence": "Page 1 \u2022 Extracted from the '13/1 Survival Rate' worksheet.",
+            "logic": "Calculated as the ratio of active agents or policies at the end of a period to those at the beginning.",
+            "definition": "The survival rate indicates the retention of agents or policies over a specific period.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_13",
-        "name": "Survival Rate by Quartile",
-        "evidence": "Page 1 \u2022 Derived from survival rate quartile rankings in the data source.",
-        "logic": "Survival rate segmented into quartiles based on agent performance.",
-        "definition": "The survival rate broken down by quartile highlights performance distribution among agents."
+            "id": "kpi_13",
+            "name": "Survival Rate by Quartile",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from survival rate quartile rankings in the data source.",
+            "evidence": "Page 1 \u2022 Derived from survival rate quartile rankings in the data source.",
+            "logic": "Survival rate segmented into quartiles based on agent performance.",
+            "definition": "The survival rate broken down by quartile highlights performance distribution among agents.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_14",
-        "name": "Bottom 25% Agents by Survival Rate",
-        "evidence": "Page 1 \u2022 Extracted from the 'Bottom 25% Agents' worksheet.",
-        "logic": "Agents ranked in the bottom quartile based on survival rate.",
-        "definition": "Identifies agents in the bottom 25% for survival rate to target for improvement."
+            "id": "kpi_14",
+            "name": "Bottom 25% Agents by Survival Rate",
+            "page": "Page 1",
+            "category": null,
+            "source": "Extracted from the 'Bottom 25% Agents' worksheet.",
+            "evidence": "Page 1 \u2022 Extracted from the 'Bottom 25% Agents' worksheet.",
+            "logic": "Agents ranked in the bottom quartile based on survival rate.",
+            "definition": "Identifies agents in the bottom 25% for survival rate to target for improvement.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_15",
-        "name": "R12 Loss Ratio Score by Agent",
-        "evidence": "Page 1 \u2022 Extracted from the 'AOR + Agent' and 'R12_OVERALL_SCORE' worksheets.",
-        "logic": "Rolling 12-month loss ratio calculated for each agent.",
-        "definition": "The rolling 12-month loss ratio score broken down by individual agents."
+            "id": "kpi_15",
+            "name": "R12 Loss Ratio Score by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Extracted from the 'AOR + Agent' and 'R12_OVERALL_SCORE' worksheets.",
+            "evidence": "Page 1 \u2022 Extracted from the 'AOR + Agent' and 'R12_OVERALL_SCORE' worksheets.",
+            "logic": "Rolling 12-month loss ratio calculated for each agent.",
+            "definition": "The rolling 12-month loss ratio score broken down by individual agents.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_16",
-        "name": "Conversion Rate",
-        "evidence": "Page 1 \u2022 Derived from the calculated field 'Conversion Rate m'.",
-        "logic": "Calculated as the ratio of new business counts to quote counts.",
-        "definition": "The conversion rate measures the effectiveness of converting quotes into new business."
+            "id": "kpi_16",
+            "name": "Conversion Rate",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the calculated field 'Conversion Rate m'.",
+            "evidence": "Page 1 \u2022 Derived from the calculated field 'Conversion Rate m'.",
+            "logic": "Calculated as the ratio of new business counts to quote counts.",
+            "definition": "The conversion rate measures the effectiveness of converting quotes into new business.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_17",
-        "name": "Conversion Rate by Quartile",
-        "evidence": "Page 1 \u2022 Derived from conversion rate quartile rankings in the data source.",
-        "logic": "Conversion rate segmented into quartiles based on agent performance.",
-        "definition": "The conversion rate broken down by quartile highlights performance distribution among agents."
+            "id": "kpi_17",
+            "name": "Conversion Rate by Quartile",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from conversion rate quartile rankings in the data source.",
+            "evidence": "Page 1 \u2022 Derived from conversion rate quartile rankings in the data source.",
+            "logic": "Conversion rate segmented into quartiles based on agent performance.",
+            "definition": "The conversion rate broken down by quartile highlights performance distribution among agents.",
+            "confidence": "80%"
       },
       {
-        "id": "kpi_18",
-        "name": "Net Active Primary Agent Count",
-        "evidence": "Page 1 \u2022 Extracted from the data source.",
-        "logic": "Count of active primary agents during the reporting period.",
-        "definition": "The total number of active primary agents within the reporting period."
+            "id": "kpi_18",
+            "name": "Net Active Primary Agent Count",
+            "page": "Page 1",
+            "category": null,
+            "source": "Extracted from the data source.",
+            "evidence": "Page 1 \u2022 Extracted from the data source.",
+            "logic": "Count of active primary agents during the reporting period.",
+            "definition": "The total number of active primary agents within the reporting period.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_19",
-        "name": "Import Assigned-Rate",
-        "evidence": "Page 1 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
-        "logic": "Sum of imports divided by sum of assignments.",
-        "definition": "The rate at which imports are assigned relative to total assignments."
+            "id": "kpi_19",
+            "name": "Import Assigned-Rate",
+            "page": "Page 1",
+            "category": null,
+            "source": "Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "evidence": "Page 1 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "logic": "Sum of imports divided by sum of assignments.",
+            "definition": "The rate at which imports are assigned relative to total assignments.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_20",
-        "name": "Daily Assigned Import Rate by CY",
-        "evidence": "Page 1 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year."
+            "id": "kpi_20",
+            "name": "Daily Assigned Import Rate by CY",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 1 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_21",
-        "name": "Import Assigned-Rate by Imported datetime adjusted",
-        "evidence": "Page 1 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
-        "logic": "Sum of imports divided by sum of assignments over time.",
-        "definition": "Analyzes the import assignment rate over time."
+            "id": "kpi_21",
+            "name": "Import Assigned-Rate by Imported datetime adjusted",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 1 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "logic": "Sum of imports divided by sum of assignments over time.",
+            "definition": "Analyzes the import assignment rate over time.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_22",
-        "name": "Daily Assigned Import Rate by CY by State",
-        "evidence": "Page 1 \u2022 Worksheet 'State' using custom visual.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state."
+            "id": "kpi_22",
+            "name": "Daily Assigned Import Rate by CY by State",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'State' using custom visual.",
+            "evidence": "Page 1 \u2022 Worksheet 'State' using custom visual.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_23",
-        "name": "Allocated_IND by bind",
-        "evidence": "Page 1 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
-        "logic": "Distribution of allocated indicators by binding status.",
-        "definition": "Shows the distribution of allocations based on whether they are bound or not."
+            "id": "kpi_23",
+            "name": "Allocated_IND by bind",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'Allocated_IND by bind' using area chart.",
+            "evidence": "Page 1 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
+            "logic": "Distribution of allocated indicators by binding status.",
+            "definition": "Shows the distribution of allocations based on whether they are bound or not.",
+            "confidence": "80%"
       },
       {
-        "id": "kpi_24",
-        "name": "Import Assigned-Rate",
-        "evidence": "Page 1 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
-        "logic": "Sum of imports divided by sum of assignments.",
-        "definition": "The rate at which imports are assigned relative to total assignments."
+            "id": "kpi_24",
+            "name": "Import Assigned-Rate",
+            "page": "Page 1",
+            "category": null,
+            "source": "Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "evidence": "Page 1 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "logic": "Sum of imports divided by sum of assignments.",
+            "definition": "The rate at which imports are assigned relative to total assignments.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_25",
-        "name": "Daily Assigned Import Rate by CY",
-        "evidence": "Page 1 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year."
+            "id": "kpi_25",
+            "name": "Daily Assigned Import Rate by CY",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 1 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_26",
-        "name": "Import Assigned-Rate by Imported datetime adjusted",
-        "evidence": "Page 1 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
-        "logic": "Sum of imports divided by sum of assignments over time.",
-        "definition": "Analyzes the import assignment rate over time."
+            "id": "kpi_26",
+            "name": "Import Assigned-Rate by Imported datetime adjusted",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 1 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "logic": "Sum of imports divided by sum of assignments over time.",
+            "definition": "Analyzes the import assignment rate over time.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_27",
-        "name": "Daily Assigned Import Rate by CY by State",
-        "evidence": "Page 1 \u2022 Worksheet 'State' using custom visual.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state."
+            "id": "kpi_27",
+            "name": "Daily Assigned Import Rate by CY by State",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'State' using custom visual.",
+            "evidence": "Page 1 \u2022 Worksheet 'State' using custom visual.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_28",
-        "name": "Allocated_IND by bind",
-        "evidence": "Page 1 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
-        "logic": "Distribution of allocated indicators by binding status.",
-        "definition": "Shows the distribution of allocations based on whether they are bound or not."
+            "id": "kpi_28",
+            "name": "Allocated_IND by bind",
+            "page": "Page 1",
+            "category": null,
+            "source": "Worksheet 'Allocated_IND by bind' using area chart.",
+            "evidence": "Page 1 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
+            "logic": "Distribution of allocated indicators by binding status.",
+            "definition": "Shows the distribution of allocations based on whether they are bound or not.",
+            "confidence": "80%"
       },
       {
-        "id": "kpi_29",
-        "name": "New Business Counts by AOR and Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, NB Counts' worksheet.",
-        "logic": "Count of new business policies attributed to each AOR and agent.",
-        "definition": "The total number of new business policies generated by each agent under a specific Agent of Record (AOR)."
+            "id": "kpi_29",
+            "name": "New Business Counts by AOR and Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'AOR + Agent, NB Counts' worksheet.",
+            "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, NB Counts' worksheet.",
+            "logic": "Count of new business policies attributed to each AOR and agent.",
+            "definition": "The total number of new business policies generated by each agent under a specific Agent of Record (AOR).",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_30",
-        "name": "R12 Overall Score by AOR and Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, R12_OVERALL_SCORE' worksheet.",
-        "logic": "Rolling 12-month performance score calculated for each agent under a specific AOR.",
-        "definition": "A performance metric that evaluates the overall effectiveness of agents over the past 12 months."
+            "id": "kpi_30",
+            "name": "R12 Overall Score by AOR and Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'AOR + Agent, R12_OVERALL_SCORE' worksheet.",
+            "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, R12_OVERALL_SCORE' worksheet.",
+            "logic": "Rolling 12-month performance score calculated for each agent under a specific AOR.",
+            "definition": "A performance metric that evaluates the overall effectiveness of agents over the past 12 months.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_31",
-        "name": "Conversion Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Ratio of new business counts to quote counts for each agent.",
-        "definition": "The percentage of quotes converted into new business policies by each agent."
+            "id": "kpi_31",
+            "name": "Conversion Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Ratio of new business counts to quote counts for each agent.",
+            "definition": "The percentage of quotes converted into new business policies by each agent.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_32",
-        "name": "Survival Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Ratio of agents retained in the bottom quartile to the total cohort size.",
-        "definition": "The retention rate of agents in the bottom quartile over a specific period."
+            "id": "kpi_32",
+            "name": "Survival Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Ratio of agents retained in the bottom quartile to the total cohort size.",
+            "definition": "The retention rate of agents in the bottom quartile over a specific period.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_33",
-        "name": "R12 Loss Ratio Score by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Rolling 12-month loss ratio score for each agent.",
-        "definition": "A metric that evaluates the loss ratio performance of agents over the past 12 months."
+            "id": "kpi_33",
+            "name": "R12 Loss Ratio Score by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Rolling 12-month loss ratio score for each agent.",
+            "definition": "A metric that evaluates the loss ratio performance of agents over the past 12 months.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_34",
-        "name": "R12 Loss Ratio Score Variance to Bottom Quartile by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Difference between an agent's R12 Loss Ratio Score and the average score of the bottom quartile.",
-        "definition": "The variance in loss ratio performance of an agent compared to the average performance of agents in the bottom quartile. 139 DAX Measures: Tabs 6 Filtered tabs KPIs 34 AI Extracted KPIs Visuals 125"
+            "id": "kpi_34",
+            "name": "R12 Loss Ratio Score Variance to Bottom Quartile by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Difference between an agent's R12 Loss Ratio Score and the average score of the bottom quartile.",
+            "definition": "The variance in loss ratio performance of an agent compared to the average performance of agents in the bottom quartile. 139 DAX Measures: Tabs 6 Filtered tabs KPIs 34 AI Extracted KPIs Visuals 125",
+            "confidence": "85%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -1856,76 +1996,116 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Import Assigned-Rate",
-        "evidence": "Page 2 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
-        "logic": "Sum of imports divided by sum of assignments.",
-        "definition": "The rate at which imports are assigned relative to total assignments."
+            "id": "kpi_1",
+            "name": "Import Assigned-Rate",
+            "page": "Page 2",
+            "category": null,
+            "source": "Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "evidence": "Page 2 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "logic": "Sum of imports divided by sum of assignments.",
+            "definition": "The rate at which imports are assigned relative to total assignments.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_2",
-        "name": "Daily Assigned Import Rate by CY",
-        "evidence": "Page 2 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year."
+            "id": "kpi_2",
+            "name": "Daily Assigned Import Rate by CY",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 2 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_3",
-        "name": "Import Assigned-Rate by Imported datetime adjusted",
-        "evidence": "Page 2 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
-        "logic": "Sum of imports divided by sum of assignments over time.",
-        "definition": "Analyzes the import assignment rate over time."
+            "id": "kpi_3",
+            "name": "Import Assigned-Rate by Imported datetime adjusted",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 2 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "logic": "Sum of imports divided by sum of assignments over time.",
+            "definition": "Analyzes the import assignment rate over time.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_4",
-        "name": "Daily Assigned Import Rate by CY by State",
-        "evidence": "Page 2 \u2022 Worksheet 'State' using custom visual.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state."
+            "id": "kpi_4",
+            "name": "Daily Assigned Import Rate by CY by State",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'State' using custom visual.",
+            "evidence": "Page 2 \u2022 Worksheet 'State' using custom visual.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_5",
-        "name": "Allocated_IND by bind",
-        "evidence": "Page 2 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
-        "logic": "Distribution of allocated indicators by binding status.",
-        "definition": "Shows the distribution of allocations based on whether they are bound or not."
+            "id": "kpi_5",
+            "name": "Allocated_IND by bind",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'Allocated_IND by bind' using area chart.",
+            "evidence": "Page 2 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
+            "logic": "Distribution of allocated indicators by binding status.",
+            "definition": "Shows the distribution of allocations based on whether they are bound or not.",
+            "confidence": "80%"
       },
       {
-        "id": "kpi_6",
-        "name": "Import Assigned-Rate",
-        "evidence": "Page 2 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
-        "logic": "Sum of imports divided by sum of assignments.",
-        "definition": "The rate at which imports are assigned relative to total assignments."
+            "id": "kpi_6",
+            "name": "Import Assigned-Rate",
+            "page": "Page 2",
+            "category": null,
+            "source": "Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "evidence": "Page 2 \u2022 Unnamed worksheet using 'Import Assigned-Rate' metric.",
+            "logic": "Sum of imports divided by sum of assignments.",
+            "definition": "The rate at which imports are assigned relative to total assignments.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_7",
-        "name": "Daily Assigned Import Rate by CY",
-        "evidence": "Page 2 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year."
+            "id": "kpi_7",
+            "name": "Daily Assigned Import Rate by CY",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 2 \u2022 Worksheet 'Daily Assigned Import Rate by CY by Imported datetime adjusted' using line chart.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_8",
-        "name": "Import Assigned-Rate by Imported datetime adjusted",
-        "evidence": "Page 2 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
-        "logic": "Sum of imports divided by sum of assignments over time.",
-        "definition": "Analyzes the import assignment rate over time."
+            "id": "kpi_8",
+            "name": "Import Assigned-Rate by Imported datetime adjusted",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "evidence": "Page 2 \u2022 Worksheet 'Import Assigned-Rate by Imported datetime adjusted' using line chart.",
+            "logic": "Sum of imports divided by sum of assignments over time.",
+            "definition": "Analyzes the import assignment rate over time.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_9",
-        "name": "Daily Assigned Import Rate by CY by State",
-        "evidence": "Page 2 \u2022 Worksheet 'State' using custom visual.",
-        "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
-        "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state."
+            "id": "kpi_9",
+            "name": "Daily Assigned Import Rate by CY by State",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'State' using custom visual.",
+            "evidence": "Page 2 \u2022 Worksheet 'State' using custom visual.",
+            "logic": "Daily import rate calculated as imported count divided by assigned count for the calendar year, broken down by state.",
+            "definition": "Tracks the daily rate of imports assigned for the calendar year, segmented by state.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_10",
-        "name": "Allocated_IND by bind",
-        "evidence": "Page 2 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
-        "logic": "Distribution of allocated indicators by binding status.",
-        "definition": "Shows the distribution of allocations based on whether they are bound or not. Tabs 2 Filtered tabs KPIs 10 AI Extracted KPIs Visuals 27"
+            "id": "kpi_10",
+            "name": "Allocated_IND by bind",
+            "page": "Page 2",
+            "category": null,
+            "source": "Worksheet 'Allocated_IND by bind' using area chart.",
+            "evidence": "Page 2 \u2022 Worksheet 'Allocated_IND by bind' using area chart.",
+            "logic": "Distribution of allocated indicators by binding status.",
+            "definition": "Shows the distribution of allocations based on whether they are bound or not. Tabs 2 Filtered tabs KPIs 10 AI Extracted KPIs Visuals 27",
+            "confidence": "80%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -3040,97 +3220,149 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Bind Household Rate by Customer Age Bucket",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER AGE BUCKET",
-        "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by customer age bucket.",
-        "definition": "The percentage of households within each customer age bucket that successfully bind a policy."
+            "id": "kpi_1",
+            "name": "Bind Household Rate by Customer Age Bucket",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY CUSTOMER AGE BUCKET",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER AGE BUCKET",
+            "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by customer age bucket.",
+            "definition": "The percentage of households within each customer age bucket that successfully bind a policy.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_2",
-        "name": "Total Alerts by Customer Age Bucket",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER AGE BUCKET",
-        "logic": "Total Alert is the sum of all alerts, broken down by customer age bucket.",
-        "definition": "The total number of alerts generated for each customer age bucket."
+            "id": "kpi_2",
+            "name": "Total Alerts by Customer Age Bucket",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY CUSTOMER AGE BUCKET",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER AGE BUCKET",
+            "logic": "Total Alert is the sum of all alerts, broken down by customer age bucket.",
+            "definition": "The total number of alerts generated for each customer age bucket.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_3",
-        "name": "Bind Household Rate by Customer Segment",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER SEGMENT",
-        "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by customer segment.",
-        "definition": "The percentage of households within each customer segment that successfully bind a policy."
+            "id": "kpi_3",
+            "name": "Bind Household Rate by Customer Segment",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY CUSTOMER SEGMENT",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER SEGMENT",
+            "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by customer segment.",
+            "definition": "The percentage of households within each customer segment that successfully bind a policy.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_4",
-        "name": "Total Alerts by Customer Segment",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER SEGMENT",
-        "logic": "Total Alert is the sum of all alerts, broken down by customer segment.",
-        "definition": "The total number of alerts generated for each customer segment."
+            "id": "kpi_4",
+            "name": "Total Alerts by Customer Segment",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY CUSTOMER SEGMENT",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY CUSTOMER SEGMENT",
+            "logic": "Total Alert is the sum of all alerts, broken down by customer segment.",
+            "definition": "The total number of alerts generated for each customer segment.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_5",
-        "name": "Bind Household Rate by State",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY STATE",
-        "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by state.",
-        "definition": "The percentage of households within each state that successfully bind a policy."
+            "id": "kpi_5",
+            "name": "Bind Household Rate by State",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY STATE",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY STATE",
+            "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by state.",
+            "definition": "The percentage of households within each state that successfully bind a policy.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_6",
-        "name": "Total Alerts by State",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY STATE",
-        "logic": "Total Alert is the sum of all alerts, broken down by state.",
-        "definition": "The total number of alerts generated for each state."
+            "id": "kpi_6",
+            "name": "Total Alerts by State",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY STATE",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY STATE",
+            "logic": "Total Alert is the sum of all alerts, broken down by state.",
+            "definition": "The total number of alerts generated for each state.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_7",
-        "name": "Bind Household Rate by Territory",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY TERRITORY",
-        "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by territory.",
-        "definition": "The percentage of households within each territory that successfully bind a policy."
+            "id": "kpi_7",
+            "name": "Bind Household Rate by Territory",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY TERRITORY",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY TERRITORY",
+            "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by territory.",
+            "definition": "The percentage of households within each territory that successfully bind a policy.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_8",
-        "name": "Total Alerts by Territory",
-        "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY TERRITORY",
-        "logic": "Total Alert is the sum of all alerts, broken down by territory.",
-        "definition": "The total number of alerts generated for each territory."
+            "id": "kpi_8",
+            "name": "Total Alerts by Territory",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS & BIND RATE BY TERRITORY",
+            "evidence": "Summary \u2022 Worksheet: ALERTS & BIND RATE BY TERRITORY",
+            "logic": "Total Alert is the sum of all alerts, broken down by territory.",
+            "definition": "The total number of alerts generated for each territory.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_9",
-        "name": "Average Alerts by Weekday",
-        "evidence": "Summary \u2022 Worksheet: AVERAGE ALERTS BY WEEKDAYS",
-        "logic": "Average number of alerts calculated for each weekday.",
-        "definition": "The average number of alerts generated on each weekday, providing insights into shopping behavior trends."
+            "id": "kpi_9",
+            "name": "Average Alerts by Weekday",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: AVERAGE ALERTS BY WEEKDAYS",
+            "evidence": "Summary \u2022 Worksheet: AVERAGE ALERTS BY WEEKDAYS",
+            "logic": "Average number of alerts calculated for each weekday.",
+            "definition": "The average number of alerts generated on each weekday, providing insights into shopping behavior trends.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_10",
-        "name": "Bind Household Rate by A/B Test Group",
-        "evidence": "Summary \u2022 Worksheet: LIFE A/B TEST",
-        "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by A/B test group.",
-        "definition": "The percentage of households within each A/B test group that successfully bind a policy."
+            "id": "kpi_10",
+            "name": "Bind Household Rate by A/B Test Group",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: LIFE A/B TEST",
+            "evidence": "Summary \u2022 Worksheet: LIFE A/B TEST",
+            "logic": "Bind_HH_Rate is calculated as the ratio of unique policies to distinct household numbers, broken down by A/B test group.",
+            "definition": "The percentage of households within each A/B test group that successfully bind a policy.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_11",
-        "name": "Total Alerts by Date",
-        "evidence": "Summary \u2022 Worksheet: TOTAL ALERTS BY DATE",
-        "logic": "Total Alert is the sum of all alerts, broken down by date.",
-        "definition": "The total number of alerts generated on each date."
+            "id": "kpi_11",
+            "name": "Total Alerts by Date",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: TOTAL ALERTS BY DATE",
+            "evidence": "Summary \u2022 Worksheet: TOTAL ALERTS BY DATE",
+            "logic": "Total Alert is the sum of all alerts, broken down by date.",
+            "definition": "The total number of alerts generated on each date.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_12",
-        "name": "Bind Quote Rate",
-        "evidence": "Summary \u2022 Worksheet: ALERTS",
-        "logic": "Bind_Quote_rate is calculated as the ratio of unique policies to unique quotes.",
-        "definition": "The percentage of quotes that successfully result in a policy binding."
+            "id": "kpi_12",
+            "name": "Bind Quote Rate",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS",
+            "evidence": "Summary \u2022 Worksheet: ALERTS",
+            "logic": "Bind_Quote_rate is calculated as the ratio of unique policies to unique quotes.",
+            "definition": "The percentage of quotes that successfully result in a policy binding.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_13",
-        "name": "Unique Life Premium",
-        "evidence": "Summary \u2022 Worksheet: ALERTS",
-        "logic": "Unique Life Premium is the sum of life premiums for unique policies.",
-        "definition": "The total premium amount for unique life insurance policies. Tabs 1 Filtered tabs KPIs 13 AI Extracted KPIs Visuals 41"
+            "id": "kpi_13",
+            "name": "Unique Life Premium",
+            "page": "Summary",
+            "category": "Summary",
+            "source": "Worksheet: ALERTS",
+            "evidence": "Summary \u2022 Worksheet: ALERTS",
+            "logic": "Unique Life Premium is the sum of life premiums for unique policies.",
+            "definition": "The total premium amount for unique life insurance policies. Tabs 1 Filtered tabs KPIs 13 AI Extracted KPIs Visuals 41",
+            "confidence": "85%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -3710,160 +3942,248 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Average Unit Price This Year by Category",
-        "evidence": "Tooltip \u2022 Worksheet: Avg $/Unit TY by Category",
-        "logic": "Average unit price for the current year, grouped by item category.",
-        "definition": "The average price per unit sold this year for each product category."
+            "id": "kpi_1",
+            "name": "Average Unit Price This Year by Category",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: Avg $/Unit TY by Category",
+            "evidence": "Tooltip \u2022 Worksheet: Avg $/Unit TY by Category",
+            "logic": "Average unit price for the current year, grouped by item category.",
+            "definition": "The average price per unit sold this year for each product category.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_2",
-        "name": "Total Sales Variance Percentage by Fiscal Month",
-        "evidence": "Tooltip \u2022 Worksheet: Last Year Sales, This Year Sales, Total Sales Variance % by FiscalMonth",
-        "logic": "Percentage change in total sales between this year and last year, grouped by fiscal month.",
-        "definition": "The percentage difference in total sales compared to the previous year, tracked monthly."
+            "id": "kpi_2",
+            "name": "Total Sales Variance Percentage by Fiscal Month",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: Last Year Sales, This Year Sales, Total Sales Variance % by FiscalMonth",
+            "evidence": "Tooltip \u2022 Worksheet: Last Year Sales, This Year Sales, Total Sales Variance % by FiscalMonth",
+            "logic": "Percentage change in total sales between this year and last year, grouped by fiscal month.",
+            "definition": "The percentage difference in total sales compared to the previous year, tracked monthly.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_3",
-        "name": "Total Sales by Chain",
-        "evidence": "Tooltip \u2022 Worksheet: TotalSales by Chain, Name",
-        "logic": "Sum of total sales grouped by store chain.",
-        "definition": "The total revenue generated by each store chain."
+            "id": "kpi_3",
+            "name": "Total Sales by Chain",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: TotalSales by Chain, Name",
+            "evidence": "Tooltip \u2022 Worksheet: TotalSales by Chain, Name",
+            "logic": "Sum of total sales grouped by store chain.",
+            "definition": "The total revenue generated by each store chain.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_4",
-        "name": "Total Sales by Store Name",
-        "evidence": "Tooltip \u2022 Worksheet: TotalSales by Chain, Name",
-        "logic": "Sum of total sales grouped by individual store names.",
-        "definition": "The total revenue generated by each store."
+            "id": "kpi_4",
+            "name": "Total Sales by Store Name",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: TotalSales by Chain, Name",
+            "evidence": "Tooltip \u2022 Worksheet: TotalSales by Chain, Name",
+            "logic": "Sum of total sales grouped by individual store names.",
+            "definition": "The total revenue generated by each store.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_5",
-        "name": "Sales Per Square Foot by District",
-        "evidence": "Tooltip \u2022 Worksheet: Sales Per Sq Ft by District",
-        "logic": "Total sales divided by the selling area size, grouped by district.",
-        "definition": "A measure of sales efficiency, indicating revenue generated per square foot of selling area in each district."
+            "id": "kpi_5",
+            "name": "Sales Per Square Foot by District",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: Sales Per Sq Ft by District",
+            "evidence": "Tooltip \u2022 Worksheet: Sales Per Sq Ft by District",
+            "logic": "Total sales divided by the selling area size, grouped by district.",
+            "definition": "A measure of sales efficiency, indicating revenue generated per square foot of selling area in each district.",
+            "confidence": "92%"
       },
       {
-        "id": "kpi_6",
-        "name": "This Year Sales by Chain",
-        "evidence": "Tooltip \u2022 Worksheet: This Year Sales by Chain",
-        "logic": "Sum of this year's sales grouped by store chain.",
-        "definition": "The total revenue generated by each store chain in the current year."
+            "id": "kpi_6",
+            "name": "This Year Sales by Chain",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: This Year Sales by Chain",
+            "evidence": "Tooltip \u2022 Worksheet: This Year Sales by Chain",
+            "logic": "Sum of this year's sales grouped by store chain.",
+            "definition": "The total revenue generated by each store chain in the current year.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_7",
-        "name": "Total Units Sold by Store Name",
-        "evidence": "Tooltip \u2022 Worksheet: TotalUnits by Name",
-        "logic": "Sum of total units sold grouped by store name.",
-        "definition": "The total number of units sold by each store."
+            "id": "kpi_7",
+            "name": "Total Units Sold by Store Name",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: TotalUnits by Name",
+            "evidence": "Tooltip \u2022 Worksheet: TotalUnits by Name",
+            "logic": "Sum of total units sold grouped by store name.",
+            "definition": "The total number of units sold by each store.",
+            "confidence": "88%"
       },
       {
-        "id": "kpi_8",
-        "name": "Total Sales Variance Percentage",
-        "evidence": "Tooltip \u2022 Worksheet: Total Sales Variance % by FiscalMonth",
-        "logic": "Percentage change in total sales between this year and last year.",
-        "definition": "The overall percentage difference in total sales compared to the previous year."
+            "id": "kpi_8",
+            "name": "Total Sales Variance Percentage",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: Total Sales Variance % by FiscalMonth",
+            "evidence": "Tooltip \u2022 Worksheet: Total Sales Variance % by FiscalMonth",
+            "logic": "Percentage change in total sales between this year and last year.",
+            "definition": "The overall percentage difference in total sales compared to the previous year.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_9",
-        "name": "Total Sales Variance Percentage by Fiscal Month and District Manager",
-        "evidence": "Tooltip \u2022 Worksheet: Total Sales Variance by FiscalMonth and District Manager",
-        "logic": "Percentage change in total sales between this year and last year, grouped by fiscal month and district manager.",
-        "definition": "The percentage difference in total sales compared to the previous year, tracked monthly and by district manager."
+            "id": "kpi_9",
+            "name": "Total Sales Variance Percentage by Fiscal Month and District Manager",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Worksheet: Total Sales Variance by FiscalMonth and District Manager",
+            "evidence": "Tooltip \u2022 Worksheet: Total Sales Variance by FiscalMonth and District Manager",
+            "logic": "Percentage change in total sales between this year and last year, grouped by fiscal month and district manager.",
+            "definition": "The percentage difference in total sales compared to the previous year, tracked monthly and by district manager.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_10",
-        "name": "Total Revenue",
-        "evidence": "Tooltip \u2022 Extracted from the 'Revenue' worksheet using a KPI card.",
-        "logic": "SUM(Fact.ProductRevenue)",
-        "definition": "The total revenue generated from all opportunities."
+            "id": "kpi_10",
+            "name": "Total Revenue",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Revenue' worksheet using a KPI card.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Revenue' worksheet using a KPI card.",
+            "logic": "SUM(Fact.ProductRevenue)",
+            "definition": "The total revenue generated from all opportunities.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_11",
-        "name": "Total Opportunity Count",
-        "evidence": "Tooltip \u2022 Extracted from the 'Count' worksheet using a KPI card.",
-        "logic": "COUNTA(Fact.Opportunity ID)",
-        "definition": "The total number of sales opportunities."
+            "id": "kpi_11",
+            "name": "Total Opportunity Count",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Count' worksheet using a KPI card.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Count' worksheet using a KPI card.",
+            "logic": "COUNTA(Fact.Opportunity ID)",
+            "definition": "The total number of sales opportunities.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_12",
-        "name": "Opportunity Count by Region",
-        "evidence": "Tooltip \u2022 Extracted from the 'Opportunity Count by Region, State' worksheet using a treemap.",
-        "logic": "COUNTA(Fact.Opportunity ID) grouped by Account[Region]",
-        "definition": "The number of sales opportunities grouped by region."
+            "id": "kpi_12",
+            "name": "Opportunity Count by Region",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Opportunity Count by Region, State' worksheet using a treemap.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Opportunity Count by Region, State' worksheet using a treemap.",
+            "logic": "COUNTA(Fact.Opportunity ID) grouped by Account[Region]",
+            "definition": "The number of sales opportunities grouped by region.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_13",
-        "name": "Opportunity Count by State",
-        "evidence": "Tooltip \u2022 Extracted from the 'Opportunity Count by Region, State' worksheet using a treemap.",
-        "logic": "COUNTA(Fact.Opportunity ID) grouped by Account[State]",
-        "definition": "The number of sales opportunities grouped by state."
+            "id": "kpi_13",
+            "name": "Opportunity Count by State",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Opportunity Count by Region, State' worksheet using a treemap.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Opportunity Count by Region, State' worksheet using a treemap.",
+            "logic": "COUNTA(Fact.Opportunity ID) grouped by Account[State]",
+            "definition": "The number of sales opportunities grouped by state.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_14",
-        "name": "Opportunity Count by Sales Stage",
-        "evidence": "Tooltip \u2022 Extracted from the 'Pipeline by Stage' worksheet using a bar chart.",
-        "logic": "COUNTA(Fact.Opportunity ID) grouped by SalesStage[Sales Stage]",
-        "definition": "The number of sales opportunities at each stage of the sales pipeline."
+            "id": "kpi_14",
+            "name": "Opportunity Count by Sales Stage",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Pipeline by Stage' worksheet using a bar chart.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Pipeline by Stage' worksheet using a bar chart.",
+            "logic": "COUNTA(Fact.Opportunity ID) grouped by SalesStage[Sales Stage]",
+            "definition": "The number of sales opportunities at each stage of the sales pipeline.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_15",
-        "name": "Revenue by Region",
-        "evidence": "Tooltip \u2022 Extracted from the 'Revenue by Region and State' worksheet using a bar chart.",
-        "logic": "SUM(Fact.ProductRevenue) grouped by Account[Region]",
-        "definition": "The total revenue generated grouped by region."
+            "id": "kpi_15",
+            "name": "Revenue by Region",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Revenue by Region and State' worksheet using a bar chart.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Revenue by Region and State' worksheet using a bar chart.",
+            "logic": "SUM(Fact.ProductRevenue) grouped by Account[Region]",
+            "definition": "The total revenue generated grouped by region.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_16",
-        "name": "Revenue by State",
-        "evidence": "Tooltip \u2022 Extracted from the 'Revenue by Region and State' worksheet using a bar chart.",
-        "logic": "SUM(Fact.ProductRevenue) grouped by Account[State]",
-        "definition": "The total revenue generated grouped by state."
+            "id": "kpi_16",
+            "name": "Revenue by State",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Revenue by Region and State' worksheet using a bar chart.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Revenue by Region and State' worksheet using a bar chart.",
+            "logic": "SUM(Fact.ProductRevenue) grouped by Account[State]",
+            "definition": "The total revenue generated grouped by state.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_17",
-        "name": "Revenue by Month",
-        "evidence": "Tooltip \u2022 Extracted from the 'Revenue, Opportunity Count by Month' worksheet using a line chart.",
-        "logic": "SUM(Fact.ProductRevenue) grouped by Fact[Month]",
-        "definition": "The total revenue generated grouped by month."
+            "id": "kpi_17",
+            "name": "Revenue by Month",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Revenue, Opportunity Count by Month' worksheet using a line chart.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Revenue, Opportunity Count by Month' worksheet using a line chart.",
+            "logic": "SUM(Fact.ProductRevenue) grouped by Fact[Month]",
+            "definition": "The total revenue generated grouped by month.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_18",
-        "name": "Opportunity Count by Month",
-        "evidence": "Tooltip \u2022 Extracted from the 'Revenue, Opportunity Count by Month' worksheet using a stacked column chart.",
-        "logic": "COUNTA(Fact.Opportunity ID) grouped by Fact[Month]",
-        "definition": "The number of sales opportunities grouped by month."
+            "id": "kpi_18",
+            "name": "Opportunity Count by Month",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Revenue, Opportunity Count by Month' worksheet using a stacked column chart.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Revenue, Opportunity Count by Month' worksheet using a stacked column chart.",
+            "logic": "COUNTA(Fact.Opportunity ID) grouped by Fact[Month]",
+            "definition": "The number of sales opportunities grouped by month.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_19",
-        "name": "Revenue by Segment",
-        "evidence": "Tooltip \u2022 Extracted from the 'Revenue by Segment' worksheet using a donut chart.",
-        "logic": "SUM(Fact.ProductRevenue) grouped by Account[Segment]",
-        "definition": "The total revenue generated grouped by customer segment."
+            "id": "kpi_19",
+            "name": "Revenue by Segment",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Revenue by Segment' worksheet using a donut chart.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Revenue by Segment' worksheet using a donut chart.",
+            "logic": "SUM(Fact.ProductRevenue) grouped by Account[Segment]",
+            "definition": "The total revenue generated grouped by customer segment.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_20",
-        "name": "Revenue by State (Map)",
-        "evidence": "Tooltip \u2022 Extracted from the 'State' worksheet using a filled map.",
-        "logic": "SUM(Fact.ProductRevenue) grouped by Account[State]",
-        "definition": "The total revenue generated grouped by state, visualized on a map."
+            "id": "kpi_20",
+            "name": "Revenue by State (Map)",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'State' worksheet using a filled map.",
+            "evidence": "Tooltip \u2022 Extracted from the 'State' worksheet using a filled map.",
+            "logic": "SUM(Fact.ProductRevenue) grouped by Account[State]",
+            "definition": "The total revenue generated grouped by state, visualized on a map.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_21",
-        "name": "Average Revenue by Opportunity Size",
-        "evidence": "Tooltip \u2022 Extracted from the 'Avg Revenue by Opportunity Size' worksheet using a matrix.",
-        "logic": "AVERAGE(Fact.ProductRevenue) grouped by Opportunity[Opportunity Size]",
-        "definition": "The average revenue generated per opportunity size."
+            "id": "kpi_21",
+            "name": "Average Revenue by Opportunity Size",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Avg Revenue by Opportunity Size' worksheet using a matrix.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Avg Revenue by Opportunity Size' worksheet using a matrix.",
+            "logic": "AVERAGE(Fact.ProductRevenue) grouped by Opportunity[Opportunity Size]",
+            "definition": "The average revenue generated per opportunity size.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_22",
-        "name": "Factored Revenue by Opportunity Size",
-        "evidence": "Tooltip \u2022 Extracted from the 'Avg Revenue by Opportunity Size' worksheet using a matrix.",
-        "logic": "SUM(Fact.FactoredProductRevenue) grouped by Opportunity[Opportunity Size]",
-        "definition": "The factored revenue generated per opportunity size. Tabs 2 Filtered tabs KPIs 22 AI Extracted KPIs Visuals 48"
+            "id": "kpi_22",
+            "name": "Factored Revenue by Opportunity Size",
+            "page": "Tooltip",
+            "category": "Tooltip",
+            "source": "Extracted from the 'Avg Revenue by Opportunity Size' worksheet using a matrix.",
+            "evidence": "Tooltip \u2022 Extracted from the 'Avg Revenue by Opportunity Size' worksheet using a matrix.",
+            "logic": "SUM(Fact.FactoredProductRevenue) grouped by Opportunity[Opportunity Size]",
+            "definition": "The factored revenue generated per opportunity size. Tabs 2 Filtered tabs KPIs 22 AI Extracted KPIs Visuals 48",
+            "confidence": "100%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -5105,41 +5425,61 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Survival Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet, which focuses on survival rate metrics for agents in the bottom quartile.",
-        "logic": "Calculated as the ratio of policies still active after 13 months to the total cohort of policies.",
-        "definition": "The percentage of policies associated with an agent that remain active after 13 months."
+            "id": "kpi_1",
+            "name": "Survival Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the '13/1 Survival Rate' worksheet, which focuses on survival rate metrics for agents in the bottom quartile.",
+            "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet, which focuses on survival rate metrics for agents in the bottom quartile.",
+            "logic": "Calculated as the ratio of policies still active after 13 months to the total cohort of policies.",
+            "definition": "The percentage of policies associated with an agent that remain active after 13 months.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_2",
-        "name": "New Business Counts by Agent",
-        "evidence": "Page 1 \u2022 Extracted from the 'NB Counts' worksheet, which tracks new business counts at the agent level.",
-        "logic": "Count of new business policies attributed to each agent.",
-        "definition": "The total number of new business policies generated by an agent."
+            "id": "kpi_2",
+            "name": "New Business Counts by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Extracted from the 'NB Counts' worksheet, which tracks new business counts at the agent level.",
+            "evidence": "Page 1 \u2022 Extracted from the 'NB Counts' worksheet, which tracks new business counts at the agent level.",
+            "logic": "Count of new business policies attributed to each agent.",
+            "definition": "The total number of new business policies generated by an agent.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_3",
-        "name": "R12 Loss Ratio Score by Agent",
-        "evidence": "Page 1 \u2022 Sourced from the 'R12_Loss_Ratio_Score' worksheet, which evaluates rolling 12-month loss ratio scores for agents.",
-        "logic": "Rolling 12-month loss ratio calculated as total claims divided by total premiums for each agent.",
-        "definition": "A measure of an agent's loss ratio over the past 12 months, indicating the profitability of their portfolio."
+            "id": "kpi_3",
+            "name": "R12 Loss Ratio Score by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Sourced from the 'R12_Loss_Ratio_Score' worksheet, which evaluates rolling 12-month loss ratio scores for agents.",
+            "evidence": "Page 1 \u2022 Sourced from the 'R12_Loss_Ratio_Score' worksheet, which evaluates rolling 12-month loss ratio scores for agents.",
+            "logic": "Rolling 12-month loss ratio calculated as total claims divided by total premiums for each agent.",
+            "definition": "A measure of an agent's loss ratio over the past 12 months, indicating the profitability of their portfolio.",
+            "confidence": "92%"
       },
       {
-        "id": "kpi_4",
-        "name": "Overall Performance Score by Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'R12_OVERALL_SCORE' worksheet, which provides a composite performance score for agents.",
-        "logic": "Composite score based on multiple metrics, including survival rate, new business counts, and loss ratio.",
-        "definition": "A comprehensive score reflecting an agent's overall performance across key business metrics."
+            "id": "kpi_4",
+            "name": "Overall Performance Score by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'R12_OVERALL_SCORE' worksheet, which provides a composite performance score for agents.",
+            "evidence": "Page 1 \u2022 Derived from the 'R12_OVERALL_SCORE' worksheet, which provides a composite performance score for agents.",
+            "logic": "Composite score based on multiple metrics, including survival rate, new business counts, and loss ratio.",
+            "definition": "A comprehensive score reflecting an agent's overall performance across key business metrics.",
+            "confidence": "88%"
       },
       {
-        "id": "kpi_5",
-        "name": "Survival Rate Quartile by Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'Survival Rate Quartile' field in the datasource, used to categorize agents into quartiles based on survival rate.",
-        "logic": "Agents are ranked by survival rate and divided into quartiles.",
-        "definition": "The quartile ranking of an agent based on their survival rate performance. -----"
+            "id": "kpi_5",
+            "name": "Survival Rate Quartile by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'Survival Rate Quartile' field in the datasource, used to categorize agents into quartiles based on survival rate.",
+            "evidence": "Page 1 \u2022 Derived from the 'Survival Rate Quartile' field in the datasource, used to categorize agents into quartiles based on survival rate.",
+            "logic": "Agents are ranked by survival rate and divided into quartiles.",
+            "definition": "The quartile ranking of an agent based on their survival rate performance. -----",
+            "confidence": "85%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -5438,48 +5778,72 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "New Business Counts by AOR and Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, NB Counts' worksheet.",
-        "logic": "Count of new business policies attributed to each AOR and agent.",
-        "definition": "The total number of new business policies generated by each agent under a specific Agent of Record (AOR)."
+            "id": "kpi_1",
+            "name": "New Business Counts by AOR and Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'AOR + Agent, NB Counts' worksheet.",
+            "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, NB Counts' worksheet.",
+            "logic": "Count of new business policies attributed to each AOR and agent.",
+            "definition": "The total number of new business policies generated by each agent under a specific Agent of Record (AOR).",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_2",
-        "name": "R12 Overall Score by AOR and Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, R12_OVERALL_SCORE' worksheet.",
-        "logic": "Rolling 12-month performance score calculated for each agent under a specific AOR.",
-        "definition": "A performance metric that evaluates the overall effectiveness of agents over the past 12 months."
+            "id": "kpi_2",
+            "name": "R12 Overall Score by AOR and Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'AOR + Agent, R12_OVERALL_SCORE' worksheet.",
+            "evidence": "Page 1 \u2022 Derived from the 'AOR + Agent, R12_OVERALL_SCORE' worksheet.",
+            "logic": "Rolling 12-month performance score calculated for each agent under a specific AOR.",
+            "definition": "A performance metric that evaluates the overall effectiveness of agents over the past 12 months.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_3",
-        "name": "Conversion Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Ratio of new business counts to quote counts for each agent.",
-        "definition": "The percentage of quotes converted into new business policies by each agent."
+            "id": "kpi_3",
+            "name": "Conversion Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Ratio of new business counts to quote counts for each agent.",
+            "definition": "The percentage of quotes converted into new business policies by each agent.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_4",
-        "name": "Survival Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Ratio of agents retained in the bottom quartile to the total cohort size.",
-        "definition": "The retention rate of agents in the bottom quartile over a specific period."
+            "id": "kpi_4",
+            "name": "Survival Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Ratio of agents retained in the bottom quartile to the total cohort size.",
+            "definition": "The retention rate of agents in the bottom quartile over a specific period.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_5",
-        "name": "R12 Loss Ratio Score by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Rolling 12-month loss ratio score for each agent.",
-        "definition": "A metric that evaluates the loss ratio performance of agents over the past 12 months."
+            "id": "kpi_5",
+            "name": "R12 Loss Ratio Score by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Rolling 12-month loss ratio score for each agent.",
+            "definition": "A metric that evaluates the loss ratio performance of agents over the past 12 months.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_6",
-        "name": "R12 Loss Ratio Score Variance to Bottom Quartile by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
-        "logic": "Difference between an agent's R12 Loss Ratio Score and the average score of the bottom quartile.",
-        "definition": "The variance in loss ratio performance of an agent compared to the average performance of agents in the bottom quartile. Report Overview Analyzing New Business (Bottom 25% agents).pbix"
+            "id": "kpi_6",
+            "name": "R12 Loss Ratio Score Variance to Bottom Quartile by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data.",
+            "logic": "Difference between an agent's R12 Loss Ratio Score and the average score of the bottom quartile.",
+            "definition": "The variance in loss ratio performance of an agent compared to the average performance of agents in the bottom quartile. Report Overview Analyzing New Business (Bottom 25% agents).pbix",
+            "confidence": "85%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -5864,41 +6228,61 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Survival Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet and calculated fields related to survival rate.",
-        "logic": "Survival rate is calculated as the ratio of retained policies (LAG13) to the cohort size.",
-        "definition": "The percentage of policies or agents retained over a specific period, broken down by agent."
+            "id": "kpi_1",
+            "name": "Survival Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the '13/1 Survival Rate' worksheet and calculated fields related to survival rate.",
+            "evidence": "Page 1 \u2022 Derived from the '13/1 Survival Rate' worksheet and calculated fields related to survival rate.",
+            "logic": "Survival rate is calculated as the ratio of retained policies (LAG13) to the cohort size.",
+            "definition": "The percentage of policies or agents retained over a specific period, broken down by agent.",
+            "confidence": "95%"
       },
       {
-        "id": "kpi_2",
-        "name": "New Business Counts by Agent",
-        "evidence": "Page 1 \u2022 Derived from the 'NB Counts' worksheet and related calculated fields.",
-        "logic": "Count of new business policies or applications processed by each agent.",
-        "definition": "The total number of new policies or applications processed, segmented by agent."
+            "id": "kpi_2",
+            "name": "New Business Counts by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'NB Counts' worksheet and related calculated fields.",
+            "evidence": "Page 1 \u2022 Derived from the 'NB Counts' worksheet and related calculated fields.",
+            "logic": "Count of new business policies or applications processed by each agent.",
+            "definition": "The total number of new policies or applications processed, segmented by agent.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_3",
-        "name": "Bottom Quartile Agents by Survival Rate",
-        "evidence": "Page 1 \u2022 Derived from the 'Bottom 25% Agents' worksheet and survival rate quartile calculations.",
-        "logic": "Agents in the bottom 25% based on survival rate performance.",
-        "definition": "The list of agents whose survival rate performance falls in the bottom quartile."
+            "id": "kpi_3",
+            "name": "Bottom Quartile Agents by Survival Rate",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from the 'Bottom 25% Agents' worksheet and survival rate quartile calculations.",
+            "evidence": "Page 1 \u2022 Derived from the 'Bottom 25% Agents' worksheet and survival rate quartile calculations.",
+            "logic": "Agents in the bottom 25% based on survival rate performance.",
+            "definition": "The list of agents whose survival rate performance falls in the bottom quartile.",
+            "confidence": "85%"
       },
       {
-        "id": "kpi_4",
-        "name": "Conversion Rate by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data in the 'AOR + Agent' worksheet.",
-        "logic": "Conversion rate is calculated as the ratio of new business counts to quote counts.",
-        "definition": "The percentage of quotes converted into new business policies, segmented by agent."
+            "id": "kpi_4",
+            "name": "Conversion Rate by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields and agent-level data in the 'AOR + Agent' worksheet.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields and agent-level data in the 'AOR + Agent' worksheet.",
+            "logic": "Conversion rate is calculated as the ratio of new business counts to quote counts.",
+            "definition": "The percentage of quotes converted into new business policies, segmented by agent.",
+            "confidence": "88%"
       },
       {
-        "id": "kpi_5",
-        "name": "Survival Rate Variance to Bottom Quartile by Agent",
-        "evidence": "Page 1 \u2022 Derived from calculated fields related to survival rate variance.",
-        "logic": "Difference between an agent's survival rate and the average survival rate of the bottom quartile.",
-        "definition": "The variance in survival rate for an agent compared to the bottom quartile average. Analyzing Survival Rate.pbix"
+            "id": "kpi_5",
+            "name": "Survival Rate Variance to Bottom Quartile by Agent",
+            "page": "Page 1",
+            "category": null,
+            "source": "Derived from calculated fields related to survival rate variance.",
+            "evidence": "Page 1 \u2022 Derived from calculated fields related to survival rate variance.",
+            "logic": "Difference between an agent's survival rate and the average survival rate of the bottom quartile.",
+            "definition": "The variance in survival rate for an agent compared to the bottom quartile average. Analyzing Survival Rate.pbix",
+            "confidence": "80%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -6150,258 +6534,402 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Actual Spend by IT Area",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Area.",
-        "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data."
+            "id": "kpi_1",
+            "name": "Actual Spend by IT Area",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Area.",
+            "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_2",
-        "name": "Planned Spend by IT Area",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Area.",
-        "definition": "The total budgeted amount for each IT Area, as per the planned spend data."
+            "id": "kpi_2",
+            "name": "Planned Spend by IT Area",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Area.",
+            "definition": "The total budgeted amount for each IT Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_3",
-        "name": "Actual Spend by IT Sub Area",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Sub Area.",
-        "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data."
+            "id": "kpi_3",
+            "name": "Actual Spend by IT Sub Area",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Sub Area.",
+            "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_4",
-        "name": "Planned Spend by IT Sub Area",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Sub Area.",
-        "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data."
+            "id": "kpi_4",
+            "name": "Planned Spend by IT Sub Area",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Sub Area.",
+            "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_5",
-        "name": "Variance Percentage by Business Area",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Business Area.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area."
+            "id": "kpi_5",
+            "name": "Variance Percentage by Business Area",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Business Area.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_6",
-        "name": "Variance Percentage by Month",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each month.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each month."
+            "id": "kpi_6",
+            "name": "Variance Percentage by Month",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each month.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each month.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_7",
-        "name": "Variance Percentage by Sales Region",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Sales Region.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region."
+            "id": "kpi_7",
+            "name": "Variance Percentage by Sales Region",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Sales Region.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_8",
-        "name": "Monthly Spend Amount by Scenario",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
-        "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
-        "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan."
+            "id": "kpi_8",
+            "name": "Monthly Spend Amount by Scenario",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
+            "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_9",
-        "name": "Year-to-Date Spend by Cost Elements",
-        "evidence": "IT Spend Trend \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
-        "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
-        "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements."
+            "id": "kpi_9",
+            "name": "Year-to-Date Spend by Cost Elements",
+            "page": "IT Spend Trend",
+            "category": "IT Spend Trend",
+            "source": "Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "evidence": "IT Spend Trend \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
+            "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_10",
-        "name": "Actual Spend by IT Area",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Area.",
-        "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data."
+            "id": "kpi_10",
+            "name": "Actual Spend by IT Area",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Area.",
+            "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_11",
-        "name": "Planned Spend by IT Area",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Area.",
-        "definition": "The total budgeted amount for each IT Area, as per the planned spend data."
+            "id": "kpi_11",
+            "name": "Planned Spend by IT Area",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Area.",
+            "definition": "The total budgeted amount for each IT Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_12",
-        "name": "Actual Spend by IT Sub Area",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Sub Area.",
-        "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data."
+            "id": "kpi_12",
+            "name": "Actual Spend by IT Sub Area",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Sub Area.",
+            "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_13",
-        "name": "Planned Spend by IT Sub Area",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Sub Area.",
-        "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data."
+            "id": "kpi_13",
+            "name": "Planned Spend by IT Sub Area",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Sub Area.",
+            "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_14",
-        "name": "Variance Percentage by Business Area",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Business Area.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area."
+            "id": "kpi_14",
+            "name": "Variance Percentage by Business Area",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Business Area.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_15",
-        "name": "Variance Percentage by Month",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each month.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each month."
+            "id": "kpi_15",
+            "name": "Variance Percentage by Month",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each month.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each month.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_16",
-        "name": "Variance Percentage by Sales Region",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Sales Region.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region."
+            "id": "kpi_16",
+            "name": "Variance Percentage by Sales Region",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Sales Region.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_17",
-        "name": "Monthly Spend Amount by Scenario",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
-        "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
-        "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan."
+            "id": "kpi_17",
+            "name": "Monthly Spend Amount by Scenario",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
+            "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_18",
-        "name": "Year-to-Date Spend by Cost Elements",
-        "evidence": "Spend By Cost Elements \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
-        "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
-        "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements."
+            "id": "kpi_18",
+            "name": "Year-to-Date Spend by Cost Elements",
+            "page": "Spend By Cost Elements",
+            "category": "Spend By Cost Elements",
+            "source": "Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "evidence": "Spend By Cost Elements \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
+            "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_19",
-        "name": "Actual Spend by IT Area",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Area.",
-        "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data."
+            "id": "kpi_19",
+            "name": "Actual Spend by IT Area",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Area.",
+            "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_20",
-        "name": "Planned Spend by IT Area",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Area.",
-        "definition": "The total budgeted amount for each IT Area, as per the planned spend data."
+            "id": "kpi_20",
+            "name": "Planned Spend by IT Area",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Area.",
+            "definition": "The total budgeted amount for each IT Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_21",
-        "name": "Actual Spend by IT Sub Area",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Sub Area.",
-        "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data."
+            "id": "kpi_21",
+            "name": "Actual Spend by IT Sub Area",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Sub Area.",
+            "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_22",
-        "name": "Planned Spend by IT Sub Area",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Sub Area.",
-        "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data."
+            "id": "kpi_22",
+            "name": "Planned Spend by IT Sub Area",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Sub Area.",
+            "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_23",
-        "name": "Variance Percentage by Business Area",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Business Area.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area."
+            "id": "kpi_23",
+            "name": "Variance Percentage by Business Area",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Business Area.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_24",
-        "name": "Variance Percentage by Month",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each month.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each month."
+            "id": "kpi_24",
+            "name": "Variance Percentage by Month",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each month.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each month.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_25",
-        "name": "Variance Percentage by Sales Region",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Sales Region.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region."
+            "id": "kpi_25",
+            "name": "Variance Percentage by Sales Region",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Sales Region.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_26",
-        "name": "Monthly Spend Amount by Scenario",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
-        "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
-        "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan."
+            "id": "kpi_26",
+            "name": "Monthly Spend Amount by Scenario",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
+            "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_27",
-        "name": "Year-to-Date Spend by Cost Elements",
-        "evidence": "Plan Variance Analysis \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
-        "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
-        "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements."
+            "id": "kpi_27",
+            "name": "Year-to-Date Spend by Cost Elements",
+            "page": "Plan Variance Analysis",
+            "category": "Plan Variance Analysis",
+            "source": "Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "evidence": "Plan Variance Analysis \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
+            "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements.",
+            "confidence": "90%"
       },
       {
-        "id": "kpi_28",
-        "name": "Actual Spend by IT Area",
-        "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Area.",
-        "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data."
+            "id": "kpi_28",
+            "name": "Actual Spend by IT Area",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Area.",
+            "definition": "The total amount of money spent in each IT Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_29",
-        "name": "Planned Spend by IT Area",
-        "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Area.",
-        "definition": "The total budgeted amount for each IT Area, as per the planned spend data."
+            "id": "kpi_29",
+            "name": "Planned Spend by IT Area",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Area.",
+            "definition": "The total budgeted amount for each IT Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_30",
-        "name": "Actual Spend by IT Sub Area",
-        "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
-        "logic": "Sum of actual spend values grouped by IT Sub Area.",
-        "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data."
+            "id": "kpi_30",
+            "name": "Actual Spend by IT Sub Area",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Actual]' field.",
+            "logic": "Sum of actual spend values grouped by IT Sub Area.",
+            "definition": "The total amount of money spent in each IT Sub Area, as recorded in the actual spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_31",
-        "name": "Planned Spend by IT Sub Area",
-        "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
-        "logic": "Sum of planned spend values grouped by IT Sub Area.",
-        "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data."
+            "id": "kpi_31",
+            "name": "Planned Spend by IT Sub Area",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "evidence": "Info \u2022 Derived from the 'Actual, Plan by IT Area, IT Sub Area' worksheet using the 'Fact[Plan]' field.",
+            "logic": "Sum of planned spend values grouped by IT Sub Area.",
+            "definition": "The total budgeted amount for each IT Sub Area, as per the planned spend data.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_32",
-        "name": "Variance Percentage by Business Area",
-        "evidence": "Info \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Business Area.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area."
+            "id": "kpi_32",
+            "name": "Variance Percentage by Business Area",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Info \u2022 Derived from the 'Var Plan % by Business Area' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Business Area.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Business Area.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_33",
-        "name": "Variance Percentage by Month",
-        "evidence": "Info \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each month.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each month."
+            "id": "kpi_33",
+            "name": "Variance Percentage by Month",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Info \u2022 Derived from the 'Var Plan % by Month' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each month.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each month.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_34",
-        "name": "Variance Percentage by Sales Region",
-        "evidence": "Info \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
-        "logic": "Percentage difference between actual and planned spend for each Sales Region.",
-        "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region."
+            "id": "kpi_34",
+            "name": "Variance Percentage by Sales Region",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "evidence": "Info \u2022 Derived from the 'Var Plan % by Sales Region' worksheet using the 'Fact[Var Plan %]' field.",
+            "logic": "Percentage difference between actual and planned spend for each Sales Region.",
+            "definition": "The percentage by which the actual spend deviates from the planned spend for each Sales Region.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_35",
-        "name": "Monthly Spend Amount by Scenario",
-        "evidence": "Info \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
-        "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
-        "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan."
+            "id": "kpi_35",
+            "name": "Monthly Spend Amount by Scenario",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "evidence": "Info \u2022 Derived from the 'Amount by Month' worksheet using the 'Fact[Amount]' and 'Scenario[Scenario]' fields.",
+            "logic": "Sum of spend amounts grouped by month and scenario (e.g., Actual, Plan).",
+            "definition": "The total spend amount for each month, categorized by scenario such as Actual or Plan.",
+            "confidence": "100%"
       },
       {
-        "id": "kpi_36",
-        "name": "Year-to-Date Spend by Cost Elements",
-        "evidence": "Info \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
-        "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
-        "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements. Report Overview Analyzing IT Spend Analysis Sample PBIX.pbix"
+            "id": "kpi_36",
+            "name": "Year-to-Date Spend by Cost Elements",
+            "page": "Info",
+            "category": "Info",
+            "source": "Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "evidence": "Info \u2022 Derived from the 'YTD Spend by Cost Elements' worksheet.",
+            "logic": "Cumulative sum of spend amounts for the year, grouped by cost elements.",
+            "definition": "The total spend amount from the beginning of the year to date, categorized by cost elements. Report Overview Analyzing IT Spend Analysis Sample PBIX.pbix",
+            "confidence": "90%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",
@@ -7105,1392 +7633,2184 @@ export const POWERBI_DETAIL_DATA: Record<string, PowerBIDetailData> = {
     },
     "kpis": [
       {
-        "id": "kpi_1",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Net Sales \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_2",
-        "name": "Sales Amount by Product",
-        "evidence": "Net Sales \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_3",
-        "name": "Sales Amount by Segment",
-        "evidence": "Net Sales \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_4",
-        "name": "Net Sales by Location",
-        "evidence": "Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_5",
-        "name": "Return Rate",
-        "evidence": "Net Sales \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_6",
-        "name": "Returns by Location",
-        "evidence": "Net Sales \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_7",
-        "name": "WIF Sales",
-        "evidence": "Net Sales \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_8",
-        "name": "WIF Total Profit",
-        "evidence": "Net Sales \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_9",
-        "name": "WIF Total Forecast",
-        "evidence": "Net Sales \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_10",
-        "name": "Units Sold",
-        "evidence": "Net Sales \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_11",
-        "name": "Units Returned",
-        "evidence": "Net Sales \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_12",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Returns \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_13",
-        "name": "Sales Amount by Product",
-        "evidence": "Returns \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_14",
-        "name": "Sales Amount by Segment",
-        "evidence": "Returns \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_15",
-        "name": "Net Sales by Location",
-        "evidence": "Returns \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_16",
-        "name": "Return Rate",
-        "evidence": "Returns \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_17",
-        "name": "Returns by Location",
-        "evidence": "Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_18",
-        "name": "WIF Sales",
-        "evidence": "Returns \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_19",
-        "name": "WIF Total Profit",
-        "evidence": "Returns \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_20",
-        "name": "WIF Total Forecast",
-        "evidence": "Returns \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_21",
-        "name": "Units Sold",
-        "evidence": "Returns \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_22",
-        "name": "Units Returned",
-        "evidence": "Returns \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_23",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Return Rate \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_24",
-        "name": "Sales Amount by Product",
-        "evidence": "Return Rate \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_25",
-        "name": "Sales Amount by Segment",
-        "evidence": "Return Rate \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_26",
-        "name": "Net Sales by Location",
-        "evidence": "Return Rate \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_27",
-        "name": "Return Rate",
-        "evidence": "Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_28",
-        "name": "Returns by Location",
-        "evidence": "Return Rate \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_29",
-        "name": "WIF Sales",
-        "evidence": "Return Rate \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_30",
-        "name": "WIF Total Profit",
-        "evidence": "Return Rate \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_31",
-        "name": "WIF Total Forecast",
-        "evidence": "Return Rate \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_32",
-        "name": "Units Sold",
-        "evidence": "Return Rate \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_33",
-        "name": "Units Returned",
-        "evidence": "Return Rate \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_34",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Market Basket Analysis \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_35",
-        "name": "Sales Amount by Product",
-        "evidence": "Market Basket Analysis \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_36",
-        "name": "Sales Amount by Segment",
-        "evidence": "Market Basket Analysis \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_37",
-        "name": "Net Sales by Location",
-        "evidence": "Market Basket Analysis \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_38",
-        "name": "Return Rate",
-        "evidence": "Market Basket Analysis \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_39",
-        "name": "Returns by Location",
-        "evidence": "Market Basket Analysis \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_40",
-        "name": "WIF Sales",
-        "evidence": "Market Basket Analysis \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_41",
-        "name": "WIF Total Profit",
-        "evidence": "Market Basket Analysis \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_42",
-        "name": "WIF Total Forecast",
-        "evidence": "Market Basket Analysis \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_43",
-        "name": "Units Sold",
-        "evidence": "Market Basket Analysis \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_44",
-        "name": "Units Returned",
-        "evidence": "Market Basket Analysis \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_45",
-        "name": "Sales Amount by Product Category",
-        "evidence": "CathegoryBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_46",
-        "name": "Sales Amount by Product",
-        "evidence": "CathegoryBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_47",
-        "name": "Sales Amount by Segment",
-        "evidence": "CathegoryBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_48",
-        "name": "Net Sales by Location",
-        "evidence": "CathegoryBreackdown \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_49",
-        "name": "Return Rate",
-        "evidence": "CathegoryBreackdown \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_50",
-        "name": "Returns by Location",
-        "evidence": "CathegoryBreackdown \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_51",
-        "name": "WIF Sales",
-        "evidence": "CathegoryBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_52",
-        "name": "WIF Total Profit",
-        "evidence": "CathegoryBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_53",
-        "name": "WIF Total Forecast",
-        "evidence": "CathegoryBreackdown \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_54",
-        "name": "Units Sold",
-        "evidence": "CathegoryBreackdown \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_55",
-        "name": "Units Returned",
-        "evidence": "CathegoryBreackdown \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_56",
-        "name": "Sales Amount by Product Category",
-        "evidence": "KeyInfluencers \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_57",
-        "name": "Sales Amount by Product",
-        "evidence": "KeyInfluencers \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_58",
-        "name": "Sales Amount by Segment",
-        "evidence": "KeyInfluencers \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_59",
-        "name": "Net Sales by Location",
-        "evidence": "KeyInfluencers \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_60",
-        "name": "Return Rate",
-        "evidence": "KeyInfluencers \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_61",
-        "name": "Returns by Location",
-        "evidence": "KeyInfluencers \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_62",
-        "name": "WIF Sales",
-        "evidence": "KeyInfluencers \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_63",
-        "name": "WIF Total Profit",
-        "evidence": "KeyInfluencers \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_64",
-        "name": "WIF Total Forecast",
-        "evidence": "KeyInfluencers \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_65",
-        "name": "Units Sold",
-        "evidence": "KeyInfluencers \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_66",
-        "name": "Units Returned",
-        "evidence": "KeyInfluencers \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_67",
-        "name": "Sales Amount by Product Category",
-        "evidence": "StoreBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_68",
-        "name": "Sales Amount by Product",
-        "evidence": "StoreBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_69",
-        "name": "Sales Amount by Segment",
-        "evidence": "StoreBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_70",
-        "name": "Net Sales by Location",
-        "evidence": "StoreBreackdown \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_71",
-        "name": "Return Rate",
-        "evidence": "StoreBreackdown \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_72",
-        "name": "Returns by Location",
-        "evidence": "StoreBreackdown \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_73",
-        "name": "WIF Sales",
-        "evidence": "StoreBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_74",
-        "name": "WIF Total Profit",
-        "evidence": "StoreBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_75",
-        "name": "WIF Total Forecast",
-        "evidence": "StoreBreackdown \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_76",
-        "name": "Units Sold",
-        "evidence": "StoreBreackdown \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_77",
-        "name": "Units Returned",
-        "evidence": "StoreBreackdown \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_78",
-        "name": "Sales Amount by Product Category",
-        "evidence": "NetSales \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_79",
-        "name": "Sales Amount by Product",
-        "evidence": "NetSales \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_80",
-        "name": "Sales Amount by Segment",
-        "evidence": "NetSales \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_81",
-        "name": "Net Sales by Location",
-        "evidence": "NetSales \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_82",
-        "name": "Return Rate",
-        "evidence": "NetSales \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_83",
-        "name": "Returns by Location",
-        "evidence": "NetSales \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_84",
-        "name": "WIF Sales",
-        "evidence": "NetSales \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_85",
-        "name": "WIF Total Profit",
-        "evidence": "NetSales \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_86",
-        "name": "WIF Total Forecast",
-        "evidence": "NetSales \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_87",
-        "name": "Units Sold",
-        "evidence": "NetSales \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_88",
-        "name": "Units Returned",
-        "evidence": "NetSales \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_89",
-        "name": "Sales Amount by Product Category",
-        "evidence": "WhatIf \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_90",
-        "name": "Sales Amount by Product",
-        "evidence": "WhatIf \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_91",
-        "name": "Sales Amount by Segment",
-        "evidence": "WhatIf \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_92",
-        "name": "Net Sales by Location",
-        "evidence": "WhatIf \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_93",
-        "name": "Return Rate",
-        "evidence": "WhatIf \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_94",
-        "name": "Returns by Location",
-        "evidence": "WhatIf \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_95",
-        "name": "WIF Sales",
-        "evidence": "WhatIf \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_96",
-        "name": "WIF Total Profit",
-        "evidence": "WhatIf \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_97",
-        "name": "WIF Total Forecast",
-        "evidence": "WhatIf \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_98",
-        "name": "Units Sold",
-        "evidence": "WhatIf \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_99",
-        "name": "Units Returned",
-        "evidence": "WhatIf \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_100",
-        "name": "Sales Amount by Product Category",
-        "evidence": "RetCategory \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_101",
-        "name": "Sales Amount by Product",
-        "evidence": "RetCategory \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_102",
-        "name": "Sales Amount by Segment",
-        "evidence": "RetCategory \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_103",
-        "name": "Net Sales by Location",
-        "evidence": "RetCategory \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_104",
-        "name": "Return Rate",
-        "evidence": "RetCategory \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_105",
-        "name": "Returns by Location",
-        "evidence": "RetCategory \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_106",
-        "name": "WIF Sales",
-        "evidence": "RetCategory \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_107",
-        "name": "WIF Total Profit",
-        "evidence": "RetCategory \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_108",
-        "name": "WIF Total Forecast",
-        "evidence": "RetCategory \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_109",
-        "name": "Units Sold",
-        "evidence": "RetCategory \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_110",
-        "name": "Units Returned",
-        "evidence": "RetCategory \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_111",
-        "name": "Sales Amount by Product Category",
-        "evidence": "RetKeyInf \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_112",
-        "name": "Sales Amount by Product",
-        "evidence": "RetKeyInf \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_113",
-        "name": "Sales Amount by Segment",
-        "evidence": "RetKeyInf \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_114",
-        "name": "Net Sales by Location",
-        "evidence": "RetKeyInf \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_115",
-        "name": "Return Rate",
-        "evidence": "RetKeyInf \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_116",
-        "name": "Returns by Location",
-        "evidence": "RetKeyInf \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_117",
-        "name": "WIF Sales",
-        "evidence": "RetKeyInf \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_118",
-        "name": "WIF Total Profit",
-        "evidence": "RetKeyInf \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_119",
-        "name": "WIF Total Forecast",
-        "evidence": "RetKeyInf \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_120",
-        "name": "Units Sold",
-        "evidence": "RetKeyInf \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_121",
-        "name": "Units Returned",
-        "evidence": "RetKeyInf \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_122",
-        "name": "Sales Amount by Product Category",
-        "evidence": "RetStoreBre \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_123",
-        "name": "Sales Amount by Product",
-        "evidence": "RetStoreBre \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_124",
-        "name": "Sales Amount by Segment",
-        "evidence": "RetStoreBre \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_125",
-        "name": "Net Sales by Location",
-        "evidence": "RetStoreBre \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_126",
-        "name": "Return Rate",
-        "evidence": "RetStoreBre \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_127",
-        "name": "Returns by Location",
-        "evidence": "RetStoreBre \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_128",
-        "name": "WIF Sales",
-        "evidence": "RetStoreBre \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_129",
-        "name": "WIF Total Profit",
-        "evidence": "RetStoreBre \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_130",
-        "name": "WIF Total Forecast",
-        "evidence": "RetStoreBre \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_131",
-        "name": "Units Sold",
-        "evidence": "RetStoreBre \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_132",
-        "name": "Units Returned",
-        "evidence": "RetStoreBre \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_133",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Legal \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_134",
-        "name": "Sales Amount by Product",
-        "evidence": "Legal \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_135",
-        "name": "Sales Amount by Segment",
-        "evidence": "Legal \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_136",
-        "name": "Net Sales by Location",
-        "evidence": "Legal \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_137",
-        "name": "Return Rate",
-        "evidence": "Legal \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_138",
-        "name": "Returns by Location",
-        "evidence": "Legal \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_139",
-        "name": "WIF Sales",
-        "evidence": "Legal \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_140",
-        "name": "WIF Total Profit",
-        "evidence": "Legal \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_141",
-        "name": "WIF Total Forecast",
-        "evidence": "Legal \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_142",
-        "name": "Units Sold",
-        "evidence": "Legal \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_143",
-        "name": "Units Returned",
-        "evidence": "Legal \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_144",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Intro \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_145",
-        "name": "Sales Amount by Product",
-        "evidence": "Intro \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_146",
-        "name": "Sales Amount by Segment",
-        "evidence": "Intro \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_147",
-        "name": "Net Sales by Location",
-        "evidence": "Intro \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_148",
-        "name": "Return Rate",
-        "evidence": "Intro \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_149",
-        "name": "Returns by Location",
-        "evidence": "Intro \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_150",
-        "name": "WIF Sales",
-        "evidence": "Intro \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_151",
-        "name": "WIF Total Profit",
-        "evidence": "Intro \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_152",
-        "name": "WIF Total Forecast",
-        "evidence": "Intro \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_153",
-        "name": "Units Sold",
-        "evidence": "Intro \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_154",
-        "name": "Units Returned",
-        "evidence": "Intro \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_155",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Net Sales Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_156",
-        "name": "Sales Amount by Product",
-        "evidence": "Net Sales Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_157",
-        "name": "Sales Amount by Segment",
-        "evidence": "Net Sales Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_158",
-        "name": "Net Sales by Location",
-        "evidence": "Net Sales Tooltip \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_159",
-        "name": "Return Rate",
-        "evidence": "Net Sales Tooltip \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_160",
-        "name": "Returns by Location",
-        "evidence": "Net Sales Tooltip \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_161",
-        "name": "WIF Sales",
-        "evidence": "Net Sales Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_162",
-        "name": "WIF Total Profit",
-        "evidence": "Net Sales Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_163",
-        "name": "WIF Total Forecast",
-        "evidence": "Net Sales Tooltip \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_164",
-        "name": "Units Sold",
-        "evidence": "Net Sales Tooltip \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_165",
-        "name": "Units Returned",
-        "evidence": "Net Sales Tooltip \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_166",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Returns Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_167",
-        "name": "Sales Amount by Product",
-        "evidence": "Returns Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_168",
-        "name": "Sales Amount by Segment",
-        "evidence": "Returns Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_169",
-        "name": "Net Sales by Location",
-        "evidence": "Returns Tooltip \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_170",
-        "name": "Return Rate",
-        "evidence": "Returns Tooltip \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_171",
-        "name": "Returns by Location",
-        "evidence": "Returns Tooltip \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_172",
-        "name": "WIF Sales",
-        "evidence": "Returns Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_173",
-        "name": "WIF Total Profit",
-        "evidence": "Returns Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_174",
-        "name": "WIF Total Forecast",
-        "evidence": "Returns Tooltip \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_175",
-        "name": "Units Sold",
-        "evidence": "Returns Tooltip \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_176",
-        "name": "Units Returned",
-        "evidence": "Returns Tooltip \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_177",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Q&A1 \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_178",
-        "name": "Sales Amount by Product",
-        "evidence": "Q&A1 \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_179",
-        "name": "Sales Amount by Segment",
-        "evidence": "Q&A1 \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_180",
-        "name": "Net Sales by Location",
-        "evidence": "Q&A1 \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_181",
-        "name": "Return Rate",
-        "evidence": "Q&A1 \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_182",
-        "name": "Returns by Location",
-        "evidence": "Q&A1 \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_183",
-        "name": "WIF Sales",
-        "evidence": "Q&A1 \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_184",
-        "name": "WIF Total Profit",
-        "evidence": "Q&A1 \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_185",
-        "name": "WIF Total Forecast",
-        "evidence": "Q&A1 \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_186",
-        "name": "Units Sold",
-        "evidence": "Q&A1 \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_187",
-        "name": "Units Returned",
-        "evidence": "Q&A1 \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned."
-      },
-      {
-        "id": "kpi_188",
-        "name": "Sales Amount by Product Category",
-        "evidence": "Q&A2 \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
-        "definition": "The total sales revenue generated for each product category."
-      },
-      {
-        "id": "kpi_189",
-        "name": "Sales Amount by Product",
-        "evidence": "Q&A2 \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
-        "definition": "The total sales revenue generated for each product."
-      },
-      {
-        "id": "kpi_190",
-        "name": "Sales Amount by Segment",
-        "evidence": "Q&A2 \u2022 Category Breakdown worksheet, bar chart visualization",
-        "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
-        "definition": "The total sales revenue generated for each customer segment."
-      },
-      {
-        "id": "kpi_191",
-        "name": "Net Sales by Location",
-        "evidence": "Q&A2 \u2022 Net Sales by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total net sales revenue generated at each store location."
-      },
-      {
-        "id": "kpi_192",
-        "name": "Return Rate",
-        "evidence": "Q&A2 \u2022 Return Rate worksheet, card visualization",
-        "logic": "Calculated as 'Analysis DAX[Return Rate]'",
-        "definition": "The percentage of products returned relative to total sales."
-      },
-      {
-        "id": "kpi_193",
-        "name": "Returns by Location",
-        "evidence": "Q&A2 \u2022 Returns by Location worksheet, custom visual",
-        "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
-        "definition": "The total number of product returns at each store location."
-      },
-      {
-        "id": "kpi_194",
-        "name": "WIF Sales",
-        "evidence": "Q&A2 \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
-        "definition": "The forecasted sales revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_195",
-        "name": "WIF Total Profit",
-        "evidence": "Q&A2 \u2022 What If Analysis Forecast worksheet, stacked column chart",
-        "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
-        "definition": "The forecasted total profit under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_196",
-        "name": "WIF Total Forecast",
-        "evidence": "Q&A2 \u2022 What If Analysis Forecast worksheet, line chart",
-        "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
-        "definition": "The total forecasted revenue under a 'What If' scenario."
-      },
-      {
-        "id": "kpi_197",
-        "name": "Units Sold",
-        "evidence": "Q&A2 \u2022 Units Sold worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Sold]'",
-        "definition": "The total number of units sold."
-      },
-      {
-        "id": "kpi_198",
-        "name": "Units Returned",
-        "evidence": "Q&A2 \u2022 Units Returned worksheet, card visualization",
-        "logic": "Sum of 'Analysis DAX[Units Returned]'",
-        "definition": "The total number of units returned. Analyzing Sales & Returns Sample v3.pbix"
+            "id": "kpi_1",
+            "name": "Sales Amount by Product Category",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Net Sales \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_2",
+            "name": "Sales Amount by Product",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Net Sales \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_3",
+            "name": "Sales Amount by Segment",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Net Sales \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_4",
+            "name": "Net Sales by Location",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_5",
+            "name": "Return Rate",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Net Sales \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_6",
+            "name": "Returns by Location",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Net Sales \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_7",
+            "name": "WIF Sales",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Net Sales \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_8",
+            "name": "WIF Total Profit",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Net Sales \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_9",
+            "name": "WIF Total Forecast",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Net Sales \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_10",
+            "name": "Units Sold",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Net Sales \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_11",
+            "name": "Units Returned",
+            "page": "Net Sales",
+            "category": "Net Sales",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Net Sales \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_12",
+            "name": "Sales Amount by Product Category",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Returns \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_13",
+            "name": "Sales Amount by Product",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Returns \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_14",
+            "name": "Sales Amount by Segment",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Returns \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_15",
+            "name": "Net Sales by Location",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Returns \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_16",
+            "name": "Return Rate",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Returns \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_17",
+            "name": "Returns by Location",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_18",
+            "name": "WIF Sales",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Returns \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_19",
+            "name": "WIF Total Profit",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Returns \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_20",
+            "name": "WIF Total Forecast",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Returns \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_21",
+            "name": "Units Sold",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Returns \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_22",
+            "name": "Units Returned",
+            "page": "Returns",
+            "category": "Returns",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Returns \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_23",
+            "name": "Sales Amount by Product Category",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Return Rate \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_24",
+            "name": "Sales Amount by Product",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Return Rate \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_25",
+            "name": "Sales Amount by Segment",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Return Rate \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_26",
+            "name": "Net Sales by Location",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Return Rate \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_27",
+            "name": "Return Rate",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_28",
+            "name": "Returns by Location",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Return Rate \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_29",
+            "name": "WIF Sales",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Return Rate \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_30",
+            "name": "WIF Total Profit",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Return Rate \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_31",
+            "name": "WIF Total Forecast",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Return Rate \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_32",
+            "name": "Units Sold",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Return Rate \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_33",
+            "name": "Units Returned",
+            "page": "Return Rate",
+            "category": "Return Rate",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Return Rate \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_34",
+            "name": "Sales Amount by Product Category",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Market Basket Analysis \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_35",
+            "name": "Sales Amount by Product",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Market Basket Analysis \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_36",
+            "name": "Sales Amount by Segment",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Market Basket Analysis \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_37",
+            "name": "Net Sales by Location",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Market Basket Analysis \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_38",
+            "name": "Return Rate",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Market Basket Analysis \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_39",
+            "name": "Returns by Location",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Market Basket Analysis \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_40",
+            "name": "WIF Sales",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Market Basket Analysis \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_41",
+            "name": "WIF Total Profit",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Market Basket Analysis \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_42",
+            "name": "WIF Total Forecast",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Market Basket Analysis \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_43",
+            "name": "Units Sold",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Market Basket Analysis \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_44",
+            "name": "Units Returned",
+            "page": "Market Basket Analysis",
+            "category": "Market Basket Analysis",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Market Basket Analysis \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_45",
+            "name": "Sales Amount by Product Category",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "CathegoryBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_46",
+            "name": "Sales Amount by Product",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "CathegoryBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_47",
+            "name": "Sales Amount by Segment",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "CathegoryBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_48",
+            "name": "Net Sales by Location",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "CathegoryBreackdown \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_49",
+            "name": "Return Rate",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "CathegoryBreackdown \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_50",
+            "name": "Returns by Location",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "CathegoryBreackdown \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_51",
+            "name": "WIF Sales",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "CathegoryBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_52",
+            "name": "WIF Total Profit",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "CathegoryBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_53",
+            "name": "WIF Total Forecast",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "CathegoryBreackdown \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_54",
+            "name": "Units Sold",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "CathegoryBreackdown \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_55",
+            "name": "Units Returned",
+            "page": "CathegoryBreackdown",
+            "category": "CathegoryBreackdown",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "CathegoryBreackdown \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_56",
+            "name": "Sales Amount by Product Category",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "KeyInfluencers \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_57",
+            "name": "Sales Amount by Product",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "KeyInfluencers \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_58",
+            "name": "Sales Amount by Segment",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "KeyInfluencers \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_59",
+            "name": "Net Sales by Location",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "KeyInfluencers \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_60",
+            "name": "Return Rate",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "KeyInfluencers \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_61",
+            "name": "Returns by Location",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "KeyInfluencers \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_62",
+            "name": "WIF Sales",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "KeyInfluencers \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_63",
+            "name": "WIF Total Profit",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "KeyInfluencers \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_64",
+            "name": "WIF Total Forecast",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "KeyInfluencers \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_65",
+            "name": "Units Sold",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "KeyInfluencers \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_66",
+            "name": "Units Returned",
+            "page": "KeyInfluencers",
+            "category": "KeyInfluencers",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "KeyInfluencers \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_67",
+            "name": "Sales Amount by Product Category",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "StoreBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_68",
+            "name": "Sales Amount by Product",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "StoreBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_69",
+            "name": "Sales Amount by Segment",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "StoreBreackdown \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_70",
+            "name": "Net Sales by Location",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "StoreBreackdown \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_71",
+            "name": "Return Rate",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "StoreBreackdown \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_72",
+            "name": "Returns by Location",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "StoreBreackdown \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_73",
+            "name": "WIF Sales",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "StoreBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_74",
+            "name": "WIF Total Profit",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "StoreBreackdown \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_75",
+            "name": "WIF Total Forecast",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "StoreBreackdown \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_76",
+            "name": "Units Sold",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "StoreBreackdown \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_77",
+            "name": "Units Returned",
+            "page": "StoreBreackdown",
+            "category": "StoreBreackdown",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "StoreBreackdown \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_78",
+            "name": "Sales Amount by Product Category",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "NetSales \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_79",
+            "name": "Sales Amount by Product",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "NetSales \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_80",
+            "name": "Sales Amount by Segment",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "NetSales \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_81",
+            "name": "Net Sales by Location",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "NetSales \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_82",
+            "name": "Return Rate",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "NetSales \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_83",
+            "name": "Returns by Location",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "NetSales \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_84",
+            "name": "WIF Sales",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "NetSales \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_85",
+            "name": "WIF Total Profit",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "NetSales \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_86",
+            "name": "WIF Total Forecast",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "NetSales \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_87",
+            "name": "Units Sold",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "NetSales \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_88",
+            "name": "Units Returned",
+            "page": "NetSales",
+            "category": "NetSales",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "NetSales \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_89",
+            "name": "Sales Amount by Product Category",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "WhatIf \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_90",
+            "name": "Sales Amount by Product",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "WhatIf \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_91",
+            "name": "Sales Amount by Segment",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "WhatIf \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_92",
+            "name": "Net Sales by Location",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "WhatIf \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_93",
+            "name": "Return Rate",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "WhatIf \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_94",
+            "name": "Returns by Location",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "WhatIf \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_95",
+            "name": "WIF Sales",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "WhatIf \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_96",
+            "name": "WIF Total Profit",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "WhatIf \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_97",
+            "name": "WIF Total Forecast",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "WhatIf \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_98",
+            "name": "Units Sold",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "WhatIf \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_99",
+            "name": "Units Returned",
+            "page": "WhatIf",
+            "category": "WhatIf",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "WhatIf \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_100",
+            "name": "Sales Amount by Product Category",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetCategory \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_101",
+            "name": "Sales Amount by Product",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetCategory \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_102",
+            "name": "Sales Amount by Segment",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetCategory \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_103",
+            "name": "Net Sales by Location",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "RetCategory \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_104",
+            "name": "Return Rate",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "RetCategory \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_105",
+            "name": "Returns by Location",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "RetCategory \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_106",
+            "name": "WIF Sales",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "RetCategory \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_107",
+            "name": "WIF Total Profit",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "RetCategory \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_108",
+            "name": "WIF Total Forecast",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "RetCategory \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_109",
+            "name": "Units Sold",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "RetCategory \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_110",
+            "name": "Units Returned",
+            "page": "RetCategory",
+            "category": "RetCategory",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "RetCategory \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_111",
+            "name": "Sales Amount by Product Category",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetKeyInf \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_112",
+            "name": "Sales Amount by Product",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetKeyInf \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_113",
+            "name": "Sales Amount by Segment",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetKeyInf \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_114",
+            "name": "Net Sales by Location",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "RetKeyInf \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_115",
+            "name": "Return Rate",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "RetKeyInf \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_116",
+            "name": "Returns by Location",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "RetKeyInf \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_117",
+            "name": "WIF Sales",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "RetKeyInf \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_118",
+            "name": "WIF Total Profit",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "RetKeyInf \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_119",
+            "name": "WIF Total Forecast",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "RetKeyInf \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_120",
+            "name": "Units Sold",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "RetKeyInf \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_121",
+            "name": "Units Returned",
+            "page": "RetKeyInf",
+            "category": "RetKeyInf",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "RetKeyInf \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_122",
+            "name": "Sales Amount by Product Category",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetStoreBre \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_123",
+            "name": "Sales Amount by Product",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetStoreBre \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_124",
+            "name": "Sales Amount by Segment",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "RetStoreBre \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_125",
+            "name": "Net Sales by Location",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "RetStoreBre \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_126",
+            "name": "Return Rate",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "RetStoreBre \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_127",
+            "name": "Returns by Location",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "RetStoreBre \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_128",
+            "name": "WIF Sales",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "RetStoreBre \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_129",
+            "name": "WIF Total Profit",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "RetStoreBre \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_130",
+            "name": "WIF Total Forecast",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "RetStoreBre \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_131",
+            "name": "Units Sold",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "RetStoreBre \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_132",
+            "name": "Units Returned",
+            "page": "RetStoreBre",
+            "category": "RetStoreBre",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "RetStoreBre \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_133",
+            "name": "Sales Amount by Product Category",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Legal \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_134",
+            "name": "Sales Amount by Product",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Legal \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_135",
+            "name": "Sales Amount by Segment",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Legal \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_136",
+            "name": "Net Sales by Location",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Legal \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_137",
+            "name": "Return Rate",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Legal \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_138",
+            "name": "Returns by Location",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Legal \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_139",
+            "name": "WIF Sales",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Legal \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_140",
+            "name": "WIF Total Profit",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Legal \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_141",
+            "name": "WIF Total Forecast",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Legal \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_142",
+            "name": "Units Sold",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Legal \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_143",
+            "name": "Units Returned",
+            "page": "Legal",
+            "category": "Legal",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Legal \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_144",
+            "name": "Sales Amount by Product Category",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Intro \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_145",
+            "name": "Sales Amount by Product",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Intro \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_146",
+            "name": "Sales Amount by Segment",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Intro \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_147",
+            "name": "Net Sales by Location",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Intro \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_148",
+            "name": "Return Rate",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Intro \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_149",
+            "name": "Returns by Location",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Intro \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_150",
+            "name": "WIF Sales",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Intro \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_151",
+            "name": "WIF Total Profit",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Intro \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_152",
+            "name": "WIF Total Forecast",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Intro \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_153",
+            "name": "Units Sold",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Intro \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_154",
+            "name": "Units Returned",
+            "page": "Intro",
+            "category": "Intro",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Intro \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_155",
+            "name": "Sales Amount by Product Category",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Net Sales Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_156",
+            "name": "Sales Amount by Product",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Net Sales Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_157",
+            "name": "Sales Amount by Segment",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Net Sales Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_158",
+            "name": "Net Sales by Location",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Net Sales Tooltip \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_159",
+            "name": "Return Rate",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Net Sales Tooltip \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_160",
+            "name": "Returns by Location",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Net Sales Tooltip \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_161",
+            "name": "WIF Sales",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Net Sales Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_162",
+            "name": "WIF Total Profit",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Net Sales Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_163",
+            "name": "WIF Total Forecast",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Net Sales Tooltip \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_164",
+            "name": "Units Sold",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Net Sales Tooltip \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_165",
+            "name": "Units Returned",
+            "page": "Net Sales Tooltip",
+            "category": "Net Sales Tooltip",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Net Sales Tooltip \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_166",
+            "name": "Sales Amount by Product Category",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Returns Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_167",
+            "name": "Sales Amount by Product",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Returns Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_168",
+            "name": "Sales Amount by Segment",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Returns Tooltip \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_169",
+            "name": "Net Sales by Location",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Returns Tooltip \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_170",
+            "name": "Return Rate",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Returns Tooltip \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_171",
+            "name": "Returns by Location",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Returns Tooltip \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_172",
+            "name": "WIF Sales",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Returns Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_173",
+            "name": "WIF Total Profit",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Returns Tooltip \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_174",
+            "name": "WIF Total Forecast",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Returns Tooltip \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_175",
+            "name": "Units Sold",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Returns Tooltip \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_176",
+            "name": "Units Returned",
+            "page": "Returns Tooltip",
+            "category": "Returns Tooltip",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Returns Tooltip \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_177",
+            "name": "Sales Amount by Product Category",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Q&A1 \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_178",
+            "name": "Sales Amount by Product",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Q&A1 \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_179",
+            "name": "Sales Amount by Segment",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Q&A1 \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_180",
+            "name": "Net Sales by Location",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Q&A1 \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_181",
+            "name": "Return Rate",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Q&A1 \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_182",
+            "name": "Returns by Location",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Q&A1 \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_183",
+            "name": "WIF Sales",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Q&A1 \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_184",
+            "name": "WIF Total Profit",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Q&A1 \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_185",
+            "name": "WIF Total Forecast",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Q&A1 \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_186",
+            "name": "Units Sold",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Q&A1 \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_187",
+            "name": "Units Returned",
+            "page": "Q&A1",
+            "category": "Q&A1",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Q&A1 \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_188",
+            "name": "Sales Amount by Product Category",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Q&A2 \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Category]'",
+            "definition": "The total sales revenue generated for each product category.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_189",
+            "name": "Sales Amount by Product",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Q&A2 \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Product]'",
+            "definition": "The total sales revenue generated for each product.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_190",
+            "name": "Sales Amount by Segment",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Category Breakdown worksheet, bar chart visualization",
+            "evidence": "Q&A2 \u2022 Category Breakdown worksheet, bar chart visualization",
+            "logic": "Sum of 'Sales[Amount]' grouped by 'Product[Segment]'",
+            "definition": "The total sales revenue generated for each customer segment.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_191",
+            "name": "Net Sales by Location",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Net Sales by Location worksheet, custom visual",
+            "evidence": "Q&A2 \u2022 Net Sales by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Net Sales]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total net sales revenue generated at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_192",
+            "name": "Return Rate",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Return Rate worksheet, card visualization",
+            "evidence": "Q&A2 \u2022 Return Rate worksheet, card visualization",
+            "logic": "Calculated as 'Analysis DAX[Return Rate]'",
+            "definition": "The percentage of products returned relative to total sales.",
+            "confidence": "95%"
+      },
+      {
+            "id": "kpi_193",
+            "name": "Returns by Location",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Returns by Location worksheet, custom visual",
+            "evidence": "Q&A2 \u2022 Returns by Location worksheet, custom visual",
+            "logic": "Sum of 'Analysis DAX[Returns]' plotted by 'Store[Latitude]' and 'Store[Longitude]'",
+            "definition": "The total number of product returns at each store location.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_194",
+            "name": "WIF Sales",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Q&A2 \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected sales under hypothetical scenarios using 'Analysis DAX[WIF Sales]'",
+            "definition": "The forecasted sales revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_195",
+            "name": "WIF Total Profit",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "What If Analysis Forecast worksheet, stacked column chart",
+            "evidence": "Q&A2 \u2022 What If Analysis Forecast worksheet, stacked column chart",
+            "logic": "Projected profit under hypothetical scenarios using 'Analysis DAX[WIF Total Profit]'",
+            "definition": "The forecasted total profit under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_196",
+            "name": "WIF Total Forecast",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "What If Analysis Forecast worksheet, line chart",
+            "evidence": "Q&A2 \u2022 What If Analysis Forecast worksheet, line chart",
+            "logic": "Projected total forecast using 'Analysis DAX[WIF Total Forecast]'",
+            "definition": "The total forecasted revenue under a 'What If' scenario.",
+            "confidence": "85%"
+      },
+      {
+            "id": "kpi_197",
+            "name": "Units Sold",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Units Sold worksheet, card visualization",
+            "evidence": "Q&A2 \u2022 Units Sold worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Sold]'",
+            "definition": "The total number of units sold.",
+            "confidence": "90%"
+      },
+      {
+            "id": "kpi_198",
+            "name": "Units Returned",
+            "page": "Q&A2",
+            "category": "Q&A2",
+            "source": "Units Returned worksheet, card visualization",
+            "evidence": "Q&A2 \u2022 Units Returned worksheet, card visualization",
+            "logic": "Sum of 'Analysis DAX[Units Returned]'",
+            "definition": "The total number of units returned. Analyzing Sales & Returns Sample v3.pbix",
+            "confidence": "90%"
       }
-    ],
+],
     "pages": [
       {
         "id": "pg_1",

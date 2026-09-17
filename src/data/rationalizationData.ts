@@ -642,7 +642,7 @@ export const recommendations: Recommendation[] = [
     businessArea: 'Distribution',
     assets: [asset('Workflow_08', 'Alteryx')],
     dependentAsset: asset('Sales & Returns Sample v3', 'Power BI'),
-    rationale: 'Associated BI dashboard is under Inactive decommission. Workflow_08 serves only this dashboard, and this decision also cascades to this ETL workflow because the workflow serves only that BI dashboard.',
+    rationale: 'The associated BI dashboard is recommended for Inactive decommissioning. Since Workflow_08 has no downstream consumers beyond this dashboard, its business dependency is eliminated. The decommissioning decision therefore cascades to Workflow_08, identifying it as an orphaned ETL workflow.',
     action: 'Decommission orphaned ETL workflow Workflow_08.',
     tags: ['Orphan Cascade', 'BI Dependent', 'Decommission Cascade'],
     kpis: ['Date', 'Burritos', 'DateTime_Out', 'Avg_Burritos'],
@@ -2667,7 +2667,7 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
         },
       ],
       rationalePoints: [
-        'ORPHAN CASCADE — Sole Downstream Consumer Decommissioned: Associated BI dashboard is under Inactive decommission. Workflow_08 serves only this dashboard, and this decision also cascades to this ETL workflow because the workflow serves only that BI dashboard.',
+        'ORPHAN CASCADE — Sole Downstream Consumer Recommended for Decommission: The associated BI dashboard is recommended for Inactive decommissioning. Since Workflow_08 has no downstream consumers beyond this dashboard, its business dependency is eliminated. The decommissioning decision therefore cascades to Workflow_08, identifying it as an orphaned ETL workflow.',
         'LINEAGE CASCADE — Deterministic Dependency: Workflow_08 output (Workflow8_output.xlsx) has zero active consumers once Sales & Returns Sample v3 is retired.',
       ],
       validationRequirements: [
