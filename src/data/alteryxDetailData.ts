@@ -970,21 +970,49 @@ ALTERYX_DETAIL_DATA.p6 = ALTERYX_DETAIL_DATA.c13; // Workflow_02
  * Maps workflow asset IDs to browser-openable SVG paths/URLs.
  * Uses Vite static asset imports to resolve direct browser URLs.
  * ───────────────────────────────────────────────────────── */
-import demoClaimsVolumeExtractSvg from './Demo Claims Volume Extract.svg';
+import demoClaimsVolumeExtractSvg from './Demo_Claims_Volume_Extract.svg';
+import demoClaimsVolumeExtractSvgRaw from './Demo_Claims_Volume_Extract.svg?raw';
 
 export const WORKFLOW_SVG_PATHS: Record<string, string> = {
   // Add/import the corresponding workflow SVG assets here.
   c10: demoClaimsVolumeExtractSvg, // Claims_Extract_Volume
-  c11: '', // Workflow_03
-  c12: '', // Workflow_01
-  c13: '', // Workflow_02
+  c11: demoClaimsVolumeExtractSvg, // Workflow_03
+  c12: demoClaimsVolumeExtractSvg, // Workflow_01
+  c13: demoClaimsVolumeExtractSvg, // Workflow_02
   c14: demoClaimsVolumeExtractSvg, // Claims_Extract_Volume_v2
-  u4: '',  // Workflow_04
-  d6: '',  // Workflow_08
-  p4: '',  // Workflow_03 (Policy Administration)
-  p5: '',  // Workflow_01 (Policy Administration)
-  p6: '',  // Workflow_02 (Policy Administration)
+  u4: demoClaimsVolumeExtractSvg,  // Workflow_04
+  d6: demoClaimsVolumeExtractSvg,  // Workflow_08
+  p4: demoClaimsVolumeExtractSvg,  // Workflow_03 (Policy Administration)
+  p5: demoClaimsVolumeExtractSvg,  // Workflow_01 (Policy Administration)
+  p6: demoClaimsVolumeExtractSvg,  // Workflow_02 (Policy Administration)
 };
+
+export const WORKFLOW_SVG_CONTENTS: Record<string, string> = {
+  c10: demoClaimsVolumeExtractSvgRaw,
+  c11: demoClaimsVolumeExtractSvgRaw,
+  c12: demoClaimsVolumeExtractSvgRaw,
+  c13: demoClaimsVolumeExtractSvgRaw,
+  c14: demoClaimsVolumeExtractSvgRaw,
+  u4: demoClaimsVolumeExtractSvgRaw,
+  d6: demoClaimsVolumeExtractSvgRaw,
+  p4: demoClaimsVolumeExtractSvgRaw,
+  p5: demoClaimsVolumeExtractSvgRaw,
+  p6: demoClaimsVolumeExtractSvgRaw,
+};
+
+/**
+ * Returns raw SVG string for the workflow, dynamically customizing DAG header title if provided.
+ */
+export function getWorkflowLineageSvg(workflowId: string, workflowName?: string): string {
+  let svg = WORKFLOW_SVG_CONTENTS[workflowId] || demoClaimsVolumeExtractSvgRaw;
+  if (workflowName && svg) {
+    svg = svg.replace(
+      'Alteryx Workflow DAG — Demo Claims Volume Extract',
+      `Alteryx Workflow DAG — ${workflowName}`
+    );
+  }
+  return svg;
+}
 
 /* ── Alteryx Workflow Overview / Business Intelligence Types ── */
 export interface BusinessInput {
