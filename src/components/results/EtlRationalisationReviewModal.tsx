@@ -139,7 +139,8 @@ export default function EtlRationalisationReviewModal({
   };
 
   const isConsolidate = detail.recType === 'CONSOLIDATE';
-  const badgeColor = isConsolidate ? '#34d399' : '#fbbf24';
+  const isOrphan = detail.recommendationBadge === 'Orphan Cascade' || rec.tags?.some((t) => /orphan/i.test(t)) || rec.id === 'er4';
+  const badgeColor = isConsolidate ? '#34d399' : isOrphan ? '#EC4899' : '#fbbf24';
 
   const wfA = detail.inScopeWorkflows[0];
   const wfB = detail.inScopeWorkflows[1];
@@ -445,7 +446,48 @@ export default function EtlRationalisationReviewModal({
               </div>
             )}
 
-            {!isConsolidate && wfB && (
+            {!isConsolidate && isOrphan && (
+              <div
+                className="p-4 rounded-xl border flex flex-col gap-2.5"
+                style={{
+                  backgroundColor: 'rgba(236, 72, 153, 0.06)',
+                  borderColor: 'rgba(236, 72, 153, 0.35)',
+                }}
+              >
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <Trash2 size={16} className="text-pink-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-pink-400">
+                      Orphan Cascade Lineage & Dependency
+                    </span>
+                  </div>
+                  <span
+                    className="text-[11px] font-bold px-2 py-0.5 rounded text-pink-400"
+                    style={{ backgroundColor: 'rgba(236, 72, 153, 0.15)' }}
+                  >
+                    BI-Induced ETL Decommission
+                  </span>
+                </div>
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex items-center gap-2.5 flex-wrap text-sm font-bold">
+                    <div className="px-3 py-1 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 flex items-center gap-1.5">
+                      <span>{detail.direction.retained.name}</span>
+                      <span className="text-[10px] opacity-80 font-normal">({detail.direction.retained.tech} — Inactive / Decommission)</span>
+                    </div>
+                    <span className="text-pink-400 font-extrabold text-base">➔</span>
+                    <div className="px-3 py-1 rounded bg-pink-500/15 text-pink-300 border border-pink-500/30 flex items-center gap-1.5">
+                      <span>{detail.direction.absorbed.name}</span>
+                      <span className="text-[10px] opacity-80 font-normal">({detail.direction.absorbed.tech} — Orphan Cascade)</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs leading-relaxed mt-1" style={{ color: 'var(--color-text-secondary)' }}>
+                  {detail.direction.bannerText}
+                </p>
+              </div>
+            )}
+
+            {!isConsolidate && !isOrphan && wfB && (
               <div
                 className="p-4 rounded-xl border flex flex-col gap-2.5"
                 style={{
@@ -1143,7 +1185,9 @@ export default function EtlRationalisationReviewModal({
                             No Active Replacement
                           </div>
                           <p className="text-xs max-w-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                            No replacement workflow is configured for this Zombie / Inactive candidate.
+                            {isOrphan
+                              ? 'No replacement workflow required. Pipeline is being decommissioned due to downstream BI consumer retirement (Orphan Cascade).'
+                              : 'No replacement workflow is configured for this Zombie / Inactive candidate.'}
                           </p>
                         </div>
                       )}

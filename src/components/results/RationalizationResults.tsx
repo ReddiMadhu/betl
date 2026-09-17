@@ -360,6 +360,7 @@ function EtlCandidateCard({
   onInspect: (idOrName: string) => void;
 }) {
   const isConsolidate = cand.category === 'etl-merge';
+  const isOrphan = cand.tags?.some((t) => /orphan/i.test(t)) || cand.id === 'er4';
   const detail = getEtlCandidateDetail(cand);
 
   const wf1 = detail.inScopeWorkflows[0];
@@ -383,7 +384,7 @@ function EtlCandidateCard({
         }}
       >
         <span className="text-[10.5px] font-bold uppercase tracking-wider block" style={{ color: 'var(--color-text-tertiary)' }}>
-          {isConsolidate ? 'WORKFLOW TO BE CONSOLIDATED' : 'WORKFLOW TO BE RETIRED'}
+          {isConsolidate ? 'WORKFLOW TO BE CONSOLIDATED' : isOrphan ? 'ORPHANED WORKFLOW TO BE RETIRED' : 'WORKFLOW TO BE RETIRED'}
         </span>
 
         <div className="text-base font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
@@ -457,8 +458,54 @@ function EtlCandidateCard({
         </div>
       )}
 
+      {/* Cascade Source Banner for Orphan Cascade */}
+      {!isConsolidate && isOrphan && cand.dependentAsset && (
+        <div
+          className="rounded-xl border p-3.5 space-y-2.5"
+          style={{
+            backgroundColor: 'rgba(236, 72, 153, 0.06)',
+            borderColor: 'rgba(236, 72, 153, 0.3)',
+          }}
+        >
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-pink-400">
+                CASCADE SOURCE
+              </span>
+            </div>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded text-rose-400 bg-rose-500/15 border border-rose-500/30"
+            >
+              Inactive / Decommission
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-4 h-4 rounded flex items-center justify-center p-0.5 shrink-0"
+                style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
+              >
+                <img src={cand.dependentAsset.logo} alt={cand.dependentAsset.technology} className="w-full h-full object-contain" />
+              </div>
+              <span className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                {cand.dependentAsset.name}
+              </span>
+              <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
+                ({cand.dependentAsset.technology})
+              </span>
+            </div>
+          </div>
+
+          <div className="text-[11px] leading-relaxed pt-1.5 border-t border-pink-500/20 text-gray-300">
+            <span className="font-bold text-pink-400">Rationale: </span>
+            {cand.rationale}
+          </div>
+        </div>
+      )}
+
       {/* Retained Replacement Banner for Retire Candidate (if pairwise) */}
-      {!isConsolidate && (cand.id === 'er1' || cand.id === 'er3') && (
+      {!isConsolidate && !isOrphan && (cand.id === 'er1' || cand.id === 'er3') && (
         <div
           className="rounded-xl border p-3.5 flex items-center justify-between flex-wrap gap-3"
           style={{
@@ -770,13 +817,13 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
       if (isCross) tags.push('Cross Technology');
     } else {
       // ETL decommission tags: Orphan Cascade, Zombie ETLs, Subset, Cross Technology, Inactive
-      const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
-        (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false);
-      const hasOrphan = rec.tags?.some((t) => /orphan/i.test(t)) || (rec.dependentAsset !== undefined && !isCrossTechRecommendation(rec));
-      const hasSubset = rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t));
+      const isOrphan = rec.tags?.some((t) => /orphan/i.test(t)) || (rec.dependentAsset !== undefined && !isCrossTechRecommendation(rec));
+      const hasInactive = !isOrphan && (rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
+        (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false));
+      const hasSubset = !isOrphan && rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t));
       const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
-      const isZombie = rec.tags?.some((t) => /zombie|no consumers|ad-hoc|stale workflow/i.test(t)) || rec.assets[0]?.name === 'Workflow_04_App';
-      if (hasOrphan) tags.push('Orphan Cascade');
+      const isZombie = !isOrphan && (rec.tags?.some((t) => /zombie|no consumers|ad-hoc|stale workflow/i.test(t)) || rec.assets[0]?.name === 'Workflow_04_App');
+      if (isOrphan) tags.push('Orphan Cascade');
       if (isZombie) tags.push('Zombie ETLs');
       if (hasSubset) tags.push('Subset');
       if (isCross) tags.push('Cross Technology');

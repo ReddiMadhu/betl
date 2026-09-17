@@ -203,7 +203,7 @@ export const migrationAssets: MigrationAsset[] = [
   },
   {
     id: 'ma_etl2',
-    name: 'Burritos_Distribution',
+    name: 'Workflow_08',
     technology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Distribution',
@@ -326,7 +326,7 @@ export const calculationConversions: CalculationConversion[] = [
   },
   {
     id: 'calc6',
-    assetName: 'Burritos_Distribution',
+    assetName: 'Workflow_08',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     fieldName: 'Fuzzy Customer Match',
@@ -493,7 +493,7 @@ def run_claims_etl(raw_claims_df, policy_dim_df):
   },
   {
     id: 'mr6',
-    assetName: 'Burritos_Distribution',
+    assetName: 'Workflow_08',
     sourceTechnology: 'Alteryx',
     targetTechnology: 'Python',
     businessArea: 'Customer',

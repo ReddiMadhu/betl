@@ -282,14 +282,14 @@
       "size": 974
     },
     {
-      "path": "ETL/Claims/Alteryx/Claims_Extract_Volume_v2/Claims_Extract_Volume_v2_Assessment.xlsx",
-      "url": "/documentation/assessment/ETL/Claims/Alteryx/Claims_Extract_Volume_v2/Claims_Extract_Volume_v2_Assessment.xlsx",
-      "size": 22348
+      "path": "ETL/Alteryx/Workflow_08/Workflow_08_Assessment.xlsx",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_08/Workflow_08_Assessment.xlsx",
+      "size": 23017
     },
     {
-      "path": "ETL/Claims/Alteryx/Claims_Extract_Volume_v2/Workflow_Specification.md",
-      "url": "/documentation/assessment/ETL/Claims/Alteryx/Claims_Extract_Volume_v2/Workflow_Specification.md",
-      "size": 1123
+      "path": "ETL/Alteryx/Workflow_08/Workflow_Specification.md",
+      "url": "/documentation/assessment/ETL/Alteryx/Workflow_08/Workflow_Specification.md",
+      "size": 1298
     },
     {
       "path": "ETL/Claims/Alteryx/Claims_Extract_Volume/Claims_Extract_Volume_Assessment.xlsx",
