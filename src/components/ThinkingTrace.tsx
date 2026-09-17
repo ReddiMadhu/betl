@@ -293,11 +293,11 @@ export default function ThinkingTrace({
                       </span>
                     </div>
 
-                    {/* Right: under Completed column — same font color and size to main text */}
+                    {/* Right: under Completed column — italic green font style */}
                     {rightContent && (
                       <span
-                        className="text-[12.5px] font-medium leading-snug shrink-0 text-right tabular-nums ml-auto max-w-[48%]"
-                        style={{ color: 'var(--color-text-primary)' }}
+                        className="text-[12.5px] font-medium italic leading-snug shrink-0 text-right tabular-nums ml-auto max-w-[48%] text-emerald-600 dark:text-emerald-400"
+                        style={{ fontStyle: 'italic' }}
                       >
                         {rightContent}
                       </span>
