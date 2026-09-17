@@ -1435,7 +1435,7 @@ const etlAssets = [
 	},
 	{
 		tech: 'Alteryx',
-		name: 'Burritos_Distribution',
+		name: 'Workflow_08',
 		area: 'Distribution',
 		owner: 'Nina Patel',
 		sources: 5,

@@ -829,7 +829,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     connectionCount: 3,
     schedule: '',
     lastRunStatus: '',
-    avgRuntime: '',
+    avgRuntime: '12s',
   },
     d6: {
     tools: [
@@ -931,7 +931,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     connectionCount: 4,
     schedule: '',
     lastRunStatus: '',
-    avgRuntime: '',
+    avgRuntime: '13s',
   },
   p4: {
     tools: [],
@@ -939,7 +939,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     pipelineStages: [],
     schedule: '',
     lastRunStatus: '',
-    avgRuntime: '',
+    avgRuntime: '17s',
   },
   p5: {
     tools: [],
@@ -947,7 +947,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     pipelineStages: [],
     schedule: '',
     lastRunStatus: '',
-    avgRuntime: '',
+    avgRuntime: '12s',
   },
   p6: {
     tools: [],
@@ -955,7 +955,7 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     pipelineStages: [],
     schedule: '',
     lastRunStatus: '',
-    avgRuntime: '',
+    avgRuntime: '12s',
   },
 };
 
@@ -980,7 +980,7 @@ export const WORKFLOW_SVG_PATHS: Record<string, string> = {
   c13: '', // Workflow_02
   c14: demoClaimsVolumeExtractSvg, // Claims_Extract_Volume_v2
   u4: '',  // Workflow_04
-  d6: '',  // Burritos_Distribution
+  d6: '',  // Workflow_08
   p4: '',  // Workflow_03 (Policy Administration)
   p5: '',  // Workflow_01 (Policy Administration)
   p6: '',  // Workflow_02 (Policy Administration)

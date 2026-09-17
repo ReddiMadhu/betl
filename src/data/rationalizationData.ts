@@ -69,7 +69,7 @@ const BI_NAME_TO_ETL_WORKFLOWS: Record<string, string[]> = {
   'Sales Insurance.twbx': ['c11'],
   'Survival Rate': ['c11'],
   'IT Spend Analysis Sample PBIX': ['c13'],
-  'Sales & Returns Sample v3': ['c12'],
+  'Sales & Returns Sample v3': ['d6'],
 };
 
 // Lineage mapping from ETL workflow name/ID to downstream BI reports
@@ -82,12 +82,12 @@ const ETL_WORKFLOW_TO_BI_ASSETS: Record<string, string[]> = {
   'c15': ['Claims - Executive Summary'],
   'c11': ['Cross Sell Dashboard', 'INSURANCE ANALYTICS DASHBOARD', 'Loss Ratio', 'Benefeciery services_v1', 'Revenue Opportunities', 'Cross Sell Dashboard PBIP', 'Cross_Sell_dashboardpbip', 'Insurance Analytics Dashboard', 'Insurance Analytics Dashboard (Tableau)', 'Insurance Analytics Dashboard (Power BI)', 'Sales Insurance.twbx', 'Survival Rate'],
   'Workflow_03': ['Cross Sell Dashboard', 'INSURANCE ANALYTICS DASHBOARD', 'Loss Ratio', 'Benefeciery services_v1', 'Revenue Opportunities', 'Cross Sell Dashboard PBIP', 'Cross_Sell_dashboardpbip', 'Insurance Analytics Dashboard', 'Insurance Analytics Dashboard (Tableau)', 'Insurance Analytics Dashboard (Power BI)', 'Sales Insurance.twbx', 'Survival Rate'],
-  'c12': ['Sales & Returns Sample v3'],
-  'Workflow_01': ['Sales & Returns Sample v3'],
+  'c12': ['Insurance Analytics Dashboard'],
+  'Workflow_01': ['Insurance Analytics Dashboard'],
   'c13': ['IT Spend Analysis Sample PBIX'],
   'Workflow_02': ['IT Spend Analysis Sample PBIX'],
-  'd6': ['Jornaya Dashboard PBI', 'Bottom 25% Agents', 'New Business (Bottom 25% agents)'],
-  'Burritos_Distribution': ['Jornaya Dashboard PBI', 'Bottom 25% Agents', 'New Business (Bottom 25% agents)'],
+  'd6': ['Sales & Returns Sample v3'],
+  'Workflow_08': ['Sales & Returns Sample v3'],
   'u4': ['Motor Insurance Dashboard', 'FFQ_Test'],
   'Workflow_04': ['Motor Insurance Dashboard', 'FFQ_Test'],
 };
@@ -465,16 +465,6 @@ export const recommendations: Recommendation[] = [
     tags: ['Retain', 'Alteryx'],
   },
   {
-    id: 'ek2',
-    category: 'etl-keep',
-    title: 'Keep Burritos_Distribution',
-    businessArea: 'Distribution',
-    assets: [asset('Burritos_Distribution', 'Alteryx')],
-    rationale: 'Retained Alteryx workflow identified for migration and continued use.',
-    action: 'Retain Burritos_Distribution for migration and future-state processing.',
-    tags: ['Retain', 'Alteryx'],
-  },
-  {
     id: 'ek3',
     category: 'etl-keep',
     title: 'Keep Workflow_02',
@@ -527,6 +517,22 @@ export const recommendations: Recommendation[] = [
     lastViewed: '210 days ago',
     userGroups: ['Financial Analysts', 'IT Budget Managers'],
     summary: 'Departmental IT spending analysis comparing actual vs planned budgets, variance by IT and business areas, and regional sales allocations.',
+  },
+  {
+    id: 'pbi_retire_3',
+    category: 'bi-retire',
+    title: 'Retire Sales & Returns Sample v3',
+    businessArea: 'Finance',
+    assets: [asset('Sales & Returns Sample v3', 'Power BI')],
+    rationale: 'INACTIVE: Departmental financial reconciliation and returns report last accessed 240 days ago (>180 days threshold). Superseded by centralized enterprise lakehouse reporting.',
+    action: 'Decommission Power BI Sales & Returns Sample v3 report.',
+    tags: ['Inactive', '240d unused', 'Finance'],
+    kpis: ['Net Premium Written', 'Returned Endorsements', 'Billing Discrepancy %', 'Gross Sales Volume', 'Reconciled Revenue'],
+    tables: ['premium_billing_ledger', 'endorsement_returns_fact', 'account_reconciliation_dim'],
+    owner: 'EXL',
+    lastViewed: '240 days ago',
+    userGroups: ['Corporate Finance', 'Premium Accounting'],
+    summary: 'Financial premium reconciliation and endorsement return analytics.',
   },
   // {
   //   id: 'tb_retire_1',
@@ -628,6 +634,23 @@ export const recommendations: Recommendation[] = [
     lastViewed: '45 days ago',
     userGroups: ['Data Engineering', 'Claims Analytics'],
     summary: 'Full functional replacement of legacy Alteryx claims volume extract workflow with high-performance vectorized Python pipeline.',
+  },
+  {
+    id: 'er4',
+    category: 'etl-retire',
+    title: 'Retire Workflow_08 (Orphan Cascade)',
+    businessArea: 'Distribution',
+    assets: [asset('Workflow_08', 'Alteryx')],
+    dependentAsset: asset('Sales & Returns Sample v3', 'Power BI'),
+    rationale: 'Associated BI dashboard is under Inactive decommission. Workflow_08 serves only this dashboard, and this decision also cascades to this ETL workflow because the workflow serves only that BI dashboard.',
+    action: 'Decommission orphaned ETL workflow Workflow_08.',
+    tags: ['Orphan Cascade', 'BI Dependent', 'Decommission Cascade'],
+    kpis: ['Date', 'Burritos', 'DateTime_Out', 'Avg_Burritos'],
+    tables: ['4701229_YK5IEQ9R.xlsx', 'Workflow8_output.xlsx'],
+    owner: 'EXL_S',
+    lastViewed: '14 days ago',
+    userGroups: ['Distribution Analytics', 'Core IT Operations'],
+    summary: 'Orphan Cascade retirement: Sole downstream BI consumer (Sales & Returns Sample v3) is decommissioned, removing the only downstream business consumer of Workflow_08.',
   },
 
   /* ── BI Keep ── */
@@ -802,22 +825,6 @@ export const recommendations: Recommendation[] = [
     lastViewed: '10 days ago',
     userGroups: ['Claims Team', 'Leadership'],
     summary: 'Distribution revenue growth modeling and pricing change forecast analytics.',
-  },
-  {
-    id: 'pbi_keep_5',
-    category: 'bi-keep',
-    title: 'Keep Sales & Returns Sample v3',
-    businessArea: 'Finance',
-    assets: [asset('Sales & Returns Sample v3', 'Power BI')],
-    rationale: 'Active dashboard: last accessed 12 days ago (<90 days). Target audience is active: Corporate Finance, Premium Accounting. High KPI/Table uniqueness of 91% providing financial reconciliation of premium billing and returned endorsements.',
-    action: 'Retain on Power BI for monthly premium reconciliation and returns tracking.',
-    tags: ['Active (<90d)', '91% Unique', 'Reconciliation'],
-    kpis: ['Net Premium Written', 'Returned Endorsements', 'Billing Discrepancy %', 'Gross Sales Volume', 'Reconciled Revenue'],
-    tables: ['premium_billing_ledger', 'endorsement_returns_fact', 'account_reconciliation_dim'],
-    owner: 'EXL',
-    lastViewed: '12 days ago',
-    userGroups: ['Corporate Finance', 'Premium Accounting'],
-    summary: 'Financial premium reconciliation and endorsement return analytics.',
   },
 ];
 
@@ -1050,7 +1057,7 @@ export interface EtlDownstreamDependency {
   consumerName: string;
   type: string;
   impact: string;
-  status: 'ACTIVE' | 'MIGRATED' | 'NONE';
+  status: 'ACTIVE' | 'MIGRATED' | 'NONE' | 'INACTIVE / DECOMMISSION' | 'DECOMMISSIONED' | string;
 }
 
 export interface EtlRetirementSafetyCheck {
@@ -2528,6 +2535,145 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
         'Complete final dual-run comparison check for today’s production batch.',
         'Point Airflow production DAG to production target folder.',
         'Decommission Alteryx Server scheduled task and archive workflow repository.',
+      ],
+    };
+  }
+
+  // 5. Orphan Cascade Retirement: Workflow_08 (er4)
+  if (rec.id === 'er4' || (rec.assets[0]?.name === 'Workflow_08' && rec.tags?.includes('Orphan Cascade'))) {
+    return {
+      recId: 'er4',
+      title: 'Orphan Cascade Decommission Analysis',
+      recType: 'RETIRE',
+      recommendationBadge: 'Orphan Cascade',
+      direction: {
+        absorbed: { name: 'Workflow_08', tech: 'Alteryx', role: 'Orphaned ETL Pipeline' },
+        retained: { name: 'Sales & Returns Sample v3', tech: 'Power BI', role: 'Cascade Source (Decommissioned)' },
+        bannerText: 'CASCADE SOURCE: Sales & Returns Sample v3 (Power BI) [Inactive / Decommission] ➔ ORPHANED ETL: Workflow_08 (Alteryx) [Orphan Cascade Decommission]',
+      },
+      inScopeWorkflows: [
+        {
+          id: 'd6',
+          name: 'Workflow_08',
+          technology: 'Alteryx',
+          complexity: 'Low',
+          criticality: 'Low',
+          toolCount: 5,
+          connectionsCount: 2,
+          sourcesCount: 1,
+          targetsCount: 1,
+          schedule: 'Weekly (Every Thursday, 06:00 AM)',
+          runtime: '12s',
+          lastRunStatus: 'Success',
+          owner: 'EXL_S',
+          businessArea: 'Distribution',
+        },
+      ],
+      overlapMetrics: {
+        sourceMetadataPct: 0,
+        targetMetadataPct: 0,
+        frequencyPct: 0,
+        logicPct: 0,
+        dagPct: 0,
+      },
+      sourcesComparison: [
+        {
+          name: '4701229_YK5IEQ9R.xlsx',
+          sourceType: 'Excel Workbook (Sheet1)',
+          matchStatus: 'unique_left',
+          leftPresent: true,
+          rightPresent: false,
+          matchingColumnsCount: 0,
+          totalColumnsCount: 2,
+          columns: [
+            { name: 'Date', type: 'DateTime', sampleValue: '2024-03-14', isMatching: false },
+            { name: 'Burritos', type: 'Double', sampleValue: '128', isMatching: false },
+          ],
+        },
+      ],
+      targetsComparison: [
+        {
+          name: 'Workflow8_output.xlsx|||Sheet1',
+          targetType: 'Excel Workbook (Sheet1)',
+          matchStatus: 'unique_left',
+          leftPresent: true,
+          rightPresent: false,
+          downstreamConsumers: ['Sales & Returns Sample v3'],
+          columnsCount: 1,
+          columns: [
+            { name: 'Avg_Burritos', type: 'Double', sampleValue: '142.50', isMatching: false },
+          ],
+        },
+      ],
+      frequencyComparison: {
+        leftSchedule: 'Weekly (Every Thursday, 06:00 AM)',
+        rightSchedule: 'N/A',
+        leftTrigger: 'Alteryx Server Schedule (Weekly Batch)',
+        rightTrigger: 'N/A',
+        leftRuntime: '12 seconds',
+        rightRuntime: 'N/A',
+        leftStatus: 'Orphaned Batch',
+        rightStatus: 'N/A',
+        alignmentSummary: 'No matching execution schedule. Workflow is orphaned due to downstream BI consumer decommission.',
+        overlapPct: 0,
+      },
+      logicComparison: {
+        rules: [],
+        leftOperations: [],
+        similarityScore: 0,
+        summary: 'No shared transformation logic. Candidate retirement is caused by downstream BI dependency removal, not logical overlap.',
+      },
+      dagComparison: {
+        stages: [
+          { stageName: 'Data Ingestion (1 Input Feed)', leftToolCount: 1, rightToolCount: 0, description: 'Reads operational distribution records from Excel workbook (4701229_YK5IEQ9R.xlsx)' },
+          { stageName: 'Date Parsing & Filtering (2 Nodes)', leftToolCount: 2, rightToolCount: 0, description: 'Converts date strings to datetime and filters records for Thursday operational cycles' },
+          { stageName: 'Volume Aggregation (1 Node)', leftToolCount: 1, rightToolCount: 0, description: 'Calculates the average value of Burritos (Avg_Burritos)' },
+          { stageName: 'Deliverable Export (1 Sink)', leftToolCount: 1, rightToolCount: 0, description: 'Writes summarized data to Workflow8_output.xlsx (Sheet1)' },
+        ],
+        leftTotalNodes: 5,
+        rightTotalNodes: 0,
+        similarityScore: 0,
+        topologyAlignment: 'No active topological match. Workflow is an orphaned single-sink pipeline with zero active downstream consumers.',
+      },
+      uniqueFunctionality: {
+        'Workflow_08': [
+          'Thursday operational distribution volume aggregation and filtering',
+          'Single-sheet Excel deliverable export (Workflow8_output.xlsx)',
+        ],
+      },
+      downstreamDependencies: [
+        { consumerName: 'Sales & Returns Sample v3', type: 'Power BI', impact: 'Sole Downstream Consumer', status: 'INACTIVE / DECOMMISSION' },
+      ],
+      retirementSafetyChecks: [
+        {
+          checkItem: 'Sole Downstream Consumer Audit',
+          status: 'passed',
+          details: 'Deterministic lineage analysis confirms Sales & Returns Sample v3 is the only downstream BI asset consuming Workflow8_output.xlsx.',
+        },
+        {
+          checkItem: 'BI Decommission Status Verification',
+          status: 'passed',
+          details: 'Sales & Returns Sample v3 is scheduled for Inactive decommissioning, eliminating the business purpose for this pipeline.',
+        },
+        {
+          checkItem: 'No Secondary Consumer Dependencies',
+          status: 'passed',
+          details: 'Zero other BI dashboards, downstream ETL workflows, or operational data marts depend on Workflow_08.',
+        },
+        {
+          checkItem: 'Scheduler De-registration Safety',
+          status: 'passed',
+          details: 'Safe to de-register scheduled job on Alteryx Server Gallery upon BI asset retirement.',
+        },
+      ],
+      rationalePoints: [
+        'ORPHAN CASCADE — Sole Downstream Consumer Decommissioned: Associated BI dashboard is under Inactive decommission. Workflow_08 serves only this dashboard, and this decision also cascades to this ETL workflow because the workflow serves only that BI dashboard.',
+        'LINEAGE CASCADE — Deterministic Dependency: Workflow_08 output (Workflow8_output.xlsx) has zero active consumers once Sales & Returns Sample v3 is retired.',
+      ],
+      validationRequirements: [
+        'Confirm decommission approval for downstream Power BI dashboard Sales & Returns Sample v3.',
+        'De-register scheduled job for Workflow_08 on Alteryx Server Gallery.',
+        'Archive Workflow_08.yxmd definition to decommissioned backup repository folder.',
       ],
     };
   }
