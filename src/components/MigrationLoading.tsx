@@ -415,15 +415,15 @@ export default function MigrationLoading({
         )}
       </div>
 
-      {/* ─── Show Results button — top right ─── */}
+      {/* ─── Show Results button — bottom right ─── */}
       <AnimatePresence>
         {isComplete && (
           <motion.div
-            initial={{ opacity: 0, y: -12 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
+            exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
-            style={{ position: 'fixed', top: 24, right: 36, zIndex: 50 }}
+            className="flex justify-end mb-8"
           >
             <motion.button
               whileHover={{ scale: 1.02, y: -1 }}
