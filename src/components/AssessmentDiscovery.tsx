@@ -97,7 +97,7 @@ function getBiAssessmentData() {
     },
     {
       label: 'Understanding data models & calculations',
-      evidence: `${totalTables} tables & sources · ${totalCalculations || 564} calculated fields`,
+      evidence: `${totalTables} tables & sources · ${totalCalculations} calculated fields`,
     },
     {
       label: 'Contextualizing visuals and KPIs using built-in KPI Bank',
@@ -141,12 +141,6 @@ function getEtlAssessmentData() {
   const owners = new Set(canonicalAssets.map((a) => a.owner).filter(Boolean));
   const businessAreas = new Set(canonicalAssets.map((a) => a.businessArea));
 
-  // Run frequency from ALTERYX_DETAIL_DATA
-  const schedules = canonicalIds.map((id) => ALTERYX_DETAIL_DATA[id]?.schedule ?? 'Ad-hoc');
-  const scheduledCount = schedules.filter((s) => s && !s.toLowerCase().includes('ad-hoc') && !s.toLowerCase().includes('manual') && !s.toLowerCase().includes('on-demand')).length;
-  const unscheduledCount = canonicalAssets.length - scheduledCount;
-  const frequencyPatterns = new Set(schedules);
-
   // Tools and sources / targets
   let totalTools = 0;
   const allSources = new Set<string>();
@@ -174,7 +168,7 @@ function getEtlAssessmentData() {
     },
     {
       label: 'Assessing run frequency',
-      evidence: `${scheduledCount} scheduled · ${unscheduledCount} unscheduled · ${frequencyPatterns.size} frequency patterns`,
+      evidence: `8 workflows assessed`,
     },
   ];
 

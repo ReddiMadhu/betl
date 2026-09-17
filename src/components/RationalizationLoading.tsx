@@ -103,23 +103,23 @@ function getRationalizationLoadingData() {
   ];
 
   // ─── 3. Interdependence Evidence ───
-  const biEtlConnMetric = biOverlapMetrics.find((m) => m.id === 'bi-etl-conn')?.value ?? 24;
+  const biEtlConnMetric = biOverlapMetrics.find((m) => m.id === 'bi-etl-conn')?.value ?? 23;
 
   const interdependenceSteps: TraceStep[] = [
     {
       label: 'Tracing cross-technology lineage between ETL pipelines and BI reports',
       detail: `${biEtlConnMetric} dependencies mapped`,
-      evidence: `${biEtlConnMetric} lineage connections across ${biAssets.length} BI assets & ${canonicalAssets.length} ETL workflows`,
+      evidence: `${biEtlConnMetric} BI-ETL connections · 1 Zombie pipeline with zero downstream consumers detected`,
     },
     {
       label: 'Assessing impact of ETL decommission recommendations on BI assets',
       detail: 'Protected · 0 zombie',
-      evidence: `${etlRetireRecs.length} ETL decommission candidates evaluated · 0 downstream BI assets broken (100% safe)`,
+      evidence: `${etlRetireRecs.length} ETL decommission candidates evaluated`,
     },
     {
       label: 'Assessing impact of BI decommission recommendations on ETL assets',
       detail: 'Verified · 0 orphaned',
-      evidence: `${biRetireRecs.length} BI decommission candidates evaluated · 0 upstream ETL pipelines orphaned`,
+      evidence: `${biRetireRecs.length} BI decommission candidates evaluated · 1 Orphaned cascade detected`,
     },
     {
       label: 'Validating end-to-end dependency integrity',

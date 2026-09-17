@@ -28,8 +28,11 @@ export interface TableDetail {
   displayName: string;
   rowCount: number;
   dataSource: string;
-  columns: { name: string; type: string }[];
-  sampleRows: Record<string, string | number>[];
+  columns: { name: string; type?: string }[];
+  sampleRows: Record<string, unknown>[];
+  hasColumnInformation?: boolean;
+  schemaInfo?: string[];
+  emptyStateMessage?: string;
 }
 
 export interface KpiDetail {
@@ -52,12 +55,520 @@ export interface TableauDetailData {
   tables: TableDetail[];
 }
 
+export const CROSS_SELL_AND_INSURANCE_ANALYTICS_TABLES: TableDetail[] = [
+  {
+    tableName: "brokerage_202001231040",
+    displayName: "brokerage_202001231040",
+    rowCount: 5,
+    dataSource: "federated.0gnnp1u032pgq11ajatw91fr25ge",
+    hasColumnInformation: true,
+    columns: [
+      { name: "client_name" },
+      { name: "policy_number" },
+      { name: "policy_status" },
+      { name: "policy_start_date" },
+      { name: "policy_end_date" },
+      { name: "product_group" },
+      { name: "Account Exe ID" },
+      { name: "Exe Name" },
+      { name: "branch_name" },
+      { name: "solution_group" },
+      { name: "income_class" },
+      { name: "Amount" },
+      { name: "income_due_date" },
+      { name: "revenue_transaction_type" },
+      { name: "renewal_status" },
+      { name: "lapse_reason" },
+      { name: "last_updated_date" }
+    ],
+    sampleRows: [
+      {
+        "client_name": "A",
+        "policy_number": "2414 2022 4088 1000 000",
+        "policy_status": "Active",
+        "policy_start_date": "2018-04-19",
+        "policy_end_date": "2019-04-18",
+        "product_group": "Marine",
+        "Account Exe ID": 1,
+        "Exe Name": "Vinay",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Marine",
+        "income_class": "Renewal",
+        "Amount": 32186.72,
+        "income_due_date": "2018-04-19",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Inception",
+        "lapse_reason": null,
+        "last_updated_date": "2020-01-22"
+      },
+      {
+        "client_name": "Sanjay Trivedi",
+        "policy_number": "2.4142e+18",
+        "policy_status": "Active",
+        "policy_start_date": "2019-05-01",
+        "policy_end_date": "2020-04-30",
+        "product_group": "Marine",
+        "Account Exe ID": 2,
+        "Exe Name": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Marine",
+        "income_class": "New",
+        "Amount": 23590.71,
+        "income_due_date": "2019-05-01",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Inception",
+        "lapse_reason": null,
+        "last_updated_date": "2020-01-22"
+      },
+      {
+        "client_name": "Anita Sethi",
+        "policy_number": "0655001825 01",
+        "policy_status": "Inactive",
+        "policy_start_date": "2018-09-13",
+        "policy_end_date": "2019-09-12",
+        "product_group": "Fire",
+        "Account Exe ID": 1,
+        "Exe Name": "Vinay",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "income_class": "Renewal",
+        "Amount": 4611.96,
+        "income_due_date": "2018-09-13",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Inception",
+        "lapse_reason": null,
+        "last_updated_date": "2020-01-22"
+      },
+      {
+        "client_name": "Ashok Chatterjee",
+        "policy_number": "12139156",
+        "policy_status": "Active",
+        "policy_start_date": "2019-09-13",
+        "policy_end_date": "2020-09-12",
+        "product_group": "Fire",
+        "Account Exe ID": 1,
+        "Exe Name": "Vinay",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "income_class": "Renewal",
+        "Amount": 4975.41,
+        "income_due_date": "2019-09-13",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Renewal",
+        "lapse_reason": null,
+        "last_updated_date": "2020-01-22"
+      },
+      {
+        "client_name": "Rani Agarwal",
+        "policy_number": "2.20009e+09",
+        "policy_status": "Active",
+        "policy_start_date": "2018-11-06",
+        "policy_end_date": "2019-11-05",
+        "product_group": "Miscellaneous",
+        "Account Exe ID": 1,
+        "Exe Name": "Vinay",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Liability",
+        "income_class": "Renewal",
+        "Amount": 1198.88,
+        "income_due_date": "2018-11-06",
+        "revenue_transaction_type": "Brokerage",
+        "renewal_status": "Inception",
+        "lapse_reason": null,
+        "last_updated_date": "2020-01-22"
+      }
+    ]
+  },
+  {
+    tableName: "fees_202001231041",
+    displayName: "fees_202001231041",
+    rowCount: 5,
+    dataSource: "federated.0gnnp1u032pgq11ajatw91fr25ge",
+    hasColumnInformation: true,
+    columns: [
+      { name: "client_name" },
+      { name: "branch_name" },
+      { name: "solution_group" },
+      { name: "Account Exe ID" },
+      { name: "Account Executive" },
+      { name: "income_class" },
+      { name: "Amount" },
+      { name: "income_due_date" },
+      { name: "revenue_transaction_type" }
+    ],
+    sampleRows: [
+      {
+        "client_name": "Sanjay Trivedi",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "Account Exe ID": 3,
+        "Account Executive": "Nishant Sharma",
+        "income_class": "Cross Sell",
+        "Amount": 139240,
+        "income_due_date": "2019-07-17",
+        "revenue_transaction_type": "Fees"
+      },
+      {
+        "client_name": "Anita Sethi",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "Account Exe ID": 3,
+        "Account Executive": "Nishant Sharma",
+        "income_class": "Cross Sell",
+        "Amount": 139240,
+        "income_due_date": "2019-01-21",
+        "revenue_transaction_type": "Fees"
+      },
+      {
+        "client_name": "Ashok Chatterjee",
+        "branch_name": "Ahmedabad",
+        "solution_group": "GL Client Network (GNB Inward)",
+        "Account Exe ID": 1,
+        "Account Executive": "Vinay",
+        "income_class": "Renewal",
+        "Amount": 2200,
+        "income_due_date": "2019-12-20",
+        "revenue_transaction_type": "Fees"
+      },
+      {
+        "client_name": "Rani Agarwal",
+        "branch_name": "Ahmedabad",
+        "solution_group": "GL Client Network (GNB Inward)",
+        "Account Exe ID": 1,
+        "Account Executive": "Vinay",
+        "income_class": "Renewal",
+        "Amount": 4500,
+        "income_due_date": "2019-01-25",
+        "revenue_transaction_type": "Fees"
+      },
+      {
+        "client_name": "Arjun Rao",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Construction, Power & Infrastructure",
+        "Account Exe ID": 3,
+        "Account Executive": "Nishant Sharma",
+        "income_class": "Cross Sell",
+        "Amount": 118000,
+        "income_due_date": "2019-03-15",
+        "revenue_transaction_type": "Fees"
+      }
+    ]
+  },
+  {
+    tableName: "NN+EN+EE Indi bdgt -20012020",
+    displayName: "NN+EN+EE Indi bdgt -20012020",
+    rowCount: 5,
+    dataSource: "federated.0gnnp1u032pgq11ajatw91fr25ge",
+    hasColumnInformation: true,
+    columns: [
+      { name: "Branch" },
+      { name: "Account Exe ID" },
+      { name: "Employee Name" },
+      { name: "New Role2" },
+      { name: "New Budget" },
+      { name: "Cross sell bugdet" },
+      { name: "Renewal Budget" }
+    ],
+    sampleRows: [
+      {
+        "Branch": "Ahmedabad",
+        "Account Exe ID": 1,
+        "Employee Name": "Vinay",
+        "New Role2": "Hunter & Farmer",
+        "New Budget": 12788092,
+        "Cross sell bugdet": 250000,
+        "Renewal Budget": 1500000
+      },
+      {
+        "Branch": "Ahmedabad",
+        "Account Exe ID": 2,
+        "Employee Name": "Abhinav Shivam",
+        "New Role2": "Servicer",
+        "New Budget": 129902,
+        "Cross sell bugdet": 129000,
+        "Renewal Budget": 1289000
+      },
+      {
+        "Branch": "Ahmedabad",
+        "Account Exe ID": 3,
+        "Employee Name": "Animesh Rawat",
+        "New Role2": "Servicer",
+        "New Budget": 1278023,
+        "Cross sell bugdet": 12365300,
+        "Renewal Budget": 12900
+      },
+      {
+        "Branch": "Ahmedabad",
+        "Account Exe ID": 4,
+        "Employee Name": "Gilbert",
+        "New Role2": "BH",
+        "New Budget": 1000000,
+        "Cross sell bugdet": 500000,
+        "Renewal Budget": 1010000
+      },
+      {
+        "Branch": "Ahmedabad",
+        "Account Exe ID": 5,
+        "Employee Name": "Juli",
+        "New Role2": "Hunter & Farmer",
+        "New Budget": 1250000,
+        "Cross sell bugdet": 3500000,
+        "Renewal Budget": 750000
+      }
+    ]
+  },
+  {
+    tableName: "invoice_202001231041",
+    displayName: "invoice_202001231041",
+    rowCount: 5,
+    dataSource: "federated.0gnnp1u032pgq11ajatw91fr25ge",
+    hasColumnInformation: true,
+    columns: [
+      { name: "invoice_number" },
+      { name: "invoice_date" },
+      { name: "revenue_transaction_type" },
+      { name: "branch_name" },
+      { name: "solution_group" },
+      { name: "Account Exe ID" },
+      { name: "Account Executive" },
+      { name: "income_class" },
+      { name: "Client Name" },
+      { name: "policy_number" },
+      { name: "Amount" },
+      { name: "income_due_date" }
+    ],
+    sampleRows: [
+      {
+        "invoice_number": 1900001087,
+        "invoice_date": "2019-04-11",
+        "revenue_transaction_type": "Fees",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Liability",
+        "Account Exe ID": 10,
+        "Account Executive": "Mark",
+        "income_class": "New",
+        "Client Name": "Sanjay Trivedi",
+        "policy_number": null,
+        "Amount": 84746,
+        "income_due_date": "2019-04-10"
+      },
+      {
+        "invoice_number": 1900001106,
+        "invoice_date": "2019-05-17",
+        "revenue_transaction_type": "Brokerage",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Global Client Network (GNB Inward)",
+        "Account Exe ID": 4,
+        "Account Executive": "Gilbert",
+        "income_class": "Renewal",
+        "Client Name": "Anita Sethi",
+        "policy_number": "2.4142e+18",
+        "Amount": 86724,
+        "income_due_date": "2019-01-01"
+      },
+      {
+        "invoice_number": 1900001110,
+        "invoice_date": "2019-05-17",
+        "revenue_transaction_type": "Brokerage",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Global Client Network (GNB Inward)",
+        "Account Exe ID": 4,
+        "Account Executive": "Gilbert",
+        "income_class": "Renewal",
+        "Client Name": "Ashok Chatterjee",
+        "policy_number": "OG-19-2202-1018-00000060",
+        "Amount": 148500,
+        "income_due_date": "2019-03-01"
+      },
+      {
+        "invoice_number": 1900001136,
+        "invoice_date": "2019-05-30",
+        "revenue_transaction_type": "Brokerage",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Global Client Network (GNB Inward)",
+        "Account Exe ID": 1,
+        "Account Executive": "Vinay",
+        "income_class": "Cross Sell",
+        "Client Name": "Rani Agarwal",
+        "policy_number": "OG-19-2202-3383-00000010",
+        "Amount": 12019,
+        "income_due_date": "2019-01-01"
+      },
+      {
+        "invoice_number": 1900001164,
+        "invoice_date": "2019-06-11",
+        "revenue_transaction_type": "Brokerage",
+        "branch_name": "Ahmedabad",
+        "solution_group": "Global Client Network (GNB Inward)",
+        "Account Exe ID": 4,
+        "Account Executive": "Gilbert",
+        "income_class": "Renewal",
+        "Client Name": "Arjun Rao",
+        "policy_number": "020P000098803000",
+        "Amount": 12500,
+        "income_due_date": "2019-02-26"
+      }
+    ]
+  },
+  {
+    tableName: "meeting_list_202001231041",
+    displayName: "meeting_list_202001231041",
+    rowCount: 5,
+    dataSource: "federated.0gnnp1u032pgq11ajatw91fr25ge",
+    hasColumnInformation: true,
+    columns: [
+      { name: "Account Exe ID" },
+      { name: "Account Executive" },
+      { name: "branch_name" },
+      { name: "global_attendees" },
+      { name: "meeting_date" }
+    ],
+    sampleRows: [
+      {
+        "Account Exe ID": 2,
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "Alex Johnson",
+        "meeting_date": "2019-10-17"
+      },
+      {
+        "Account Exe ID": 2,
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "Emily Thompson",
+        "meeting_date": "2019-10-17"
+      },
+      {
+        "Account Exe ID": 2,
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "Liam Smith",
+        "meeting_date": "2019-12-24"
+      },
+      {
+        "Account Exe ID": 2,
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "Ava Davis",
+        "meeting_date": "2020-01-03"
+      },
+      {
+        "Account Exe ID": 2,
+        "Account Executive": "Abhinav Shivam",
+        "branch_name": "Ahmedabad",
+        "global_attendees": "Noah Wilson",
+        "meeting_date": "2020-01-08"
+      }
+    ]
+  },
+  {
+    tableName: "gcrm_opportunity_202001231041",
+    displayName: "gcrm_opportunity_202001231041",
+    rowCount: 5,
+    dataSource: "federated.0gnnp1u032pgq11ajatw91fr25ge",
+    hasColumnInformation: true,
+    columns: [
+      { name: "opportunity_name" },
+      { name: "opportunity_id" },
+      { name: "Account Exe Id" },
+      { name: "Account Executive" },
+      { name: "premium_amount" },
+      { name: "revenue_amount" },
+      { name: "closing_date" },
+      { name: "stage" },
+      { name: "branch" },
+      { name: "specialty" },
+      { name: "product_group" },
+      { name: "product_sub_group" },
+      { name: "risk_details" }
+    ],
+    sampleRows: [
+      {
+        "opportunity_name": "EL-Group Mediclaim",
+        "opportunity_id": "OPP1900001042",
+        "Account Exe Id": 3,
+        "Account Executive": "Animesh Rawat",
+        "premium_amount": 8000000,
+        "revenue_amount": 400000,
+        "closing_date": "2019-11-13",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Employee Benefits (EB)",
+        "product_group": "Employee Benefits",
+        "product_sub_group": "Mediclaim",
+        "risk_details": "Group Medical"
+      },
+      {
+        "opportunity_name": "AL GPA",
+        "opportunity_id": "OPP1900001047",
+        "Account Exe Id": 1,
+        "Account Executive": "Vinay",
+        "premium_amount": 200000,
+        "revenue_amount": 30000,
+        "closing_date": "2020-03-31",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Employee Benefits (EB)",
+        "product_group": "Employee Benefits",
+        "product_sub_group": "Mediclaim",
+        "risk_details": "Group Personal Accident"
+      },
+      {
+        "opportunity_name": "BL - Marine STOP",
+        "opportunity_id": "OPP1900001048",
+        "Account Exe Id": 1,
+        "Account Executive": "Vinay",
+        "premium_amount": 0,
+        "revenue_amount": 100000,
+        "closing_date": "2020-06-30",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Marine",
+        "product_group": "Marine",
+        "product_sub_group": "Marine Hull",
+        "risk_details": "Charterers' Liability Policy"
+      },
+      {
+        "opportunity_name": "II-Marine",
+        "opportunity_id": "OPP1900001050",
+        "Account Exe Id": 1,
+        "Account Executive": "Vinay",
+        "premium_amount": 0,
+        "revenue_amount": 100000,
+        "closing_date": "2020-03-31",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Marine",
+        "product_group": "Marine",
+        "product_sub_group": "Marine Hull",
+        "risk_details": "Charterers' Liability Policy"
+      },
+      {
+        "opportunity_name": "PIL-Credit Insurance",
+        "opportunity_id": "OPP1900001051",
+        "Account Exe Id": 1,
+        "Account Executive": "Vinay",
+        "premium_amount": 1200000,
+        "revenue_amount": 100000,
+        "closing_date": "2020-03-31",
+        "stage": "Qualify Opportunity",
+        "branch": "Ahmedabad",
+        "specialty": "Trade Credit & Political Risk",
+        "product_group": "Miscellaneous",
+        "product_sub_group": "Miscellaneous",
+        "risk_details": "Trade Credit Insurance"
+      }
+    ]
+  }
+];
+
+
 export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
   "c1": {
     "summary": {
       "totalDashboards": 1,
       "totalWorksheets": 75,
-      "totalTables": 2,
+      "totalTables": 4,
       "totalCalculatedFields": 88,
       "totalKpis": 13
     },
@@ -3805,148 +4316,142 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
     ],
     "tables": [
       {
-        "tableName": "bar",
-        "displayName": "Bar$ (Sheet1 (Car Insurance Parameter Control))",
-        "rowCount": 12000,
-        "dataSource": "Sheet1 (Car Insurance Parameter Control)",
+        "tableName": "Extract",
+        "displayName": "Extract",
+        "rowCount": 5,
+        "dataSource": "federated.01ytitq02p7dpp1981vqe1wsg1gz",
+        "hasColumnInformation": true,
         "columns": [
-          {
-            "name": "Parameter Value",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Display As",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Display As1",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Zero",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Parameter Value1",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected | Days to Settle (copy)",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Type1",
-            "type": "VARCHAR(100)"
-          }
+          { "name": "TOTAL CLAIM AMOUNT", "type": "NUMERIC" },
+          { "name": "REGION", "type": "VARCHAR" },
+          { "name": "GENDER", "type": "VARCHAR" },
+          { "name": "INCIDENT STATE", "type": "VARCHAR" },
+          { "name": "INCIDENT DATE", "type": "DATE" },
+          { "name": "DAYS TO SETTLE CLAIM", "type": "NUMERIC" },
+          { "name": "CAR USE", "type": "VARCHAR" },
+          { "name": "COVERAGE ZONE", "type": "VARCHAR" },
+          { "name": "INCOME", "type": "NUMERIC" },
+          { "name": "CLAIM FILED", "type": "VARCHAR" }
         ],
         "sampleRows": [
           {
-            "Parameter Value": 1,
-            "Display As": 1,
-            "Type": "Days to Settle",
-            "Display As1": 1,
-            "Zero": 0,
-            "Parameter Value1": 1,
-            "Selected | Days to Settle (copy)": 1,
-            "Type1": "Days to Settle"
+            "TOTAL CLAIM AMOUNT": 1761.264,
+            "REGION": "Central",
+            "GENDER": "Female",
+            "INCIDENT STATE": "Wisconsin",
+            "INCIDENT DATE": "2015-02-26",
+            "DAYS TO SETTLE CLAIM": 27.3,
+            "CAR USE": "Private",
+            "COVERAGE ZONE": "Urban",
+            "INCOME": 76715.37,
+            "CLAIM FILED": "Yes"
           },
           {
-            "Parameter Value": 2,
-            "Display As": 2,
-            "Type": "Loss Ratio",
-            "Display As1": 2,
-            "Zero": 0,
-            "Parameter Value1": 2,
-            "Selected | Days to Settle (copy)": 2,
-            "Type1": "Loss Ratio"
+            "TOTAL CLAIM AMOUNT": 11155.502499999999,
+            "REGION": "West",
+            "GENDER": "Female",
+            "INCIDENT STATE": "California",
+            "INCIDENT DATE": "2013-04-28",
+            "DAYS TO SETTLE CLAIM": 61.2,
+            "CAR USE": "Private",
+            "COVERAGE ZONE": "Urban",
+            "INCOME": 55091.15,
+            "CLAIM FILED": "Yes"
           },
           {
-            "Parameter Value": 3,
-            "Display As": 3,
-            "Type": "Retention Rate",
-            "Display As1": 3,
-            "Zero": 0,
-            "Parameter Value1": 3,
-            "Selected | Days to Settle (copy)": 3,
-            "Type1": "Retention Rate"
+            "TOTAL CLAIM AMOUNT": 2292.06,
+            "REGION": "West",
+            "GENDER": "Female",
+            "INCIDENT STATE": "Oregon",
+            "INCIDENT DATE": "2012-05-26",
+            "DAYS TO SETTLE CLAIM": 21.7,
+            "CAR USE": "Private",
+            "COVERAGE ZONE": "Urban",
+            "INCOME": 37940.11,
+            "CLAIM FILED": "Yes"
+          },
+          {
+            "TOTAL CLAIM AMOUNT": 6663.995999999999,
+            "REGION": "East",
+            "GENDER": "Female",
+            "INCIDENT STATE": "Connecticut",
+            "INCIDENT DATE": "2017-10-13",
+            "DAYS TO SETTLE CLAIM": 20.3,
+            "CAR USE": "Private",
+            "COVERAGE ZONE": "Rural",
+            "INCOME": 72912.64,
+            "CLAIM FILED": "Yes"
+          },
+          {
+            "TOTAL CLAIM AMOUNT": 1873.78,
+            "REGION": "South",
+            "GENDER": "Male",
+            "INCIDENT STATE": "Florida",
+            "INCIDENT DATE": "2015-10-15",
+            "DAYS TO SETTLE CLAIM": 25.2,
+            "CAR USE": "Private",
+            "COVERAGE ZONE": "Suburban",
+            "INCOME": 55720.27,
+            "CLAIM FILED": "Yes"
           }
         ]
       },
       {
-        "tableName": "numbers",
-        "displayName": "Numbers$ (Numbers (Car Insurance Parameter Control))",
-        "rowCount": 19400,
-        "dataSource": "Numbers (Car Insurance Parameter Control)",
+        "tableName": "Extract1",
+        "displayName": "Extract1",
+        "rowCount": 5,
+        "dataSource": "federated.01ytitq02p7dpp1981vqe1wsg1gz",
+        "hasColumnInformation": true,
         "columns": [
-          {
-            "name": "Parameter Value",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Display As",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Unselected Text | Days to Settle",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected Text | Retention Rate",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected Text | Satisfaction Score",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected | Retention Rate",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected | Satisfaction Score",
-            "type": "NUMERIC(14,2)"
-          }
+          { "name": "PARAMETER VALUE", "type": "NUMERIC" },
+          { "name": "DISPLAY AS", "type": "NUMERIC" },
+          { "name": "TYPE", "type": "VARCHAR" }
         ],
         "sampleRows": [
           {
-            "Parameter Value": 1,
-            "Display As": 1,
-            "Type": "Days to Settle",
-            "Unselected Text | Days to Settle": 24.5,
-            "Selected Text | Retention Rate": "88%",
-            "Selected Text | Satisfaction Score": 8.4,
-            "Selected | Retention Rate": 1,
-            "Selected | Satisfaction Score": 0
+            "PARAMETER VALUE": 20.0,
+            "DISPLAY AS": 20.0,
+            "TYPE": "Days to Settle"
           },
           {
-            "Parameter Value": 2,
-            "Display As": 2,
-            "Type": "Loss Ratio",
-            "Unselected Text | Days to Settle": 18.2,
-            "Selected Text | Retention Rate": "91%",
-            "Selected Text | Satisfaction Score": 8.8,
-            "Selected | Retention Rate": 0,
-            "Selected | Satisfaction Score": 1
+            "PARAMETER VALUE": 25.0,
+            "DISPLAY AS": 25.0,
+            "TYPE": "Days to Settle"
           },
           {
-            "Parameter Value": 3,
-            "Display As": 3,
-            "Type": "Retention Rate",
-            "Unselected Text | Days to Settle": 31,
-            "Selected Text | Retention Rate": "85%",
-            "Selected Text | Satisfaction Score": 7.9,
-            "Selected | Retention Rate": 1,
-            "Selected | Satisfaction Score": 1
+            "PARAMETER VALUE": 30.0,
+            "DISPLAY AS": 30.0,
+            "TYPE": "Days to Settle"
+          },
+          {
+            "PARAMETER VALUE": 35.0,
+            "DISPLAY AS": 35.0,
+            "TYPE": "Days to Settle"
+          },
+          {
+            "PARAMETER VALUE": 80.0,
+            "DISPLAY AS": 80.0,
+            "TYPE": "Retention Rate"
           }
         ]
+      },
+      {
+        "tableName": "Bar",
+        "displayName": "Bar",
+        "rowCount": 0,
+        "dataSource": "federated.09kx21030imsj13sqdttb1mxw430",
+        "hasColumnInformation": false,
+        "columns": [],
+        "sampleRows": []
+      },
+      {
+        "tableName": "Numbers",
+        "displayName": "Numbers",
+        "rowCount": 0,
+        "dataSource": "federated.0ln375r91wa31ftdb31x7csmv",
+        "hasColumnInformation": false,
+        "columns": [],
+        "sampleRows": []
       }
     ]
   },
@@ -3954,7 +4459,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
     "summary": {
       "totalDashboards": 1,
       "totalWorksheets": 48,
-      "totalTables": 2,
+      "totalTables": 4,
       "totalCalculatedFields": 88,
       "totalKpis": 16
     },
@@ -6662,148 +7167,142 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
     ],
     "tables": [
       {
-        "tableName": "bar",
-        "displayName": "Bar$ (Sheet1 (Car Insurance Parameter Control))",
-        "rowCount": 12000,
-        "dataSource": "Sheet1 (Car Insurance Parameter Control)",
+        "tableName": "Extract",
+        "displayName": "Extract",
+        "rowCount": 5,
+        "dataSource": "federated.01yftqi02p7dpp19e1vqe1wsg1gz",
+        "hasColumnInformation": true,
         "columns": [
-          {
-            "name": "Parameter Value",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Display As",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Display As1",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Zero",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Parameter Value1",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected | Days to Settle (copy)",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Type1",
-            "type": "VARCHAR(100)"
-          }
+          { "name": "Total Claim Amount", "type": "NUMERIC" },
+          { "name": "Region", "type": "VARCHAR" },
+          { "name": "Gender", "type": "VARCHAR" },
+          { "name": "Incident State", "type": "VARCHAR" },
+          { "name": "Incident Date", "type": "DATE" },
+          { "name": "Days to Settle Claim", "type": "NUMERIC" },
+          { "name": "Car Use", "type": "VARCHAR" },
+          { "name": "Coverage Zone", "type": "VARCHAR" },
+          { "name": "Income", "type": "NUMERIC" },
+          { "name": "Claim Filed", "type": "VARCHAR" }
         ],
         "sampleRows": [
           {
-            "Parameter Value": 1,
-            "Display As": 1,
-            "Type": "Days to Settle",
-            "Display As1": 1,
-            "Zero": 0,
-            "Parameter Value1": 1,
-            "Selected | Days to Settle (copy)": 1,
-            "Type1": "Days to Settle"
+            "Total Claim Amount": 1761.264,
+            "Region": "Central",
+            "Gender": "Female",
+            "Incident State": "Wisconsin",
+            "Incident Date": "2015-02-26",
+            "Days to Settle Claim": 27.3,
+            "Car Use": "Private",
+            "Coverage Zone": "Urban",
+            "Income": 76715.37,
+            "Claim Filed": "Yes"
           },
           {
-            "Parameter Value": 2,
-            "Display As": 2,
-            "Type": "Loss Ratio",
-            "Display As1": 2,
-            "Zero": 0,
-            "Parameter Value1": 2,
-            "Selected | Days to Settle (copy)": 2,
-            "Type1": "Loss Ratio"
+            "Total Claim Amount": 11155.502499999999,
+            "Region": "West",
+            "Gender": "Female",
+            "Incident State": "California",
+            "Incident Date": "2013-04-28",
+            "Days to Settle Claim": 61.2,
+            "Car Use": "Private",
+            "Coverage Zone": "Urban",
+            "Income": 55091.15,
+            "Claim Filed": "Yes"
           },
           {
-            "Parameter Value": 3,
-            "Display As": 3,
-            "Type": "Retention Rate",
-            "Display As1": 3,
-            "Zero": 0,
-            "Parameter Value1": 3,
-            "Selected | Days to Settle (copy)": 3,
-            "Type1": "Retention Rate"
+            "Total Claim Amount": 2292.06,
+            "Region": "West",
+            "Gender": "Female",
+            "Incident State": "Oregon",
+            "Incident Date": "2012-05-26",
+            "Days to Settle Claim": 21.7,
+            "Car Use": "Private",
+            "Coverage Zone": "Urban",
+            "Income": 37940.11,
+            "Claim Filed": "Yes"
+          },
+          {
+            "Total Claim Amount": 6663.995999999999,
+            "Region": "East",
+            "Gender": "Female",
+            "Incident State": "Connecticut",
+            "Incident Date": "2017-10-13",
+            "Days to Settle Claim": 20.3,
+            "Car Use": "Private",
+            "Coverage Zone": "Rural",
+            "Income": 72912.64,
+            "Claim Filed": "Yes"
+          },
+          {
+            "Total Claim Amount": 1873.78,
+            "Region": "South",
+            "Gender": "Male",
+            "Incident State": "Florida",
+            "Incident Date": "2015-10-15",
+            "Days to Settle Claim": 25.2,
+            "Car Use": "Private",
+            "Coverage Zone": "Suburban",
+            "Income": 55720.27,
+            "Claim Filed": "Yes"
           }
         ]
       },
       {
-        "tableName": "numbers",
-        "displayName": "Numbers$ (Numbers (Car Insurance Parameter Control))",
-        "rowCount": 19400,
-        "dataSource": "Numbers (Car Insurance Parameter Control)",
+        "tableName": "Extract1",
+        "displayName": "Extract1",
+        "rowCount": 5,
+        "dataSource": "federated.01yftqi02p7dpp19e1vqe1wsg1gz",
+        "hasColumnInformation": true,
         "columns": [
-          {
-            "name": "Parameter Value",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Display As",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Unselected Text | Days to Settle",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected Text | Retention Rate",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected Text | Satisfaction Score",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected | Retention Rate",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Selected | Satisfaction Score",
-            "type": "NUMERIC(14,2)"
-          }
+          { "name": "Parameter Value", "type": "NUMERIC" },
+          { "name": "Display As", "type": "NUMERIC" },
+          { "name": "Type", "type": "VARCHAR" }
         ],
         "sampleRows": [
           {
-            "Parameter Value": 1,
-            "Display As": 1,
-            "Type": "Days to Settle",
-            "Unselected Text | Days to Settle": 24.5,
-            "Selected Text | Retention Rate": "88%",
-            "Selected Text | Satisfaction Score": 8.4,
-            "Selected | Retention Rate": 1,
-            "Selected | Satisfaction Score": 0
+            "Parameter Value": 20.0,
+            "Display As": 20.0,
+            "Type": "Days to Settle"
           },
           {
-            "Parameter Value": 2,
-            "Display As": 2,
-            "Type": "Loss Ratio",
-            "Unselected Text | Days to Settle": 18.2,
-            "Selected Text | Retention Rate": "91%",
-            "Selected Text | Satisfaction Score": 8.8,
-            "Selected | Retention Rate": 0,
-            "Selected | Satisfaction Score": 1
+            "Parameter Value": 25.0,
+            "Display As": 25.0,
+            "Type": "Days to Settle"
           },
           {
-            "Parameter Value": 3,
-            "Display As": 3,
-            "Type": "Retention Rate",
-            "Unselected Text | Days to Settle": 31,
-            "Selected Text | Retention Rate": "85%",
-            "Selected Text | Satisfaction Score": 7.9,
-            "Selected | Retention Rate": 1,
-            "Selected | Satisfaction Score": 1
+            "Parameter Value": 30.0,
+            "Display As": 30.0,
+            "Type": "Days to Settle"
+          },
+          {
+            "Parameter Value": 35.0,
+            "Display As": 35.0,
+            "Type": "Days to Settle"
+          },
+          {
+            "Parameter Value": 80.0,
+            "Display As": 80.0,
+            "Type": "Retention Rate"
           }
         ]
+      },
+      {
+        "tableName": "Bar",
+        "displayName": "Bar",
+        "rowCount": 0,
+        "dataSource": "federated.09kxt2103oimsj13sqdtb1mxw430",
+        "hasColumnInformation": false,
+        "columns": [],
+        "sampleRows": []
+      },
+      {
+        "tableName": "Numbers",
+        "displayName": "Numbers",
+        "rowCount": 0,
+        "dataSource": "federated.0ln375r0r91wa31ftdab31x7csmv",
+        "hasColumnInformation": false,
+        "columns": [],
+        "sampleRows": []
       }
     ]
   },
@@ -12180,32 +12679,137 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
     ],
     "tables": [
       {
-        "tableName": "extract_table",
-        "displayName": "Extract (Claims - Agent Performance.twbx)",
-        "rowCount": 28500,
-        "dataSource": "Hyper / Excel Extract",
+        "tableName": "Extract",
+        "displayName": "Extract",
+        "rowCount": 5,
+        "dataSource": "federated.1oywxhs0yqa12112iftoe1d99io6",
+        "hasColumnInformation": true,
         "columns": [
-          {
-            "name": "id",
-            "type": "INTEGER"
-          },
-          {
-            "name": "value",
-            "type": "NUMERIC(14,2)"
-          }
+          { "name": "Open Date", "type": "DATETIME" },
+          { "name": "Close Date", "type": "DATETIME" },
+          { "name": "Event Date", "type": "DATETIME" },
+          { "name": "Is Reimbursed Flag", "type": "VARCHAR" },
+          { "name": "Is Closed Flag", "type": "VARCHAR" },
+          { "name": "Claim Number", "type": "VARCHAR" },
+          { "name": "Claim Status", "type": "VARCHAR" },
+          { "name": "Claim Reason", "type": "VARCHAR" },
+          { "name": "Policy Number", "type": "VARCHAR" },
+          { "name": "Policy Holder", "type": "VARCHAR" },
+          { "name": "Policy Type", "type": "VARCHAR" },
+          { "name": "Business Line", "type": "VARCHAR" },
+          { "name": "Agent", "type": "VARCHAR" },
+          { "name": "Agent Group", "type": "VARCHAR" },
+          { "name": "Damages Amount", "type": "NUMERIC" },
+          { "name": "Claim Paid Amount", "type": "NUMERIC" },
+          { "name": "Deductible", "type": "NUMERIC" },
+          { "name": "Claim Process Status", "type": "VARCHAR" },
+          { "name": "Annualized Premium Amount", "type": "NUMERIC" }
         ],
         "sampleRows": [
           {
-            "id": 101,
-            "value": 4250
+            "Open Date": "2023-01-19 00:00:00",
+            "Close Date": "2023-03-02 00:00:00",
+            "Event Date": "2022-12-31 00:00:00",
+            "Is Reimbursed Flag": "Y",
+            "Is Closed Flag": "Y",
+            "Claim Number": "8443344403",
+            "Claim Status": "Reimbursed",
+            "Claim Reason": "Lightning",
+            "Policy Number": "00004043763635874",
+            "Policy Holder": "4043723235874",
+            "Policy Type": "Residential",
+            "Business Line": "Property",
+            "Agent": "Tina Trevino",
+            "Agent Group": "Back Office",
+            "Damages Amount": 4887.0,
+            "Claim Paid Amount": 4674.0,
+            "Deductible": 276.9745732285,
+            "Claim Process Status": "Closed",
+            "Annualized Premium Amount": 596.9436683762965
           },
           {
-            "id": 102,
-            "value": 1890.5
+            "Open Date": "2023-02-18 00:00:00",
+            "Close Date": "2023-03-05 00:00:00",
+            "Event Date": "2022-12-31 00:00:00",
+            "Is Reimbursed Flag": "Y",
+            "Is Closed Flag": "Y",
+            "Claim Number": "8773703300",
+            "Claim Status": "Reimbursed",
+            "Claim Reason": "Lightning",
+            "Policy Number": "00000003074604030",
+            "Policy Holder": "3074204030",
+            "Policy Type": "Residential",
+            "Business Line": "Property",
+            "Agent": "Tina Trevino",
+            "Agent Group": "Back Office",
+            "Damages Amount": 10057.0,
+            "Claim Paid Amount": 9838.0,
+            "Deductible": 276.9745732285,
+            "Claim Process Status": "Closed",
+            "Annualized Premium Amount": 6967.136245134898
           },
           {
-            "id": 103,
-            "value": 3120.75
+            "Open Date": "2023-01-25 00:00:00",
+            "Close Date": "2023-03-08 00:00:00",
+            "Event Date": "2022-12-31 00:00:00",
+            "Is Reimbursed Flag": "Y",
+            "Is Closed Flag": "Y",
+            "Claim Number": "8470234754",
+            "Claim Status": "Reimbursed",
+            "Claim Reason": "Lightning",
+            "Policy Number": "00047533370655874",
+            "Policy Holder": "47533370255874",
+            "Policy Type": "Residential",
+            "Business Line": "Property",
+            "Agent": "Tina Trevino",
+            "Agent Group": "Back Office",
+            "Damages Amount": 10701.0,
+            "Claim Paid Amount": 10477.0,
+            "Deductible": 276.9745732285,
+            "Claim Process Status": "Closed",
+            "Annualized Premium Amount": 1837.121071186669
+          },
+          {
+            "Open Date": "2023-01-11 00:00:00",
+            "Close Date": "2023-03-10 00:00:00",
+            "Event Date": "2022-12-31 00:00:00",
+            "Is Reimbursed Flag": "Y",
+            "Is Closed Flag": "Y",
+            "Claim Number": "8320734030",
+            "Claim Status": "Reimbursed",
+            "Claim Reason": "Lightning",
+            "Policy Number": "00000004437384676",
+            "Policy Holder": "4437384272",
+            "Policy Type": "Residential",
+            "Business Line": "Property",
+            "Agent": "Tina Trevino",
+            "Agent Group": "Back Office",
+            "Damages Amount": 455.0,
+            "Claim Paid Amount": 244.0,
+            "Deductible": 276.9745732285,
+            "Claim Process Status": "Closed",
+            "Annualized Premium Amount": 1026.931667307502
+          },
+          {
+            "Open Date": "2023-02-19 00:00:00",
+            "Close Date": "2023-03-10 00:00:00",
+            "Event Date": "2022-12-31 00:00:00",
+            "Is Reimbursed Flag": "Y",
+            "Is Closed Flag": "Y",
+            "Claim Number": "8724242720",
+            "Claim Status": "Reimbursed",
+            "Claim Reason": "Lightning",
+            "Policy Number": "00000004435557403",
+            "Policy Holder": "4435557403",
+            "Policy Type": "Residential",
+            "Business Line": "Property",
+            "Agent": "Tina Trevino",
+            "Agent Group": "Back Office",
+            "Damages Amount": 10687.0,
+            "Claim Paid Amount": 10454.0,
+            "Deductible": 276.9745732285,
+            "Claim Process Status": "Closed",
+            "Annualized Premium Amount": 964.5179360387715
           }
         ]
       }
@@ -12578,440 +13182,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       }
     ],
-    "tables": [
-      {
-        "tableName": "brokerage_202001231040",
-        "displayName": "brokerage_202001231040$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 12000,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "fees_202001231041",
-        "displayName": "fees_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 19400,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "'nn+en+ee indi bdgt -20012020 '",
-        "displayName": "'NN+EN+EE Indi bdgt -20012020 $' (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 26800,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "invoice_202001231041",
-        "displayName": "invoice_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 34200,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "meeting_list_202001231041",
-        "displayName": "meeting_list_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 41600,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "gcrm_opportunity_202001231041",
-        "displayName": "gcrm_opportunity_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 49000,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      }
-    ]
+    "tables": CROSS_SELL_AND_INSURANCE_ANALYTICS_TABLES
   },
   "d7": {
     "summary": {
@@ -13325,440 +13496,7 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
         ]
       }
     ],
-    "tables": [
-      {
-        "tableName": "brokerage_202001231040",
-        "displayName": "brokerage_202001231040$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 12000,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "fees_202001231041",
-        "displayName": "fees_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 19400,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "'nn+en+ee indi bdgt -20012020 '",
-        "displayName": "'NN+EN+EE Indi bdgt -20012020 $' (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 26800,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "invoice_202001231041",
-        "displayName": "invoice_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 34200,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "meeting_list_202001231041",
-        "displayName": "meeting_list_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 41600,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      },
-      {
-        "tableName": "gcrm_opportunity_202001231041",
-        "displayName": "gcrm_opportunity_202001231041$ (brokerage_202001231040 (Multiple Connections))",
-        "rowCount": 49000,
-        "dataSource": "brokerage_202001231040 (Multiple Connections)",
-        "columns": [
-          {
-            "name": "client_name",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_number",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_status",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "policy_start_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "policy_end_date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "product_group",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Account Exe ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Exe Name",
-            "type": "VARCHAR(100)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "client_name": "Apex Logistics Corp",
-            "policy_number": "POL-90214",
-            "policy_status": "Active",
-            "policy_start_date": "2023-01-15",
-            "policy_end_date": "2024-01-14",
-            "product_group": "Commercial Property",
-            "Account Exe ID": "EXE-104",
-            "Exe Name": "Sarah Jenkins"
-          },
-          {
-            "client_name": "Beacon Retail Group",
-            "policy_number": "POL-90388",
-            "policy_status": "Active",
-            "policy_start_date": "2023-03-01",
-            "policy_end_date": "2024-02-28",
-            "product_group": "General Liability",
-            "Account Exe ID": "EXE-108",
-            "Exe Name": "Michael Chang"
-          },
-          {
-            "client_name": "Crestview Health Systems",
-            "policy_number": "POL-88412",
-            "policy_status": "Renewed",
-            "policy_start_date": "2022-11-01",
-            "policy_end_date": "2023-10-31",
-            "product_group": "Workers Comp",
-            "Account Exe ID": "EXE-112",
-            "Exe Name": "David Ross"
-          }
-        ]
-      }
-    ]
+    "tables": CROSS_SELL_AND_INSURANCE_ANALYTICS_TABLES
   },
   "cu1": {
     "summary": {
@@ -14291,74 +14029,137 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
     ],
     "tables": [
       {
-        "tableName": "beneficiary_cases#csv",
-        "displayName": "beneficiary_cases#csv (beneficiary_cases)",
-        "rowCount": 12000,
-        "dataSource": "beneficiary_cases",
-        "columns": [
-          {
-            "name": "Case ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Case Created Date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Business",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Master Work Category",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Master Work Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Work Category",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Work Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "SEC Market Ind",
-            "type": "NUMERIC(14,2)"
-          }
+        tableName: "beneficiary_cases.csv",
+        displayName: "beneficiary_cases.csv",
+        rowCount: 5,
+        dataSource: "federated.065oqrq01f7c6g1cde3270f6fu6h",
+        hasColumnInformation: true,
+        columns: [
+          { name: "Case ID" },
+          { name: "Case Created Date" },
+          { name: "Business" },
+          { name: "Master Work Category" },
+          { name: "Master Work Type" },
+          { name: "Work Category" },
+          { name: "Work Type" },
+          { name: "SEC Market Ind" },
+          { name: "Case Status" },
+          { name: "Team" },
+          { name: "Processor" },
+          { name: "Reopen Case" },
+          { name: "NIGO IGO" },
+          { name: "IGO Aging" },
+          { name: "Processed Days" },
+          { name: "OnHand Days" },
+          { name: "SLA Threshold" },
+          { name: "SLA Status" },
+          { name: "Aging Bin" }
         ],
-        "sampleRows": [
+        sampleRows: [
           {
-            "Case ID": "CASE-77102",
+            "Case ID": "BS-000001",
+            "Case Created Date": "2023-06-23",
+            "Business": "Beneficiary Services",
+            "Master Work Category": "RET-PRT-Claims",
+            "Master Work Type": "IRA Claim",
+            "Work Category": "DPC",
+            "Work Type": "Death No Payment",
+            "SEC Market Ind": "Hybrid",
+            "Case Status": "Closed",
+            "Team": "Team Bravo",
+            "Processor": "Rahul Mehta",
+            "Reopen Case": "No",
+            "NIGO IGO": "IGO",
+            "IGO Aging": 0,
+            "Processed Days": 2,
+            "OnHand Days": 0,
+            "SLA Threshold": 5,
+            "SLA Status": "Within SLA",
+            "Aging Bin": "0-9 days"
+          },
+          {
+            "Case ID": "BS-000002",
+            "Case Created Date": "2023-06-27",
+            "Business": "Beneficiary Services",
+            "Master Work Category": "RET-PRT-LifeClaims",
+            "Master Work Type": "Survivor Benefit",
+            "Work Category": "Financial Control",
+            "Work Type": "Death Claim Advanced",
+            "SEC Market Ind": "Domestic",
+            "Case Status": "Closed",
+            "Team": "Team Charlie",
+            "Processor": "Sunita Kapoor",
+            "Reopen Case": "No",
+            "NIGO IGO": "IGO",
+            "IGO Aging": 1,
+            "Processed Days": 0,
+            "OnHand Days": 0,
+            "SLA Threshold": 6,
+            "SLA Status": "Within SLA",
+            "Aging Bin": "0-9 days"
+          },
+          {
+            "Case ID": "BS-000003",
             "Case Created Date": "2023-04-10",
-            "Business": "Life & Annuity",
-            "Master Work Category": "Claims",
-            "Master Work Type": "Death Benefit",
-            "Work Category": "Verification",
-            "Work Type": "Document Review",
-            "SEC Market Ind": "Y"
+            "Business": "Beneficiary Services",
+            "Master Work Category": "ANN",
+            "Master Work Type": "Indexed Annuity",
+            "Work Category": "Benefit Payments",
+            "Work Type": "Death No Payment",
+            "SEC Market Ind": "Domestic",
+            "Case Status": "Closed",
+            "Team": "Team Alpha",
+            "Processor": "Neha Luthra",
+            "Reopen Case": "No",
+            "NIGO IGO": "IGO",
+            "IGO Aging": 17,
+            "Processed Days": 17,
+            "OnHand Days": 0,
+            "SLA Threshold": 17,
+            "SLA Status": "Within SLA",
+            "Aging Bin": "10-19 days"
           },
           {
-            "Case ID": "CASE-77103",
-            "Case Created Date": "2023-04-12",
-            "Business": "Retirement",
-            "Master Work Category": "Servicing",
-            "Master Work Type": "Beneficiary Change",
-            "Work Category": "Processing",
-            "Work Type": "Record Update",
-            "SEC Market Ind": "N"
+            "Case ID": "BS-000004",
+            "Case Created Date": "2023-07-30",
+            "Business": "Beneficiary Services",
+            "Master Work Category": "ANN",
+            "Master Work Type": "Fixed Annuity",
+            "Work Category": "Death Claims",
+            "Work Type": "Death Claim-Reissue CK",
+            "SEC Market Ind": "Domestic",
+            "Case Status": "External Pending",
+            "Team": "Team Delta",
+            "Processor": "Nikhil Rajput",
+            "Reopen Case": "No",
+            "NIGO IGO": "IGO",
+            "IGO Aging": 1,
+            "Processed Days": 0,
+            "OnHand Days": 1,
+            "SLA Threshold": 17,
+            "SLA Status": "Within SLA",
+            "Aging Bin": "0-9 days"
           },
           {
-            "Case ID": "CASE-77104",
-            "Case Created Date": "2023-04-15",
-            "Business": "Life & Annuity",
-            "Master Work Category": "Inquiry",
-            "Master Work Type": "Policy Status",
-            "Work Category": "Customer Service",
-            "Work Type": "Inbound Call",
-            "SEC Market Ind": "N"
+            "Case ID": "BS-000005",
+            "Case Created Date": "2023-07-03",
+            "Business": "Beneficiary Services",
+            "Master Work Category": "RET-PRT-LifeClaims",
+            "Master Work Type": "Lump-Sum Claim",
+            "Work Category": "Benefit Payments",
+            "Work Type": "Death Claims",
+            "SEC Market Ind": "International",
+            "Case Status": "Closed",
+            "Team": "Team Bravo",
+            "Processor": "Vikas Gupta",
+            "Reopen Case": "No",
+            "NIGO IGO": "IGO",
+            "IGO Aging": 3,
+            "Processed Days": 5,
+            "OnHand Days": 0,
+            "SLA Threshold": 6,
+            "SLA Status": "UnAvbl",
+            "Aging Bin": "0-9 days"
           }
         ]
       }
@@ -15031,76 +14832,15 @@ export const TABLEAU_DETAIL_DATA: Record<string, TableauDetailData> = {
     ],
     "tables": [
       {
-        "tableName": "beneficiary_cases#csv",
-        "displayName": "beneficiary_cases#csv (beneficiary_cases)",
-        "rowCount": 12000,
-        "dataSource": "beneficiary_cases",
-        "columns": [
-          {
-            "name": "Case ID",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Case Created Date",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Business",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Master Work Category",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Master Work Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "Work Category",
-            "type": "NUMERIC(14,2)"
-          },
-          {
-            "name": "Work Type",
-            "type": "VARCHAR(100)"
-          },
-          {
-            "name": "SEC Market Ind",
-            "type": "NUMERIC(14,2)"
-          }
-        ],
-        "sampleRows": [
-          {
-            "Case ID": "CASE-77102",
-            "Case Created Date": "2023-04-10",
-            "Business": "Life & Annuity",
-            "Master Work Category": "Claims",
-            "Master Work Type": "Death Benefit",
-            "Work Category": "Verification",
-            "Work Type": "Document Review",
-            "SEC Market Ind": "Y"
-          },
-          {
-            "Case ID": "CASE-77103",
-            "Case Created Date": "2023-04-12",
-            "Business": "Retirement",
-            "Master Work Category": "Servicing",
-            "Master Work Type": "Beneficiary Change",
-            "Work Category": "Processing",
-            "Work Type": "Record Update",
-            "SEC Market Ind": "N"
-          },
-          {
-            "Case ID": "CASE-77104",
-            "Case Created Date": "2023-04-15",
-            "Business": "Life & Annuity",
-            "Master Work Category": "Inquiry",
-            "Master Work Type": "Policy Status",
-            "Work Category": "Customer Service",
-            "Work Type": "Inbound Call",
-            "SEC Market Ind": "N"
-          }
-        ]
+        tableName: "beneficiary_cases.csv",
+        displayName: "beneficiary_cases.csv",
+        rowCount: 0,
+        dataSource: "federated.065oqrq01f7c6g1cde3270f6fu6h",
+        hasColumnInformation: false,
+        schemaInfo: ["Nigo Igo", "SLA Status"],
+        emptyStateMessage: "Column Schema · no data preview available (.twb without extract)",
+        columns: [],
+        sampleRows: []
       }
     ]
   }
