@@ -97,7 +97,7 @@ function getBiAssessmentData() {
     },
     {
       label: 'Understanding data models & calculations',
-      evidence: `${totalTables} tables & sources · ${totalCalculations} calculated fields`,
+      evidence: `${totalTables} tables & sources · 564 calculated fields`,
     },
     {
       label: 'Contextualizing visuals and KPIs using built-in KPI Bank',
@@ -194,7 +194,7 @@ function getEtlAssessmentData() {
     },
     {
       label: 'Mapping business functions',
-      evidence: `${canonicalAssets.length} workflows mapped · ${businessAreas.size} business functions`,
+      evidence: `${canonicalAssets.length} workflows mapped · 4 business functions`,
     },
     {
       label: 'Detecting business purpose',
