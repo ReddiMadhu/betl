@@ -236,12 +236,12 @@ export default function TakeAGlance({ onNavigate }: Props) {
   // Business domain distribution (31 Total Assets)
   const domainBreakdown = useMemo(
     () => [
-      { name: 'Claims Management', assets: 11, count: '35%' },
-      { name: 'Distribution', assets: 10, count: '32%' },
-      { name: 'Underwriting', assets: 4, count: '13%' },
-      { name: 'Policy Administration', assets: 4, count: '13%' },
-      { name: 'Finance', assets: 3, count: '10%' },
-      { name: 'Customer', assets: 2, count: '10%' },
+      { name: 'Claims Management', assets: 11, count: '32%' },
+      { name: 'Distribution', assets: 10, count: '29%' },
+      { name: 'Underwriting', assets: 4, count: '12%' },
+      { name: 'Policy Administration', assets: 4, count: '12%' },
+      { name: 'Finance', assets: 3, count: '9%' },
+      { name: 'Customer', assets: 2, count: '6%' },
     ],
     [],
   );
