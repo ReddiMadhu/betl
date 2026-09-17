@@ -1830,8 +1830,8 @@ writeExcelFile(
 			},
 			{
 				Category: 'BI-ETL Connections Mapped',
-				Recommendations: 32,
-				'Assets Impacted': 32,
+				Recommendations: 24,
+				'Assets Impacted': 24,
 				'Lineage Integrity': '100% Validated',
 				'Risk Level': 'None',
 			},

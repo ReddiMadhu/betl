@@ -210,8 +210,8 @@ export default function TakeAGlance({ onNavigate }: Props) {
     biAssessmentCount: 27,
     etlAssessmentCount: 8,
     sourceToTargetCount: 8,
-    biRationalizationCount: 7,
-    etlRationalizationCount: 3,
+    biRationalizationCount: 21,
+    etlRationalizationCount: 8,
   });
 
   useEffect(() => {
@@ -236,11 +236,12 @@ export default function TakeAGlance({ onNavigate }: Props) {
   // Business domain distribution (31 Total Assets)
   const domainBreakdown = useMemo(
     () => [
-      { name: 'Claims Management', assets: 11, count: '35%' },
-      { name: 'Sales & Distribution', assets: 10, count: '32%' },
-      { name: 'Underwriting Ops', assets: 4, count: '13%' },
-      { name: 'Finance & Actuarial', assets: 3, count: '10%' },
-      { name: 'Customer & Policy', assets: 3, count: '10%' },
+      { name: 'Claims Management', assets: 11, count: '32%' },
+      { name: 'Distribution', assets: 10, count: '29%' },
+      { name: 'Underwriting', assets: 4, count: '12%' },
+      { name: 'Policy Administration', assets: 4, count: '12%' },
+      { name: 'Finance', assets: 3, count: '9%' },
+      { name: 'Customer', assets: 2, count: '6%' },
     ],
     [],
   );
@@ -528,13 +529,13 @@ export default function TakeAGlance({ onNavigate }: Props) {
                 >
                   Merge Candidate
                 </span>
-                <span className="text-2xl font-black text-amber-500">9 Recs</span>
+                <span className="text-2xl font-black text-amber-500">6 Recs</span>
               </div>
               <h4 className="text-sm font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
                 Consolidate &amp; Merge
               </h4>
               <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                5 BI dashboard merges + 4 ETL workflow unifications combining overlapping KPIs and calculations into master reporting layers.
+                5 BI dashboard merges + 1 ETL workflow unifications combining overlapping KPIs and calculations into master reporting layers.
               </p>
             </div>
           </div>
@@ -590,13 +591,13 @@ export default function TakeAGlance({ onNavigate }: Props) {
                 >
                   Retain Core
                 </span>
-                <span className="text-2xl font-black text-emerald-500">15 Assets</span>
+                <span className="text-2xl font-black text-emerald-500">16 Assets</span>
               </div>
               <h4 className="text-sm font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
                 Keep Mission-Critical
               </h4>
               <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                15 high-fidelity core production assets preserved and directly targeted for accelerated automated migration to modern target platforms.
+                16 high-fidelity core production assets preserved and directly targeted for accelerated automated migration to modern target platforms.
               </p>
             </div>
           </div>

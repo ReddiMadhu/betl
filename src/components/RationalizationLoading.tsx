@@ -103,7 +103,7 @@ function getRationalizationLoadingData() {
   ];
 
   // ─── 3. Interdependence Evidence ───
-  const biEtlConnMetric = biOverlapMetrics.find((m) => m.id === 'bi-etl-conn')?.value ?? 23;
+  const biEtlConnMetric = biOverlapMetrics.find((m) => m.id === 'bi-etl-conn')?.value ?? 24;
 
   const interdependenceSteps: TraceStep[] = [
     {

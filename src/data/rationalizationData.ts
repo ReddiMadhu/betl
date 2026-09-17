@@ -18,11 +18,11 @@ export interface OverlapMetric {
 }
 
 export const biOverlapMetrics: OverlapMetric[] = [
-  { id: 'source-metadata', label: 'Source Metadata Overlaps', value: 12 },
-  { id: 'logic', label: 'Logic Overlaps', value: 11 },
+  { id: 'source-metadata', label: 'BI + ETL Source Metadata Overlaps', value: 24 },
+  { id: 'logic', label: 'BI + ETL Logic Overlaps', value: 24 },
   { id: 'kpi', label: 'KPI Overlaps', value: 17 },
   { id: 'schema', label: 'Schema Overlaps', value: 7 },
-  { id: 'bi-etl-conn', label: 'BI-ETL Connections', value: 32 },
+  { id: 'bi-etl-conn', label: 'BI-ETL Connections', value: 24 },
   { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: 4 },
 ];
 
@@ -263,7 +263,7 @@ export const categories: CategoryInfo[] = [
   { id: 'etl-retire', label: 'ETL Retire', count: 3, color: '#F97316', section: 'etl' },
   { id: 'bi-keep', label: 'BI Keep', count: 13, color: '#22C55E', section: 'bi' },
   { id: 'etl-keep', label: 'ETL Keep', count: 4, color: '#10B981', section: 'etl' },
-  { id: 'bi-etl-connections', label: 'BI-ETL Connections', count: 32, color: '#8B5CF6', section: 'both' },
+  { id: 'bi-etl-connections', label: 'BI-ETL Connections', count: 24, color: '#8B5CF6', section: 'both' },
 ];
 
 /* ── Individual recommendation ── */
