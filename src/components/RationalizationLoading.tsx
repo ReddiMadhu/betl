@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Clock, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Clock, CheckCircle2, ExternalLink } from 'lucide-react';
 import ThinkingTrace from './ThinkingTrace';
 import type { TraceStep } from './ThinkingTrace';
 import { allAssets, isEtlAsset } from '../data/discoveryData';
@@ -164,6 +164,78 @@ export default function RationalizationLoading({ onShowResults }: Props) {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className="max-w-[1240px] mx-auto"
     >
+      {/* ─── Page header with KPI Bank link and Show Results button ─── */}
+      <div className="flex items-center justify-end gap-3 mb-4">
+        <a
+          href="https://kpibank.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            borderColor: 'var(--color-border-primary)',
+            color: 'var(--color-text-primary)',
+            boxShadow: '0 1px 3px var(--color-card-shadow)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-accent)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-border-primary)';
+          }}
+          title="KPI Bank"
+        >
+          <span
+            className="w-2 h-2 rounded-full"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, #F5D060, #D4A017)',
+              boxShadow: '0 0 6px rgba(212, 160, 23, 0.5)',
+            }}
+          />
+          <span>KPI Bank</span>
+          <ExternalLink size={13} style={{ color: 'var(--color-text-tertiary)' }} />
+        </a>
+
+        {/* ─── Show Results button — placed right after KPI Bank ─── */}
+        <AnimatePresence>
+          {allDone && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.92, x: 8 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.92, x: 8 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className="group relative inline-flex items-center gap-2 px-4 py-2 rounded-xl
+                         text-xs sm:text-sm font-semibold text-white cursor-pointer
+                         transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{
+                backgroundColor: 'var(--color-accent)',
+                boxShadow: '0 2px 8px var(--color-accent-glow)',
+                outlineColor: 'var(--color-accent)',
+                border: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 4px 18px var(--color-accent-glow)';
+                e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
+                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
+              }}
+              aria-label="Show Rationalization Results"
+              onClick={onShowResults}
+            >
+              <span>Show Rationalization Results</span>
+              <ArrowRight
+                size={15}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* ─── Top Row: BI Rationalization & ETL Rationalization ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
@@ -333,48 +405,6 @@ export default function RationalizationLoading({ onShowResults }: Props) {
         )}
       </motion.section>
 
-      {/* ─── Show Results button — bottom right ─── */}
-      <AnimatePresence>
-        {allDone && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex justify-end mb-8"
-          >
-            <motion.button
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl
-                         text-sm font-semibold text-white cursor-pointer
-                         transition-shadow duration-300 focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{
-                backgroundColor: 'var(--color-accent)',
-                boxShadow: '0 2px 8px var(--color-accent-glow)',
-                outlineColor: 'var(--color-accent)',
-                border: 'none',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 4px 20px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-glow)';
-                e.currentTarget.style.backgroundColor = 'var(--color-accent)';
-              }}
-              aria-label="Show Rationalization Results"
-              onClick={onShowResults}
-            >
-              Show Rationalization Results
-              <ArrowRight
-                size={16}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
