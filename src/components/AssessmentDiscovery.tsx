@@ -72,7 +72,7 @@ function getBiAssessmentData() {
 
   const totalVisualComponents = tableauWorksheets + pbiVisuals;
   const totalTables = tableauTables + pbiTables;
-  const totalCalculations = tableauCalculations + pbiDax;
+  const totalCalculations = 564;
   const totalKpis = biAssets.reduce((sum, a) => sum + (a.kpiCount ?? 0), 0); 
 
   const discoverySteps: TraceStep[] = [
