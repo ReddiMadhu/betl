@@ -86,7 +86,7 @@ function getBiAssessmentData() {
     },
     {
       label: 'Assessing access frequency',
-      evidence: `22 active (<90d) · 1 inactive (>180d)`,
+      evidence: `20 active (<90d) · 3 inactive (>180d)`,
     },
   ];
 
