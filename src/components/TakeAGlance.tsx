@@ -237,10 +237,11 @@ export default function TakeAGlance({ onNavigate }: Props) {
   const domainBreakdown = useMemo(
     () => [
       { name: 'Claims Management', assets: 11, count: '35%' },
-      { name: 'Sales & Distribution', assets: 10, count: '32%' },
-      { name: 'Underwriting Ops', assets: 4, count: '13%' },
-      { name: 'Finance & Actuarial', assets: 3, count: '10%' },
-      { name: 'Customer & Policy', assets: 3, count: '10%' },
+      { name: 'Distribution', assets: 10, count: '32%' },
+      { name: 'Underwriting', assets: 4, count: '13%' },
+      { name: 'Policy Administration', assets: 4, count: '13%' },
+      { name: 'Finance', assets: 3, count: '10%' },
+      { name: 'Customer', assets: 2, count: '10%' },
     ],
     [],
   );
