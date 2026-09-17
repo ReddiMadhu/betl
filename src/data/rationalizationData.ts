@@ -852,11 +852,76 @@ export function getOverlapMetrics(
   return section === 'bi' ? computeBiOverlapMetrics(displayedCandidates) : computeEtlOverlapMetrics(displayedCandidates);
 }
 
-/** Returns true if the recommendation involves assets from 2+ different technology platforms */
+/**
+ * Helper to identify Orphan Cascade recommendations.
+ * Orphan Cascade represents a lifecycle/dependency cascade decision from a decommissioned downstream asset.
+ */
+export function isOrphanCascadeRecommendation(rec: Recommendation): boolean {
+  return (
+    rec.id === 'er4' ||
+    (rec.tags?.some((t) => /orphan/i.test(t)) ?? false) ||
+    (rec.title ? rec.title.toLowerCase().includes('orphan cascade') : false)
+  );
+}
+
+/**
+ * Helper to identify Inactive recommendations.
+ */
+export function isInactiveRecommendation(rec: Recommendation): boolean {
+  if (isOrphanCascadeRecommendation(rec)) return false;
+  return (
+    (rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ?? false) ||
+    (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false)
+  );
+}
+
+/**
+ * Helper to identify Zombie ETL recommendations.
+ */
+export function isZombieRecommendation(rec: Recommendation): boolean {
+  if (isOrphanCascadeRecommendation(rec)) return false;
+  return (
+    (rec.tags?.some((t) => /zombie|no consumers|ad-hoc|stale workflow/i.test(t)) ?? false) ||
+    rec.assets[0]?.name === 'Workflow_04_App' ||
+    false
+  );
+}
+
+/**
+ * Helper to identify Subset recommendations.
+ */
+export function isSubsetRecommendation(rec: Recommendation): boolean {
+  if (isOrphanCascadeRecommendation(rec)) return false;
+  return (
+    rec.id === 'er1' ||
+    (rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t)) ?? false) ||
+    (rec.title ? rec.title.toLowerCase().includes('subset') || rec.title.toLowerCase().includes('redundant') : false)
+  );
+}
+
+/**
+ * Returns true if the recommendation involves assets from 2+ different technology platforms.
+ * CRITICAL: Orphan Cascade candidates are EXCLUDED from Cross-Technology (precedence).
+ */
 export function isCrossTechRecommendation(rec: Recommendation): boolean {
+  // Orphan Cascade must take precedence and NEVER be cross-tech
+  if (isOrphanCascadeRecommendation(rec)) return false;
+
   const techs = new Set(rec.assets.map((a) => a.technology));
   if (rec.dependentAsset) techs.add(rec.dependentAsset.technology);
-  return techs.size >= 2;
+  return techs.size >= 2 || (rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t)) ?? false);
+}
+
+/**
+ * Determines whether analytical overlap evidence bars should be rendered for a candidate.
+ * HIDE overlap evidence ONLY for: Inactive, Zombie, Orphan Cascade.
+ * KEEP overlap evidence for: Consolidation, Cross-Technology, Normal Retirement / Replacement candidates.
+ */
+export function shouldShowOverlapEvidence(rec: Recommendation): boolean {
+  if (isOrphanCascadeRecommendation(rec)) return false;
+  if (isInactiveRecommendation(rec)) return false;
+  if (isZombieRecommendation(rec)) return false;
+  return true;
 }
 
 export const etlOverlapMetrics: OverlapMetric[] = computeEtlOverlapMetrics();
@@ -1011,8 +1076,10 @@ export interface EtlDagComparison {
   stages: EtlDagStage[];
   leftTotalNodes: number;
   rightTotalNodes: number;
-  similarityScore: number;
+  similarityScore: number | 'N/A' | null;
   topologyAlignment: string;
+  isNotApplicable?: boolean;
+  notApplicableReason?: string;
 }
 
 export interface EtlFieldProvenance {
@@ -1082,7 +1149,7 @@ export interface EtlCandidateDetailDTO {
     targetMetadataPct: number;
     frequencyPct: number;
     logicPct: number;
-    dagPct: number;
+    dagPct: number | 'N/A' | null;
   };
   sourcesComparison: EtlDatasetComparison[];
   targetsComparison: EtlTargetComparison[];
@@ -2078,8 +2145,8 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
         },
       ],
       rationalePoints: [
-        'INACTIVE — Exceeds Inactivity Threshold: Workflow_04_App has been inactive for >200 days (>180 days policy rule for automated decommissioning). Dead-End DAG Topology: Terminates in 4 Browse tools without any persistent database or file output nodes.',
-        'ZOMBIE ETL — Zero Downstream Consumers: No downstream BI tools, warehouses, reporting layers, or other consumers depend on the workflow. Workspace Cleanup: Decommissioning removes obsolete assets and reduces governance inventory overhead.',
+        'INACTIVE — Exceeds Inactivity Threshold: Workflow_04_App has been inactive for >200 days (>180 days policy rule for automated decommissioning).',
+        'ZOMBIE ETL — Zero Downstream Consumers: No other downstream consumers depend on the workflow. Terminates in 4 Browse tools without any persistent database or file output nodes. Decommissioning removes obsolete assets and reduces governance inventory overhead.',
       ],
       validationRequirements: [
         'Export and archive the workflow XML definition into the audit archive.',
@@ -2123,7 +2190,8 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
           technology: 'Python',
           complexity: 'High',
           criticality: 'High',
-          toolCount: 44,
+          toolCount: 0,
+          connectionsCount: 0,
           sourcesCount: 4,
           targetsCount: 5,
           schedule: 'Daily 05:30 AM EST',
@@ -2137,8 +2205,8 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
         sourceMetadataPct: 100,
         targetMetadataPct: 100,
         frequencyPct: 100,
-        logicPct: 96,
-        dagPct: 94,
+        logicPct: 100,
+        dagPct: 'N/A',
       },
       sourcesComparison: [
         {
@@ -2306,7 +2374,7 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
       ],
       frequencyComparison: {
         leftSchedule: 'Daily 05:30 AM EST (Alteryx Server)',
-        rightSchedule: 'Daily 05:30 AM EST (Airflow / Cron)',
+        rightSchedule: 'Daily 05:30 AM EST',
         leftTrigger: 'Alteryx Server Engine Scheduler',
         rightTrigger: 'Airflow Python Pipeline DAG',
         leftRuntime: '32 seconds',
@@ -2355,17 +2423,13 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
         summary: '96% logic parity achieved through vectorized Python operations. Automated unit test suite verifies 100% output cell parity.',
       },
       dagComparison: {
-        stages: [
-          { stageName: 'Source Ingestion (4 Input Sources)', leftToolCount: 4, rightToolCount: 4, description: 'Pandas / Calamine excel reader vs Alteryx Input' },
-          { stageName: 'Claims & Payment Feature Engineering', leftToolCount: 14, rightToolCount: 18, description: 'Vectorized calculations and temporal summaries' },
-          { stageName: 'Relational Merge & Null Imputation', leftToolCount: 7, rightToolCount: 8, description: 'Data frame left joins and fillna logic' },
-          { stageName: 'Multidimensional Aggregations', leftToolCount: 5, rightToolCount: 9, description: 'Pivoting and grouping by Quarter, Product, State, Risk' },
-          { stageName: 'Data Mart Output Writers', leftToolCount: 5, rightToolCount: 5, description: 'XlsxWriter / OpenPyXL multi-sheet export' },
-        ],
+        stages: [],
         leftTotalNodes: 35,
-        rightTotalNodes: 44,
-        similarityScore: 94,
-        topologyAlignment: 'Topologically identical multi-branch DAG implemented as a modern modular Python package.',
+        rightTotalNodes: 0,
+        similarityScore: 'N/A',
+        isNotApplicable: true,
+        notApplicableReason: 'Not applicable: Python implementation has no workflow-node or connection topology.',
+        topologyAlignment: 'Not applicable: Python implementation has no workflow-node or connection topology. Transformation logic is implemented as modular vectorized Python functions rather than a visual node/tool graph.',
       },
       subsumptionItems: [
         {

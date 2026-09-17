@@ -34,6 +34,8 @@ export interface AlteryxDetailData {
   schedule: string;
   lastRunStatus: string;
   avgRuntime: string;
+  complexity?: 'Low' | 'Medium' | 'High';
+  criticality?: 'Low' | 'Medium' | 'High';
 }
 
 export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
@@ -99,6 +101,8 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     schedule: 'Daily 5:30 AM EST',
     lastRunStatus: 'Success',
     avgRuntime: '32s',
+    complexity: 'High',
+    criticality: 'High',
   },
   c11: {
     tools: [
@@ -204,6 +208,8 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     schedule: 'Daily 6:00 AM EST',
     lastRunStatus: 'Success',
     avgRuntime: '15s',
+    complexity: 'High',
+    criticality: 'High',
   },
   c12: {
   tools: [
@@ -428,6 +434,8 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
   schedule: '',
   lastRunStatus: '',
   avgRuntime: '16s',
+  complexity: 'Medium',
+  criticality: 'Medium',
 },
     c13: {
     tools: [
@@ -676,6 +684,8 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     schedule: '',
     lastRunStatus: '',
     avgRuntime: '16s',
+    complexity: 'Medium',
+    criticality: 'Medium',
   },
   c14: {
     tools: [
@@ -739,6 +749,8 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     schedule: 'Daily 5:30 AM EST',
     lastRunStatus: 'Success',
     avgRuntime: '32s',
+    complexity: 'High',
+    criticality: 'High',
   },
     u4: {
     tools: [
@@ -830,6 +842,8 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     schedule: '',
     lastRunStatus: '',
     avgRuntime: '12s',
+    complexity: 'Low',
+    criticality: 'Low',
   },
     d6: {
     tools: [
@@ -932,6 +946,8 @@ export const ALTERYX_DETAIL_DATA: Record<string, AlteryxDetailData> = {
     schedule: '',
     lastRunStatus: '',
     avgRuntime: '13s',
+    complexity: 'Low',
+    criticality: 'Low',
   },
   p4: {
     tools: [],

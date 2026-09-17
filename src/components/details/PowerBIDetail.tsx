@@ -574,13 +574,7 @@ export default function PowerBIDetail({ asset, onBack }: Props) {
                         >
                           {m.homeTable}
                         </span>
-                        <span className="text-[10px] text-gray-400 font-mono">
-                          Format: {m.formatString}
-                        </span>
                       </div>
-                      <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
-                        Bound in {m.usedInPages.length} report page{m.usedInPages.length > 1 ? 's' : ''}
-                      </p>
                     </div>
                     <div className="shrink-0" style={{ color: 'var(--color-text-tertiary)' }}>
                       {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}

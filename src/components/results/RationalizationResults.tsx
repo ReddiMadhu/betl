@@ -14,6 +14,11 @@ import {
   recommendations,
   getOverlapMetrics,
   isCrossTechRecommendation,
+  isOrphanCascadeRecommendation,
+  isInactiveRecommendation,
+  isZombieRecommendation,
+  isSubsetRecommendation,
+  shouldShowOverlapEvidence,
   getEtlCandidateDetail,
   getComplexityCriticalityBadgeStyle,
 } from '../../data/rationalizationData';
@@ -354,13 +359,20 @@ function EtlCandidateCard({
   cand,
   onReview,
   onInspect,
+  activeTag,
 }: {
   cand: Recommendation;
   onReview: () => void;
   onInspect: (idOrName: string) => void;
+  activeTag?: string | null;
 }) {
   const isConsolidate = cand.category === 'etl-merge';
-  const isOrphan = cand.tags?.some((t) => /orphan/i.test(t)) || cand.id === 'er4';
+  const isOrphan = isOrphanCascadeRecommendation(cand);
+  const isZombie = isZombieRecommendation(cand);
+  const isInactive = isInactiveRecommendation(cand);
+  const isSubset = isSubsetRecommendation(cand);
+  const isCrossTech = isCrossTechRecommendation(cand);
+  const showOverlap = shouldShowOverlapEvidence(cand);
   const detail = getEtlCandidateDetail(cand);
 
   const wf1 = detail.inScopeWorkflows[0];
@@ -458,8 +470,8 @@ function EtlCandidateCard({
         </div>
       )}
 
-      {/* Cascade Source Banner for Orphan Cascade */}
-      {!isConsolidate && isOrphan && cand.dependentAsset && (
+      {/* ── 1. ORPHAN CASCADE RATIONALE OVERLAY CARD (PINK) ── */}
+      {!isConsolidate && isOrphan && (
         <div
           className="rounded-xl border p-3.5 space-y-2.5"
           style={{
@@ -474,28 +486,30 @@ function EtlCandidateCard({
               </span>
             </div>
             <span
-              className="text-[10px] font-bold px-2 py-0.5 rounded text-rose-400 bg-rose-500/15 border border-rose-500/30"
+              className="text-[10px] font-bold px-2 py-0.5 rounded text-pink-400 bg-pink-500/15 border border-pink-500/30"
             >
               Inactive / Decommission
             </span>
           </div>
 
-          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded flex items-center justify-center p-0.5 shrink-0"
-                style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
-              >
-                <img src={cand.dependentAsset.logo} alt={cand.dependentAsset.technology} className="w-full h-full object-contain" />
+          {cand.dependentAsset && (
+            <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded flex items-center justify-center p-0.5 shrink-0"
+                  style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
+                >
+                  <img src={cand.dependentAsset.logo} alt={cand.dependentAsset.technology} className="w-full h-full object-contain" />
+                </div>
+                <span className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                  {cand.dependentAsset.name}
+                </span>
+                <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
+                  ({cand.dependentAsset.technology})
+                </span>
               </div>
-              <span className="font-bold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-                {cand.dependentAsset.name}
-              </span>
-              <span className="text-[10px]" style={{ color: 'var(--color-text-tertiary)' }}>
-                ({cand.dependentAsset.technology})
-              </span>
             </div>
-          </div>
+          )}
 
           <div className="text-[11px] leading-relaxed pt-1.5 border-t border-pink-500/20 text-gray-300">
             <span className="font-bold text-pink-400">Rationale: </span>
@@ -504,73 +518,228 @@ function EtlCandidateCard({
         </div>
       )}
 
-      {/* Retained Replacement Banner for Retire Candidate (if pairwise) */}
-      {!isConsolidate && !isOrphan && (cand.id === 'er1' || cand.id === 'er3') && (
+      {/* ── 2. ZOMBIE ETL RATIONALE OVERLAY CARD (BLUE) ── */}
+      {!isConsolidate && !isOrphan && isZombie && activeTag !== 'Inactive' && (
         <div
-          className="rounded-xl border p-3.5 flex items-center justify-between flex-wrap gap-3"
+          className="rounded-xl border p-3.5 space-y-2.5"
           style={{
-            backgroundColor: 'rgba(239, 68, 68, 0.06)',
-            borderColor: 'rgba(239, 68, 68, 0.25)',
+            backgroundColor: 'rgba(59, 130, 246, 0.06)',
+            borderColor: 'rgba(59, 130, 246, 0.3)',
           }}
         >
-          <div className="flex items-center gap-2 text-xs">
-            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 600 }}>
-              {cand.id === 'er3' ? 'Modernization Cutover Replacement:' : 'Replaced / Covered By:'}
-            </span>
-            <span className="px-2.5 py-0.5 rounded border text-xs font-bold bg-emerald-500/15 text-emerald-300 border-emerald-500/35">
-              {cand.id === 'er3' ? 'claims_processing (Python)' : 'Claims_Extract_Volume'}
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                ZOMBIE ETL
+              </span>
+            </div>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded text-blue-400 bg-blue-500/15 border border-blue-500/30"
+            >
+              Zombie / Decommission
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => onInspect(cand.id === 'er3' ? 'claims_processing' : 'Claims_Extract_Volume')}
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold cursor-pointer transition-all hover:opacity-90"
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              borderColor: 'var(--color-border-primary)',
-              color: 'var(--color-accent)',
-            }}
-          >
-            <span>Inspect Replacement</span>
-            <ExternalLink size={11} />
-          </button>
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[10.5px] font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                0 Downstream Consumers
+              </span>
+              <span className="text-[11px] text-gray-400">
+                Terminates exclusively in inspection nodes with no active consumers
+              </span>
+            </div>
+          </div>
+
+          
+        </div>
+      )}
+
+      {/* ── 3. INACTIVE RATIONALE OVERLAY CARD (ROSE) ── */}
+      {!isConsolidate && !isOrphan && isInactive && (activeTag === 'Inactive' || !isZombie) && (
+        <div
+          className="rounded-xl border p-3.5 space-y-2.5"
+          style={{
+            backgroundColor: 'rgba(244, 63, 94, 0.06)',
+            borderColor: 'rgba(244, 63, 94, 0.3)',
+          }}
+        >
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-rose-400">
+                INACTIVE / DECOMMISSION
+              </span>
+            </div>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded text-rose-400 bg-rose-500/15 border border-rose-500/30"
+            >
+              Inactive / Decommission
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[10.5px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                Inactive for {cand.lastViewed || '200 days'} (&gt;180d policy threshold)
+              </span>
+              <span className="text-[11px] text-gray-400">
+                Dormant execution footprint with zero production deliverables
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 4. SUBSET RATIONALE OVERLAY CARD (AMBER) ── */}
+      {!isConsolidate && !isOrphan && isSubset && !isCrossTech && (
+        <div
+          className="rounded-xl border p-3.5 space-y-2.5"
+          style={{
+            backgroundColor: 'rgba(249, 115, 22, 0.06)',
+            borderColor: 'rgba(249, 115, 22, 0.3)',
+          }}
+        >
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                SUBSET / COVERAGE
+              </span>
+            </div>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded text-amber-400 bg-amber-500/15 border border-amber-500/30"
+            >
+              Subset / Decommission
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 600 }}>
+                Replaced / Covered By:
+              </span>
+              <span className="px-2.5 py-0.5 rounded border text-xs font-bold bg-emerald-500/15 text-emerald-300 border-emerald-500/35">
+                Claims_Extract_Volume (Alteryx)
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => onInspect('Claims_Extract_Volume')}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold cursor-pointer transition-all hover:opacity-90"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-accent)',
+              }}
+            >
+              <span>Inspect Replacement</span>
+              <ExternalLink size={11} />
+            </button>
+          </div>
+
+          <div className="text-[11px] leading-relaxed pt-1.5 border-t border-amber-500/20 text-gray-300">
+            <span className="font-bold text-amber-400">Rationale: </span>
+            {cand.rationale}
+          </div>
+        </div>
+      )}
+
+      {/* ── 5. CROSS-TECHNOLOGY MODERNIZATION OVERLAY CARD (PURPLE) ── */}
+      {!isConsolidate && !isOrphan && isCrossTech && (
+        <div
+          className="rounded-xl border p-3.5 space-y-2.5"
+          style={{
+            backgroundColor: 'rgba(139, 92, 246, 0.06)',
+            borderColor: 'rgba(139, 92, 246, 0.3)',
+          }}
+        >
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
+                CROSS-TECHNOLOGY MODERNIZATION
+              </span>
+            </div>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded text-purple-400 bg-purple-500/15 border border-purple-500/30"
+            >
+              Cross-Technology / Cutover
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 600 }}>
+                Modernization Cutover Replacement:
+              </span>
+              <span className="px-2.5 py-0.5 rounded border text-xs font-bold bg-emerald-500/15 text-emerald-300 border-emerald-500/35">
+                claims_processing (Python)
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => onInspect('claims_processing')}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold cursor-pointer transition-all hover:opacity-90"
+              style={{
+                backgroundColor: 'var(--color-surface)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-accent)',
+              }}
+            >
+              <span>Inspect Replacement</span>
+              <ExternalLink size={11} />
+            </button>
+          </div>
+
+          <div className="text-[11px] leading-relaxed pt-1.5 border-t border-purple-500/20 text-gray-300">
+            <span className="font-bold text-purple-400">Rationale: </span>
+            {cand.rationale}
+          </div>
         </div>
       )}
 
       {/* Five Overlap Evidence Metrics — Vertically Stacked in exact required order */}
-      <div className="space-y-2.5 pt-1">
-        {[
-          { label: 'Source Metadata Overlap', value: detail.overlapMetrics.sourceMetadataPct },
-          { label: 'Target Metadata Overlap', value: detail.overlapMetrics.targetMetadataPct },
-          { label: 'Frequency Overlap', value: detail.overlapMetrics.frequencyPct },
-          { label: 'Logic Overlap', value: detail.overlapMetrics.logicPct },
-          { label: 'DAG Overlap', value: detail.overlapMetrics.dagPct },
-        ].map((m, mI) => {
-          const fillColor = m.value >= 70 ? '#34d399' : m.value >= 40 ? '#fbbf24' : '#38bdf8';
-          return (
-            <div key={mI} className="space-y-1">
-              <div className="flex items-center justify-between text-xs font-semibold">
-                <span style={{ color: 'var(--color-text-secondary)' }}>
-                  {m.label}
-                </span>
-                <span className="font-extrabold tabular-nums" style={{ color: fillColor }}>
-                  {m.value}%
-                </span>
-              </div>
-              <div
-                className="w-full h-1.5 rounded-full overflow-hidden"
-                style={{ backgroundColor: 'var(--color-border-subtle)' }}
-              >
+      {showOverlap && (
+        <div className="space-y-2.5 pt-1">
+          {[
+            { label: 'Source Metadata Overlap', value: detail.overlapMetrics.sourceMetadataPct },
+            { label: 'Target Metadata Overlap', value: detail.overlapMetrics.targetMetadataPct },
+            { label: 'Frequency Overlap', value: detail.overlapMetrics.frequencyPct },
+            { label: 'Logic Overlap', value: detail.overlapMetrics.logicPct },
+            { label: 'DAG Overlap', value: detail.overlapMetrics.dagPct },
+          ].map((m, mI) => {
+            const isNA = typeof m.value !== 'number';
+            const numVal = typeof m.value === 'number' ? m.value : 0;
+            const fillColor = isNA ? 'var(--color-text-tertiary)' : numVal >= 70 ? '#34d399' : numVal >= 40 ? '#fbbf24' : '#38bdf8';
+            return (
+              <div key={mI} className="space-y-1">
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <span style={{ color: 'var(--color-text-secondary)' }}>
+                    {m.label}
+                  </span>
+                  <span className="font-extrabold tabular-nums" style={{ color: isNA ? 'var(--color-text-tertiary)' : fillColor }}>
+                    {isNA ? 'N/A' : `${m.value}%`}
+                  </span>
+                </div>
                 <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${m.value}%`, backgroundColor: fillColor }}
-                />
+                  className="w-full h-1.5 rounded-full overflow-hidden"
+                  style={{ backgroundColor: 'var(--color-border-subtle)' }}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: isNA ? '0%' : `${numVal}%`, backgroundColor: isNA ? 'transparent' : fillColor }}
+                  />
+                </div>
+                {isNA && m.label === 'DAG Overlap' && (
+                  <p className="text-[10px] leading-tight text-gray-400 pt-0.5">
+                    Not applicable: Python implementation has no workflow-node or connection topology.
+                  </p>
+                )}
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Card Footer: View Detailed Analysis CTA Button */}
       <div
@@ -810,24 +979,27 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
     const tags: string[] = [];
     if (section === 'bi') {
       // BI decommission tags: Inactive, Cross Technology (Subset removed for BI)
-      const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
-        (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false);
-      const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
+      const hasInactive = isInactiveRecommendation(rec);
+      const isCross = isCrossTechRecommendation(rec);
       if (hasInactive) tags.push('Inactive');
       if (isCross) tags.push('Cross Technology');
     } else {
       // ETL decommission tags: Orphan Cascade, Zombie ETLs, Subset, Cross Technology, Inactive
-      const isOrphan = rec.tags?.some((t) => /orphan/i.test(t)) || (rec.dependentAsset !== undefined && !isCrossTechRecommendation(rec));
-      const hasInactive = !isOrphan && (rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
-        (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false));
-      const hasSubset = !isOrphan && rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t));
-      const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
-      const isZombie = !isOrphan && (rec.tags?.some((t) => /zombie|no consumers|ad-hoc|stale workflow/i.test(t)) || rec.assets[0]?.name === 'Workflow_04_App');
-      if (isOrphan) tags.push('Orphan Cascade');
-      if (isZombie) tags.push('Zombie ETLs');
-      if (hasSubset) tags.push('Subset');
-      if (isCross) tags.push('Cross Technology');
-      if (hasInactive) tags.push('Inactive');
+      // Precedence: Orphan Cascade is mutually exclusive and takes precedence
+      const isOrphan = isOrphanCascadeRecommendation(rec);
+      if (isOrphan) {
+        tags.push('Orphan Cascade');
+      } else {
+        const isZombie = isZombieRecommendation(rec);
+        const hasInactive = isInactiveRecommendation(rec);
+        const hasSubset = rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t)) ?? false;
+        const isCross = isCrossTechRecommendation(rec);
+
+        if (isZombie) tags.push('Zombie ETLs');
+        if (hasSubset) tags.push('Subset');
+        if (isCross) tags.push('Cross Technology');
+        if (hasInactive) tags.push('Inactive');
+      }
     }
     return tags;
   }, []);
@@ -1328,6 +1500,7 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
                     <EtlCandidateCard
                       key={cand.id}
                       cand={cand}
+                      activeTag={activeTagFilter?.column === 'decommission' ? activeTagFilter.tag : null}
                       onReview={() => setEtlModalRec(cand)}
                       onInspect={(idOrName) => handleInspectWorkflow(idOrName)}
                     />

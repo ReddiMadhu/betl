@@ -16,11 +16,13 @@ import {
   FileInput,
   FileOutput,
   Info,
+  Layers,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
 import type { AlteryxDetailData } from '../../data/alteryxDetailData';
 import { ALTERYX_DETAIL_DATA, getWorkflowBusinessSummary } from '../../data/alteryxDetailData';
+import { getComplexityCriticalityColor } from '../../data/rationalizationData';
 import { AlteryxWorkflowOverview } from './AlteryxWorkflowOverview';
 
 /* ─────────────────────────────────────────────────────────
@@ -36,7 +38,19 @@ interface Props {
 }
 
 /* ── Stat Card ── */
-function StatCard({ icon: Icon, label, value, color }: { icon: typeof Workflow; label: string; value: string | number; color: string }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color,
+  valueColor,
+}: {
+  icon: typeof Workflow | typeof Settings | typeof Layers | typeof AlertTriangle;
+  label: string;
+  value: string | number;
+  color: string;
+  valueColor?: string;
+}) {
   return (
     <div
       className="rounded-xl border p-5 theme-transition"
@@ -57,7 +71,10 @@ function StatCard({ icon: Icon, label, value, color }: { icon: typeof Workflow; 
           <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
             {label}
           </p>
-          <p className="text-2xl font-bold mt-0.5" style={{ color: 'var(--color-text-primary)' }}>
+          <p
+            className="text-2xl font-bold mt-0.5"
+            style={{ color: valueColor || 'var(--color-text-primary)' }}
+          >
             {value}
           </p>
         </div>
@@ -132,6 +149,9 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
   const logo = TECHNOLOGY_LOGOS[asset.technology];
   const inputConns = connections.filter((c) => c.direction === 'input');
   const outputConns = connections.filter((c) => c.direction === 'output');
+
+  const complexity = detailData.complexity ?? asset.complexity;
+  const criticality = detailData.criticality ?? asset.criticality;
 
   return (
     <motion.div
@@ -246,12 +266,25 @@ export default function AlteryxDetail({ asset, onBack }: Props) {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.35 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6"
       >
         <StatCard icon={Settings} label="Tool Count" value={tools.length} color="#8B5CF6" />
         <StatCard icon={FileInput} label="Input Sources" value={summary.sourceInputs.length || asset.sourceCount || inputConns.length} color="#3B82F6" />
         <StatCard icon={FileOutput} label="Output Targets" value={summary.businessOutputs.length || asset.targetCount || outputConns.length} color="#22C55E" />
-        <StatCard icon={Clock} label="Avg Runtime" value={detailData.avgRuntime || '-'} color="#F59E0B" />
+        <StatCard
+          icon={Layers}
+          label="Complexity"
+          value={complexity || '-'}
+          color={complexity ? getComplexityCriticalityColor(complexity) : '#6B7280'}
+          valueColor={complexity ? getComplexityCriticalityColor(complexity) : undefined}
+        />
+        <StatCard
+          icon={AlertTriangle}
+          label="Criticality"
+          value={criticality || '-'}
+          color={criticality ? getComplexityCriticalityColor(criticality) : '#6B7280'}
+          valueColor={criticality ? getComplexityCriticalityColor(criticality) : undefined}
+        />
       </motion.div>
 
       {/* ── Tabs ── */}

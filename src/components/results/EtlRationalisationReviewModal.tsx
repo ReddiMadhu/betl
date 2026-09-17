@@ -588,6 +588,7 @@ export default function EtlRationalisationReviewModal({
                   },
                 ].map((m) => {
                   const isSelected = activeEvidenceMetric === m.key;
+                  const isNA = m.val === 'N/A' || m.val === null || typeof m.val !== 'number';
                   const Icon = m.icon;
                   return (
                     <button
@@ -605,8 +606,8 @@ export default function EtlRationalisationReviewModal({
                         <Icon size={13} style={{ color: isSelected ? '#facc15' : 'var(--color-text-tertiary)' }} />
                         <span className="truncate">{m.label}</span>
                       </div>
-                      <span className="text-xl font-extrabold tabular-nums" style={{ color: isSelected ? '#facc15' : 'var(--color-text-primary)' }}>
-                        {m.val}%
+                      <span className="text-xl font-extrabold tabular-nums" style={{ color: isSelected ? '#facc15' : isNA ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)' }}>
+                        {isNA ? 'N/A' : `${m.val}%`}
                       </span>
                     </button>
                   );
@@ -1125,73 +1126,149 @@ export default function EtlRationalisationReviewModal({
 
                 {/* TAB 5: DAG OVERLAP */}
                 {activeEvidenceMetric === 'dag' && (
-                  <div>
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2.5">
-                      DAG TOPOLOGY & COMPLEXITY ATTRIBUTES
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                        DAG TOPOLOGY & COMPLEXITY ATTRIBUTES
+                      </div>
+                      {detail.dagComparison?.isNotApplicable && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded text-amber-400 bg-amber-500/15 border border-amber-500/30">
+                          Topology: N/A (Python Codebase)
+                        </span>
+                      )}
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Left: DAG A */}
-                      <div className="p-4 rounded-xl border space-y-3" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
-                        <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfA_name}</div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
-                            <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.toolCount ?? 20}</span>
+
+                    {detail.dagComparison?.isNotApplicable ? (
+                      <div className="space-y-4">
+                        <div className="p-3.5 rounded-xl border bg-amber-500/10 border-amber-500/25 flex items-start gap-3">
+                          <Layers size={18} className="text-amber-400 shrink-0 mt-0.5" />
+                          <div className="text-xs space-y-1">
+                            <span className="font-bold text-amber-300">Semantic DAG Overlap: Not Applicable (N/A)</span>
+                            <p className="text-gray-300 leading-relaxed">
+                              {detail.dagComparison.notApplicableReason || 'Not applicable: Python implementation has no workflow-node or connection topology.'}
+                            </p>
                           </div>
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
-                            <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.connectionsCount ?? 20}</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* Left: DAG A */}
+                          <div className="p-4 rounded-xl border space-y-3" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfA_name}</span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30">{wfA?.technology || 'Alteryx'}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
+                                <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.toolCount ?? 35}</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
+                                <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.connectionsCount ?? wfA?.toolCount ?? 35}</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
+                                <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.complexity) }}>{wfA?.complexity || 'High'}</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
+                                <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.criticality) }}>{wfA?.criticality || 'High'}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
-                            <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.complexity) }}>{wfA?.complexity || 'Medium'}</span>
-                          </div>
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
-                            <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.criticality) }}>{wfA?.criticality || 'Medium'}</span>
+
+                          {/* Right: Python Pipeline */}
+                          <div className="p-4 rounded-xl border space-y-3" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfB?.name || 'claims_processing'}</span>
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">{wfB?.technology || 'Python'}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
+                                <span className="text-xs font-bold" style={{ color: 'var(--color-text-secondary)' }}>0 (Modular Code)</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
+                                <span className="text-xs font-bold" style={{ color: 'var(--color-text-secondary)' }}>0 (Function Calls)</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
+                                <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB?.complexity) }}>{wfB?.complexity || 'High'}</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
+                                <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB?.criticality) }}>{wfB?.criticality || 'High'}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-
-                      {/* Right: DAG B / No Active Replacement */}
-                      {wfB ? (
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Left: DAG A */}
                         <div className="p-4 rounded-xl border space-y-3" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
-                          <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfB.name}</div>
+                          <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfA_name}</div>
                           <div className="grid grid-cols-2 gap-2">
                             <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                               <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
-                              <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB.toolCount}</span>
+                              <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.toolCount ?? 20}</span>
                             </div>
                             <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                               <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
-                              <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB.connectionsCount ?? wfB.toolCount}</span>
+                              <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.connectionsCount ?? 20}</span>
                             </div>
                             <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                               <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
-                              <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB.complexity) }}>{wfB.complexity}</span>
+                              <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.complexity) }}>{wfA?.complexity || 'Medium'}</span>
                             </div>
                             <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                               <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
-                              <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB.criticality) }}>{wfB.criticality}</span>
+                              <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.criticality) }}>{wfA?.criticality || 'Medium'}</span>
                             </div>
                           </div>
                         </div>
-                      ) : (
-                        <div className="p-6 rounded-xl border flex flex-col items-center justify-center text-center space-y-2.5" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400" style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
-                            <Workflow size={20} />
+
+                        {/* Right: DAG B / No Active Replacement */}
+                        {wfB ? (
+                          <div className="p-4 rounded-xl border space-y-3" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
+                            <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfB.name}</div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
+                                <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB.toolCount}</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
+                                <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB.connectionsCount ?? wfB.toolCount}</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
+                                <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB.complexity) }}>{wfB.complexity}</span>
+                              </div>
+                              <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                                <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
+                                <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB.criticality) }}>{wfB.criticality}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                            No Active Replacement
+                        ) : (
+                          <div className="p-6 rounded-xl border flex flex-col items-center justify-center text-center space-y-2.5" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400" style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
+                              <Workflow size={20} />
+                            </div>
+                            <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                              No Active Replacement
+                            </div>
+                            <p className="text-xs max-w-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                              {isOrphan
+                                ? 'No replacement workflow required. Pipeline is being decommissioned due to downstream BI consumer retirement (Orphan Cascade).'
+                                : 'No replacement workflow is configured for this Zombie / Inactive candidate.'}
+                            </p>
                           </div>
-                          <p className="text-xs max-w-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-                            {isOrphan
-                              ? 'No replacement workflow required. Pipeline is being decommissioned due to downstream BI consumer retirement (Orphan Cascade).'
-                              : 'No replacement workflow is configured for this Zombie / Inactive candidate.'}
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
