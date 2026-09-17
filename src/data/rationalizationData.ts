@@ -204,7 +204,7 @@ export function computeEtlOverlapMetrics(displayedRecs?: Recommendation[]): Over
     if (r.category === 'etl-merge' || r.category === 'etl-retire') {
       try {
         const detail = getEtlCandidateDetail(r);
-        if (detail?.frequencyComparison?.overlapPct === 100 && r.id === 'er1') {
+        if (detail?.frequencyComparison?.overlapPct === 100) {
           scheduleConflictCount += 1;
         }
       } catch {
@@ -232,7 +232,7 @@ export function computeEtlOverlapMetrics(displayedRecs?: Recommendation[]): Over
     { id: 'etl-source-overlap', label: 'Source Overlaps', value: sourceOverlapCount, highlight: sourceOverlapCount > 10 },
     { id: 'etl-logic', label: 'Logic Overlaps', value: logicOverlapCount, highlight: logicOverlapCount > 8 },
     { id: 'etl-target', label: 'Target Overlaps', value: targetOverlapCount, highlight: targetOverlapCount > 5 },
-    { id: 'etl-schedule', label: 'Schedule Conflicts', value: scheduleConflictCount, highlight: scheduleConflictCount > 3 },
+    { id: 'etl-schedule', label: 'Schedule Overlaps', value: scheduleConflictCount, highlight: scheduleConflictCount > 3 },
     { id: 'etl-bi-conn', label: 'BI-ETL Connections', value: biEtlConnections, highlight: biEtlConnections > 15 },
     { id: 'cross-tech', label: 'Cross-Technology Overlaps', value: crossTechCount, highlight: crossTechCount > 3 },
   ];

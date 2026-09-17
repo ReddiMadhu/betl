@@ -14,6 +14,7 @@ import {
   Calendar,
   User,
   Target,
+  Table,
 } from 'lucide-react';
 import type { Asset } from '../../data/discoveryData';
 import { TECHNOLOGY_LOGOS } from '../../data/discoveryData';
@@ -50,7 +51,6 @@ export default function TableauDetail({ asset, onBack }: Props) {
 
   const [worksheetSearch, setWorksheetSearch] = useState('');
   const [calcFieldSearch, setCalcFieldSearch] = useState('');
-  const [tableSearch, setTableSearch] = useState('');
   const [kpiSearch, setKpiSearch] = useState('');
 
   const [selectedWorksheet, setSelectedWorksheet] = useState<WorksheetDetail | null>(null);
@@ -108,18 +108,6 @@ export default function TableauDetail({ asset, onBack }: Props) {
     return list;
   }, [baseCalculatedMeasures, selectedWorksheet, calcFieldSearch]);
 
-  // Filter data tables
-  const filteredTables = useMemo(() => {
-    if (!tableSearch.trim()) return metadata.tables;
-    const q = tableSearch.toLowerCase();
-    return metadata.tables.filter(
-      (t) =>
-        t.displayName.toLowerCase().includes(q) ||
-        t.dataSource.toLowerCase().includes(q) ||
-        t.columns.some((c) => c.name.toLowerCase().includes(q))
-    );
-  }, [metadata.tables, tableSearch]);
-
   // Filter authoritative KPIs
   const filteredKpis = useMemo(() => {
     const list = metadata.kpis ?? [];
@@ -131,6 +119,19 @@ export default function TableauDetail({ asset, onBack }: Props) {
         k.evidence.toLowerCase().includes(q)
     );
   }, [metadata.kpis, kpiSearch]);
+
+  // Dynamic table count label for Table Data Preview
+  const tableCountLabel = useMemo(() => {
+    const count = metadata.tables.length;
+    if (count === 0) return '0 tables found';
+    const hasIncompleteTables = metadata.tables.some(
+      (t) => t.hasColumnInformation === false && !t.schemaInfo
+    );
+    if (hasIncompleteTables) {
+      return `${count} tables found`;
+    }
+    return `${count} ${count === 1 ? 'table' : 'tables'} · first 5 rows`;
+  }, [metadata.tables]);
 
   return (
     <motion.div
@@ -588,11 +589,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
                         <span className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                           MEASURE
                         </span>
-                        <span className="text-[10px] text-gray-400 font-mono">[{cf.datatype}]</span>
                       </div>
-                      <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
-                        Used in {cf.usedInSheets.length} sheet{cf.usedInSheets.length > 1 ? 's' : ''}
-                      </p>
                     </div>
                     <div className="shrink-0" style={{ color: 'var(--color-text-tertiary)' }}>
                       {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -745,7 +742,7 @@ export default function TableauDetail({ asset, onBack }: Props) {
         </div>
       </div>
 
-      {/* ── Full-Width Data Tables Card ── */}
+      {/* ── Table Data Preview ── */}
       <div
         className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
         style={{
@@ -753,131 +750,149 @@ export default function TableauDetail({ asset, onBack }: Props) {
           borderColor: 'var(--color-border-primary)',
         }}
       >
-        {/* Card Header */}
+        {/* Section Header */}
         <div
-          className="p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0"
+          className="p-4 border-b flex items-center justify-between gap-3 shrink-0"
           style={{ borderColor: 'var(--color-border-primary)' }}
         >
-          <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-orange-500" />
+          <div className="flex items-center gap-2.5">
+            <Table className="w-5 h-5 text-purple-400" />
             <h2 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
-              Data Tables & Schema Preview ({filteredTables.length})
+              Table Data Preview
             </h2>
           </div>
-          <div className="relative w-full sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search data tables or columns..."
-              value={tableSearch}
-              onChange={(e) => setTableSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
-              style={{
-                backgroundColor: 'var(--color-bg-tertiary)',
-                borderColor: 'var(--color-border-primary)',
-                color: 'var(--color-text-primary)',
-              }}
-            />
+          <div className="text-xs font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
+            {tableCountLabel}
           </div>
         </div>
 
-        {/* Card Body - List of Tables with Live Data Previews */}
-        <div className="p-4 space-y-4 max-h-[560px] overflow-y-auto">
-          {filteredTables.map((tbl) => (
-            <div
-              key={tbl.tableName}
-              className="rounded-xl border overflow-hidden shadow-xs"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                borderColor: 'var(--color-border-primary)',
-              }}
-            >
-              {/* Table Meta Bar */}
+        {/* Section Body - List of Table Cards */}
+        <div className="p-4 space-y-4">
+          {metadata.tables.map((tbl, idx) => {
+            const hasData =
+              tbl.hasColumnInformation !== false &&
+              tbl.columns &&
+              tbl.columns.length > 0 &&
+              tbl.sampleRows &&
+              tbl.sampleRows.length > 0;
+            const previewRowCount = hasData ? tbl.sampleRows.length : 0;
+
+            return (
               <div
-                className="px-4 py-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                key={tbl.tableName || idx}
+                className="rounded-xl border overflow-hidden"
                 style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  borderColor: 'var(--color-border-subtle)',
+                  backgroundColor: '#0c0f17',
+                  borderColor: '#261b40',
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-orange-500" />
-                  <h3 className="font-bold text-xs" style={{ color: 'var(--color-text-primary)' }}>
-                    {tbl.displayName}
-                  </h3>
-                  <span className="text-[10px] text-gray-400 font-mono">({tbl.dataSource})</span>
-                </div>
-                <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-                  <strong style={{ color: 'var(--color-text-primary)' }}>{tbl.rowCount.toLocaleString()}</strong> rows ×{' '}
-                  <strong style={{ color: 'var(--color-text-primary)' }}>{tbl.columns.length}</strong> columns
-                </div>
-              </div>
-
-              {/* Data Preview Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr
-                      className="border-b"
-                      style={{
-                        backgroundColor: 'var(--color-surface)',
-                        borderColor: 'var(--color-border-subtle)',
-                      }}
-                    >
-                      {tbl.columns.map((col, idx) => (
-                        <th
-                          key={idx}
-                          className="px-4 py-2.5 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap"
-                          style={{ color: 'var(--color-text-secondary)' }}
+                {/* Purple Table-Card Header */}
+                <div
+                  className="px-4 py-3 border-b flex items-center justify-between gap-4"
+                  style={{
+                    backgroundColor: '#1b1233',
+                    borderColor: '#2d1e54',
+                  }}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0">
+                      <Table className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-sm text-white truncate leading-tight">
+                        {tbl.displayName || tbl.tableName}
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-[11px] mt-0.5 truncate">
+                        <span className="text-gray-400 shrink-0">via datasource:</span>
+                        <span
+                          className="text-amber-400 font-mono font-medium truncate"
+                          title={tbl.dataSource}
                         >
-                          <div>{col.name}</div>
-                          <span className="text-[9px] font-mono text-gray-400 font-normal">
-                            {col.type}
-                          </span>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                    {tbl.sampleRows.map((row, rowIdx) => (
-                      <tr
-                        key={rowIdx}
-                        className="hover:bg-opacity-50 transition-colors"
-                        style={{ backgroundColor: rowIdx % 2 === 0 ? 'transparent' : 'var(--color-bg-tertiary)' }}
-                      >
-                        {tbl.columns.map((col, colIdx) => (
-                          <td
-                            key={colIdx}
-                            className="px-4 py-2 whitespace-nowrap font-mono text-[11px]"
-                            style={{ color: 'var(--color-text-primary)' }}
-                          >
-                            {row[col.name] !== undefined && row[col.name] !== null
-                              ? String(row[col.name])
-                              : <span className="text-gray-400 italic">null</span>}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                          {tbl.dataSource}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="shrink-0">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-purple-950/70 text-purple-300 border border-purple-700/50">
+                      {previewRowCount} rows preview
+                    </span>
+                  </div>
+                </div>
 
-              {/* Footer */}
-              <div
-                className="px-4 py-2 border-t text-[11px] text-center font-medium"
-                style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  borderColor: 'var(--color-border-subtle)',
-                  color: 'var(--color-text-tertiary)',
-                }}
-              >
-                Showing 5 of {tbl.rowCount.toLocaleString()} sample rows
+                {/* Table Body */}
+                {hasData ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse font-mono text-xs">
+                      <thead>
+                        <tr className="border-b border-gray-800/80 bg-[#0e1320]">
+                          <th className="py-2.5 px-3.5 font-bold text-[11px] text-cyan-400 tracking-wider whitespace-nowrap border-r border-gray-800/60 w-12 text-center">
+                            #
+                          </th>
+                          {tbl.columns.map((col, colIdx) => (
+                            <th
+                              key={colIdx}
+                              className="py-2.5 px-3.5 font-bold text-[11px] text-cyan-400 uppercase tracking-wider whitespace-nowrap border-r border-gray-800/60 last:border-r-0"
+                            >
+                              {col.name}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800/50">
+                        {tbl.sampleRows.map((row, rowIdx) => (
+                          <tr
+                            key={rowIdx}
+                            className="hover:bg-purple-950/10 transition-colors"
+                          >
+                            <td className="py-2 px-3.5 text-[11px] font-mono text-gray-400 text-center border-r border-gray-800/60 whitespace-nowrap bg-black/20">
+                              {rowIdx + 1}
+                            </td>
+                            {tbl.columns.map((col, colIdx) => (
+                              <td
+                                key={colIdx}
+                                className="py-2 px-3.5 text-[11px] font-mono text-gray-200 border-r border-gray-800/60 last:border-r-0 whitespace-nowrap"
+                              >
+                                {row[col.name] !== undefined && row[col.name] !== null
+                                  ? String(row[col.name])
+                                  : <span className="text-gray-500 italic">null</span>}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="py-8 px-6 flex flex-col items-center justify-center gap-3 text-center">
+                    <Database className="w-6 h-6 text-purple-400/60" />
+                    <div className="space-y-1.5">
+                      <p className="text-xs font-mono text-purple-300 font-medium">
+                        {tbl.emptyStateMessage || 'No column information available.'}
+                      </p>
+                      {tbl.schemaInfo && tbl.schemaInfo.length > 0 && (
+                        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                          <span className="text-[11px] font-mono text-gray-400">Schema Fields:</span>
+                          {tbl.schemaInfo.map((field, fIdx) => (
+                            <span
+                              key={fIdx}
+                              className="px-2 py-0.5 rounded text-[11px] font-mono bg-purple-950/60 text-purple-200 border border-purple-800/50"
+                            >
+                              {field}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
-          {filteredTables.length === 0 && (
+            );
+          })}
+
+          {metadata.tables.length === 0 && (
             <div className="text-center py-10 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
-              No data tables match your search query.
+              No data tables available.
             </div>
           )}
         </div>
