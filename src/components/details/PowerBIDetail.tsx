@@ -116,7 +116,10 @@ export default function PowerBIDetail({ asset, onBack }: Props) {
         k.name.toLowerCase().includes(q) ||
         k.evidence.toLowerCase().includes(q) ||
         (k.logic && k.logic.toLowerCase().includes(q)) ||
-        (k.definition && k.definition.toLowerCase().includes(q))
+        (k.definition && k.definition.toLowerCase().includes(q)) ||
+        (k.category && k.category.toLowerCase().includes(q)) ||
+        (k.page && k.page.toLowerCase().includes(q)) ||
+        (k.confidence && k.confidence.toLowerCase().includes(q))
     );
   }, [metadata.kpis, kpiSearch]);
 
@@ -676,7 +679,7 @@ export default function PowerBIDetail({ asset, onBack }: Props) {
         </div>
 
         {/* Card Body - Grid of KPI Cards */}
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto">
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[420px] overflow-y-auto">
           {filteredKpis.map((kpi, idx) => (
             <div
               key={kpi.id || idx}
@@ -691,11 +694,25 @@ export default function PowerBIDetail({ asset, onBack }: Props) {
                   {idx + 1}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-xs leading-snug" style={{ color: 'var(--color-text-primary)' }}>
-                    {kpi.name}
-                  </h3>
+                  <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                    <h3 className="font-semibold text-xs leading-snug" style={{ color: 'var(--color-text-primary)' }}>
+                      {kpi.name}
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                    {kpi.confidence && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        {kpi.confidence} Confidence
+                      </span>
+                    )}
+                    {(kpi.category || kpi.page) && (
+                      <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                        {kpi.category || kpi.page}
+                      </span>
+                    )}
+                  </div>
                   {kpi.definition && (
-                    <p className="text-[11px] mt-1 line-clamp-2" style={{ color: 'var(--color-text-tertiary)' }}>
+                    <p className="text-[11px] leading-relaxed line-clamp-2" style={{ color: 'var(--color-text-tertiary)' }}>
                       {kpi.definition}
                     </p>
                   )}
@@ -743,7 +760,7 @@ export default function PowerBIDetail({ asset, onBack }: Props) {
         </div>
       </div>
 
-      {/* ── Full-Width Data Tables Card ── */}
+      {/* ── Semantic Model Tables & Data Preview Card ── */}
       <div
         className="rounded-2xl border flex flex-col shadow-sm overflow-hidden"
         style={{
@@ -756,138 +773,179 @@ export default function PowerBIDetail({ asset, onBack }: Props) {
           className="p-4 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0"
           style={{ borderColor: 'var(--color-border-primary)' }}
         >
-          <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-orange-500" />
+          <div className="flex items-center gap-2.5">
+            <Database className="w-5 h-5 text-orange-400" />
             <h2 className="text-base font-bold" style={{ color: 'var(--color-text-primary)' }}>
               Semantic Model Tables & Schema Preview ({filteredTables.length})
             </h2>
           </div>
-          <div className="relative w-full sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search model tables or columns..."
-              value={tableSearch}
-              onChange={(e) => setTableSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
-              style={{
-                backgroundColor: 'var(--color-bg-tertiary)',
-                borderColor: 'var(--color-border-primary)',
-                color: 'var(--color-text-primary)',
-              }}
-            />
+          <div className="flex items-center gap-3">
+            <div className="text-xs font-mono" style={{ color: 'var(--color-text-tertiary)' }}>
+              {metadata.tables.length} {metadata.tables.length === 1 ? 'table' : 'tables'} · schema preview
+            </div>
+            <div className="relative w-full sm:max-w-xs">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search model tables or columns..."
+                value={tableSearch}
+                onChange={(e) => setTableSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border outline-none transition-all"
+                style={{
+                  backgroundColor: 'var(--color-bg-tertiary)',
+                  borderColor: 'var(--color-border-primary)',
+                  color: 'var(--color-text-primary)',
+                }}
+              />
+            </div>
           </div>
         </div>
 
         {/* Card Body - List of Tables with Live Data Previews */}
-        <div className="p-4 space-y-4 max-h-[560px] overflow-y-auto">
-          {filteredTables.map((tbl) => (
-            <div
-              key={tbl.tableName}
-              className="rounded-xl border overflow-hidden shadow-xs"
-              style={{
-                backgroundColor: 'var(--color-surface)',
-                borderColor: 'var(--color-border-primary)',
-              }}
-            >
-              {/* Table Meta Bar */}
+        <div className="p-4 space-y-4">
+          {filteredTables.map((tbl, idx) => {
+            const hasData = tbl.columns && tbl.columns.length > 0;
+            const previewRowCount = tbl.sampleRows ? tbl.sampleRows.length : 0;
+
+            return (
               <div
-                className="px-4 py-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                key={tbl.tableName || idx}
+                className="rounded-xl border overflow-hidden shadow-xs"
                 style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  borderColor: 'var(--color-border-subtle)',
+                  backgroundColor: '#0c0f17',
+                  borderColor: '#261b40',
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-orange-500" />
-                  <h3 className="font-bold text-xs" style={{ color: 'var(--color-text-primary)' }}>
-                    {tbl.displayName}
-                  </h3>
-                  <span className="text-[10px] text-gray-400 font-mono">({tbl.source})</span>
-                </div>
-                <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-                  <strong style={{ color: 'var(--color-text-primary)' }}>{tbl.rowCount.toLocaleString()}</strong> rows ×{' '}
-                  <strong style={{ color: 'var(--color-text-primary)' }}>{tbl.columns.length}</strong> columns
-                </div>
-              </div>
-
-              {/* Data Preview Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr
-                      className="border-b"
-                      style={{
-                        backgroundColor: 'var(--color-surface)',
-                        borderColor: 'var(--color-border-subtle)',
-                      }}
-                    >
-                      {tbl.columns.map((col, idx) => (
-                        <th
-                          key={idx}
-                          className="px-4 py-2.5 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap"
-                          style={{ color: 'var(--color-text-secondary)' }}
+                {/* Purple Table-Card Header */}
+                <div
+                  className="px-4 py-3 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  style={{
+                    backgroundColor: '#1b1233',
+                    borderColor: '#2d1e54',
+                  }}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0">
+                      <Database className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-sm text-white truncate leading-tight">
+                        {tbl.displayName || tbl.tableName}
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-[11px] mt-0.5 truncate">
+                        <span className="text-gray-400 shrink-0">via model source:</span>
+                        <span
+                          className="text-amber-400 font-mono font-medium truncate"
+                          title={tbl.source}
                         >
-                          <div>{col.name}</div>
-                          <span className="text-[9px] font-mono text-gray-400 font-normal">
-                            {col.type}
-                          </span>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y" style={{ borderColor: 'var(--color-border-subtle)' }}>
-                    {tbl.sampleRows.map((row, rowIdx) => (
-                      <tr
-                        key={rowIdx}
-                        className="hover:bg-opacity-50 transition-colors"
-                        style={{ backgroundColor: rowIdx % 2 === 0 ? 'transparent' : 'var(--color-bg-tertiary)' }}
-                      >
-                        {tbl.columns.map((col, colIdx) => (
-                          <td
-                            key={colIdx}
-                            className="px-4 py-2 whitespace-nowrap font-mono text-[11px]"
-                            style={{ color: 'var(--color-text-primary)' }}
-                          >
-                            {row[col.name] !== undefined && row[col.name] !== null
-                              ? String(row[col.name])
-                              : <span className="text-gray-400 italic">null</span>}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Relationships Footer */}
-              <div
-                className="px-4 py-2.5 border-t text-[11px] flex flex-wrap items-center justify-between gap-2"
-                style={{
-                  backgroundColor: 'var(--color-bg-tertiary)',
-                  borderColor: 'var(--color-border-subtle)',
-                  color: 'var(--color-text-tertiary)',
-                }}
-              >
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <Network size={12} className="text-blue-500" />
-                  <span className="font-semibold text-gray-400">Relationships:</span>
-                  {tbl.relationships.map((rel, rIdx) => (
-                    <span
-                      key={rIdx}
-                      className="px-1.5 py-0.5 rounded border text-[10px] font-mono"
-                      style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-secondary)' }}
-                    >
-                      {rel}
+                          {tbl.source}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[11px] font-mono text-gray-400">
+                      {tbl.rowCount.toLocaleString()} rows × {tbl.columns.length} cols
                     </span>
-                  ))}
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono font-medium bg-purple-950/70 text-purple-300 border border-purple-700/50">
+                      {previewRowCount} rows preview
+                    </span>
+                  </div>
                 </div>
-                <div>Showing 5 of {tbl.rowCount.toLocaleString()} sample rows</div>
+
+                {/* Data Preview Table */}
+                {hasData ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse font-mono text-xs">
+                      <thead>
+                        <tr className="border-b border-gray-800/80 bg-[#0e1320]">
+                          <th className="py-2.5 px-3.5 font-bold text-[11px] text-cyan-400 tracking-wider whitespace-nowrap border-r border-gray-800/60 w-12 text-center">
+                            #
+                          </th>
+                          {tbl.columns.map((col, colIdx) => (
+                            <th
+                              key={colIdx}
+                              className="py-2.5 px-3.5 font-bold text-[11px] text-cyan-400 uppercase tracking-wider whitespace-nowrap border-r border-gray-800/60 last:border-r-0"
+                            >
+                              <div className="leading-tight">{col.name}</div>
+                              <span className="text-[9px] font-mono text-gray-500 font-normal lowercase">
+                                {col.type}
+                              </span>
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800/50">
+                        {tbl.sampleRows.map((row, rowIdx) => (
+                          <tr
+                            key={rowIdx}
+                            className="hover:bg-purple-950/10 transition-colors"
+                          >
+                            <td className="py-2 px-3.5 text-[11px] font-mono text-gray-400 text-center border-r border-gray-800/60 whitespace-nowrap bg-black/20">
+                              {rowIdx + 1}
+                            </td>
+                            {tbl.columns.map((col, colIdx) => (
+                              <td
+                                key={colIdx}
+                                className="py-2 px-3.5 text-[11px] font-mono text-gray-200 border-r border-gray-800/60 last:border-r-0 whitespace-nowrap"
+                              >
+                                {row[col.name] !== undefined && row[col.name] !== null
+                                  ? String(row[col.name])
+                                  : <span className="text-gray-500 italic">null</span>}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="py-8 px-4 flex flex-col items-center justify-center gap-2 text-gray-400">
+                    <Database className="w-5 h-5 text-gray-500" />
+                    <span className="text-xs text-gray-400 font-medium">
+                      No column information available.
+                    </span>
+                  </div>
+                )}
+
+                {/* Relationships Footer */}
+                {tbl.relationships && tbl.relationships.length > 0 && (
+                  <div
+                    className="px-4 py-2.5 border-t text-[11px] flex flex-wrap items-center justify-between gap-2"
+                    style={{
+                      backgroundColor: '#0a0d14',
+                      borderColor: '#1f293d',
+                      color: 'var(--color-text-tertiary)',
+                    }}
+                  >
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Network size={12} className="text-blue-400" />
+                      <span className="font-semibold text-gray-400">Relationships:</span>
+                      {tbl.relationships.map((rel, rIdx) => (
+                        <span
+                          key={rIdx}
+                          className="px-1.5 py-0.5 rounded border text-[10px] font-mono bg-purple-950/40 text-purple-200 border-purple-800/40"
+                        >
+                          {rel}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="font-mono text-[10px] text-gray-500">
+                      Showing {previewRowCount} of {tbl.rowCount.toLocaleString()} sample rows
+                    </div>
+                  </div>
+                )}
               </div>
+            );
+          })}
+          {filteredTables.length === 0 && (
+            <div className="text-center py-10 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+              No semantic model tables match your search query.
             </div>
-          ))}
+          )}
         </div>
       </div>
     </motion.div>
   );
 }
+
