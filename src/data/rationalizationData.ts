@@ -18,8 +18,8 @@ export interface OverlapMetric {
 }
 
 export const biOverlapMetrics: OverlapMetric[] = [
-  { id: 'source-metadata', label: 'Source Metadata Overlaps', value: 24 },
-  { id: 'logic', label: 'Logic Overlaps', value: 11 },
+  { id: 'source-metadata', label: 'BI + ETL Source Metadata Overlaps', value: 24 },
+  { id: 'logic', label: 'BI + ETL Logic Overlaps', value: 24 },
   { id: 'kpi', label: 'KPI Overlaps', value: 17 },
   { id: 'schema', label: 'Schema Overlaps', value: 7 },
   { id: 'bi-etl-conn', label: 'BI-ETL Connections', value: 24 },
