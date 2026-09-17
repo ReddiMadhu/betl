@@ -16,11 +16,14 @@ import {
   Target,
   CheckCircle,
   AlertTriangle,
+  Workflow,
 } from 'lucide-react';
 import type { Recommendation } from '../../data/rationalizationData';
 import {
   getEtlCandidateDetail,
   TECHNOLOGY_LOGOS,
+  getComplexityCriticalityBadgeStyle,
+  getComplexityCriticalityColor,
 } from '../../data/rationalizationData';
 import type {
   EtlCandidateDetailDTO,
@@ -299,25 +302,13 @@ export default function EtlRationalisationReviewModal({
                         <div className="flex items-center gap-2 flex-wrap">
                           <span
                             className="text-[10px] font-bold px-2 py-0.5 rounded border"
-                            style={{
-                              backgroundColor:
-                                wf.complexity === 'High' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                              borderColor:
-                                wf.complexity === 'High' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)',
-                              color: wf.complexity === 'High' ? '#EF4444' : '#F59E0B',
-                            }}
+                            style={getComplexityCriticalityBadgeStyle(wf.complexity)}
                           >
                             Complexity: {wf.complexity}
                           </span>
                           <span
                             className="text-[10px] font-bold px-2 py-0.5 rounded border"
-                            style={{
-                              backgroundColor:
-                                wf.criticality === 'High' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                              borderColor:
-                                wf.criticality === 'High' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)',
-                              color: wf.criticality === 'High' ? '#EF4444' : '#F59E0B',
-                            }}
+                            style={getComplexityCriticalityBadgeStyle(wf.criticality)}
                           >
                             Criticality: {wf.criticality}
                           </span>
@@ -346,22 +337,73 @@ export default function EtlRationalisationReviewModal({
               </div>
             </div>
             {/* ── Section G: Recommendation Rationale ── */}
-            <div>
+            <div className="space-y-2">
               <div
-                className="text-[11px] font-bold uppercase tracking-wider mb-2"
+                className="text-[11px] font-bold uppercase tracking-wider"
                 style={{ color: 'var(--color-text-tertiary)' }}
               >
                 RECOMMENDATION RATIONALE
               </div>
               <div
-                className="p-4 rounded-xl border text-xs sm:text-sm leading-relaxed"
+                className="p-4 rounded-xl border space-y-3"
                 style={{
                   backgroundColor: 'var(--color-surface)',
                   borderColor: 'var(--color-border-subtle)',
-                  color: 'var(--color-text-secondary)',
                 }}
               >
-                {detail.rationalePoints.join(' ')}
+                {detail.rationalePoints.map((point, idx) => {
+                  const badgeMatch = point.match(/^(INACTIVE|ZOMBIE ETL|ZOMBIE ETLS|SUBSET|CROSS TECHNOLOGY|ORPHAN CASCADE)\s*[—–-]\s*([^:]+):\s*(.+)$/i);
+                  if (badgeMatch) {
+                    const [, rawBadge, subtitle, explanation] = badgeMatch;
+                    const badgeUpper = rawBadge.toUpperCase();
+                    const tagColorMap: Record<string, string> = {
+                      'INACTIVE': '#F43F5E',
+                      'ZOMBIE ETL': '#3B82F6',
+                      'ZOMBIE ETLS': '#3B82F6',
+                      'SUBSET': '#F97316',
+                      'CROSS TECHNOLOGY': '#A855F7',
+                      'ORPHAN CASCADE': '#EC4899',
+                    };
+                    const tagColor = tagColorMap[badgeUpper] || '#EF4444';
+                    return (
+                      <div
+                        key={idx}
+                        className="p-3.5 rounded-lg border space-y-2"
+                        style={{
+                          backgroundColor: `${tagColor}08`,
+                          borderColor: `${tagColor}25`,
+                        }}
+                      >
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <span
+                            className="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border"
+                            style={{
+                              backgroundColor: `${tagColor}15`,
+                              color: tagColor,
+                              borderColor: `${tagColor}35`,
+                              boxShadow: `0 1px 4px ${tagColor}20`,
+                            }}
+                          >
+                            {badgeUpper}
+                          </span>
+                          <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                            {subtitle.trim()}
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                          {explanation.trim()}
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: 'var(--color-accent)' }} />
+                      <span>{point}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -903,7 +945,7 @@ export default function EtlRationalisationReviewModal({
                             <div>Runtime: {detail.frequencyComparison.leftRuntime || 'N/A'}</div>
                           </div>
                           <div className="text-[11px] font-semibold text-yellow-400 mt-1">
-                            {detail.frequencyComparison.overlapPct === 100 ? 'Matching Operational Schedule' : 'Schedule Variance'}
+                            {detail.frequencyComparison.overlapPct === 100 ? 'Matching Operational Schedule' : ''}
                           </div>
                         </div>
 
@@ -926,7 +968,7 @@ export default function EtlRationalisationReviewModal({
                             <div>Runtime: {detail.frequencyComparison.rightRuntime || 'N/A'}</div>
                           </div>
                           <div className="text-[11px] font-semibold text-yellow-400 mt-1">
-                            {detail.frequencyComparison.overlapPct === 100 ? 'Matching Operational Schedule' : 'Schedule Variance'}
+                            {detail.frequencyComparison.overlapPct === 100 ? 'Matching Operational Schedule' : ''}
                           </div>
                         </div>
                       </div>
@@ -1052,7 +1094,7 @@ export default function EtlRationalisationReviewModal({
                         <div className="grid grid-cols-2 gap-2">
                           <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                             <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
-                            <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.toolCount || 20}</span>
+                            <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfA?.toolCount ?? 20}</span>
                           </div>
                           <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                             <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
@@ -1060,37 +1102,51 @@ export default function EtlRationalisationReviewModal({
                           </div>
                           <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                             <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
-                            <span className="text-xs font-bold text-amber-400">{wfA?.complexity || 'Medium'}</span>
+                            <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.complexity) }}>{wfA?.complexity || 'Medium'}</span>
                           </div>
                           <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
                             <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
-                            <span className="text-xs font-bold text-amber-400">{wfA?.criticality || 'Medium'}</span>
+                            <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfA?.criticality) }}>{wfA?.criticality || 'Medium'}</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Right: DAG B */}
-                      <div className="p-4 rounded-xl border space-y-3" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
-                        <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfB_name}</div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
-                            <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB?.toolCount || 34}</span>
-                          </div>
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
-                            <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB?.connectionsCount ?? 32}</span>
-                          </div>
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
-                            <span className="text-xs font-bold text-amber-400">{wfB?.complexity || 'High'}</span>
-                          </div>
-                          <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
-                            <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
-                            <span className="text-xs font-bold text-amber-400">{wfB?.criticality || 'High'}</span>
+                      {/* Right: DAG B / No Active Replacement */}
+                      {wfB ? (
+                        <div className="p-4 rounded-xl border space-y-3" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
+                          <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>{wfB.name}</div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                              <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Nodes / Tools</span>
+                              <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB.toolCount}</span>
+                            </div>
+                            <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                              <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Connections</span>
+                              <span className="text-base font-bold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{wfB.connectionsCount ?? wfB.toolCount}</span>
+                            </div>
+                            <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                              <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Complexity</span>
+                              <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB.complexity) }}>{wfB.complexity}</span>
+                            </div>
+                            <div className="p-2.5 rounded-lg border" style={{ backgroundColor: 'var(--color-bg-tertiary)', borderColor: 'var(--color-border-subtle)' }}>
+                              <span className="text-[10px] block" style={{ color: 'var(--color-text-tertiary)' }}>Criticality</span>
+                              <span className="text-xs font-bold" style={{ color: getComplexityCriticalityColor(wfB.criticality) }}>{wfB.criticality}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="p-6 rounded-xl border flex flex-col items-center justify-center text-center space-y-2.5" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border-primary)' }}>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400" style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
+                            <Workflow size={20} />
+                          </div>
+                          <div className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                            No Active Replacement
+                          </div>
+                          <p className="text-xs max-w-xs leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                            No replacement workflow is configured for this Zombie / Inactive candidate.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

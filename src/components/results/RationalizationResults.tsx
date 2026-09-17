@@ -15,6 +15,7 @@ import {
   getOverlapMetrics,
   isCrossTechRecommendation,
   getEtlCandidateDetail,
+  getComplexityCriticalityBadgeStyle,
 } from '../../data/rationalizationData';
 import type { Recommendation, TechnologyName } from '../../data/rationalizationData';
 import { useCountUp } from '../../hooks/useAnimations';
@@ -393,21 +394,13 @@ function EtlCandidateCard({
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
               className="text-[10px] font-bold px-2 py-0.5 rounded border"
-              style={{
-                backgroundColor: wf1.complexity === 'High' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                borderColor: wf1.complexity === 'High' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)',
-                color: wf1.complexity === 'High' ? '#EF4444' : '#F59E0B',
-              }}
+              style={getComplexityCriticalityBadgeStyle(wf1.complexity)}
             >
               Complexity: {wf1.complexity}
             </span>
             <span
               className="text-[10px] font-bold px-2 py-0.5 rounded border"
-              style={{
-                backgroundColor: wf1.criticality === 'High' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)',
-                borderColor: wf1.criticality === 'High' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(245, 158, 11, 0.3)',
-                color: wf1.criticality === 'High' ? '#EF4444' : '#F59E0B',
-              }}
+              style={getComplexityCriticalityBadgeStyle(wf1.criticality)}
             >
               Criticality: {wf1.criticality}
             </span>
@@ -603,10 +596,16 @@ function EtlKeepCard({
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded border"
+            style={getComplexityCriticalityBadgeStyle(assetName.includes('03') || assetName.includes('Extract') ? 'High' : 'Medium')}
+          >
             Complexity: {assetName.includes('03') || assetName.includes('Extract') ? 'High' : 'Medium'}
           </span>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/25">
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded border"
+            style={getComplexityCriticalityBadgeStyle(assetName.includes('03') || assetName.includes('Extract') ? 'High' : 'Medium')}
+          >
             Criticality: {assetName.includes('03') || assetName.includes('Extract') ? 'High' : 'Medium'}
           </span>
         </div>
@@ -755,7 +754,7 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
   const mergeTags = useMemo(() => ['Cross Technology', 'Same Technology'], []);
   const decommissionTags = useMemo(() => {
     if (activeSection === 'bi') {
-      return ['Inactive', 'Subset', 'Cross Technology'];
+      return ['Inactive', 'Cross Technology'];
     }
     return ['Orphan Cascade', 'Zombie ETLs', 'Subset', 'Cross Technology', 'Inactive'];
   }, [activeSection]);
@@ -763,15 +762,12 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
   const classifyDecommissionRec = useCallback((rec: Recommendation, section: 'bi' | 'etl'): string[] => {
     const tags: string[] = [];
     if (section === 'bi') {
-      // BI decommission tags: Inactive, Subset, Cross Technology
+      // BI decommission tags: Inactive, Cross Technology (Subset removed for BI)
       const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
         (rec.lastViewed ? parseInt(rec.lastViewed) > 180 : false);
-      const hasSubset = !hasInactive && (rec.tags?.some((t) => /redundant|legacy|superseded|subset/i.test(t)) || rec.assets[0]?.name === 'Claims Cube');
       const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
       if (hasInactive) tags.push('Inactive');
-      if (hasSubset) tags.push('Subset');
       if (isCross) tags.push('Cross Technology');
-      if (tags.length === 0) tags.push('Subset'); // fallback
     } else {
       // ETL decommission tags: Orphan Cascade, Zombie ETLs, Subset, Cross Technology, Inactive
       const hasInactive = rec.tags?.some((t) => /inactive|unused|\d+d\s*(inactive|unused)/i.test(t)) ||
@@ -779,7 +775,7 @@ export default function RationalizationResults({ onStartMigration, onAssetDetail
       const hasOrphan = rec.tags?.some((t) => /orphan/i.test(t)) || (rec.dependentAsset !== undefined && !isCrossTechRecommendation(rec));
       const hasSubset = rec.tags?.some((t) => /redundant|shared\s*logic|subset/i.test(t));
       const isCross = isCrossTechRecommendation(rec) || rec.tags?.some((t) => /cross-?(tech|platform)/i.test(t));
-      const isZombie = !hasInactive && !hasOrphan && !hasSubset && !isCross && rec.tags?.some((t) => /zombie|no consumers|ad-hoc/i.test(t));
+      const isZombie = rec.tags?.some((t) => /zombie|no consumers|ad-hoc|stale workflow/i.test(t)) || rec.assets[0]?.name === 'Workflow_04_App';
       if (hasOrphan) tags.push('Orphan Cascade');
       if (isZombie) tags.push('Zombie ETLs');
       if (hasSubset) tags.push('Subset');

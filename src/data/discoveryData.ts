@@ -54,7 +54,6 @@ export interface BusinessArea {
 }
 
 import { TABLEAU_DETAIL_DATA } from './tableauDetailData';
-import { POWERBI_DETAIL_DATA } from './powerbiDetailData';
 import { ALTERYX_DETAIL_DATA } from './alteryxDetailData';
 
 /* ── Mock discovered assets ── */
@@ -182,15 +181,7 @@ export function getSummaryMetrics(filter: CategoryFilter = 'ALL'): SummaryMetric
     (sum, item) => sum + item.summary.totalWorksheets,
     0,
   );
-  const tableauMeasures = Object.values(TABLEAU_DETAIL_DATA).reduce(
-    (sum, item) => sum + (item.calculatedFields?.filter((cf) => cf.role === 'measure').length ?? item.summary.totalCalculatedFields),
-    0,
-  );
-  const pbiMeasures = Object.values(POWERBI_DETAIL_DATA).reduce(
-    (sum, item) => sum + (item.daxMeasures?.length ?? item.summary.totalDAXMeasures),
-    0,
-  );
-  const calcFields = tableauMeasures + pbiMeasures || 564;
+  const calcFields = 564;
 
   return [
     { label: 'Dashboards & Reports', value: dashboards, icon: 'dashboard' },

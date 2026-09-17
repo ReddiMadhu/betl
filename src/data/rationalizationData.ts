@@ -259,9 +259,9 @@ export interface CategoryInfo {
 export const categories: CategoryInfo[] = [
   { id: 'merge-bi', label: 'Merge BI', count: 5, color: '#FB4E0B', section: 'bi' },
   { id: 'etl-merge', label: 'ETL Merge', count: 1, color: '#0EA5E9', section: 'etl' },
-  { id: 'bi-retire', label: 'BI Retire', count: 5, color: '#EF4444', section: 'bi' },
+  { id: 'bi-retire', label: 'BI Retire', count: 2, color: '#EF4444', section: 'bi' },
   { id: 'etl-retire', label: 'ETL Retire', count: 3, color: '#F97316', section: 'etl' },
-  { id: 'bi-keep', label: 'BI Keep', count: 12, color: '#22C55E', section: 'bi' },
+  { id: 'bi-keep', label: 'BI Keep', count: 13, color: '#22C55E', section: 'bi' },
   { id: 'etl-keep', label: 'ETL Keep', count: 4, color: '#10B981', section: 'etl' },
   { id: 'bi-etl-connections', label: 'BI-ETL Connections', count: 32, color: '#8B5CF6', section: 'both' },
 ];
@@ -400,7 +400,7 @@ export const recommendations: Recommendation[] = [
     targetUserGroups: ['Distribution Analytics', 'Commercial Sales', 'Digital Agency'],
     summary: 'Unification of commercial, property, and casualty cross-selling dashboards.',
     commonKpis: ['Cross-Sell Ratio', 'Multi-Line Penetration'],
-    commonTables: ['policy_master', 'customer_dim'],
+    commonTables: ['policy_master', 'customer_dim', 'line_of_business_dim'],
     mergeTarget: 'Cross Sell Dashboard PBIP',
   },
   {
@@ -502,7 +502,7 @@ export const recommendations: Recommendation[] = [
     title: 'Retire FFQ_Test Report',
     businessArea: 'Underwriting',
     assets: [asset('FFQ_Test', 'Power BI')],
-    rationale: 'INACTIVE: Experimental rating prototype last accessed 200 days ago (>180 days threshold). Zero active business consumers; production rating workflows now run directly through automated underwriting pipelines.',
+    rationale: 'INACTIVE: Experimental rating prototype last accessed 200 days ago (>180 days threshold).',
     action: 'Decommission Power BI FFQ_Test report.',
     tags: ['Inactive', '200d inactive', '100% Unique'],
     kpis: ['Quotation Latency', 'Rating Multiplier', 'Submission Volume by State', 'Reinsurance Rate Variance'],
@@ -518,7 +518,7 @@ export const recommendations: Recommendation[] = [
     title: 'Retire IT Spend Analysis Sample',
     businessArea: 'Finance',
     assets: [asset('IT Spend Analysis Sample PBIX', 'Power BI')],
-    rationale: 'INACTIVE: Departmental IT budget variance workbook last viewed 210 days ago (>180 days threshold). Finance operations have migrated to central corporate ledger reporting.',
+    rationale: 'INACTIVE: Departmental IT budget variance workbook last viewed 210 days ago (>180 days threshold).',
     action: 'Decommission Power BI IT Spend Analysis report.',
     tags: ['Inactive', '210d unused', 'OpEx'],
     kpis: ['IT Spend Actual vs Budget', 'Variance by Business Area', 'Vendor Allocation %', 'Capitalized IT Assets', 'Regional IT Infrastructure Cost'],
@@ -528,38 +528,38 @@ export const recommendations: Recommendation[] = [
     userGroups: ['Financial Analysts', 'IT Budget Managers'],
     summary: 'Departmental IT spending analysis comparing actual vs planned budgets, variance by IT and business areas, and regional sales allocations.',
   },
-  {
-    id: 'tb_retire_1',
-    category: 'bi-retire',
-    title: 'Retire Car Insurance Dashboard',
-    businessArea: 'Underwriting',
-    assets: [asset('Car Insurance Dashboard', 'Tableau')],
-    rationale: 'SUPERSEDED: Personal lines auto damage and driver risk demographic analysis has been superseded by enterprise commercial underwriting models and centralized lakehouse risk marts.',
-    action: 'Decommission Tableau Car Insurance Dashboard following commercial risk model cutover.',
-    tags: ['Superseded', 'Underwriting'],
-    kpis: ['Average Claim Amount', 'Claim Frequency', 'Average Household Income', 'Vehicle Age Risk', 'Driver Education Level', 'Total Policies'],
-    tables: ['insurance_policies', 'customer_demographics', 'vehicle_dim'],
-    owner: 'EXL',
-    lastViewed: '94 days ago',
-    userGroups: ['Personal Auto Underwriting'],
-    summary: 'Legacy personal auto underwriting workbook replaced by modern risk portfolio rating models.',
-  },
-  {
-    id: 'tb_retire_2',
-    category: 'bi-retire',
-    title: 'Retire Healthcare Claim Analysis Dashboard',
-    businessArea: 'Claims',
-    assets: [asset('Healthcare Claim Analysis Dashboard', 'Tableau')],
-    rationale: 'LEGACY DATA MODEL: Diagnostic category and clinical benefit cost tracking relies on static extracts superseded by the central claims lakehouse mart.',
-    action: 'Decommission Healthcare Claim Analysis Dashboard after clinical KPI migration.',
-    tags: ['Redundant Mart', 'Clinical Claims'],
-    kpis: ['Claims Cost', 'Benefit Nature Distribution', 'Regional Claimant Count', 'Diagnosis Category Cost', 'Genderwise Claim Cost', 'Total Benefit Records'],
-    tables: ['database_claims_data', 'sheet1_navigation'],
-    owner: 'EXL',
-    lastViewed: '76 days ago',
-    userGroups: ['Clinical Review', 'Medical Claims'],
-    summary: 'Static medical diagnostic and clinical benefit review workbook superseded by enterprise claims reporting.',
-  },
+  // {
+  //   id: 'tb_retire_1',
+  //   category: 'bi-retire',
+  //   title: 'Retire Car Insurance Dashboard',
+  //   businessArea: 'Underwriting',
+  //   assets: [asset('Car Insurance Dashboard', 'Tableau')],
+  //   rationale: 'SUPERSEDED: Personal lines auto damage and driver risk demographic analysis has been superseded by enterprise commercial underwriting models and centralized lakehouse risk marts.',
+  //   action: 'Decommission Tableau Car Insurance Dashboard following commercial risk model cutover.',
+  //   tags: ['Superseded', 'Underwriting'],
+  //   kpis: ['Average Claim Amount', 'Claim Frequency', 'Average Household Income', 'Vehicle Age Risk', 'Driver Education Level', 'Total Policies'],
+  //   tables: ['insurance_policies', 'customer_demographics', 'vehicle_dim'],
+  //   owner: 'EXL',
+  //   lastViewed: '94 days ago',
+  //   userGroups: ['Personal Auto Underwriting'],
+  //   summary: 'Legacy personal auto underwriting workbook replaced by modern risk portfolio rating models.',
+  // },
+  // {
+  //   id: 'tb_retire_2',
+  //   category: 'bi-retire',
+  //   title: 'Retire Healthcare Claim Analysis Dashboard',
+  //   businessArea: 'Claims',
+  //   assets: [asset('Healthcare Claim Analysis Dashboard', 'Tableau')],
+  //   rationale: 'LEGACY DATA MODEL: Diagnostic category and clinical benefit cost tracking relies on static extracts superseded by the central claims lakehouse mart.',
+  //   action: 'Decommission Healthcare Claim Analysis Dashboard after clinical KPI migration.',
+  //   tags: ['Redundant Mart', 'Clinical Claims'],
+  //   kpis: ['Claims Cost', 'Benefit Nature Distribution', 'Regional Claimant Count', 'Diagnosis Category Cost', 'Genderwise Claim Cost', 'Total Benefit Records'],
+  //   tables: ['database_claims_data', 'sheet1_navigation'],
+  //   owner: 'EXL',
+  //   lastViewed: '76 days ago',
+  //   userGroups: ['Clinical Review', 'Medical Claims'],
+  //   summary: 'Static medical diagnostic and clinical benefit review workbook superseded by enterprise claims reporting.',
+  // },
   // {
   //   id: 'br4',
   //   category: 'bi-retire',
@@ -603,7 +603,7 @@ export const recommendations: Recommendation[] = [
     assets: [asset('Workflow_04_App', 'Alteryx')],
     rationale: 'INACTIVE: Workflow has been inactive for over 200 days (>180 days threshold). Produces no production deliverables and terminates exclusively in inspection nodes with no active downstream consumers.',
     action: 'Decommission inactive workflow.',
-    tags: ['Inactive', '200d unused', 'Stale Workflow'],
+    tags: ['Inactive', 'Zombie ETLs'],
     kpis: ['Age', 'BMI', 'Policy_Status', 'Health_Status', 'Policy_ID', 'Policy_Type', 'Submit_ID'],
     tables: ['Health_Data', 'Policy_Data'],
     owner: 'EXL',
@@ -696,6 +696,38 @@ export const recommendations: Recommendation[] = [
     lastViewed: '22 days ago',
     userGroups: ['Distribution Leadership', 'Sales Ops'],
     summary: 'Insurance distribution sales performance and account executive achievement tracking workbook.',
+  },
+    {
+    id: 'tb_keep_7',
+    category: 'bi-keep',
+    title: 'Keep Car Insurance Dashboard',
+    businessArea: 'Underwriting',
+    assets: [asset('Car Insurance Dashboard', 'Tableau')],
+    rationale: 'Active dashboard tracking personal lines auto physical damage, bodily injury claims summary, and driver risk demographics.',
+    action: 'Retain and certify for personal auto repair cost and underwriting analytics.',
+    tags: ['Active', 'Underwriting', 'Certified'],
+    kpis: ['Average Claim Amount', 'Claim Frequency', 'Average Household Income', 'Vehicle Age Risk', 'Driver Education Level', 'Total Policies'],
+    tables: ['insurance_policies', 'customer_demographics', 'vehicle_dim'],
+    owner: 'EXL',
+    lastViewed: '94 days ago',
+    userGroups: ['Personal Auto Underwriting'],
+    summary: 'Personal lines auto physical damage, bodily injury claims summary, and repair cost analytics.',
+  },
+  {
+    id: 'tb_keep_8',
+    category: 'bi-keep',
+    title: 'Keep Healthcare Claim Analysis Dashboard',
+    businessArea: 'Claims',
+    assets: [asset('Healthcare Claim Analysis Dashboard', 'Tableau')],
+    rationale: 'Active dashboard tracking clinical healthcare claims evaluation, diagnostic categorization, benefit utilization, and regional cost distribution.',
+    action: 'Retain and certify for clinical claims review and benefit utilization analytics.',
+    tags: ['Active', 'Clinical Claims', 'Certified'],
+    kpis: ['Claims Cost', 'Benefit Nature Distribution', 'Regional Claimant Count', 'Diagnosis Category Cost', 'Genderwise Claim Cost', 'Total Benefit Records'],
+    tables: ['database_claims_data', 'sheet1_navigation'],
+    owner: 'EXLService',
+    lastViewed: '76 days ago',
+    userGroups: ['Clinical Review', 'Medical Claims'],
+    summary: 'Clinical healthcare claims evaluation, diagnostic categorization, benefit utilization, and regional cost distribution.',
   },
   {
     id: 'bk8',
@@ -795,7 +827,15 @@ export function getRecommendationsByCategory(cat: RecommendationCategory): Recom
 }
 
 export function getCategoriesForSection(section: 'bi' | 'etl'): CategoryInfo[] {
-  return categories.filter((c) => c.section === section || c.section === 'both');
+  return categories
+    .filter((c) => c.section === section || c.section === 'both')
+    .map((c) => {
+      const recCount = recommendations.filter((r) => r.category === c.id).length;
+      return {
+        ...c,
+        count: recCount > 0 ? recCount : c.count,
+      };
+    });
 }
 
 export function getOverlapMetrics(
@@ -824,6 +864,47 @@ export function getCrossTechCounts(
   const mergeCount = recs.filter((r) => r.category === mergeCat && isCrossTechRecommendation(r)).length;
   const retireCount = recs.filter((r) => r.category === retireCat && isCrossTechRecommendation(r)).length;
   return { mergeCount, retireCount, total: mergeCount + retireCount };
+}
+
+/**
+ * Standardised colour tokens for Complexity and Criticality across ETL Rationalisation:
+ * HIGH   → GREEN (#10B981)
+ * MEDIUM → YELLOW / AMBER (#F59E0B)
+ * LOW    → RED (#EF4444)
+ */
+export function getComplexityCriticalityBadgeStyle(level: string | undefined): {
+  backgroundColor: string;
+  borderColor: string;
+  color: string;
+} {
+  const norm = (level || '').toLowerCase().trim();
+  if (norm === 'high') {
+    return {
+      backgroundColor: 'rgba(16, 185, 129, 0.15)',
+      borderColor: 'rgba(16, 185, 129, 0.35)',
+      color: '#10B981',
+    };
+  }
+  if (norm === 'low') {
+    return {
+      backgroundColor: 'rgba(239, 68, 68, 0.15)',
+      borderColor: 'rgba(239, 68, 68, 0.35)',
+      color: '#EF4444',
+    };
+  }
+  // Medium / Default
+  return {
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+    color: '#F59E0B',
+  };
+}
+
+export function getComplexityCriticalityColor(level: string | undefined): string {
+  const norm = (level || '').toLowerCase().trim();
+  if (norm === 'high') return '#10B981';
+  if (norm === 'low') return '#EF4444';
+  return '#F59E0B';
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -1453,7 +1534,7 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
       ],
       overlapMetrics: {
         sourceMetadataPct: 100,
-        targetMetadataPct: 0,
+        targetMetadataPct: 100,
         frequencyPct: 100,
         logicPct: 100,
         dagPct: 100,
@@ -1530,7 +1611,98 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
           ],
         },
       ],
-      targetsComparison: [],
+      targetsComparison: [
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
+          targetType: 'Excel Extract',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - State Performance'],
+          columnsCount: 17,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Claim Number', type: 'V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Policy Number', type: 'V_WString', sampleValue: 'POL-10492', isMatching: true },
+            { name: 'Team', type: 'V_WString', sampleValue: 'Team Alpha', isMatching: true },
+            { name: 'Manager', type: 'V_WString', sampleValue: 'Sarah Jenkins', isMatching: true },
+            { name: 'Examiner', type: 'V_WString', sampleValue: 'David Miller', isMatching: true },
+            { name: 'Claim Status', type: 'V_WString', sampleValue: 'Active_Pending', isMatching: true },
+            { name: 'Disability Date', type: 'Date', sampleValue: '2024-01-15', isMatching: true },
+            { name: 'ICD1Code', type: 'V_WString', sampleValue: 'S82.1', isMatching: true },
+            { name: 'ICD1Description', type: 'V_WString', sampleValue: 'Fracture of tibia', isMatching: true },
+            { name: 'ICD1GroupName', type: 'V_WString', sampleValue: 'Musculoskeletal', isMatching: true },
+            { name: 'Total Paid', type: 'Double', sampleValue: '1,450.00', isMatching: true },
+            { name: 'Payment Count', type: 'Int32', sampleValue: '3', isMatching: true },
+            { name: 'Litigation Flag', type: 'V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Reopened Flag', type: 'V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Days Since Last Activity', type: 'Int32', sampleValue: '12', isMatching: true },
+            { name: 'Aging Bucket', type: 'V_WString', sampleValue: '0-30 Days', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - Agent Performance'],
+          columnsCount: 7,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Manager', type: 'V_WString', sampleValue: 'Sarah Jenkins', isMatching: true },
+            { name: 'Examiner', type: 'V_WString', sampleValue: 'David Miller', isMatching: true },
+            { name: 'Preclaim', type: 'Int32', sampleValue: '8', isMatching: true },
+            { name: 'Active_Pending', type: 'Int32', sampleValue: '42', isMatching: true },
+            { name: 'Approved', type: 'Int32', sampleValue: '115', isMatching: true },
+            { name: 'Stable_and_Mature', type: 'Int32', sampleValue: '24', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Healthcare Claim Analysis Dashboard'],
+          columnsCount: 4,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Product Type', type: 'V_WString', sampleValue: 'Workers Comp', isMatching: true },
+            { name: 'Claim Count', type: 'Int32', sampleValue: '128', isMatching: true },
+            { name: 'Total Paid Amount', type: 'Double', sampleValue: '482,900.00', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_State_Demo_Output.xlsx|||StateSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - State Performance', 'Car Insurance Dashboard'],
+          columnsCount: 4,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'State', type: 'V_WString', sampleValue: 'CA', isMatching: true },
+            { name: 'Claim Count', type: 'Int32', sampleValue: '94', isMatching: true },
+            { name: 'Total Paid', type: 'Double', sampleValue: '341,200.00', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
+          targetType: 'Excel Summary',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Benefeciery_services_Aging_Dashboard'],
+          columnsCount: 3,
+          columns: [
+            { name: 'Aging Bucket', type: 'V_WString', sampleValue: '90+ Days', isMatching: true },
+            { name: 'Litigation Flag', type: 'V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Claim Count', type: 'Int32', sampleValue: '31', isMatching: true },
+          ],
+        },
+      ],
       frequencyComparison: {
         leftSchedule: 'Daily 05:30 AM EST',
         rightSchedule: 'Daily 05:30 AM EST',
@@ -1776,12 +1948,12 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
   if (rec.id === 'er2') {
     return {
       recId: 'er2',
-      title: 'Stale / Orphaned Workflow Decommission Analysis',
+      title: 'Inactive / Zombie Workflow Decommission Analysis',
       recType: 'RETIRE',
       recommendationBadge: 'Retire',
       direction: {
         absorbed: { name: 'Workflow_04_App', tech: 'Alteryx', role: 'Stale Candidate' },
-        retained: { name: 'None (Orphaned)', tech: 'Alteryx', role: 'No Replacement Required' },
+        retained: { name: 'None', tech: 'Alteryx', role: 'No Replacement Required' },
         bannerText: 'RETIRED STALE PIPELINE: Workflow_04_App (Alteryx) → REASON: Zero Downstream Consumers & Inactive > 200 Days',
       },
       inScopeWorkflows: [
@@ -1854,22 +2026,6 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
       },
       logicComparison: {
         rules: [
-          {
-            name: 'Underwriting Prototype Join',
-            category: 'Join',
-            leftExpression: 'Join on Submit_ID / Policy_ID',
-            rightExpression: 'N/A',
-            matchType: 'Unique',
-            description: 'Experimental join between health criteria and policy status prototype tables.',
-          },
-          {
-            name: 'Risk Score Filter',
-            category: 'Filter',
-            leftExpression: '[BMI] < 30 AND [Age] < 60',
-            rightExpression: 'N/A',
-            matchType: 'Unique',
-            description: 'Rudimentary filter rule superseded by automated rating engine.',
-          },
         ],
         similarityScore: 0,
         summary: 'Contains experimental prototype logic from early 2024 underwriting testing. Zero active production relevance.',
@@ -1915,10 +2071,8 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
         },
       ],
       rationalePoints: [
-        'Zero Downstream Consumers: Audit confirmed no BI tools, data warehouses, or reporting layers depend on this workflow.',
-        'Exceeds Inactivity Threshold: Inactive for >200 days (>180 days policy rule for automated decommissioning).',
-        'Dead-End DAG Topology: Terminates in 4 Browse tools without any persistent database or file output nodes.',
-        'Workspace Cleanup: Decommissioning removes obsolete assets and reduces governance inventory overhead.',
+        'INACTIVE — Exceeds Inactivity Threshold: Workflow_04_App has been inactive for >200 days (>180 days policy rule for automated decommissioning). Dead-End DAG Topology: Terminates in 4 Browse tools without any persistent database or file output nodes.',
+        'ZOMBIE ETL — Zero Downstream Consumers: No downstream BI tools, warehouses, reporting layers, or other consumers depend on the workflow. Workspace Cleanup: Decommissioning removes obsolete assets and reduces governance inventory overhead.',
       ],
       validationRequirements: [
         'Export and archive the workflow XML definition into the audit archive.',
@@ -1974,7 +2128,7 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
       ],
       overlapMetrics: {
         sourceMetadataPct: 100,
-        targetMetadataPct: 0,
+        targetMetadataPct: 100,
         frequencyPct: 100,
         logicPct: 96,
         dagPct: 94,
@@ -2051,7 +2205,98 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
           ],
         },
       ],
-      targetsComparison: [],
+      targetsComparison: [
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||Detail',
+          targetType: 'Excel Data Mart (Sheet: Detail)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - State Performance'],
+          columnsCount: 17,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Claim Number', type: 'String / V_WString', sampleValue: 'CLM-90123', isMatching: true },
+            { name: 'Policy Number', type: 'String / V_WString', sampleValue: 'POL-10492', isMatching: true },
+            { name: 'Team', type: 'String / V_WString', sampleValue: 'Team Alpha', isMatching: true },
+            { name: 'Manager', type: 'String / V_WString', sampleValue: 'Sarah Jenkins', isMatching: true },
+            { name: 'Examiner', type: 'String / V_WString', sampleValue: 'David Miller', isMatching: true },
+            { name: 'Claim Status', type: 'String / V_WString', sampleValue: 'Active_Pending', isMatching: true },
+            { name: 'Disability Date', type: 'Date', sampleValue: '2024-01-15', isMatching: true },
+            { name: 'ICD1Code', type: 'String / V_WString', sampleValue: 'S82.1', isMatching: true },
+            { name: 'ICD1Description', type: 'String / V_WString', sampleValue: 'Fracture of tibia', isMatching: true },
+            { name: 'ICD1GroupName', type: 'String / V_WString', sampleValue: 'Musculoskeletal', isMatching: true },
+            { name: 'Total Paid', type: 'Float64 / Double', sampleValue: '1,450.00', isMatching: true },
+            { name: 'Payment Count', type: 'Int64 / Int32', sampleValue: '3', isMatching: true },
+            { name: 'Litigation Flag', type: 'String / V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Reopened Flag', type: 'String / V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Days Since Last Activity', type: 'Int64 / Int32', sampleValue: '12', isMatching: true },
+            { name: 'Aging Bucket', type: 'String / V_WString', sampleValue: '0-30 Days', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Historical_Extract_Demo_Output.xlsx|||QuarterSummary',
+          targetType: 'Excel Data Mart (Sheet: QuarterSummary)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - Executive Summary', 'Claims - Agent Performance'],
+          columnsCount: 7,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Manager', type: 'String / V_WString', sampleValue: 'Sarah Jenkins', isMatching: true },
+            { name: 'Examiner', type: 'String / V_WString', sampleValue: 'David Miller', isMatching: true },
+            { name: 'Preclaim', type: 'Int64 / Int32', sampleValue: '8', isMatching: true },
+            { name: 'Active_Pending', type: 'Int64 / Int32', sampleValue: '42', isMatching: true },
+            { name: 'Approved', type: 'Int64 / Int32', sampleValue: '115', isMatching: true },
+            { name: 'Stable_and_Mature', type: 'Int64 / Int32', sampleValue: '24', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_Product_Type_Demo_Output.xlsx|||ProductTypeSummary',
+          targetType: 'Excel Data Mart (Sheet: ProductTypeSummary)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Healthcare Claim Analysis Dashboard'],
+          columnsCount: 4,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'Product Type', type: 'String / V_WString', sampleValue: 'Workers Comp', isMatching: true },
+            { name: 'Claim Count', type: 'Int64 / Int32', sampleValue: '128', isMatching: true },
+            { name: 'Total Paid Amount', type: 'Float64 / Double', sampleValue: '482,900.00', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_By_State_Demo_Output.xlsx|||StateSummary',
+          targetType: 'Excel Data Mart (Sheet: StateSummary)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Claims - State Performance', 'Car Insurance Dashboard'],
+          columnsCount: 4,
+          columns: [
+            { name: 'Quarter End Date', type: 'Date', sampleValue: '2024-03-31', isMatching: true },
+            { name: 'State', type: 'String / V_WString', sampleValue: 'CA', isMatching: true },
+            { name: 'Claim Count', type: 'Int64 / Int32', sampleValue: '94', isMatching: true },
+            { name: 'Total Paid', type: 'Float64 / Double', sampleValue: '341,200.00', isMatching: true },
+          ],
+        },
+        {
+          name: 'Claims_Aging_Risk_Demo_Output.xlsx|||AgingRiskSummary',
+          targetType: 'Excel Data Mart (Sheet: AgingRiskSummary)',
+          matchStatus: 'exact',
+          leftPresent: true,
+          rightPresent: true,
+          downstreamConsumers: ['Benefeciery_services_Aging_Dashboard'],
+          columnsCount: 3,
+          columns: [
+            { name: 'Aging Bucket', type: 'String / V_WString', sampleValue: '90+ Days', isMatching: true },
+            { name: 'Litigation Flag', type: 'String / V_WString', sampleValue: 'N', isMatching: true },
+            { name: 'Claim Count', type: 'Int64 / Int32', sampleValue: '31', isMatching: true },
+          ],
+        },
+      ],
       frequencyComparison: {
         leftSchedule: 'Daily 05:30 AM EST (Alteryx Server)',
         rightSchedule: 'Daily 05:30 AM EST (Airflow / Cron)',
@@ -2277,8 +2522,6 @@ export function getEtlCandidateDetail(rec: Recommendation): EtlCandidateDetailDT
       ],
       rationalePoints: [
         'Full Modernization Parity: The vectorized Python pipeline claims_processing replicates all 35 Alteryx tools with 100% data fidelity.',
-        'Significant Performance Gain: Execution runtime reduced by 87% (32s down to 4.2s).',
-        'Direct Cloud Lakehouse Readiness: Python pipeline integrates natively into modern CI/CD, Git version control, and Airflow orchestration.',
         'Safe Decommissioning: Legacy Alteryx workflow can be retired with zero risk to downstream reporting consumers.',
       ],
       validationRequirements: [

@@ -15,7 +15,6 @@ import {
   FileCheck2,
   Rocket,
   Settings,
-  ChevronRight,
 } from 'lucide-react';
 import type { ViewState } from './navigation/workflowStages';
 import { getSummaryMetrics, TECHNOLOGY_LOGOS } from '../data/discoveryData';
