@@ -136,7 +136,7 @@ export default function App() {
               className="text-[11px]"
               style={{ color: 'var(--color-text-tertiary)' }}
             >
-              © 2026 AI on BI and ETL. All rights reserved.
+              © 2026 BI and ETL Modernization. All rights reserved.
             </span>
             <span
               className="text-[11px] pr-52 hidden sm:inline"
@@ -303,7 +303,7 @@ export default function App() {
           style={{ borderColor: 'var(--color-border-subtle)' }}
         >
           <div className="max-w-[1600px] mx-auto flex items-center justify-between text-[11px]" style={{ color: 'var(--color-text-tertiary)' }}>
-            <span>AI on BI and ETL Modernization Platform</span>
+            <span>BI and ETL Modernization Platform</span>
             <span>Enterprise Cloud Edition</span>
           </div>
         </footer>
