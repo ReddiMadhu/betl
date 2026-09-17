@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Compass,
@@ -193,6 +193,18 @@ function DocCountCard({
 }
 
 export default function TakeAGlance({ onNavigate }: Props) {
+  const section2Ref = useRef<HTMLElement>(null);
+
+  // Auto-scroll directly to Section 2 ("2. Rationalization - Decisions Recommended Successfully")
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (section2Ref.current) {
+        section2Ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Document counts from manifest
   const [docCounts, setDocCounts] = useState({
     biAssessmentCount: 27,
@@ -446,7 +458,7 @@ export default function TakeAGlance({ onNavigate }: Props) {
       {/* ════════════════════════════════════════════════════
        *  SECTION 2: RATIONALIZATION & OVERLAP GOVERNANCE CARDS
        * ════════════════════════════════════════════════════ */}
-      <section className="space-y-4">
+      <section ref={section2Ref} id="section-rationalization" className="space-y-4 pt-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div

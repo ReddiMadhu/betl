@@ -415,7 +415,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
           {/* Sub-stage 1: ETL Discovery */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-500">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-500">
                 ETL Discovery
               </span>
               {etlDiscoveryDone && (
@@ -448,7 +448,7 @@ export default function AssessmentDiscovery({ onShowResults }: { onShowResults?:
                 className="text-[11px] font-bold uppercase tracking-wider"
                 style={{
                   color: etlDiscoveryDone
-                    ? 'rgb(16, 185, 129)'
+                    ? '#3B82F6'
                     : 'var(--color-text-tertiary)',
                 }}
               >
