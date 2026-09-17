@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Clock, CheckCircle2, ExternalLink } from 'lucide-react';
+import { ArrowRight, Clock, CheckCircle2 } from 'lucide-react';
 import ThinkingTrace from './ThinkingTrace';
 import type { TraceStep } from './ThinkingTrace';
 import { allAssets, isEtlAsset } from '../data/discoveryData';
@@ -164,39 +164,8 @@ export default function RationalizationLoading({ onShowResults }: Props) {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className="max-w-[1240px] mx-auto"
     >
-      {/* ─── Page header with KPI Bank link and Show Results button ─── */}
-      <div className="flex items-center justify-end gap-3 mb-4">
-        <a
-          href="https://kpibank.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-all duration-200 shadow-sm hover:opacity-90"
-          style={{
-            backgroundColor: 'var(--color-surface)',
-            borderColor: 'var(--color-border-primary)',
-            color: 'var(--color-text-primary)',
-            boxShadow: '0 1px 3px var(--color-card-shadow)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = 'var(--color-accent)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'var(--color-border-primary)';
-          }}
-          title="KPI Bank"
-        >
-          <span
-            className="w-2 h-2 rounded-full"
-            style={{
-              backgroundImage: 'linear-gradient(135deg, #F5D060, #D4A017)',
-              boxShadow: '0 0 6px rgba(212, 160, 23, 0.5)',
-            }}
-          />
-          <span>KPI Bank</span>
-          <ExternalLink size={13} style={{ color: 'var(--color-text-tertiary)' }} />
-        </a>
-
-        {/* ─── Show Results button — placed right after KPI Bank ─── */}
+      {/* ─── Top-right Show Results button ─── */}
+      <div className="flex items-center justify-end mb-4 min-h-[38px]">
         <AnimatePresence>
           {allDone && (
             <motion.button
