@@ -1,28 +1,18 @@
-import JSZip from 'jszip';
+import {
+  generateAssessmentZip,
+  generateRationalizationZip,
+  getDiscoveredBiAssets,
+  getCanonicalEtlAssets,
+} from './documentationGenerator';
+import type { DocGenerationProgress } from './documentationGenerator';
+import { recommendations } from '../data/rationalizationData';
 
-export interface DownloadProgress {
-  status: 'idle' | 'fetching' | 'zipping' | 'downloading' | 'completed' | 'error';
-  progress: number;
-  currentFile?: string;
-  errorMessage?: string;
-}
-
-interface ManifestFile {
-  path: string;
-  url: string;
-  size?: number;
-}
-
-interface Manifest {
-  generatedAt: string;
-  assessment: ManifestFile[];
-  rationalization: ManifestFile[];
-}
+export type DownloadProgress = DocGenerationProgress;
 
 /**
- * Downloads the full documentation package as a structured ZIP archive.
- * Fetches all static files from `/documentation/assessment` or `/documentation/rationalization`,
- * bundles them in JSZip, and saves to the user's computer.
+ * Generates and downloads the full documentation package as a structured ZIP archive in-memory.
+ * Uses the live, authoritative application data models directly, ensuring genuine Markdown specifications
+ * and accurate Excel workbooks without network fetch failures or HTML fallback corruption.
  */
 export async function downloadDocumentationZip(
   type: 'assessment' | 'rationalization',
@@ -31,85 +21,25 @@ export async function downloadDocumentationZip(
 ): Promise<void> {
   try {
     onProgress?.({
-      status: 'fetching',
-      progress: 5,
-      currentFile: 'Fetching documentation manifest...',
-    });
-
-    // 1. Fetch manifest.json to get all static file paths
-    const manifestRes = await fetch('/documentation/manifest.json');
-    if (!manifestRes.ok) {
-      throw new Error(`Failed to load documentation manifest (${manifestRes.status})`);
-    }
-
-    const manifest: Manifest = await manifestRes.json();
-    let files = type === 'assessment' ? manifest.assessment : manifest.rationalization;
-
-    // 2. Filter by subType if specified (BI or ETL)
-    if (subType === 'bi') {
-      files = files.filter((f) => f.path.startsWith('BI/'));
-    } else if (subType === 'etl') {
-      files = files.filter((f) => f.path.startsWith('ETL/'));
-    }
-
-    if (!files || files.length === 0) {
-      throw new Error(`No documentation files found for ${type}${subType ? ` (${subType.toUpperCase()})` : ''}`);
-    }
-
-    const zip = new JSZip();
-    const totalFiles = files.length;
-    let loadedFiles = 0;
-
-    // 3. Fetch each static file and add to ZIP
-    for (const file of files) {
-      onProgress?.({
-        status: 'fetching',
-        progress: Math.round(10 + (loadedFiles / totalFiles) * 60),
-        currentFile: file.path,
-      });
-
-      const res = await fetch(file.url);
-      if (!res.ok) {
-        console.warn(`Could not fetch ${file.url}, skipping...`);
-        continue;
-      }
-
-      const blob = await res.blob();
-      // Add to ZIP maintaining directory path
-      zip.file(file.path, blob);
-      loadedFiles++;
-    }
-
-    // 4. Compress ZIP
-    onProgress?.({
       status: 'zipping',
-      progress: 75,
-      currentFile: 'Compressing files into ZIP archive...',
+      progress: 5,
+      currentFile: `Initializing ${type} documentation generator...`,
     });
 
-    const zipBlob = await zip.generateAsync(
-      {
-        type: 'blob',
-        compression: 'DEFLATE',
-        compressionOptions: { level: 6 },
-      },
-      (metadata) => {
-        onProgress?.({
-          status: 'zipping',
-          progress: Math.round(75 + (metadata.percent / 100) * 20),
-          currentFile: `Compressing: ${Math.round(metadata.percent)}%`,
-        });
-      }
-    );
+    let zipBlob: Blob;
+    if (type === 'assessment') {
+      zipBlob = await generateAssessmentZip(onProgress, subType);
+    } else {
+      zipBlob = await generateRationalizationZip(onProgress, subType);
+    }
 
-    // 5. Trigger browser download
+    // Trigger browser download
     onProgress?.({
       status: 'downloading',
       progress: 98,
       currentFile: 'Starting download...',
     });
 
-    // Build descriptive filename
     const subLabel = subType ? `_${subType.toUpperCase()}` : '';
     const typeLabel = type === 'assessment' ? 'Assessment' : 'Rationalization';
     const fileName = `${typeLabel}${subLabel}_Documentation.zip`;
@@ -141,7 +71,7 @@ export async function downloadDocumentationZip(
 }
 
 /**
- * Returns document counts from the manifest for display in summary cards.
+ * Returns document counts directly derived from the live application data models.
  */
 export async function getDocumentCounts(): Promise<{
   biAssessmentCount: number;
@@ -150,42 +80,19 @@ export async function getDocumentCounts(): Promise<{
   biRationalizationCount: number;
   etlRationalizationCount: number;
 }> {
-  try {
-    const res = await fetch('/documentation/manifest.json');
-    if (!res.ok) throw new Error('Failed to load manifest');
-    const manifest: Manifest = await res.json();
+  const biAssessmentCount = getDiscoveredBiAssets().length; // 23
+  const etlAssessmentCount = getCanonicalEtlAssets().length; // 8
+  const sourceToTargetCount = etlAssessmentCount; // 8
 
-    // Count unique asset folders (each asset has an xlsx + md, so count xlsx files)
-    const biAssessmentCount = manifest.assessment.filter(
-      (f) => f.path.startsWith('BI/') && f.path.endsWith('.xlsx')
-    ).length;
+  const biRationalizationCount = recommendations.filter((r) => r.category.includes('bi')).length; // 21
+  const etlRationalizationCount = recommendations.filter((r) => r.category.includes('etl')).length; // 8
 
-    const etlAssessmentCount = manifest.assessment.filter(
-      (f) => f.path.startsWith('ETL/') && f.path.endsWith('.xlsx')
-    ).length;
-
-    // Each ETL assessment includes source-to-target mapping
-    const sourceToTargetCount = etlAssessmentCount;
-
-    // Document counts for BI and ETL rationalization reports
-    const biRationalizationCount = 21;
-    const etlRationalizationCount = 8;
-
-    return {
-      biAssessmentCount,
-      etlAssessmentCount,
-      sourceToTargetCount,
-      biRationalizationCount,
-      etlRationalizationCount,
-    };
-  } catch {
-    // Return defaults from static data if manifest can't be fetched
-    return {
-      biAssessmentCount: 27,
-      etlAssessmentCount: 8,
-      sourceToTargetCount: 8,
-      biRationalizationCount: 21,
-      etlRationalizationCount: 8,
-    };
-  }
+  return {
+    biAssessmentCount,
+    etlAssessmentCount,
+    sourceToTargetCount,
+    biRationalizationCount,
+    etlRationalizationCount,
+  };
 }
+

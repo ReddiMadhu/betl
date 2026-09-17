@@ -195,7 +195,7 @@ function DocCountCard({
 export default function TakeAGlance({ onNavigate }: Props) {
   // Document counts from manifest
   const [docCounts, setDocCounts] = useState({
-    biAssessmentCount: 27,
+    biAssessmentCount: 23,
     etlAssessmentCount: 8,
     sourceToTargetCount: 8,
     biRationalizationCount: 21,
