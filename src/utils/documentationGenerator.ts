@@ -67,6 +67,108 @@ export function getDiscoveredBiAssets(): Asset[] {
   return allAssets.filter((a) => !isEtlAsset(a));
 }
 
+/**
+ * Recursively discovers and includes any locally present manual STTM XLSX workbooks
+ * placed under public/documentation/assessment/ETL/** into the Assessment ZIP.
+ * Tolerates absent files on different machines gracefully.
+ */
+async function includeManualSttmFiles(
+  zip: JSZip,
+  onProgress?: (p: DocGenerationProgress) => void
+): Promise<void> {
+  try {
+    let manualFiles: Array<{ relPath: string; url?: string; filename?: string }> = [];
+
+    // 1. Try dev live API endpoint first (available when running vite dev server)
+    try {
+      const apiRes = await fetch('/api/sttm-manifest');
+      if (apiRes.ok) {
+        const data = await apiRes.json();
+        if (Array.isArray(data?.files) && data.files.length > 0) {
+          manualFiles = data.files;
+        }
+      }
+    } catch {
+      // Not in dev mode or API endpoint unavailable
+    }
+
+    // 2. Try sttm-manifest.json
+    if (manualFiles.length === 0) {
+      try {
+        const sttmRes = await fetch('/documentation/sttm-manifest.json');
+        if (sttmRes.ok) {
+          const data = await sttmRes.json();
+          if (Array.isArray(data?.files) && data.files.length > 0) {
+            manualFiles = data.files;
+          }
+        }
+      } catch {
+        // Fallback
+      }
+    }
+
+    // 3. Try main manifest.json
+    if (manualFiles.length === 0) {
+      try {
+        const manifestRes = await fetch('/documentation/manifest.json');
+        if (manifestRes.ok) {
+          const data = await manifestRes.json();
+          if (Array.isArray(data?.manualSttmFiles) && data.manualSttmFiles.length > 0) {
+            manualFiles = data.manualSttmFiles;
+          }
+        }
+      } catch {
+        // No manifest
+      }
+    }
+
+    if (manualFiles.length === 0) {
+      return;
+    }
+
+    for (const sttm of manualFiles) {
+      const zipPath = sttm.relPath;
+      // Do not duplicate if already present in zip
+      if (zip.file(zipPath)) {
+        continue;
+      }
+
+      const fileUrl = sttm.url || `/documentation/assessment/${sttm.relPath}`;
+      try {
+        const fileRes = await fetch(fileUrl);
+        if (!fileRes.ok) continue;
+
+        const ct = fileRes.headers.get('content-type') || '';
+        if (ct.includes('text/html')) {
+          // SPA 404 fallback HTML response, skip!
+          continue;
+        }
+
+        const buf = await fileRes.arrayBuffer();
+        if (buf.byteLength < 50) continue;
+
+        // Verify valid zip/xlsx PK signature (0x50, 0x4B)
+        const firstBytes = new Uint8Array(buf.slice(0, 4));
+        if (firstBytes[0] !== 0x50 || firstBytes[1] !== 0x4B) {
+          continue;
+        }
+
+        // Add exact original binary bytes to ZIP
+        zip.file(zipPath, new Uint8Array(buf));
+        onProgress?.({
+          status: 'zipping',
+          progress: 78,
+          currentFile: `Including Manual STTM: ${zipPath}`,
+        });
+      } catch (err) {
+        console.warn(`[sttm-discovery] Could not fetch manual STTM file ${fileUrl}:`, err);
+      }
+    }
+  } catch (err) {
+    console.warn('[sttm-discovery] Non-critical error during manual STTM discovery:', err);
+  }
+}
+
 /** Build Assessment ZIP Package in memory */
 export async function generateAssessmentZip(
   onProgress?: (p: DocGenerationProgress) => void,
@@ -695,7 +797,12 @@ ${connections.map((c) => `| \`${c.id}\` | **${c.name}** | ${c.direction.toUpperC
     }
   }
 
-  // 4. Compress ZIP
+  // 4. Include locally present manual STTM XLSX files under public/documentation/assessment/ETL
+  if (subType !== 'bi') {
+    await includeManualSttmFiles(zip, onProgress);
+  }
+
+  // 5. Compress ZIP
   onProgress?.({
     status: 'zipping',
     progress: 80,

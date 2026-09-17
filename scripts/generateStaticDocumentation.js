@@ -494,11 +494,56 @@ ${r.id === 'er3' ? '> [!NOTE]\n> **Cross-Technology Alteryx to Python Topology N
 }
 
 // ─────────────────────────────────────────────────────────────
-// 3. WRITE MANIFEST
+// 3. SCAN MANUAL STTM FILES AND WRITE MANIFESTS
 // ─────────────────────────────────────────────────────────────
+function scanManualSttmFiles() {
+  const etlBaseDir = path.join(assessmentDir, 'ETL');
+  const manualFiles = [];
+  if (!fs.existsSync(etlBaseDir)) return manualFiles;
+
+  function scan(currentDir) {
+    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+      if (entry.isDirectory()) {
+        scan(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith('.xlsx')) {
+        // Exclude standard generated _Assessment.xlsx unless explicitly containing sttm
+        const isGeneratedAssessment = entry.name.endsWith('_Assessment.xlsx') && !/sttm/i.test(entry.name);
+        if (!isGeneratedAssessment) {
+          const relPath = path.relative(assessmentDir, fullPath).replace(/\\/g, '/');
+          const stat = fs.statSync(fullPath);
+          manualFiles.push({
+            relPath, // e.g. "ETL/Claims/Alteryx/Workflow_01/Workflow_01_STTM.xlsx"
+            url: `/documentation/assessment/${relPath}`,
+            filename: entry.name,
+            size: stat.size,
+            lastModified: stat.mtime.toISOString(),
+          });
+        }
+      }
+    }
+  }
+
+  scan(etlBaseDir);
+  return manualFiles;
+}
+
+const manualSttmFiles = scanManualSttmFiles();
+manifest.manualSttmFiles = manualSttmFiles;
+
 const manifestPath = path.join(publicDocDir, 'manifest.json');
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
+
+const sttmManifestPath = path.join(publicDocDir, 'sttm-manifest.json');
+fs.writeFileSync(
+  sttmManifestPath,
+  JSON.stringify({ generatedAt: new Date().toISOString(), count: manualSttmFiles.length, files: manualSttmFiles }, null, 2),
+  'utf-8'
+);
 
 console.log('✅ Successfully generated static documentation and manifest!');
 console.log(`- Assessment files: ${manifest.assessment.length}`);
 console.log(`- Rationalization files: ${manifest.rationalization.length}`);
+console.log(`- Manual STTM files discovered: ${manualSttmFiles.length}`);
+

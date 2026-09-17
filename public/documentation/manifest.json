@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-17T14:42:32.987Z",
+  "generatedAt": "2026-09-17T15:27:39.049Z",
   "assessment": [
     {
       "path": "Portfolio_Assessment_Executive_Summary.xlsx",
@@ -531,5 +531,6 @@
       "path": "ETL/Claims/Retention/Keep Workflow_03/Retention_Plan.md",
       "url": "/documentation/rationalization/ETL/Claims/Retention/Keep Workflow_03/Retention_Plan.md"
     }
-  ]
+  ],
+  "manualSttmFiles": []
 }

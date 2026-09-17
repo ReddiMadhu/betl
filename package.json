@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/generateStaticDocumentation.js",
     "dev": "vite",
+    "prebuild": "node scripts/generateStaticDocumentation.js",
     "build": "tsc -b && vite build",
     "generate-docs": "node scripts/generateStaticDocumentation.js",
     "lint": "oxlint",
